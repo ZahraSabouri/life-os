@@ -1,9 +1,35 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { apiFetch } from '../lib/api.js'
-import { upcomingBirthdays } from '../utils/birthdays.js'
 
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const WEEKDAYS = [
+  { label: 'Mon', sample: new Date(2026, 0, 5) },
+  { label: 'Tue', sample: new Date(2026, 0, 6) },
+  { label: 'Wed', sample: new Date(2026, 0, 7) },
+  { label: 'Thu', sample: new Date(2026, 0, 8) },
+  { label: 'Fri', sample: new Date(2026, 0, 9) },
+  { label: 'Sat', sample: new Date(2026, 0, 10) },
+  { label: 'Sun', sample: new Date(2026, 0, 11) }
+]
 const ENTRY_TYPES = new Set(['task', 'event'])
+const PERSIAN_MONTH_FORMATTER = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+  month: 'long',
+  year: 'numeric'
+})
+const PERSIAN_DAY_FORMATTER = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+  day: 'numeric'
+})
+const PERSIAN_WEEKDAY_FORMATTER = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+  weekday: 'short'
+})
+
+const CALENDAR_LEGEND = [
+  { key: 'study', label: 'Study', tone: 'var(--g-acc)' },
+  { key: 'career', label: 'Career', tone: 'var(--g-blue)' },
+  { key: 'body', label: 'Body', tone: 'var(--g-coral)' },
+  { key: 'memories', label: 'Memories', tone: 'var(--g-sage)' },
+  { key: 'mind', label: 'Mind', tone: 'var(--g-rose)' },
+  { key: 'places', label: 'Places', tone: 'var(--g-coral)' }
+]
 
 function firstOfMonth(date) {
   return new Date(date.getFullYear(), date.getMonth(), 1)
@@ -41,9 +67,11 @@ function buildMonthGrid(monthDate) {
   const end = new Date(last)
   const todayKey = formatDateKey(new Date())
   const days = []
+  const firstWeekday = (first.getDay() + 6) % 7
+  const lastWeekday = (last.getDay() + 6) % 7
 
-  start.setDate(first.getDate() - first.getDay())
-  end.setDate(last.getDate() + (6 - last.getDay()))
+  start.setDate(first.getDate() - firstWeekday)
+  end.setDate(last.getDate() + (6 - lastWeekday))
 
   for (const cursor = new Date(start); cursor <= end; cursor.setDate(cursor.getDate() + 1)) {
     const date = new Date(cursor)
@@ -60,20 +88,56 @@ function buildMonthGrid(monthDate) {
   return days
 }
 
-function birthdayLabel(birthday) {
-  if (typeof birthday !== 'string') return ''
+function domainForText(text, fallback = 'mind') {
+  const value = String(text || '').toLowerCase()
 
-  const match = birthday.match(/^\d{4}-(\d{2})-(\d{2})/)
-  if (!match) return birthday
+  if (/\b(mat|cmt|ma\d|study|exam|revision|paper|module|notebook|seminar|lecture|course)\b/.test(value)) return 'study'
+  if (/\b(job|career|cv|phd|application|interview|role|email|bristol|cardiff)\b/.test(value)) return 'career'
+  if (/\b(gym|workout|run|lift|push|pull|body|doctor|health)\b/.test(value)) return 'body'
+  if (/\b(photo|memory|walk|family|maman|birthday)\b/.test(value)) return 'memories'
+  if (/\b(beach|bay|london|trip|travel|place|wales|penarth)\b/.test(value)) return 'places'
 
-  const date = new Date(2000, Number(match[1]) - 1, Number(match[2]))
-  return new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' }).format(date)
+  return fallback
 }
 
-function relativeBirthdayLabel(daysUntil) {
-  if (daysUntil === 0) return 'today'
-  if (daysUntil === 1) return 'tomorrow'
-  return `in ${daysUntil} days`
+function toneForDomain(domain) {
+  return CALENDAR_LEGEND.find((item) => item.key === domain)?.tone || 'var(--g-acc)'
+}
+
+function inferDateFromPrompt(prompt, fallbackKey, visibleMonth) {
+  const value = String(prompt || '').toLowerCase()
+  const explicit = value.match(/\b(20\d{2})-(\d{1,2})-(\d{1,2})\b/)
+
+  if (explicit) {
+    const date = new Date(Number(explicit[1]), Number(explicit[2]) - 1, Number(explicit[3]))
+    if (!Number.isNaN(date.getTime())) return formatDateKey(date)
+  }
+
+  const dayMatch = value.match(/\b([1-9]|[12]\d|3[01])(?:st|nd|rd|th)?\b/)
+
+  if (dayMatch) {
+    const candidate = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), Number(dayMatch[1]))
+    if (candidate.getMonth() === visibleMonth.getMonth()) return formatDateKey(candidate)
+  }
+
+  return fallbackKey
+}
+
+function birthdayKeyInMonth(person, visibleMonth) {
+  const match = String(person.birthday || '').match(/^\d{4}-(\d{2})-(\d{2})/)
+  if (!match) return ''
+
+  const date = new Date(visibleMonth.getFullYear(), Number(match[1]) - 1, Number(match[2]))
+  return date.getMonth() === visibleMonth.getMonth() ? formatDateKey(date) : ''
+}
+
+function persianRangeLabel(visibleMonth) {
+  const first = firstOfMonth(visibleMonth)
+  const last = lastOfMonth(visibleMonth)
+  const firstLabel = PERSIAN_MONTH_FORMATTER.format(first)
+  const lastLabel = PERSIAN_MONTH_FORMATTER.format(last)
+
+  return firstLabel === lastLabel ? firstLabel : `${firstLabel} - ${lastLabel}`
 }
 
 export default function CalendarView() {
@@ -82,24 +146,14 @@ export default function CalendarView() {
   const [people, setPeople] = useState([])
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
-  const [showEntryForm, setShowEntryForm] = useState(false)
-  const [showPersonForm, setShowPersonForm] = useState(false)
-  const [entryForm, setEntryForm] = useState({
-    title: '',
-    date: formatDateKey(new Date()),
-    type: 'event',
-    all_day: true
-  })
-  const [personForm, setPersonForm] = useState({
-    name: '',
-    birthday: formatDateKey(new Date()),
-    notes: ''
-  })
+  const [captureText, setCaptureText] = useState('')
+  const [captureDate, setCaptureDate] = useState(() => formatDateKey(new Date()))
 
   const monthLabel = useMemo(() => new Intl.DateTimeFormat(undefined, {
     month: 'long',
     year: 'numeric'
   }).format(visibleMonth), [visibleMonth])
+  const persianMonthLabel = useMemo(() => persianRangeLabel(visibleMonth), [visibleMonth])
 
   const monthRange = useMemo(() => ({
     from: formatDateKey(firstOfMonth(visibleMonth)),
@@ -107,7 +161,6 @@ export default function CalendarView() {
   }), [visibleMonth])
 
   const monthDays = useMemo(() => buildMonthGrid(visibleMonth), [visibleMonth])
-  const birthdays = useMemo(() => upcomingBirthdays(people), [people])
 
   const entriesByDay = useMemo(() => {
     const grouped = new Map()
@@ -118,13 +171,35 @@ export default function CalendarView() {
         const key = dateKeyFromValue(entry.start_at)
         if (!key) return
 
+        const domain = domainForText(`${entry.title || ''} ${entry.details?.location || ''}`, entry.type === 'task' ? 'study' : 'mind')
         const current = grouped.get(key) || []
-        current.push(entry)
+        current.push({
+          id: entry.id,
+          title: entry.title || entry.type,
+          domain,
+          tone: toneForDomain(domain),
+          type: entry.type
+        })
         grouped.set(key, current)
       })
 
+    people.forEach((person) => {
+      const key = birthdayKeyInMonth(person, visibleMonth)
+      if (!key) return
+
+      const current = grouped.get(key) || []
+      current.push({
+        id: `birthday-${person.id}`,
+        title: `${person.name} birthday`,
+        domain: 'memories',
+        tone: toneForDomain('memories'),
+        type: 'birthday'
+      })
+      grouped.set(key, current)
+    })
+
     return grouped
-  }, [entries])
+  }, [entries, people, visibleMonth])
 
   const loadCalendar = useCallback(async () => {
     setStatus('loading')
@@ -150,10 +225,10 @@ export default function CalendarView() {
     loadCalendar()
   }, [loadCalendar])
 
-  async function handleEntrySubmit(event) {
+  async function handleCaptureSubmit(event) {
     event.preventDefault()
 
-    const title = entryForm.title.trim()
+    const title = captureText.trim().replace(/^["']|["']$/g, '')
     if (!title || status === 'saving') return
 
     setStatus('saving')
@@ -163,43 +238,14 @@ export default function CalendarView() {
       await apiFetch('/api/entries', {
         method: 'POST',
         body: JSON.stringify({
-          type: entryForm.type,
+          type: 'event',
           title,
-          start_at: entryForm.date,
-          all_day: entryForm.all_day
+          start_at: inferDateFromPrompt(title, captureDate, visibleMonth),
+          all_day: true
         })
       })
 
-      setEntryForm((current) => ({ ...current, title: '' }))
-      setShowEntryForm(false)
-      await loadCalendar()
-    } catch (submitError) {
-      setError(submitError.message)
-      setStatus('idle')
-    }
-  }
-
-  async function handlePersonSubmit(event) {
-    event.preventDefault()
-
-    const name = personForm.name.trim()
-    if (!name || status === 'saving-person') return
-
-    setStatus('saving-person')
-    setError('')
-
-    try {
-      await apiFetch('/api/people', {
-        method: 'POST',
-        body: JSON.stringify({
-          name,
-          birthday: personForm.birthday,
-          notes: personForm.notes.trim() || null
-        })
-      })
-
-      setPersonForm((current) => ({ ...current, name: '', notes: '' }))
-      setShowPersonForm(false)
+      setCaptureText('')
       await loadCalendar()
     } catch (submitError) {
       setError(submitError.message)
@@ -208,150 +254,88 @@ export default function CalendarView() {
   }
 
   return (
-    <section className="calendar-layout" aria-label="Calendar">
-        <section className="calendar-month" aria-labelledby="calendar-month-heading">
-          <div className="calendar-toolbar">
+    <section className="calendar-layout calendar-board-layout" aria-label="Calendar">
+      <header className="calendar-board-header">
+        <div className="calendar-brandline">
+          <h1>Life OS</h1>
+          <span />
+        </div>
+        <div className="calendar-title-stack">
+          <h2 id="calendar-month-heading">{monthLabel}</h2>
+          <p lang="fa" dir="rtl">{persianMonthLabel}</p>
+          <div className="calendar-board-controls" aria-label="Month controls">
             <button className="ghost-pill compact-pill" type="button" onClick={() => setVisibleMonth(addMonths(visibleMonth, -1))}>
               Prev
             </button>
-            <h1 id="calendar-month-heading">{monthLabel}</h1>
             <button className="ghost-pill compact-pill" type="button" onClick={() => setVisibleMonth(addMonths(visibleMonth, 1))}>
               Next
             </button>
-            <button className="primary-pill compact-pill" type="button" onClick={() => setShowEntryForm((value) => !value)}>
-              + Add
-            </button>
           </div>
+        </div>
+      </header>
 
-          {showEntryForm ? (
-            <form className="calendar-form" onSubmit={handleEntrySubmit}>
-              <label>
-                <span>Title</span>
-                <input
-                  value={entryForm.title}
-                  onChange={(event) => setEntryForm((current) => ({ ...current, title: event.target.value }))}
-                  placeholder="Seminar, deadline, appointment"
-                />
-              </label>
-              <label>
-                <span>Date</span>
-                <input
-                  type="date"
-                  value={entryForm.date}
-                  onChange={(event) => setEntryForm((current) => ({ ...current, date: event.target.value }))}
-                />
-              </label>
-              <label>
-                <span>Type</span>
-                <select
-                  value={entryForm.type}
-                  onChange={(event) => setEntryForm((current) => ({ ...current, type: event.target.value }))}
-                >
-                  <option value="event">Event</option>
-                  <option value="task">Task</option>
-                </select>
-              </label>
-              <label className="inline-check">
-                <input
-                  type="checkbox"
-                  checked={entryForm.all_day}
-                  onChange={(event) => setEntryForm((current) => ({ ...current, all_day: event.target.checked }))}
-                />
-                <span>All day</span>
-              </label>
-              <button className="submit-link" type="submit" disabled={!entryForm.title.trim() || status === 'saving'}>
-                Save
-              </button>
-            </form>
-          ) : null}
-
-          {error ? <p className="form-error">{error}</p> : null}
-
-          <div className="calendar-weekdays" aria-hidden="true">
-            {WEEKDAYS.map((day) => <span key={day}>{day}</span>)}
+      <aside className="calendar-legend" aria-label="Calendar domains">
+        {CALENDAR_LEGEND.map((item) => (
+          <div key={item.key} style={{ '--item-accent': item.tone }}>
+            <span aria-hidden="true" />
+            <strong>{item.label}</strong>
           </div>
+        ))}
+      </aside>
 
-          <div className="month-grid">
-            {monthDays.map((day) => {
-              const dayEntries = entriesByDay.get(day.key) || []
+      <section className="calendar-month calendar-board" aria-labelledby="calendar-month-heading">
+        {error ? <p className="form-error">{error}</p> : null}
 
-              return (
-                <article
-                  className={`calendar-day${day.isCurrentMonth ? '' : ' muted-day'}${day.isToday ? ' today-day' : ''}`}
-                  key={day.key}
-                >
-                  <time dateTime={day.key}>{day.date.getDate()}</time>
-                  <div className="day-entry-list">
-                    {dayEntries.map((entry) => (
-                      <span className="day-chip" data-type={entry.type} key={entry.id}>
-                        {entry.title || entry.type}
-                      </span>
-                    ))}
-                  </div>
-                </article>
-              )
-            })}
-          </div>
-        </section>
+        <div className="calendar-weekdays" aria-hidden="true">
+          {WEEKDAYS.map((day) => (
+            <span key={day.label}>
+              <strong>{day.label}</strong>
+              <small lang="fa" dir="rtl">{PERSIAN_WEEKDAY_FORMATTER.format(day.sample)}</small>
+            </span>
+          ))}
+        </div>
 
-        <aside className="birthday-panel" aria-labelledby="birthday-heading">
-          <div className="section-heading">
-            <h2 id="birthday-heading">Upcoming birthdays</h2>
-            <span />
-          </div>
+        <div className="month-grid">
+          {monthDays.map((day) => {
+            const dayEntries = entriesByDay.get(day.key) || []
 
-          <button className="submit-link add-person-button" type="button" onClick={() => setShowPersonForm((value) => !value)}>
-            + Add person
-          </button>
+            return (
+              <article
+                className={`calendar-day${day.isCurrentMonth ? '' : ' muted-day'}${day.isToday ? ' today-day' : ''}`}
+                key={day.key}
+              >
+                <time dateTime={day.key}>
+                  <span>{day.date.getDate()}</span>
+                  <small lang="fa" dir="rtl">{PERSIAN_DAY_FORMATTER.format(day.date)}</small>
+                </time>
+                <div className="day-entry-list">
+                  {dayEntries.map((entry) => (
+                    <span className="day-chip" data-type={entry.type} key={entry.id} style={{ '--item-accent': entry.tone }}>
+                      {entry.title}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            )
+          })}
+        </div>
+      </section>
 
-          {showPersonForm ? (
-            <form className="person-form" onSubmit={handlePersonSubmit}>
-              <label>
-                <span>Name</span>
-                <input
-                  value={personForm.name}
-                  onChange={(event) => setPersonForm((current) => ({ ...current, name: event.target.value }))}
-                  placeholder="Name"
-                />
-              </label>
-              <label>
-                <span>Birthday</span>
-                <input
-                  type="date"
-                  value={personForm.birthday}
-                  onChange={(event) => setPersonForm((current) => ({ ...current, birthday: event.target.value }))}
-                />
-              </label>
-              <label>
-                <span>Notes</span>
-                <textarea
-                  value={personForm.notes}
-                  onChange={(event) => setPersonForm((current) => ({ ...current, notes: event.target.value }))}
-                  rows={3}
-                />
-              </label>
-              <button className="submit-link" type="submit" disabled={!personForm.name.trim() || status === 'saving-person'}>
-                Save person
-              </button>
-            </form>
-          ) : null}
-
-          {birthdays.length ? (
-            <ol className="birthday-list">
-              {birthdays.map((person) => (
-                <li key={person.id}>
-                  <div>
-                    <p>{person.name}</p>
-                    <small>{birthdayLabel(person.birthday)}</small>
-                  </div>
-                  <span>{relativeBirthdayLabel(person.daysUntil)}</span>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p className="empty-state">No birthdays in the next 30 days.</p>
-          )}
-        </aside>
+      <form className="calendar-capture-bar" onSubmit={handleCaptureSubmit}>
+        <input
+          value={captureText}
+          onChange={(event) => setCaptureText(event.target.value)}
+          placeholder={'"Seminar on the 22nd, two in the afternoon..."'}
+          aria-label="Add calendar item"
+        />
+        <input
+          aria-label="Fallback date"
+          type="date"
+          value={captureDate}
+          onChange={(event) => setCaptureDate(event.target.value)}
+        />
+        <button className="capture-orb" type="submit" aria-label="Add to calendar" disabled={!captureText.trim() || status === 'saving'} />
+      </form>
     </section>
   )
 }
