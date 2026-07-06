@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import { ENTRY_TYPES, validateDetails } from '@shared/entryTypes.js'
+import FieldsForm from './FieldsForm.jsx'
 import { apiFetch } from '../lib/api.js'
 import { useEntries } from '../lib/useEntries.js'
 import { poemForDate } from '../lib/poems.js'
@@ -38,11 +40,14 @@ function relativeTime(value) {
 
 export default function TheCourt() {
   const [body, setBody] = useState('')
+  const [entryType, setEntryType] = useState('note')
+  const [detailsDraft, setDetailsDraft] = useState({})
   const [status, setStatus] = useState('idle')
   const [submitError, setSubmitError] = useState('')
   const { entries, error: entriesError, refetch } = useEntries('?limit=10')
   const error = submitError || entriesError
 
+  const entryTypeOptions = useMemo(() => Object.entries(ENTRY_TYPES), [])
   const dailyPoem = useMemo(() => poemForDate(new Date()), [])
 
   async function handleSubmit(event) {
@@ -55,16 +60,28 @@ export default function TheCourt() {
     setSubmitError('')
 
     try {
+      const details = entryType === 'note'
+        ? { body: text }
+        : detailsDraft
+      const validation = validateDetails(entryType, details)
+
+      if (!validation.ok) {
+        setSubmitError(validation.errors.join('; '))
+        setStatus('idle')
+        return
+      }
+
       await apiFetch('/api/entries', {
         method: 'POST',
         body: JSON.stringify({
-          type: 'note',
+          type: entryType,
           title: titleFromBody(text),
-          details: { body: text }
+          details: validation.value
         })
       })
 
       setBody('')
+      setDetailsDraft({})
       await refetch()
       setStatus('saved')
       window.setTimeout(() => setStatus('idle'), 1200)
@@ -91,15 +108,39 @@ export default function TheCourt() {
         />
         <p className="capture-label">Capture</p>
         <h1>Capture first. Structure after.</h1>
+        <div className="type-picker" aria-label="Entry type">
+          {entryTypeOptions.map(([type, config]) => (
+            <button
+              className={type === entryType ? 'selected-type' : undefined}
+              key={type}
+              type="button"
+              onClick={() => {
+                setEntryType(type)
+                setDetailsDraft({})
+                setSubmitError('')
+              }}
+            >
+              <span>{config.icon}</span>
+              {config.label}
+            </button>
+          ))}
+        </div>
         <textarea
           value={body}
           onChange={(event) => setBody(event.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Write anything. A task, a deadline, a memory, a line to keep."
+          placeholder={entryType === 'note'
+            ? 'Write anything. A task, a deadline, a memory, a line to keep.'
+            : `Title for this ${ENTRY_TYPES[entryType].label.toLowerCase()}. Add structure below.`}
           rows={7}
         />
+        <FieldsForm
+          details={detailsDraft}
+          onChange={setDetailsDraft}
+          type={entryType}
+        />
         <div className="capture-meta">
-          <span>{status === 'saving' ? 'Filing...' : status === 'saved' ? 'Filed.' : 'Plain note for now'}</span>
+          <span>{status === 'saving' ? 'Filing...' : status === 'saved' ? 'Filed.' : ENTRY_TYPES[entryType].label}</span>
           <button className="submit-link" type="submit" disabled={!body.trim() || status === 'saving'}>
             File entry
           </button>
@@ -119,7 +160,10 @@ export default function TheCourt() {
               <li key={entry.id} className="entry-item">
                 <time dateTime={entry.created_at}>{relativeTime(entry.created_at)}</time>
                 <div>
-                  <p>{entry.title || 'Untitled note'}</p>
+                  <p className="entry-title-line">
+                    <span className="entry-icon">{ENTRY_TYPES[entry.type]?.icon || '?'}</span>
+                    <span>{entry.title || `Untitled ${ENTRY_TYPES[entry.type]?.label?.toLowerCase() || 'entry'}`}</span>
+                  </p>
                   {entry.details?.body ? <small>{entry.details.body}</small> : null}
                 </div>
               </li>

@@ -469,6 +469,51 @@ select:focus-visible {
   line-height: 1.04;
 }
 
+.type-picker {
+  position: relative;
+  z-index: 1;
+  width: min(34rem, 100%);
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+}
+
+.type-picker button {
+  min-height: 2.25rem;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--g-line);
+  border-radius: 999px;
+  padding: 0.4rem 0.7rem;
+  background: rgba(239, 227, 200, 0.035);
+  color: var(--g-sub);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.type-picker button span,
+.entry-icon {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.35rem;
+  min-height: 1.35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--g-acc) 18%, transparent);
+  color: var(--g-acc);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.type-picker .selected-type {
+  border-color: var(--g-accsoft);
+  background: color-mix(in srgb, var(--g-acc) 13%, transparent);
+  color: var(--g-ink);
+}
+
 .capture-arch textarea {
   position: relative;
   z-index: 1;
@@ -485,6 +530,46 @@ select:focus-visible {
 
 .capture-arch textarea::placeholder {
   color: rgba(216, 185, 162, 0.62);
+}
+
+.details-fields {
+  position: relative;
+  z-index: 1;
+  width: min(34rem, 100%);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.details-fields label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--g-sub);
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.details-fields input,
+.details-fields select {
+  width: 100%;
+  min-height: 2.35rem;
+  border: 1px solid rgba(239, 227, 200, 0.16);
+  border-radius: 6px;
+  padding: 0.45rem 0.6rem;
+  background: color-mix(in srgb, var(--g-bg2) 36%, transparent);
+  color: var(--g-ink);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.details-fields select option {
+  color: #24120f;
+}
+
+.detail-check {
+  align-self: end;
 }
 
 .capture-meta {
@@ -573,6 +658,12 @@ select:focus-visible {
   margin: 0;
   font-size: 1.18rem;
   line-height: 1.35;
+}
+
+.entry-title-line {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
 }
 
 .entry-item small {
@@ -1051,6 +1142,7 @@ select:focus-visible {
   }
 
   .capture-meta,
+  .details-fields,
   .intro-controls {
     align-items: stretch;
     flex-direction: column;
@@ -1086,6 +1178,10 @@ select:focus-visible {
 
   .entry-item time {
     text-align: left;
+  }
+
+  .details-fields {
+    grid-template-columns: 1fr;
   }
 }
 

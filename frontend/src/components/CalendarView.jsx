@@ -166,8 +166,7 @@ export default function CalendarView() {
           type: entryForm.type,
           title,
           start_at: entryForm.date,
-          all_day: entryForm.all_day,
-          details: { source: 'calendar-manual' }
+          all_day: entryForm.all_day
         })
       })
 
