@@ -7,6 +7,7 @@ export default function CourtLayout() {
   const location = useLocation()
   const { ground, cycleGround } = useGround()
   const [now, setNow] = useState(() => new Date())
+  const isBoardRoute = location.pathname === '/calendar' || location.pathname === '/today'
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat(undefined, {
     weekday: 'long',
@@ -25,14 +26,18 @@ export default function CourtLayout() {
   }
 
   return (
-    <main className="court-screen">
+    <main className={`court-screen${isBoardRoute ? ' board-screen' : ''}`}>
       <header className="court-topbar">
         <div className="wordmark">Life OS</div>
         <div className="date-line">{dateLabel}</div>
         <nav className="court-nav" aria-label="Primary">
-          {location.pathname !== '/court' ? (
-            <button type="button" onClick={() => navigate('/court')}>Court</button>
-          ) : null}
+          <button
+            className={location.pathname === '/court' ? 'active' : undefined}
+            type="button"
+            onClick={() => navigate('/court')}
+          >
+            Court
+          </button>
           <button
             className={location.pathname === '/today' ? 'active' : undefined}
             type="button"
