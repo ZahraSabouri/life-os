@@ -13,7 +13,7 @@ const SKIP_INTRO_KEY = 'life-os.skip-intro'
 function DivanRoute() {
   const navigate = useNavigate()
   const location = useLocation()
-  const forceIntro = location.state?.forceIntro === true
+  const forceIntro = location.state?.forceIntro === true || new URLSearchParams(location.search).get('intro') === '1'
   const shouldSkipIntro = !forceIntro && window.localStorage.getItem(SKIP_INTRO_KEY) === 'true'
 
   useEffect(() => {
