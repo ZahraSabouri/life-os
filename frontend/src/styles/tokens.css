@@ -20,6 +20,42 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.app-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--g-acc) 8%, transparent), transparent 31rem),
+    linear-gradient(135deg, color-mix(in srgb, var(--g-bg2) 38%, transparent), transparent 35%),
+    var(--g-bg);
+  color: var(--g-ink);
+  transition: background 0.45s ease, color 0.45s ease;
+}
+
+.app-shell[data-ground='indigo'] {
+  --g-bg: #171b2c;
+  --g-bg2: #1e2338;
+  --g-ink: #e9dcc0;
+  --g-acc: #d7a445;
+  --g-sub: #aeb0bf;
+  --g-line: rgba(233, 220, 192, 0.16);
+  --g-panel: rgba(233, 220, 192, 0.05);
+  --g-accsoft: rgba(215, 164, 69, 0.45);
+  --g-shadow: rgba(5, 8, 18, 0.34);
+  --g-danger: #ffc8bc;
+}
+
+.app-shell[data-ground='paper'] {
+  --g-bg: #eee1c6;
+  --g-bg2: #e5d5b4;
+  --g-ink: #332b30;
+  --g-acc: #a5432f;
+  --g-sub: #786b5d;
+  --g-line: rgba(51, 43, 48, 0.18);
+  --g-panel: rgba(51, 43, 48, 0.045);
+  --g-accsoft: rgba(165, 67, 47, 0.45);
+  --g-shadow: rgba(83, 55, 38, 0.2);
+  --g-danger: #7c1f18;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -33,10 +69,7 @@ body,
 
 body {
   min-width: 320px;
-  background:
-    radial-gradient(circle at 50% 38%, rgba(223, 174, 79, 0.08), transparent 31rem),
-    linear-gradient(135deg, rgba(67, 19, 12, 0.22), transparent 35%),
-    var(--g-bg);
+  background: var(--g-bg);
 }
 
 button,
@@ -248,7 +281,7 @@ input:focus-visible {
   padding: 0.375rem 0.5rem;
   border: 1px solid var(--g-line);
   border-radius: 999px;
-  background: rgba(125, 42, 32, 0.78);
+  background: color-mix(in srgb, var(--g-bg2) 82%, transparent);
   transform: translateX(-50%);
   backdrop-filter: blur(10px);
 }
@@ -402,7 +435,7 @@ input:focus-visible {
   border-radius: 50%;
   background:
     radial-gradient(circle at 35% 30%, #fff1c7, transparent 24%),
-    radial-gradient(circle at 50% 50%, #dfae4f, #8f561d 76%);
+    radial-gradient(circle at 50% 50%, var(--g-acc), color-mix(in srgb, var(--g-acc) 48%, #2b1208) 76%);
   cursor: pointer;
   animation: breath 3.8s ease-in-out infinite;
 }
@@ -438,7 +471,7 @@ input:focus-visible {
   border: 1px solid rgba(239, 227, 200, 0.16);
   border-radius: 8px;
   padding: 1rem;
-  background: rgba(67, 19, 12, 0.25);
+  background: color-mix(in srgb, var(--g-bg2) 32%, transparent);
   color: var(--g-ink);
   line-height: 1.55;
 }
@@ -544,6 +577,48 @@ input:focus-visible {
   line-height: 1.45;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+.court-poem {
+  display: grid;
+  gap: 1rem;
+  padding: 1.35rem 0 0.3rem;
+}
+
+.court-poem-lines {
+  display: grid;
+  gap: 0.25rem;
+  font-family: var(--font-poem);
+  text-align: center;
+}
+
+.court-poem-lines p {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+
+.court-poem-lines p + p {
+  color: color-mix(in srgb, var(--g-ink) 88%, var(--g-sub));
+  font-size: 1.45rem;
+}
+
+.court-poet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 0;
+  color: var(--g-sub);
+}
+
+.court-poet::before,
+.court-poet::after {
+  content: '';
+  width: 2.5rem;
+  height: 1px;
+  background: var(--g-line);
 }
 
 .empty-state {

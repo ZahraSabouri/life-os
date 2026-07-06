@@ -1,49 +1,22 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { getPoemPool, pickPoem } from '../lib/poems.js'
 
-const FALLBACK_POEM = {
-  poet: 'Life OS',
-  lines: [
-    'A private ledger opens here.',
-    'Capture first. Structure after.'
-  ],
-  en: ''
-}
-
-function poemPool() {
-  return Array.isArray(window.POEMS_DB) && window.POEMS_DB.length
-    ? window.POEMS_DB
-    : [FALLBACK_POEM]
-}
-
-function normalizePoem(poem) {
-  if (!poem || !Array.isArray(poem.lines) || poem.lines.length === 0) {
-    return FALLBACK_POEM
-  }
-
-  if (poem.lines.length <= 2) {
-    return poem
-  }
-
-  const coupletCount = Math.max(1, Math.floor(poem.lines.length / 2))
-  const index = Math.floor(Math.random() * coupletCount) * 2
-
-  return {
-    ...poem,
-    lines: poem.lines.slice(index, index + 2)
-  }
-}
-
-function pickPoem() {
-  const pool = poemPool()
-  return normalizePoem(pool[Math.floor(Math.random() * pool.length)])
-}
-
-export default function DivanIntro({ onEnter, skipKey }) {
+export default function DivanIntro({ ground, onEnter, onGround, skipKey }) {
   const [poem, setPoem] = useState(() => pickPoem())
   const [skipNextTime, setSkipNextTime] = useState(
     () => window.localStorage.getItem(skipKey) === 'true'
   )
-  const poemCount = useMemo(() => poemPool().length, [])
+  const poemCount = useMemo(() => getPoemPool().length, [])
+
+  const handleEnter = useCallback(() => {
+    if (skipNextTime) {
+      window.localStorage.setItem(skipKey, 'true')
+    } else {
+      window.localStorage.removeItem(skipKey)
+    }
+
+    onEnter()
+  }, [onEnter, skipKey, skipNextTime])
 
   useEffect(() => {
     const onKeyDown = (event) => {
@@ -54,17 +27,7 @@ export default function DivanIntro({ onEnter, skipKey }) {
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  })
-
-  function handleEnter() {
-    if (skipNextTime) {
-      window.localStorage.setItem(skipKey, 'true')
-    } else {
-      window.localStorage.removeItem(skipKey)
-    }
-
-    onEnter()
-  }
+  }, [handleEnter])
 
   return (
     <main className="divan-screen">
@@ -98,6 +61,9 @@ export default function DivanIntro({ onEnter, skipKey }) {
         </button>
         <button className="ghost-pill" type="button" onClick={() => setPoem(pickPoem())}>
           New poem
+        </button>
+        <button className="ghost-pill" type="button" onClick={onGround}>
+          Ground: {ground}
         </button>
         <label className="skip-control">
           <input

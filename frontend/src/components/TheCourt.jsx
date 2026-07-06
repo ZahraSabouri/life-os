@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { poemForDate } from '../lib/poems.js'
 
 const TOKEN = import.meta.env.VITE_LIFE_OS_TOKEN || 'dev-token-change-me'
 
@@ -53,7 +54,7 @@ async function apiFetch(path, options = {}) {
   return response.json()
 }
 
-export default function TheCourt({ onDivan }) {
+export default function TheCourt({ ground, onDivan, onGround }) {
   const [now, setNow] = useState(() => new Date())
   const [body, setBody] = useState('')
   const [entries, setEntries] = useState([])
@@ -66,6 +67,7 @@ export default function TheCourt({ onDivan }) {
     month: 'long',
     year: 'numeric'
   }).format(now), [now])
+  const dailyPoem = useMemo(() => poemForDate(now), [now])
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 60_000)
@@ -128,8 +130,13 @@ export default function TheCourt({ onDivan }) {
         <div className="date-line">{dateLabel}</div>
         <nav className="court-nav" aria-label="Primary">
           <button type="button" aria-disabled="true">Study hub</button>
-          <button type="button" aria-disabled="true">Ground</button>
-          <button type="button" aria-disabled="true">Poem</button>
+          <button type="button" onClick={onGround}>Ground: {ground}</button>
+          <button
+            type="button"
+            onClick={() => document.getElementById('court-poem')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+          >
+            Poem
+          </button>
           <button className="active" type="button" onClick={onDivan}>Divan</button>
         </nav>
       </header>
@@ -182,8 +189,20 @@ export default function TheCourt({ onDivan }) {
             <p className="empty-state">No entries filed yet.</p>
           )}
         </section>
+
+        <aside className="court-poem" id="court-poem" aria-label="Poem of the day">
+          <div className="section-heading">
+            <h2>Poem of the day</h2>
+            <span />
+          </div>
+          <div className="court-poem-lines" lang="fa" dir="rtl">
+            {dailyPoem.lines.map((line, index) => (
+              <p key={`${line}-${index}`}>{line}</p>
+            ))}
+          </div>
+          <p className="court-poet">{dailyPoem.poet}</p>
+        </aside>
       </section>
     </main>
   )
 }
-
