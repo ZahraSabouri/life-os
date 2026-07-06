@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS entries (
   id TEXT PRIMARY KEY,
   type TEXT NOT NULL DEFAULT 'note',
+  archetype TEXT,
   title TEXT,
   status TEXT,
   start_at TEXT,
@@ -65,4 +66,3 @@ CREATE TABLE IF NOT EXISTS entry_links (
   relation TEXT,
   PRIMARY KEY (from_entry_id, to_entry_id, relation)
 );
-
