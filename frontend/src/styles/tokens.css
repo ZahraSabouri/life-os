@@ -858,6 +858,119 @@ select:focus-visible {
   font-size: 0.84rem;
 }
 
+.today-layout {
+  width: min(62rem, 100%);
+  display: grid;
+  gap: 2rem;
+  margin: 3rem auto 0;
+}
+
+.today-panel {
+  display: grid;
+  gap: 1.35rem;
+  border: 1px solid var(--g-line);
+  border-radius: 8px;
+  padding: 1.25rem;
+  background: var(--g-panel);
+  box-shadow: 0 1.4rem 3.25rem var(--g-shadow);
+}
+
+.today-panel-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.today-panel-header h1 {
+  margin: 0.25rem 0 0;
+  font-size: 2.15rem;
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.today-panel-header time {
+  border: 1px solid var(--g-line);
+  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
+  color: var(--g-sub);
+  white-space: nowrap;
+}
+
+.today-section {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.today-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.today-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.65rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(239, 227, 200, 0.08);
+}
+
+.today-row p,
+.today-row small {
+  margin: 0;
+}
+
+.today-row p,
+.task-check span {
+  font-size: 1.12rem;
+  line-height: 1.3;
+}
+
+.today-row small,
+.entry-type-pill {
+  color: var(--g-sub);
+  font-size: 0.84rem;
+}
+
+.task-check {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.task-check input {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: 0 0 auto;
+  accent-color: var(--g-acc);
+}
+
+.task-check span {
+  overflow-wrap: anywhere;
+}
+
+.done-row .task-check span {
+  color: color-mix(in srgb, var(--g-sub) 75%, transparent);
+  text-decoration: line-through;
+}
+
+.entry-type-pill {
+  border: 1px solid var(--g-line);
+  border-radius: 999px;
+  padding: 0.25rem 0.55rem;
+}
+
+.today-recent {
+  border-top: 1px solid var(--g-line);
+  padding-top: 1.35rem;
+}
+
 .empty-state {
   margin: 0;
   color: rgba(216, 185, 162, 0.72);
@@ -892,6 +1005,10 @@ select:focus-visible {
     margin-top: 2.25rem;
   }
 
+  .today-layout {
+    margin-top: 2.25rem;
+  }
+
   .calendar-toolbar,
   .calendar-form {
     grid-template-columns: 1fr;
@@ -908,6 +1025,16 @@ select:focus-visible {
   .calendar-weekdays,
   .month-grid {
     min-width: 42rem;
+  }
+
+  .today-panel-header,
+  .today-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .today-panel-header time {
+    align-self: start;
   }
 
   .capture-arch {
