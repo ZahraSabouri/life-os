@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiFetch } from '../lib/api.js'
+import { useGround } from '../lib/groundContext.jsx'
 import { upcomingBirthdays } from '../utils/birthdays.js'
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -79,6 +80,7 @@ function relativeBirthdayLabel(daysUntil) {
 
 export default function CalendarView() {
   const navigate = useNavigate()
+  const { ground, cycleGround } = useGround()
   const [visibleMonth, setVisibleMonth] = useState(() => firstOfMonth(new Date()))
   const [entries, setEntries] = useState([])
   const [people, setPeople] = useState([])
@@ -219,7 +221,7 @@ export default function CalendarView() {
           <button type="button" onClick={() => navigate('/court')}>Court</button>
           <button className="active" type="button">Calendar</button>
           <button type="button" aria-disabled="true">Study hub</button>
-          <button type="button" aria-disabled="true">Ground</button>
+          <button type="button" onClick={cycleGround}>Ground: {ground}</button>
           <button type="button" aria-disabled="true">Poem</button>
         </nav>
       </header>

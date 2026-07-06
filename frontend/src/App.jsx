@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from
 import CalendarView from './components/CalendarView.jsx'
 import DivanIntro from './components/DivanIntro.jsx'
 import TheCourt from './components/TheCourt.jsx'
+import { GroundProvider, useGround } from './lib/groundContext.jsx'
 
 const SKIP_INTRO_KEY = 'life-os.skip-intro'
 
@@ -39,17 +40,27 @@ function CourtRoute() {
   )
 }
 
+function AppRoutes() {
+  const { ground } = useGround()
+
+  return (
+    <div className="app-shell" data-ground={ground}>
+      <Routes>
+        <Route path="/" element={<DivanRoute />} />
+        <Route path="/court" element={<CourtRoute />} />
+        <Route path="/calendar" element={<CalendarView />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </div>
+  )
+}
+
 export default function App() {
   return (
-    <BrowserRouter>
-      <div className="app-shell">
-        <Routes>
-          <Route path="/" element={<DivanRoute />} />
-          <Route path="/court" element={<CourtRoute />} />
-          <Route path="/calendar" element={<CalendarView />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <GroundProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </GroundProvider>
   )
 }

@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { apiFetch } from '../lib/api.js'
+import { useGround } from '../lib/groundContext.jsx'
+import { useEntries } from '../lib/useEntries.js'
 import { poemForDate } from '../lib/poems.js'
 
 function titleFromBody(body) {
@@ -36,11 +38,13 @@ function relativeTime(value) {
 }
 
 export default function TheCourt({ onCalendar, onDivan }) {
+  const { ground, cycleGround } = useGround()
   const [now, setNow] = useState(() => new Date())
   const [body, setBody] = useState('')
-  const [entries, setEntries] = useState([])
   const [status, setStatus] = useState('idle')
-  const [error, setError] = useState('')
+  const [submitError, setSubmitError] = useState('')
+  const { entries, error: entriesError, refetch } = useEntries('?limit=10')
+  const error = submitError || entriesError
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat(undefined, {
     weekday: 'long',
@@ -55,20 +59,6 @@ export default function TheCourt({ onCalendar, onDivan }) {
     return () => window.clearInterval(timer)
   }, [])
 
-  useEffect(() => {
-    fetchEntries()
-  }, [])
-
-  async function fetchEntries() {
-    try {
-      const rows = await apiFetch('/api/entries?limit=10')
-      setEntries(rows)
-      setError('')
-    } catch (fetchError) {
-      setError(fetchError.message)
-    }
-  }
-
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -76,7 +66,7 @@ export default function TheCourt({ onCalendar, onDivan }) {
     if (!text || status === 'saving') return
 
     setStatus('saving')
-    setError('')
+    setSubmitError('')
 
     try {
       await apiFetch('/api/entries', {
@@ -89,11 +79,11 @@ export default function TheCourt({ onCalendar, onDivan }) {
       })
 
       setBody('')
-      await fetchEntries()
+      await refetch()
       setStatus('saved')
       window.setTimeout(() => setStatus('idle'), 1200)
     } catch (submitError) {
-      setError(submitError.message)
+      setSubmitError(submitError.message)
       setStatus('idle')
     }
   }
@@ -112,7 +102,7 @@ export default function TheCourt({ onCalendar, onDivan }) {
         <nav className="court-nav" aria-label="Primary">
           <button type="button" aria-disabled="true">Study hub</button>
           <button type="button" onClick={onCalendar}>Calendar</button>
-          <button type="button" aria-disabled="true">Ground</button>
+          <button type="button" onClick={cycleGround}>Ground: {ground}</button>
           <button type="button" aria-disabled="true">Poem</button>
           <button className="active" type="button" onClick={onDivan}>Divan</button>
         </nav>
