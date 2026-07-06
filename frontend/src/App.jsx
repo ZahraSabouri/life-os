@@ -1,50 +1,55 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import CalendarView from './components/CalendarView.jsx'
 import DivanIntro from './components/DivanIntro.jsx'
 import TheCourt from './components/TheCourt.jsx'
 
 const SKIP_INTRO_KEY = 'life-os.skip-intro'
-const GROUND_KEY = 'life-os.ground'
-const GROUNDS = ['madder', 'indigo', 'paper']
 
-function getInitialScreen() {
-  return window.localStorage.getItem(SKIP_INTRO_KEY) === 'true' ? 'court' : 'divan'
+function DivanRoute() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const forceIntro = location.state?.forceIntro === true
+  const shouldSkipIntro = !forceIntro && window.localStorage.getItem(SKIP_INTRO_KEY) === 'true'
+
+  useEffect(() => {
+    if (shouldSkipIntro) {
+      navigate('/court', { replace: true })
+    }
+  }, [navigate, shouldSkipIntro])
+
+  if (shouldSkipIntro) return null
+
+  return (
+    <DivanIntro
+      onEnter={() => navigate('/court')}
+      skipKey={SKIP_INTRO_KEY}
+    />
+  )
 }
 
-function getInitialGround() {
-  const savedGround = window.localStorage.getItem(GROUND_KEY)
-  return GROUNDS.includes(savedGround) ? savedGround : GROUNDS[0]
+function CourtRoute() {
+  const navigate = useNavigate()
+
+  return (
+    <TheCourt
+      onCalendar={() => navigate('/calendar')}
+      onDivan={() => navigate('/', { state: { forceIntro: true } })}
+    />
+  )
 }
 
 export default function App() {
-  const [screen, setScreen] = useState(getInitialScreen)
-  const [ground, setGround] = useState(getInitialGround)
-
-  function cycleGround() {
-    setGround((currentGround) => {
-      const nextGround = GROUNDS[(GROUNDS.indexOf(currentGround) + 1) % GROUNDS.length]
-      window.localStorage.setItem(GROUND_KEY, nextGround)
-      return nextGround
-    })
-  }
-
   return (
-    <div className="app-shell" data-ground={ground}>
-      {screen === 'divan'
-        ? (
-          <DivanIntro
-            ground={ground}
-            onEnter={() => setScreen('court')}
-            onGround={cycleGround}
-            skipKey={SKIP_INTRO_KEY}
-          />
-        )
-        : (
-          <TheCourt
-            ground={ground}
-            onDivan={() => setScreen('divan')}
-            onGround={cycleGround}
-          />
-        )}
-    </div>
+    <BrowserRouter>
+      <div className="app-shell">
+        <Routes>
+          <Route path="/" element={<DivanRoute />} />
+          <Route path="/court" element={<CourtRoute />} />
+          <Route path="/calendar" element={<CalendarView />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   )
 }

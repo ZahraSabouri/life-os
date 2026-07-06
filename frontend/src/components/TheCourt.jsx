@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
+import { apiFetch } from '../lib/api.js'
 import { poemForDate } from '../lib/poems.js'
-
-const TOKEN = import.meta.env.VITE_LIFE_OS_TOKEN || 'dev-token-change-me'
 
 function titleFromBody(body) {
   const compact = body.trim().replace(/\s+/g, ' ')
@@ -36,25 +35,7 @@ function relativeTime(value) {
   }).format(new Date(value))
 }
 
-async function apiFetch(path, options = {}) {
-  const response = await fetch(path, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${TOKEN}`,
-      ...options.headers
-    }
-  })
-
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}))
-    throw new Error(body.error || `Request failed with ${response.status}`)
-  }
-
-  return response.json()
-}
-
-export default function TheCourt({ ground, onDivan, onGround }) {
+export default function TheCourt({ onCalendar, onDivan }) {
   const [now, setNow] = useState(() => new Date())
   const [body, setBody] = useState('')
   const [entries, setEntries] = useState([])
@@ -130,13 +111,9 @@ export default function TheCourt({ ground, onDivan, onGround }) {
         <div className="date-line">{dateLabel}</div>
         <nav className="court-nav" aria-label="Primary">
           <button type="button" aria-disabled="true">Study hub</button>
-          <button type="button" onClick={onGround}>Ground: {ground}</button>
-          <button
-            type="button"
-            onClick={() => document.getElementById('court-poem')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-          >
-            Poem
-          </button>
+          <button type="button" onClick={onCalendar}>Calendar</button>
+          <button type="button" aria-disabled="true">Ground</button>
+          <button type="button" aria-disabled="true">Poem</button>
           <button className="active" type="button" onClick={onDivan}>Divan</button>
         </nav>
       </header>
