@@ -7,27 +7,44 @@ const FALLBACK_POEM = {
   en: ''
 }
 
+function isUsablePoem(poem) {
+  return poem
+    && typeof poem.poet === 'string'
+    && poem.poet.trim().length > 0
+    && Array.isArray(poem.lines)
+    && poem.lines.some((line) => typeof line === 'string' && line.trim().length > 0)
+}
+
 export function getPoemPool() {
-  return Array.isArray(window.POEMS_DB) && window.POEMS_DB.length
-    ? window.POEMS_DB
+  const source = typeof window !== 'undefined' && Array.isArray(window.POEMS_DB)
+    ? window.POEMS_DB.filter(isUsablePoem)
+    : []
+
+  return source.length
+    ? source
     : [FALLBACK_POEM]
 }
 
 export function normalizePoem(poem, seed = Math.random()) {
-  if (!poem || !Array.isArray(poem.lines) || poem.lines.length === 0) {
+  if (!isUsablePoem(poem)) {
     return FALLBACK_POEM
   }
 
+  const lines = poem.lines.filter((line) => typeof line === 'string' && line.trim().length > 0)
+
   if (poem.lines.length <= 2) {
-    return poem
+    return {
+      ...poem,
+      lines
+    }
   }
 
-  const coupletCount = Math.max(1, Math.floor(poem.lines.length / 2))
+  const coupletCount = Math.max(1, Math.floor(lines.length / 2))
   const index = Math.floor(seed * coupletCount) * 2
 
   return {
     ...poem,
-    lines: poem.lines.slice(index, index + 2)
+    lines: lines.slice(index, index + 2)
   }
 }
 
@@ -50,4 +67,3 @@ export function poemForDate(date = new Date()) {
 
   return normalizePoem(poem, seed)
 }
-

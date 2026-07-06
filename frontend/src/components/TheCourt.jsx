@@ -216,12 +216,6 @@ export default function TheCourt() {
   return (
     <section className="court-body" aria-label="The Court">
       <form className="capture-arch court-capture-hero" onSubmit={handleSubmit}>
-        <button
-          className="capture-orb"
-          type="submit"
-          aria-label="Capture entry"
-          disabled={!body.trim() || status === 'saving'}
-        />
         <div className="court-capture-copy">
           <p className="capture-label">Capture</p>
           <h1>Capture first. Structure after.</h1>
@@ -234,6 +228,12 @@ export default function TheCourt() {
             ? 'Tell Life OS anything - a deadline, a memory, a book, a place, a workout, a job lead...'
             : `Title for this ${ENTRY_TYPES[entryType].label.toLowerCase()}. Add structure below.`}
           rows={2}
+        />
+        <button
+          className="capture-orb"
+          type="submit"
+          aria-label="Capture entry"
+          disabled={!body.trim() || status === 'saving'}
         />
         <div className="type-picker context-picker" aria-label="Entry type">
           {entryTypeOptions.map(([type, config]) => (
@@ -370,7 +370,7 @@ export default function TheCourt() {
                 <p key={`${line}-${index}`}>{line}</p>
               ))}
             </div>
-            <p className="court-poet">{dailyPoem.poet}</p>
+            <p className="court-poet" lang="fa" dir="rtl">{dailyPoem.poet}</p>
           </aside>
         </aside>
       </section>

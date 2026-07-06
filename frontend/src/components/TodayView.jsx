@@ -1,169 +1,176 @@
 import { useMemo, useState } from 'react'
+import { ENTRY_TYPES } from '@shared/entryTypes.js'
 import { apiFetch } from '../lib/api.js'
+import { poemForDate } from '../lib/poems.js'
 import { useEntries } from '../lib/useEntries.js'
 
-function formatDateKey(date) {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-
-  return `${year}-${month}-${day}`
+const TYPE_TONES = {
+  task: 'var(--g-acc)',
+  event: 'var(--g-acc)',
+  workout: 'var(--g-coral)',
+  book: 'var(--g-blue)',
+  movie: 'var(--g-blue)',
+  place: 'var(--g-sage)',
+  'person-link': 'var(--g-rose)',
+  'job-application': 'var(--g-blue)',
+  material: 'var(--g-sage)',
+  snippet: 'var(--g-sage)',
+  'shopping-item': 'var(--g-acc)',
+  module: 'var(--g-acc)',
+  'module-session': 'var(--g-blue)',
+  note: 'var(--g-sage)'
 }
 
-function relativeTime(value) {
-  const then = new Date(value).getTime()
-  const now = Date.now()
-  const seconds = Math.max(0, Math.round((now - then) / 1000))
-
-  if (seconds < 45) return 'just now'
-
-  const minutes = Math.round(seconds / 60)
-  if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`
-
-  const hours = Math.round(minutes / 60)
-  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`
-
-  const days = Math.round(hours / 24)
-  if (days < 8) return `${days} day${days === 1 ? '' : 's'} ago`
-
-  return new Intl.DateTimeFormat(undefined, {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-  }).format(new Date(value))
+function titleFromBody(body) {
+  const compact = body.trim().replace(/\s+/g, ' ')
+  return compact.length <= 78 ? compact : `${compact.slice(0, 75)}...`
 }
 
-function dateTimeLabel(value) {
-  if (!value) return 'Today'
+function entryTypeLabel(entry) {
+  return ENTRY_TYPES[entry.type]?.label || 'Entry'
+}
+
+function entryTitle(entry) {
+  return entry.title || `Untitled ${entryTypeLabel(entry).toLowerCase()}`
+}
+
+function timeLabel(value) {
+  if (!value) return ''
 
   return new Intl.DateTimeFormat(undefined, {
-    hour: 'numeric',
+    hour: '2-digit',
     minute: '2-digit'
   }).format(new Date(value))
 }
 
+function dayLabel(value) {
+  const date = new Date(value)
+  const today = new Date()
+  const yesterday = new Date()
+  yesterday.setDate(today.getDate() - 1)
+
+  if (date.toDateString() === today.toDateString()) return 'Today'
+  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday'
+
+  return new Intl.DateTimeFormat(undefined, { weekday: 'long' }).format(date)
+}
+
+function detailLine(entry) {
+  if (entry.details?.body) return entry.details.body
+  if (entry.type === 'event' && entry.start_at) return entry.all_day ? 'all day' : timeLabel(entry.start_at)
+  if (entry.type === 'task') return entry.status || 'open'
+  if (entry.type === 'book') return [entry.details?.author, entry.details?.status].filter(Boolean).join(' - ')
+  if (entry.type === 'workout') return [entry.details?.kind, entry.details?.duration_min ? `${entry.details.duration_min} minutes` : ''].filter(Boolean).join(' - ')
+  if (entry.type === 'place') return entry.details?.notes || entry.details?.name || ''
+  if (entry.type === 'module-session') return [entry.details?.module_code, entry.details?.topic].filter(Boolean).join(' - ')
+  if (entry.type === 'job-application') return [entry.details?.company, entry.details?.status].filter(Boolean).join(' - ')
+
+  return ''
+}
+
+function mediaLabel(entry) {
+  const body = `${entry.title || ''} ${entry.details?.body || ''}`.toLowerCase()
+  if (!/\b(photo|image|gallery|jpg|jpeg|png)\b/.test(body)) return ''
+
+  const fileMatch = body.match(/\b[\w-]+\.(?:jpg|jpeg|png)\b/)
+  return fileMatch ? fileMatch[0] : 'photo'
+}
+
 export default function TodayView() {
-  const [updatingId, setUpdatingId] = useState('')
+  const [captureText, setCaptureText] = useState('')
+  const [status, setStatus] = useState('idle')
   const [actionError, setActionError] = useState('')
-  const todayKey = useMemo(() => formatDateKey(new Date()), [])
-  const todayQuery = useMemo(() => `?from=${todayKey}&end=${todayKey}`, [todayKey])
-  const todayEntries = useEntries(todayQuery)
-  const recentEntries = useEntries('?limit=10')
+  const recentEntries = useEntries('?limit=30')
+  const dailyPoem = useMemo(() => poemForDate(new Date()), [])
+  const error = actionError || recentEntries.error
 
-  const tasks = todayEntries.entries.filter((entry) => entry.type === 'task')
-  const events = todayEntries.entries.filter((entry) => entry.type === 'event')
-  const error = actionError || todayEntries.error || recentEntries.error
+  async function handleCaptureSubmit(event) {
+    event.preventDefault()
 
-  async function toggleTask(entry) {
-    setUpdatingId(entry.id)
+    const body = captureText.trim()
+    if (!body || status === 'saving') return
+
+    setStatus('saving')
     setActionError('')
 
     try {
-      await apiFetch(`/api/entries/${entry.id}`, {
-        method: 'PATCH',
+      await apiFetch('/api/entries', {
+        method: 'POST',
         body: JSON.stringify({
-          status: entry.status === 'done' ? 'open' : 'done'
+          type: 'note',
+          title: titleFromBody(body),
+          details: { body }
         })
       })
 
-      await Promise.all([
-        todayEntries.refetch(),
-        recentEntries.refetch()
-      ])
-    } catch (toggleError) {
-      setActionError(toggleError.message)
-    } finally {
-      setUpdatingId('')
+      setCaptureText('')
+      await recentEntries.refetch()
+      setStatus('idle')
+    } catch (submitError) {
+      setActionError(submitError.message)
+      setStatus('idle')
     }
   }
 
   return (
-    <section className="today-layout" aria-label="Today">
-      <section className="today-panel" aria-labelledby="today-heading">
-        <div className="today-panel-header">
-          <div>
-            <p className="capture-label">Today</p>
-            <h1 id="today-heading">What is live now</h1>
-          </div>
-          <time dateTime={todayKey}>{todayKey}</time>
-        </div>
-
-        {error ? <p className="form-error">{error}</p> : null}
-
-        <div className="today-section">
-          <div className="section-heading">
-            <h2>Tasks</h2>
-            <span />
-          </div>
-
-          {tasks.length ? (
-            <ol className="today-list">
-              {tasks.map((task) => (
-                <li className={`today-row${task.status === 'done' ? ' done-row' : ''}`} key={task.id}>
-                  <label className="task-check">
-                    <input
-                      type="checkbox"
-                      checked={task.status === 'done'}
-                      disabled={updatingId === task.id}
-                      onChange={() => toggleTask(task)}
-                    />
-                    <span>{task.title || 'Untitled task'}</span>
-                  </label>
-                  <small>{task.status === 'done' ? 'done' : task.status || 'open'}</small>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p className="empty-state">No dated tasks for today.</p>
-          )}
-        </div>
-
-        <div className="today-section">
-          <div className="section-heading">
-            <h2>Events</h2>
-            <span />
-          </div>
-
-          {events.length ? (
-            <ol className="today-list">
-              {events.map((event) => (
-                <li className="today-row" key={event.id}>
-                  <div>
-                    <p>{event.title || 'Untitled event'}</p>
-                    <small>{event.all_day ? 'all day' : dateTimeLabel(event.start_at)}</small>
-                  </div>
-                  <span className="entry-type-pill">event</span>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p className="empty-state">No events filed for today.</p>
-          )}
-        </div>
-      </section>
-
-      <section className="recently-filed today-recent" aria-labelledby="today-recent-heading">
-        <div className="section-heading">
-          <h2 id="today-recent-heading">Recently filed</h2>
+    <section className="today-layout ledger-layout" aria-label="The ledger">
+      <header className="ledger-header">
+        <div className="ledger-brandline">
+          <h1>Life OS</h1>
           <span />
         </div>
+        <p>The ledger - {recentEntries.entries.length} recent entries</p>
+      </header>
 
-        {recentEntries.entries.length ? (
-          <ol className="entry-list">
-            {recentEntries.entries.map((entry) => (
-              <li key={entry.id} className="entry-item">
-                <time dateTime={entry.created_at}>{relativeTime(entry.created_at)}</time>
-                <div>
-                  <p>{entry.title || 'Untitled note'}</p>
-                  {entry.details?.body ? <small>{entry.details.body}</small> : null}
+      <form className="ledger-capture" onSubmit={handleCaptureSubmit}>
+        <input
+          value={captureText}
+          onChange={(event) => setCaptureText(event.target.value)}
+          placeholder="Tell me something..."
+          aria-label="Capture a ledger entry"
+        />
+        <button className="capture-orb" type="submit" aria-label="File ledger entry" disabled={!captureText.trim() || status === 'saving'} />
+      </form>
+
+      {error ? <p className="form-error">{error}</p> : null}
+
+      {recentEntries.entries.length ? (
+        <ol className="ledger-entry-list">
+          {recentEntries.entries.map((entry) => {
+            const tone = TYPE_TONES[entry.type] || 'var(--g-acc)'
+            const media = mediaLabel(entry)
+
+            return (
+              <li className="ledger-entry" key={entry.id} style={{ '--item-accent': tone }}>
+                <aside>
+                  <time dateTime={entry.created_at}>{dayLabel(entry.created_at)} {timeLabel(entry.created_at)}</time>
+                  <span>{entryTypeLabel(entry)}</span>
+                </aside>
+                <div className="ledger-entry-body">
+                  <h2>{entryTitle(entry)}</h2>
+                  {detailLine(entry) ? <p>{detailLine(entry)}</p> : null}
+                  {media ? (
+                    <div className="ledger-media">
+                      <span>{media}</span>
+                    </div>
+                  ) : null}
                 </div>
               </li>
-            ))}
-          </ol>
-        ) : (
-          <p className="empty-state">No entries filed yet.</p>
-        )}
-      </section>
+            )
+          })}
+        </ol>
+      ) : (
+        <p className="empty-state">No entries filed yet.</p>
+      )}
+
+      <footer className="ledger-poem" aria-label="Poem of the day">
+        <div lang="fa" dir="rtl">
+          {dailyPoem.lines.slice(0, 1).map((line) => (
+            <p key={line}>{line}</p>
+          ))}
+        </div>
+        <small lang="fa" dir="rtl">{dailyPoem.poet}</small>
+      </footer>
     </section>
   )
 }
