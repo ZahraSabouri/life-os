@@ -165,8 +165,8 @@ export default function TodayView() {
 
       <footer className="ledger-poem" aria-label="Poem of the day">
         <div lang="fa" dir="rtl">
-          {dailyPoem.lines.slice(0, 1).map((line) => (
-            <p key={line}>{line}</p>
+          {dailyPoem.lines.map((line, index) => (
+            <p key={`${line}-${index}`}>{line}</p>
           ))}
         </div>
         <small lang="fa" dir="rtl">{dailyPoem.poet}</small>
