@@ -27,6 +27,11 @@ const selectRecentEntries = db.prepare(`
   LIMIT ?
 `)
 
+const selectEntryById = db.prepare(`
+  SELECT * FROM entries
+  WHERE id = ?
+`)
+
 const selectEntriesInRange = db.prepare(`
   SELECT * FROM entries
   WHERE start_at IS NOT NULL
@@ -34,6 +39,18 @@ const selectEntriesInRange = db.prepare(`
     AND (? IS NULL OR date(start_at) <= date(?))
   ORDER BY date(start_at) ASC, created_at DESC
   LIMIT ?
+`)
+
+const updateEntry = db.prepare(`
+  UPDATE entries
+     SET title = ?,
+         status = ?,
+         start_at = ?,
+         end_at = ?,
+         all_day = ?,
+         details = ?,
+         updated_at = ?
+   WHERE id = ?
 `)
 
 function parseDetails(value) {
@@ -143,6 +160,43 @@ router.get('/', (req, res) => {
     const rows = selectRecentEntries.all(limit)
 
     res.json(rows.map(serializeEntry))
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+})
+
+router.patch('/:id', (req, res) => {
+  try {
+    const existing = selectEntryById.get(req.params.id)
+
+    if (!existing) {
+      return res.status(404).json({ error: 'not found' })
+    }
+
+    const body = req.body ?? {}
+    const title = 'title' in body
+      ? cleanOptionalString(body.title)
+      : existing.title
+    const status = 'status' in body
+      ? cleanOptionalString(body.status)
+      : existing.status
+    const startAt = 'start_at' in body
+      ? cleanOptionalDate(body.start_at, 'start_at')
+      : existing.start_at
+    const endAt = 'end_at' in body
+      ? cleanOptionalDate(body.end_at, 'end_at')
+      : existing.end_at
+    const allDay = 'all_day' in body
+      ? (body.all_day ? 1 : 0)
+      : existing.all_day
+    const details = 'details' in body && body.details && typeof body.details === 'object' && !Array.isArray(body.details)
+      ? JSON.stringify(body.details)
+      : existing.details
+    const now = new Date().toISOString()
+
+    updateEntry.run(title, status, startAt, endAt, allDay, details, now, req.params.id)
+
+    res.json(serializeEntry(selectEntryById.get(req.params.id)))
   } catch (error) {
     res.status(400).json({ error: error.message })
   }
