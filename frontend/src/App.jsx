@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import CalendarView from './components/CalendarView.jsx'
+import CourtLayout from './components/CourtLayout.jsx'
 import DivanIntro from './components/DivanIntro.jsx'
 import TheCourt from './components/TheCourt.jsx'
 import { GroundProvider, useGround } from './lib/groundContext.jsx'
@@ -29,17 +30,6 @@ function DivanRoute() {
   )
 }
 
-function CourtRoute() {
-  const navigate = useNavigate()
-
-  return (
-    <TheCourt
-      onCalendar={() => navigate('/calendar')}
-      onDivan={() => navigate('/', { state: { forceIntro: true } })}
-    />
-  )
-}
-
 function AppRoutes() {
   const { ground } = useGround()
 
@@ -47,8 +37,10 @@ function AppRoutes() {
     <div className="app-shell" data-ground={ground}>
       <Routes>
         <Route path="/" element={<DivanRoute />} />
-        <Route path="/court" element={<CourtRoute />} />
-        <Route path="/calendar" element={<CalendarView />} />
+        <Route element={<CourtLayout />}>
+          <Route path="/court" element={<TheCourt />} />
+          <Route path="/calendar" element={<CalendarView />} />
+        </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

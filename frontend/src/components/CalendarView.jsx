@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { apiFetch } from '../lib/api.js'
-import { useGround } from '../lib/groundContext.jsx'
 import { upcomingBirthdays } from '../utils/birthdays.js'
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -79,8 +77,6 @@ function relativeBirthdayLabel(daysUntil) {
 }
 
 export default function CalendarView() {
-  const navigate = useNavigate()
-  const { ground, cycleGround } = useGround()
   const [visibleMonth, setVisibleMonth] = useState(() => firstOfMonth(new Date()))
   const [entries, setEntries] = useState([])
   const [people, setPeople] = useState([])
@@ -213,20 +209,7 @@ export default function CalendarView() {
   }
 
   return (
-    <main className="calendar-screen">
-      <header className="court-topbar">
-        <div className="wordmark">Life OS</div>
-        <div className="date-line">{monthLabel}</div>
-        <nav className="court-nav" aria-label="Primary">
-          <button type="button" onClick={() => navigate('/court')}>Court</button>
-          <button className="active" type="button">Calendar</button>
-          <button type="button" aria-disabled="true">Study hub</button>
-          <button type="button" onClick={cycleGround}>Ground: {ground}</button>
-          <button type="button" aria-disabled="true">Poem</button>
-        </nav>
-      </header>
-
-      <section className="calendar-layout" aria-label="Calendar">
+    <section className="calendar-layout" aria-label="Calendar">
         <section className="calendar-month" aria-labelledby="calendar-month-heading">
           <div className="calendar-toolbar">
             <button className="ghost-pill compact-pill" type="button" onClick={() => setVisibleMonth(addMonths(visibleMonth, -1))}>
@@ -370,7 +353,6 @@ export default function CalendarView() {
             <p className="empty-state">No birthdays in the next 30 days.</p>
           )}
         </aside>
-      </section>
-    </main>
+    </section>
   )
 }
