@@ -47,7 +47,13 @@ export default function CourtLayout() {
           >
             Calendar
           </button>
-          <button type="button" aria-disabled="true">Study hub</button>
+          <button
+            className={location.pathname === '/study' ? 'active' : undefined}
+            type="button"
+            onClick={() => navigate('/study')}
+          >
+            Study hub
+          </button>
           <button type="button" onClick={cycleGround}>Ground: {ground}</button>
           <button type="button" onClick={goDivan}>Divan</button>
         </nav>

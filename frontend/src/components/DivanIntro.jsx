@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useGround } from '../lib/groundContext.jsx'
 import { getPoemPool, pickPoem } from '../lib/poems.js'
 
 export default function DivanIntro({ onEnter, skipKey }) {
+  const { ground, cycleGround } = useGround()
   const [poem, setPoem] = useState(() => pickPoem())
   const [skipNextTime, setSkipNextTime] = useState(
     () => window.localStorage.getItem(skipKey) === 'true'
@@ -61,6 +63,9 @@ export default function DivanIntro({ onEnter, skipKey }) {
         </button>
         <button className="ghost-pill" type="button" onClick={() => setPoem(pickPoem())}>
           New poem
+        </button>
+        <button className="ghost-pill" type="button" onClick={cycleGround}>
+          Ground: {ground}
         </button>
         <label className="skip-control">
           <input
