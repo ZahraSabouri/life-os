@@ -1,14 +1,15 @@
 import { randomUUID } from 'node:crypto'
 import { Router } from 'express'
 import db from '../db.js'
+import { archetypeOf, typeExists, validateDetails } from '../../../shared/entryTypes.js'
 
 const router = Router()
-const ENTRY_TYPES = new Set(['note', 'task', 'event'])
 
 const insertEntry = db.prepare(`
   INSERT INTO entries (
     id,
     type,
+    archetype,
     title,
     status,
     start_at,
@@ -18,7 +19,7 @@ const insertEntry = db.prepare(`
     created_at,
     updated_at
   )
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `)
 
 const selectRecentEntries = db.prepare(`
@@ -84,6 +85,20 @@ function serializeEntry(row) {
   }
 }
 
+function cleanDetailsForType(type, details) {
+  const result = validateDetails(type, details ?? {})
+
+  if (!result.ok) {
+    throw new Error(result.errors.join('; '))
+  }
+
+  if (result.stripped.length && process.env.NODE_ENV !== 'production') {
+    console.warn(`Stripped unknown ${type} detail fields: ${result.stripped.join(', ')}`)
+  }
+
+  return result.value
+}
+
 router.post('/', (req, res) => {
   try {
     const {
@@ -100,22 +115,22 @@ router.post('/', (req, res) => {
     const now = new Date().toISOString()
     const cleanType = String(type || 'note').trim() || 'note'
 
-    if (!ENTRY_TYPES.has(cleanType)) {
-      return res.status(400).json({ error: `type must be one of: ${Array.from(ENTRY_TYPES).join(', ')}` })
+    if (!typeExists(cleanType)) {
+      return res.status(400).json({ error: `unknown entry type: ${cleanType}` })
     }
 
+    const cleanArchetype = archetypeOf(cleanType)
     const cleanTitle = cleanOptionalString(title)
     const cleanStatus = cleanOptionalString(status)
     const cleanStartAt = cleanOptionalDate(start_at, 'start_at')
     const cleanEndAt = cleanOptionalDate(end_at, 'end_at')
     const cleanAllDay = all_day ? 1 : 0
-    const cleanDetails = details && typeof details === 'object' && !Array.isArray(details)
-      ? details
-      : {}
+    const cleanDetails = cleanDetailsForType(cleanType, details)
 
     insertEntry.run(
       id,
       cleanType,
+      cleanArchetype,
       cleanTitle,
       cleanStatus,
       cleanStartAt,
@@ -129,6 +144,7 @@ router.post('/', (req, res) => {
     res.status(201).json({
       id,
       type: cleanType,
+      archetype: cleanArchetype,
       title: cleanTitle,
       status: cleanStatus,
       start_at: cleanStartAt,
@@ -189,8 +205,8 @@ router.patch('/:id', (req, res) => {
     const allDay = 'all_day' in body
       ? (body.all_day ? 1 : 0)
       : existing.all_day
-    const details = 'details' in body && body.details && typeof body.details === 'object' && !Array.isArray(body.details)
-      ? JSON.stringify(body.details)
+    const details = 'details' in body
+      ? JSON.stringify(cleanDetailsForType(existing.type, body.details))
       : existing.details
     const now = new Date().toISOString()
 
