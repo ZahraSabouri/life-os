@@ -10,11 +10,9 @@ fs.mkdirSync(dataDir, { recursive: true })
 
 const db = new DatabaseSync(path.join(dataDir, 'life-os.db'))
 
-db.exec('PRAGMA journal_mode = WAL;')
 db.exec('PRAGMA foreign_keys = ON;')
 
 const migrations = fs.readFileSync(path.join(__dirname, 'migrations.sql'), 'utf8')
 db.exec(migrations)
 
 export default db
-
