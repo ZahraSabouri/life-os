@@ -1,0 +1,1656 @@
+7 - MAT700MA4700 Mathematical Methods for Data Mining online class-20260223_151118-Meeting Recording
+Auto-generated captions may contain errors.
+Okay. Once again good afternoon. So we are looking into selection.
+0:10
+At least there is some small misprint. This supposed to be lecture six.
+0:14
+Previous was next year, fourth year supposed to be lecture six.
+0:21
+So in this lecture today we are going to go through uh, and this is basically the last lecture, you know, of course.
+0:25
+And after that we will go through some exercises and tutorial on examples.
+0:32
+So the first topic is the clustering. Which is probably one of the most important part of unsupervised learning.
+0:38
+It's when we want to cluster our data or group the data according to some measure of similarity or distance measure.
+0:47
+Okay. What do you want to put? Some object which are close in some sense of distance or measure of similarity.
+0:58
+The big similarity together, but I tell which are different.
+1:06
+To put them as far as possible. Example of clustering, of course.
+1:12
+So this is just plot. Two dimensional plot of height and weight of some dogs.
+1:18
+Okay. Even when we don't know their name. So what we can do if you see all this is Dot without name, you see this?
+1:26
+It is the one group. And as a group and several.
+1:34
+So your feelings have probably said as a very present three group of dogs.
+1:42
+And of course, when you look and examine is a particular item in this group, you can say which type of dog is this one?
+1:46
+So this is the main idea of clustering. The difficulty of the clustering is that in dimension two dimensions need somehow you can visualise.
+1:53
+In dimension of the high dimension. It's not so easy.
+2:03
+Plus. We have to somehow, uh, look, for example.
+2:07
+Yes. When you when you look at this picture. Well, from far away, you definitely see a Citigroup.
+2:13
+But if I look just this picture, then of course I don't see any clustering.
+2:20
+Okay, so the clustering is also depend on how close you look into your data.
+2:25
+If you look very close, each point becomes a cluster and all of this far away.
+2:31
+It's also depend clustering depend on other point of view.
+2:36
+Okay. So. As I said in dimension two and three.
+2:43
+People did this for many years. And by the way, one of the first example historical example of using clustering in science,
+2:48
+it was during some in London it was cholera disease and nobody that I knew that cholera there was the water is the main source of this disease.
+2:56
+So. So what what what people did they just look into the map of London with a street.
+3:08
+And so on. And they map all cases of the cholera.
+3:17
+And once they found that the group somehow. It was such a little clustering of cholera cases.
+3:21
+And when you look into this group, this group were around some water source.
+3:30
+So this is why they created conjecture. This is probably if you close to water source and it's probably infected.
+3:36
+So this work it's come from. This was historically first roughly speaking use your clustering for science.
+3:42
+But it's a dimension too. And of course you could just visually human has this fantastic ability, uh,
+3:49
+to look when you have two dimensional tissue to see group and to see clusters.
+3:57
+But what we have here is that we want to develop a clustering algorithm in the following.
+4:02
+Special cases. First of all, doctor is very large.
+4:11
+It's usual in data science, and doctor has a small.
+4:15
+It's close to these things, but the data very large.
+4:19
+It's called um. So we have tried to do this in data science.
+4:23
+Second we want. Also to understand how to deal with the high dimensional space.
+4:27
+Remember, I told you many times that in high dimensional there is a so-called.
+4:36
+Because of dimensionality. Our intuition in dimension two three doesn't work in the high dimension.
+4:41
+It's completely different. And second, not all data is so-called freedom or in RL.
+4:49
+For example, Netflix's daughter. Choose a table.
+4:58
+Users. And movies. So it's usually present by.
+5:04
+Some number of star which divinities his daughter is not.
+5:14
+You feed him. And also here you can always say, okay, I can replace a number of, uh, you who didn't watch this movie.
+5:19
+Zero. And if I have like City Star, I will put just number three.
+5:28
+So using the looks like. Uh.
+5:35
+Very good in Iran. We don't know if this is actually representative, but nevertheless.
+5:40
+But if you look into the record of user, for example, in Amazon, when it's not only, uh, what person bought what item name,
+5:46
+what is IP address that you log in where you come from with his A history of the browsing of Amazon website.
+5:58
+So it's the data is definitely not internet. So also but you want to cluster using by some sort of similarity of that these days.
+6:05
+So this is another. Particular situation, which is important for us when that is not completed.
+6:13
+This means that not every everything vector is linked to a vector, because you can do a numerical calculation, but not all that that is a vector.
+6:21
+So what do you start with? We start with just general discussion of the most general approaches.
+6:29
+It was a cluster. And also.
+6:39
+We want to discuss how to deal with a cluster when we are not in Euclidean space.
+6:44
+For example, like Facebook. You know, group of people.
+6:52
+So how do you represent a group of people on Facebook? By graph. If they connect, it may be directly graph who send who messages and so on.
+6:57
+So what does know is a graph. Maybe weighted graph. And so we want to somehow cluster user in some groups of similar behaviour simulators.
+7:06
+Then we can do this so-called personalised advertising.
+7:17
+If you know this is group communicator load the intention consumption, then we can do this advertising and.
+7:21
+Do clustering in more Euclidean space. So this is our plan.
+7:33
+So let's start. So there are two main strategy in casting.
+7:37
+We just. More than enough.
+7:46
+But this is the two general approaches. And.
+7:49
+The first approach is it's cool. Hierarchical clustering.
+7:55
+Let me explain where it's come from. Uh, suppose.
+8:10
+So several years ago, I took my son.
+8:17
+He went to some, uh, Hewlett-Packard party, which they organised some activity for kids.
+8:20
+And it was like 50 kids around an age was between like five.
+8:28
+It was like around 50 kids. Age between.
+8:39
+And five and 15. And.
+8:47
+People recreates the activities. So the question is.
+8:54
+Poor Yankee kid for average kid and 15 kids.
+9:03
+So the question is how to divide them into three groups. Well, the first strategy for one person was the following.
+9:06
+You look in this kit. Then it was the same age.
+9:14
+And what you said. People of the same age.
+9:24
+He puts them into the groups. Maybe that is the one person who is six six years old.
+9:28
+Or maybe five of them. So he put them in group. Now you look.
+9:38
+Which group is it? Closer to each other. For example, it was a group five and six and the next group was eight and nine.
+9:43
+So he says this group go together. Maybe group eight and nine go together.
+9:51
+And so on. So every time, as you can see idea, you bring together something which is a close.
+9:58
+And every time when you bring something to go, cause number of groups become less by one.
+10:06
+So if you reach the cluster, you will have your solution.
+10:12
+Okay, so this is a general idea. Try to bring together something which is a closer get other.
+10:17
+And so let's start with the following. The this algorithm that we have is this does a point.
+10:29
+X1XN. And we want to bring them together and we want to create k clusters.
+10:37
+This is hyperparameter we don't know is depends on probably which how many groups you want to have.
+10:46
+But this is a hyperparameter. So we have got the active cluster.
+10:51
+Second the humans have your data. I'm from some space with a distance, so there is a distance.
+10:55
+This is called metric space. He's a vector.
+11:04
+You can use L1, L2 or an infinity distance.
+11:10
+But generally assume that there is some subtle metric which measure how close to point on.
+11:15
+So when you have this one and just moment.
+11:25
+If you go through the details of this, what you want for hierarchical clustering, the strategy will be if you need data in some space museum metric.
+11:31
+And that was strategy will be to combine more and more point together at the beginning with things as they are all different in cluster.
+11:41
+How do you define all? How to combine them together?
+11:51
+And every time any convey number of groups decrease by one, because from two group you create one and it's.
+11:54
+And when you reach requiring on both clusters you stop.
+12:02
+That's the main idea. We will go to details a little bit later, maybe in two slides.
+12:07
+No. Another strategy. This is one strategy that will start from each point and try to go so-called from bottom.
+12:12
+Up. We start with the beginnings of your point are separate, and after that you somehow combines them and it's and you have number of classes it.
+12:21
+Well it's called bottom up. There is another approach called top down or point assignment.
+12:30
+For the kids in the following. I at the beginning, I don't know, a precise age, which Keith and I would say, okay, I will decide.
+12:39
+There'll be kids around six, kids around ten, and kids around with you.
+12:52
+So I will tell each give the following find closest to you age and go to this group.
+12:58
+And even for example here, you're 80 years old. You decide where to go.
+13:05
+You can go to this group or to this group.
+13:09
+So everybody who less than eight go around this group, everybody is hit around ten go to this group and everybody get and for 14 go to this.
+13:12
+So between this is 12. Everything between 8 and 12.
+13:27
+Go to group ten. Everything set more than 12. Go to 14.
+13:31
+And if you are both case, you just decide where to go. So no.
+13:34
+At the first iteration you create these three groups. And now for each group you calculate average.
+13:38
+Before you put people just point six, then a 14. But now you calculate average group.
+13:46
+Maybe average year will be nine. Average year will be 13.
+13:54
+And yeah, but this year will be seven. Maybe more kids just seven years old.
+13:58
+And some of them atheists, will also come to know you and us in number and know everything.
+14:07
+Okay, now we have another game. Everybody has a closer to seven goes to says his group of close to nine go to nine.
+14:14
+Everybody is as close as his age to say teens at nine go to 13.
+14:22
+So I know 11 other groups and so on.
+14:26
+So this is called point assignment. You don't. Combine elements together.
+14:29
+You just declare this will be like Flagpole Point.
+14:37
+And after that, everybody is closer to this point. Go to this one. So this is ideal for entertainment.
+14:41
+And it's also create. And once again we need to decide how many clusters we need.
+14:47
+The two main idea. The same here as well.
+14:52
+The question is how to select the initial point. 610.
+14:57
+Oh, maybe if you're looking in the graph and you want to divide people on some particular area on Facebook into the five groups,
+15:02
+so you want to find maybe five vertices.
+15:09
+Uh, which is spread enough. And after that, for each vertex which present, I attach to the somehow closest.
+15:14
+And so on. So we still need the definition of distance. Okay.
+15:23
+So no. So we we sold general idea. Hierarchical clustering.
+15:29
+When we start from individual point and we combine them till we reach required number of clusters.
+15:36
+And another approach point assignment, we just decide decide that this particular point will be so centre of the future cluster.
+15:42
+And after that each data goes to the closest. I don't have to say to you to calculate this call centre of the cluster and so on.
+15:51
+And you repeat this many, many times. And so on.
+16:00
+No. So this is general strategy. Of course, this general strategy has two different application.
+16:05
+One case it's when you space is Euclidean space. Oh, I ran.
+16:14
+With normal vector structure and distance structure.
+16:21
+Why is a perfect? Because you know them. You if you have several vectors, if you want.
+16:26
+If you keep not in. You can calculate average.
+16:32
+We should play a role like centre of gravity, of centre of the cluster.
+16:40
+So if you have several points and you calculate average just like centre of this cluster.
+16:44
+In ecclesia, the ultimate definition of distance. You can use one at all Euclidean distance,
+16:52
+and the most important you can you will be able to calculate centroid average somehow point which represent cluster and not Euclidean space.
+16:59
+It's a little bit more difficult because there is no national definition of centroid.
+17:09
+So we have to somehow to develop another approach to characterise cluster.
+17:18
+We need to decide which distance we are going to use. This is a two different.
+17:24
+So there is a two strategy. Hierarchical and point assignment.
+17:28
+Plus. All of these approaches, they have different implementation.
+17:34
+In this case you're working with Euclidean space. So you don't have just normal vectors or you're doing things.
+17:40
+I know as I said, maybe graphs. And so.
+17:47
+Let's start with the hierarchical clustering. So this is a precise definition of algorithm.
+17:53
+So once again what is Hume. Yeah. They have got X1X in.
+17:58
+They all from some space. Oh my God. And there is a distance.
+18:06
+Between any two point in Omega. Okay.
+18:12
+So now. So how do you decide your question at the beginning?
+18:19
+We it right now. So suppose we want to develop k clusters.
+18:25
+This is a hyperparameter which you have to decide in advance. Though as a beginning you don't know nothing.
+18:30
+So we declare at each point. X1, x2, x3.
+18:39
+X1, x2, x3. X for x value of x x.
+18:46
+They all separate clusters or groups.
+18:52
+So what does this mean? That is this point. I assume that I declare each of them separate as cluster.
+18:56
+So I have n clusters. So now what?
+19:03
+They do? The next step. Are you?
+19:14
+Choose to point, which is a closest. For example, x3 and x4 is the closest, and I declare a new cluster.
+19:21
+So this means that now I have cluster x1 x2.
+19:31
+X3 x6 x4 three x5 x6.
+19:39
+So before this particular case, I had six cluster. Now I have.
+19:46
+Five groups. And suppose I want to end up with the k equal three.
+19:51
+So now I want to combine and as a group. I will have four cluster and as a group.
+19:58
+Anyone have seen my problem solved? But now the question is.
+20:06
+With a distance. I can measure.
+20:11
+Uh, distance between point. But he I have groups.
+20:17
+Yes x1, x2 x5 x6. There's two point, but this cluster is a group and I do not know how to measure distance between, for example x1.
+20:23
+And the group x3 x4. So to make this.
+20:35
+Useful. So what they need their ability to extend.
+20:40
+Distance between any two point. Which was only two point between distance between any two points for a moment.
+20:46
+I want to extend this extension to distance between any two sets.
+20:55
+Set. S1, s2.
+21:00
+Uh, subset of Omega. So how can I extend my distance between point?
+21:06
+To measure distance between subset. If I have this extension, then I'm in business.
+21:14
+I can measure distance between x1 and x2 using standard x5 x6 plus I can measure distance between two subset x3, x4 and x5.
+21:22
+For example, if I have this distance between subset, it's denoted.
+21:32
+Example that of the first moment x1, x2 are closest.
+21:37
+I have four clusters. But after that X5 and these are closed.
+21:41
+And they have Lone Star clusters. So every step.
+21:48
+The number of cluster decreases by one. And when they reach my anyway.
+21:53
+And of course the key, I will stop. So the only semantical problem we have here is how to make this extension.
+21:58
+Let me read to you the task in hierarchical clustering.
+22:10
+To be able to do this is the fully I have distance between any two point x y.
+22:14
+X y from my omega, and they want to extend this to the distance between set S1 and S2 for any s1 s2.
+22:21
+Subset no. What elements of set. So I have set S1.
+22:32
+And I have said this to. Which are disjointed.
+22:38
+So I in fact I need to extend only to disjoint subset.
+22:43
+Because when I created clusters of different groups. So how can they measure distance between cities a minute?
+22:48
+Unfortunately, there is no unique way to measure. So one of those is done that way is happening in Euclidean space.
+22:54
+I calculate average. Often said.
+23:02
+And it declares a distance between S1 and S2 is just distance between the centroid, centroid, or average.
+23:07
+And this is the beauty of Euclidean space.
+23:17
+You can always calculate average and you calculate this between them and this equal distance between subset.
+23:19
+But this means the definition of average. Is why it's good enough.
+23:29
+Clear space. No. There.
+23:32
+There's another possibility. For example. You measure smallest distance between point.
+23:36
+So you calculate minimum. Of distance between x and y with x from the set.
+23:42
+This one and y set this to. And you call this distance between two set.
+23:50
+It's the second possibility. And in this case, you don't need any centroid of this work in the nuclear in space.
+23:57
+Another possibility. Which is very popular.
+24:06
+Is it following? You.
+24:14
+There's distance so called diameter or maximum distance.
+24:19
+So you calculate maximum of distance x and y.
+24:24
+When x from s1 and y s2.
+24:31
+This will diameter. So of course if diameter is small they're very close to each other.
+24:36
+Because when you can just go with minimum distance, which can happen two subsets very far from each other.
+24:42
+To majority Puerto here. There is a one point here, one point here.
+24:51
+And then is majority, which means that yes, you this distance is small.
+24:56
+But of course if these two groups are very far from each other,
+25:02
+but if you measure distance by this diameter and it's small, then they're really close to each other.
+25:06
+So this diameter, it's just more useful. There is also so called radius or host of dimension but a distance.
+25:12
+But this is one of the examples. And as long as you have this.
+25:21
+Definition of distance. This is a how you do algorithm.
+25:28
+It's the beginning. Every point is a cluster. We calculate closest, we combine together.
+25:34
+No. You have n minus one clusters. No.
+25:41
+You calculate distance between any two.
+25:44
+And you just use what you already calculated before, and you calculate you distance and you close combine to get a close sensor.
+25:48
+Okay, so we already discussed. The problem is.
+26:02
+How we are going to. Sort of just second.
+26:08
+Sorry. Sorry. Okay. So the question is would you have to decide how to represent this cluster, for example, in Euclidean space where you centre.
+26:52
+And how to choose, how to calculate this and how to choose with one margin.
+27:04
+And when you stop. When we answer this question.
+27:09
+The solution is very simple. The clustering algorithm do the following.
+27:14
+So usually we stop when we reach. Require a number of clusters.
+27:20
+To choose which cluster to merge in.
+27:28
+We just calculate the smallest distance between them after extending our distance and how we represent our cluster,
+27:33
+for example by centroid or ozone, we is just the visualisation of the cluster.
+27:40
+So this is how hierarchical clustering. It's a straightforward algorithm.
+27:46
+Very easy to implement. As long as you have distance between subset and it's very popular way of clustering.
+27:53
+For example, in your kitchen space. As I already told you, the best way to represent clustered is just at present by centred centroid.
+28:04
+So we replace cluster by one point which is a call centre.
+28:12
+And now we think about just. This is a point which represents this cluster.
+28:15
+So to calculate distance we just calculate distance between centroids.
+28:20
+We can have like technology rules. You know, we just want to use this, for example, minimum distance between any two points.
+28:30
+Another day. Another. And as it is.
+28:41
+Reduce. Radius of custody.
+28:49
+Just. Maximum distance between centroid and peak point in the clusters.
+28:58
+When we combine two clusters. If as a result, you have clustered with the smallest radius, what would you do?
+29:04
+You check all possible subsets of cluster and you check what will be.
+29:12
+If it combines them, what will be centre and what will be radius.
+29:16
+And you select combine two groups only. You say create smallest radius.
+29:21
+There is a possibility. All of are implemented in.
+29:29
+Think it in in any library, but you have to choose. It's depending on your problem.
+29:33
+Because sometimes representative cluster by centroid is not the best idea.
+29:40
+For example, you can have the following points. One group and another small group here.
+29:44
+So definitely you've seen this. There are two clusters. This one. And then also in the circle.
+29:57
+Part of who represents him as a saint through it, since they all have the same centre.
+30:05
+And it means that they're very close. But of course, in reality, they far from each other.
+30:10
+So and through this very popular tool approach.
+30:15
+But you still have to figure out which approach to doing your best.
+30:21
+And how do you do this in practice? Of course, we started centre with maybe to give you satisfying answer for it,
+30:28
+but if you are not happy then the better to do visualisation like dimension reduction, vision and you look what is the real geometry of your cluster?
+30:35
+Maybe another measure will measure like reduce.
+30:44
+Uh will be much better because for example in this case radius of this group is this one.
+30:49
+But there was a second group is much bigger. So David. And you can see the difference between them if you calculate radius.
+30:56
+Okay. So this was in Euclidean space. In non-Euclidean space.
+31:05
+And that's where ideas. Uh, how to calculate centre.
+31:13
+Centroid. So one of the approaches is it's so cool.
+31:18
+You can create something that play a role as a central it so that you cluster it.
+31:25
+So for example, if we have some point in the graph. With the distance between ages.
+31:31
+So. I can calculate the average, but I will say which point is such that total distance, like radius or maximum distance is a small is a smallest.
+31:43
+And you select this point as if it's just a clay cluster or it and you call this centre.
+32:01
+So how to select this. So cross it the same way seamlessly.
+32:13
+Approach is first. You pick vertex size at some of the distances to other point in the cluster is smallest.
+32:19
+Or. You take point.
+32:31
+You calculate maximum distance to other points in the cluster and you select point which this maximum is the smallest.
+32:36
+Or you can calculate from each point.
+32:44
+Sum of the squares of distances from this point to lies in like Euclidean distance, and after that you select a point with a smallest.
+32:47
+You can have several vertices in the graph.
+32:57
+I picked this graph, for example, for the second approach. iPhone's vertex, which is as far as possible.
+33:01
+And now I do this for each point in this graph.
+33:10
+And I selected the situate point where this maximum distance is the smallest and the closest point which represent my cluster or cluster it,
+33:14
+and after that I follow. It's time to feel good.
+33:23
+Because now you have this android. And now you can combine to cluster such a distance between their clusters.
+33:27
+It is as smallest possible. So this is all what you need to know about.
+33:34
+It'll look some example. And.
+33:41
+Of his hierarchical clustering. And.
+33:47
+It's implemented everywhere. So what is the drawback of this algorithm?
+33:53
+It's usually very slow because if you have a meeting point and you said you have to want to see cluster,
+33:58
+then you have to do million, 1 million minus three steps.
+34:06
+So you start with each point. And after that you combine.
+34:12
+So number of group decreased by one. So 23 cluster units 1 million minus three operation.
+34:17
+Though for each step what you have to do you have to calculate centroids.
+34:25
+Distance between them finds the minimum. And of course once it becomes smaller and smaller you could do this faster faster.
+34:32
+But in the beginning it's a very slow procedure. So in general it's a very slow algorithm.
+34:40
+So to do this for practical applications,
+34:47
+people use so-called probabilistic or they try to approximate distance by a little something that you can calculate much faster,
+34:51
+but you're not going to do. This is implemented in many library. It's based on so-called probabilistic projection.
+35:02
+It's also you can do and it will be much faster calculation.
+35:08
+But in general it's a very slow but does give you a very good result.
+35:12
+No. Let us look into the second so called point assignment.
+35:18
+But in a very particular case. In.
+35:26
+Euclidean space. Okay. And so this algorithm probably has this algorithm and the previous one here like a constant,
+35:31
+the arsehole member of this elite group of the ten most important algorithm in
+35:41
+data science or hierarchical clustering work for any Euclidean norm Euclidean.
+35:46
+The only difference is we have to somehow additionally to define what is the course through it, and you have to define distance between subset.
+35:54
+Which is many cases just automatically up. Which is, for most people, their favourite algorithm choice.
+36:03
+It's called K-means algorithm, but it's all good work only.
+36:11
+In Euclidean space. Okay.
+36:17
+Not necessarily reflected in the Euclidean distance.
+36:22
+You can use L1, L2 in this one, but the best performance is really for reading distance L2.
+36:28
+So we will assume that we have our points.
+36:35
+You have data set. Which contain endpoints.
+36:38
+In some. Maybe very high dimensional space on it.
+36:50
+And you want to perform point assignment algorithm, which is a special name.
+36:57
+K-means algorithm. So.
+37:03
+What is this all about? Let's look.
+37:07
+Once you get what you have, you have got set of an object.
+37:15
+Key is the number of clusters that they want to.
+37:20
+You write my daughter into the care group? Okay.
+37:28
+Cluster once again came. You have to fix in advance.
+37:32
+This is a hyperparameter. So what is the idea of this?
+37:41
+How could. So you know that we have points.
+37:45
+Importance. You know that after the. Suppose you have partition of this data.
+37:55
+In two key groups. She means it does equal union die.
+38:05
+Right equal from one to k k group and.
+38:14
+They're disjoint. This competition will keep us.
+38:19
+Who do you want to do? What? Each partition.
+38:31
+If you want to define some sort of function, objective function which tell us.
+38:35
+How bad this petition is. Keith.
+38:43
+So how far is this petition from being good? It's a cluster and no other problem will be.
+38:49
+This function. Objective function. Which depend on this partition.
+38:59
+And some additional data which.
+39:05
+And now our task will be to make this objective function as small as possible, which means it to make its better and better.
+39:08
+We don't stand for each separate point. We start from there.
+39:17
+Just divides us into the k but the k group. And we can evaluate how good this group is.
+39:21
+And after if we're trying to improve this k. It's like an algorithm.
+39:27
+We want to optimise some function. So goodness. And we want to make it as good as possible by minimising the potential minimisation.
+39:33
+And you do this like it's introduced as gradient descent.
+39:42
+If you want do a small step to improve. But the problem is.
+39:46
+It is a first of all, it's not. There is no derivatives.
+39:52
+There is no gradient because this function depends on partition.
+39:56
+This is a discrete object, but you still can develop step how to make this function smaller.
+40:00
+Second what have you done step by step. Make this function smaller.
+40:06
+You can end up in Brazil in the local media. So you good.
+40:12
+You understand? You. You become smaller. Smaller.
+40:16
+You do end up in the minimum. But it's a local minimum and global minimum.
+40:19
+Unfortunately, we can't guarantee. That.
+40:24
+Using this procedure and dumping through the global menu.
+40:29
+But of course, like you just said, if you try to start at some menu points,
+40:33
+then at the beginning there is a big chance that we end up in the global minimum.
+40:40
+And the same here. If you start from several random partitions, there's a big chance at being dumped into a global minimum.
+40:45
+What our strategy is. Which partition defined.
+40:53
+How far is from being good enough to develop step to make him better?
+40:58
+Okay, now it's nice mathematical definition. What you're going to do once again.
+41:05
+You have data set give. Of an object in Euclidean space.
+41:13
+Only working in an agrarian space. It. What is a partition into the K cluster?
+41:20
+I already said this with the weight of a data set.
+41:26
+As the union of Z B group. Uh, they give me.
+41:33
+Hold ye and their judgement. So I have this called partition.
+41:46
+The problem is with the partition is there is a huge number of partition.
+41:53
+If you want to have, for example, divide group of 1000 point into like dem subgroup,
+41:58
+this number is so big it's even difficult to invite you to imagine.
+42:06
+This means a brute force algorithm.
+42:11
+Just let us look in all division of my D to the case of group and find which one is the best one is not feasible, just this number became okay.
+42:13
+When do you have just ten object?
+42:24
+Maybe it's it's doable, but then you have something which you're going to do it in the 20th partition has become doable on any modern computer.
+42:26
+So what is a starting point. Suppose you have partition of this one.
+42:37
+So we use objective function. Which calculate.
+42:42
+How good is this partition is? In fact, it's got quite a bit.
+42:48
+This partition is because you wanted an objective function to minimise.
+42:54
+What we are going to use. Uh.
+43:02
+You know, you so-called centroid based partition. We not only.
+43:08
+Uh, this function will depend on objective function, not only on this partition, but also for possible.
+43:13
+Centre point of this partition lets me be. Precisely.
+43:24
+Let me be precise. So this is my function objective function which will be depend on this c1 c2 Siki.
+43:30
+Plus one some additional point. C1 c2, which is just vectors in this space.
+43:42
+Which I want them to be the centroid of my future clusters.
+43:53
+Okay. Oh ideal cluster centroid.
+44:01
+So my function depends on partition and candidate for future.
+44:06
+Best centroid. Oh, my best function.
+44:16
+And now I will define objective function. If I wanted.
+44:21
+When someone was in Boot Centro.
+44:28
+It functions for the class U1.
+44:32
+U2 was a cluster C2, GK was good point to cluster CQ, so this means that they can point U1 and they have to be close to this point.
+44:35
+At this point they have to be close. So when they calculate some of the distances between point and this cluster and my centre.
+44:50
+Square. I want this to be small and I will do this for age groups.
+45:00
+So once again for each group.
+45:07
+I take point P from the cluster C, I and they calculate some of the distances to this point, which I want to be centre of ideal cluster.
+45:11
+So now I have this function which call objective function which depends on C1CK my partition loss.
+45:25
+Possible. Centroid of my future clusters, my best clusters.
+45:37
+This means that now what I want to find. I want to find not only partition, but also I want to find centre of the best cluster.
+45:46
+So as and when I combine them together. If you miss smallest variation.
+45:56
+So this number is quasi falling. If I have points u1 and this point from clusters you want, some of the square distance is called variance.
+46:03
+The same for the tools don't have the total variance to be as small as possible.
+46:13
+So each group clustered around its centre.
+46:18
+So this is a strategy. And this is the reason behind this uh objective function.
+46:22
+Okay. So let's have some break. And after that we start after the break.
+46:31
+Okay, let us continue. So the strategy is the following.
+58:54
+Once again. Other unknown will be.
+59:00
+Partition. How with the whites I was sent into.
+59:08
+Okay. Groups. And also in other variables which we don't know what is the centres of our.
+59:15
+Best possible clusters. Visita Uno.
+59:26
+What should. How should we divide our group, our daughter, into groups?
+59:32
+And which will be centres of these best possible groups?
+59:36
+These two key objects are unknown.
+59:44
+So once again this is just upset. And so you want to keep small.
+59:48
+It's just a vector. It's a vector in this vector space.
+59:54
+Possible centre. And for this object we defined a function objective function.
+59:59
+Which it's called. Resume cluster variation.
+1:00:10
+So we are. We want this idea centre to be inside the cluster, and the variation from this centre to the point of cluster was as small as possible.
+1:00:17
+So now we want to find the minimum of this function. So we want to find partition.
+1:00:31
+It is a group. Plus we want to find the centres.
+1:00:37
+Sergeant. Altogether, I have the smallest possible value of my objective function.
+1:00:42
+This means that I have groups with a small variation around this centre, so their looks like grouped together.
+1:00:50
+This is a mathematical problem optimisation theory.
+1:00:59
+The only problem is that of course she wants hickeys and normal vectors, and I can't find derivative with respect to this vector.
+1:01:03
+There is no problem but keep it up.
+1:01:12
+Uppercase U one. Uppercase K. They are not vector or not, but just groups, so I can't use calculus.
+1:01:16
+This is why its problem is not so obviously trivial.
+1:01:25
+No. So this is exactly is it finding this minimum of this funtion.
+1:01:32
+It's really very computationally challenging. So in worst case scenario, when we don't use any information in the ones in this one,
+1:01:39
+the number of possible partitions you just exponentiate, it's not even like binomial, it's just crazy big number.
+1:01:50
+Plus we also have to find said you can't just you you tools and second possibility.
+1:02:00
+Even. More received.
+1:02:07
+Then. In general Euclidean space.
+1:02:12
+You not in. The number of courses that they need to.
+1:02:16
+So I need to find only C1, C2 and centre.
+1:02:22
+She wants you to. This problem is NP hard so it's exponentially growth.
+1:02:27
+Huge growth. Was that damage? Now if I have a lot of clusters.
+1:02:33
+In general, both clusters. But even on two dimensional plane, it's still the NP hard problem.
+1:02:42
+So what it means is that you can't possibly expect in reasonable time to find global minimum of this function.
+1:02:52
+Sue and him tell us that this is NP hard problem.
+1:03:02
+But the interesting thing is that when we say that problem is NP hard or very difficult,
+1:03:07
+it means that we estimate how much calculation we need to do in a worst case scenario.
+1:03:13
+But in practice, real data is not always worst case scenario.
+1:03:19
+So very often we can do much faster, and there is a big chance that this really gives us global minimum.
+1:03:24
+Well it was the algorithm how to find. So the strategy to find this minimum.
+1:03:30
+It's a very similar to steepest descent. We could not be able to for a medium which is a global, but we can find local minima.
+1:03:40
+And if you repeat this many times, there is a big chance, if your data is not the worst case scenario, that we really end up in a good medium.
+1:03:52
+And so this is precisely what is akin me a k means algorithm.
+1:04:03
+Is called greedy algorithm. Why? Because we start with.
+1:04:10
+Particular partition c one, c, k and some point between citizens and candidates for.
+1:04:16
+For being centre of this cluster. So we start from random partition.
+1:04:28
+And Wrentham. Centre points. And.
+1:04:37
+You can calculate, of course. Objective function.
+1:04:41
+And now the next step is to make it smaller. This objective function and so on.
+1:04:45
+We just every step make it smaller and smaller. So let's see examples.
+1:04:50
+We start with okay. Equal to.
+1:04:57
+Why did why my ABCd? 35 points into first group.
+1:05:04
+This is one. And this is.
+1:05:11
+She too. Okay.
+1:05:18
+So anyway, I did. Uh, so sorry, I don't do it.
+1:05:23
+So this really. I stopped resuscitation, Joe.
+1:05:29
+Five points. A, b, c, d e.
+1:05:40
+And. Centre one. Centre two.
+1:05:45
+So this is my starting point. Any. She wants you to and not does it b c d any lady will discuss that with me.
+1:05:51
+We have some options to better choose the starting points to throw in, but guarantees in general.
+1:06:03
+I have a year five point and 2.4% and I want to find two clusters.
+1:06:09
+So know what I do. Remember I want to minimise squared distance, which means that no, from all this five points I say oh hey, it's closer to.
+1:06:17
+First enter. It closes with the first set.
+1:06:33
+So I will allocate A and B to this point because this is the closest point.
+1:06:38
+And remember you have to minimise square distance. We going to have.
+1:06:45
+This is as small as possible between points and centre.
+1:06:48
+No. Was the second centre. Uh he is a closer to the second centre.
+1:06:53
+He is a close. This was a second centre. And he is also closest to the second centre.
+1:07:00
+So you know what I have. After this first step, I can see that no, I combine together A and B.
+1:07:09
+And Cindy. So now I have my first big group, C1 and C2 cluster.
+1:07:40
+She won. It's a big. And she too is C, D and E.
+1:07:51
+So now I remember I want this. Thank you.
+1:08:03
+Centroid. C1 and C2 to become the centre of my future good cluster.
+1:08:09
+So what I will do now I replace this and throw it.
+1:08:17
+By centre of this new group. And I replaced the second point by centre of this loop.
+1:08:23
+So. No, I have next step. I have to use Android.
+1:08:33
+This one. And this one. And now repeat the same procedure.
+1:08:41
+I look for this new thing through it now. Hey, is it closes?
+1:08:45
+Is it closes and season closes and no deal closes.
+1:08:50
+Closes. You said this one. Sorry, I already jumped through that.
+1:08:54
+So before. She was close closest to my original point, but now she became closest to this new centroid.
+1:09:01
+So I combine them together. And now D and E.
+1:09:11
+Also close to this user droid.
+1:09:17
+So I have this new group. Now for them I recalculate average.
+1:09:21
+And he averaged. And no way stop.
+1:09:29
+Because now this new centre.
+1:09:33
+She is A, closes A and B closes its own centre.
+1:09:38
+And did you close this consistent. So we stop.
+1:09:42
+2 to 1. Once again, we start from any.
+1:09:47
+Two original centres. After this review each point along with the closest attach.
+1:09:53
+We have now two groups and now we recalculate new centroid and we repeat this many times.
+1:10:02
+So this is the precisely definition of this famous K-means algorithm.
+1:10:08
+Let's. Something nice about it.
+1:10:15
+First of all, we have to choose the way to keep. How many clusters do you want?
+1:10:18
+As in here, the clustering is a hyperparameter. So select keep.
+1:10:26
+Always whatever you want. And.
+1:10:35
+And declare them initials and throw it. To this point c1, c2.
+1:10:42
+She you? Though, after selecting all this centroid each point of data.
+1:10:50
+Weight of this. Centroid. Which way does a point to the closest and moves this point to this group, and so on.
+1:11:00
+She assign each of the object of your data to the cluster for which it is the nearest to the centroid.
+1:11:11
+Now you have this group, you recalculated.
+1:11:22
+It was the key question once again because you are working in Euclidean space.
+1:11:26
+Centroid is just average. And what is important.
+1:11:31
+That? No. We repeat steps three and four.
+1:11:38
+Until we. Here's how could be stable.
+1:11:44
+Every point is the centroid and each point is the closest to draw it.
+1:11:50
+So we can't have any non-trivial move anymore. And we stop.
+1:11:55
+Why is this? How good is fantastic? Of course, it's very fast.
+1:12:02
+We just calculate the distance to the closest point and it'll.
+1:12:06
+And if, for example, you don't have to calculate distance between any pair of points for their meeting points.
+1:12:11
+Calculate the distance between any two is a quadratic complexity. Now we just calculate the distance to this new centroid to linear complexity.
+1:12:17
+And second, calculate the average very easy and set property that this algorithm will always stop.
+1:12:26
+It's always produce you. Stable situation and you will look at the roses forever.
+1:12:34
+So as long as you still reach this. Unfortunately, you reach only a local minimum objective function.
+1:12:41
+Nobody guarantee you that you reach the global minimum. This is why sometimes it's very useful to isolate initially,
+1:12:48
+because the legs are seen through it in arbitrary fashion, but it's better to select them in some good fashion.
+1:12:57
+Because if you have your boy and daughter here.
+1:13:05
+But you select and throw it. So we're very far. It's David you produce.
+1:13:11
+You better result. Yeah. Produce local media with scope. But it's going to be very far from up to an optimal solution.
+1:13:17
+So you want some? How is this point to be one of this point?
+1:13:25
+Reach the point and as far as possible from each other,
+1:13:29
+because these centroids for different cluster, they're supposed to be far away from each other.
+1:13:33
+And as I said, this algorithm is always terminate.
+1:13:41
+After a finite number of step. We, uh, we stop.
+1:13:47
+But it's not give you. It's give you your local minimum.
+1:13:54
+It's doesn't guarantee that you reach the best possible value of objective function.
+1:13:57
+And second, as I said. The initial selection of centroids can significantly affect the result.
+1:14:04
+Which means that what we do in practice, we select several different initials and throw it in some clever way.
+1:14:16
+And after that we ran. And from Zambia select the smallest. So the question is how to select.
+1:14:27
+It clever way. How to find.
+1:14:34
+This initial sentence. There are two approaches.
+1:14:38
+I prefer the first one. Because it's much faster.
+1:14:50
+Oh, second. Second is the following. Uh, perform hierarchical clustering because we decided before.
+1:14:53
+We create key clusters. Different.
+1:15:09
+Their centres, and we use them as the initial point for K-means clustering.
+1:15:13
+So it's just double clustering we use here.
+1:15:20
+I have clustering to for initial point for the next clustering okay.
+1:15:25
+And of course you've got these are very big. The second approaches become very computationally expensive.
+1:15:29
+Another possibility is the following. You try to pick your initial point as far from each other.
+1:15:36
+What did you mean? Suppose you have your data.
+1:15:42
+Initially you pick any of at any point of your. That's the point as a strategist you want.
+1:15:47
+The second you select YouTube as a, which is as far as possible from C one,
+1:15:55
+the next you select point, which is as far as possible from both of them C1 and C2.
+1:16:02
+When I say both of them, you calculate distance to first point.
+1:16:09
+You calculate distance from the second point and you select minimum of this column,
+1:16:14
+but as a distance to C1 and C2 and one for all this point you select point which is smallest such distance.
+1:16:19
+This means that it's as far as possible from both of them, C1 and C2.
+1:16:28
+How do you select C4 and so on? This is a very good selection.
+1:16:32
+So here if you correctly selects you one it will give you global media with a high probability.
+1:16:38
+This is my favourite choice. I want you to think last.
+1:16:45
+Okay, so let's prove some.
+1:16:59
+Serum. Just moments.
+1:17:04
+He. Looks like. I have to add some.
+1:17:08
+Lecture, which I. So to give you five minutes because I need to add some lecture, which is.
+1:17:18
+Not guaranteed my folder. This go?
+1:17:30
+Got yourself a little bit messed up with location, but nobody likes you.
+1:18:55
+But it's okay. I will put this on learning centre. Okay, so this about.
+1:19:02
+Clustering algorithm. So and now what I want to do before going to the last lecture I want to prove that.
+1:19:11
+This K-means algorithm is always terminate. Okay, so I want to prove that this algorithm is always terminate.
+1:19:25
+How we can prove this. Remember our objective function is depend on these groups U1.
+1:19:34
+And that's okay. And then since this point, we split all of the clusters.
+1:19:49
+Sorry. Are you drawing something? I can't see it on my screen or something.
+1:19:58
+You know, I am really drawing.
+1:20:01
+I want to. I want to prove that this algorithm will terminate.
+1:20:11
+But even if our objective function depend on, uh, clusters.
+1:20:16
+Clusters and this point possible centroid. Remember as your first step we.
+1:20:35
+Have six points you want. Okay. And we encourage each.
+1:20:44
+Point of our daughter to the closest centre and we recalculate.
+1:20:52
+Centre of gravity for each cluster after each step.
+1:20:59
+Who's the K-means algorithm? What you will have.
+1:21:02
+She won. You'll be average. Average of points U1, u2 will be just average, all the points U2 and so on.
+1:21:07
+Because of each step to calculate the centre of gravity, it should the average of seek.
+1:21:23
+After we perform our algorithm. So it's music.
+1:21:33
+In fact, because he's this point at each step.
+1:21:37
+Will, we'll be average. Who's the corresponding cluster?
+1:21:42
+Which means that after each step of a function, you.
+1:21:49
+In fact depend only on these clusters. Because we calculate distance from square distances to the corresponding centre.
+1:21:54
+So in fact, our function value values that we have after each iteration.
+1:22:05
+It's depend only on partition because in a finite number of the partition, the total number of numbers that you have will be finite.
+1:22:10
+Set of numbers. That we can have as objective value after you after each iteration.
+1:22:25
+So what I want to show is that every time when we perform non-trivial iteration of K-means algorithm,
+1:22:38
+this means that even next step is a different from previous this number that you have become really smaller, strictly smaller.
+1:22:46
+And because we have a finite set of numbers. And every time when you perform operation number becomes strictly smaller, you can't go to infinity.
+1:22:55
+At some point you stop because when you have finite number of numbers and every time you you select smaller, smaller, smaller.
+1:23:07
+You have to stop. You can't continue infinity. So why does this number become every time smaller?
+1:23:16
+Suppose I perform the first operation. I am the centre.
+1:23:22
+That's one point. X, y.
+1:23:28
+Because originally it was attached to this centre back after the calculation.
+1:23:33
+Now it's the closest to this new centre. So if I move excite from this group.
+1:23:39
+With this new group, I decrease. My distance and my funtion become really swollen.
+1:23:47
+So you're not even allowed to do the first step. Then my number become even strictly smaller.
+1:23:56
+Second, when I recalculate average, I make number even smaller.
+1:24:04
+Why? So let's prove this. I want to prove the following simple fact from calculus.
+1:24:10
+Suppose you give me point y1.
+1:24:21
+Y el. It's a vector space out in.
+1:24:27
+And suppose I walk away and say, wait, why are you not in?
+1:24:33
+So this is a given. I want to fight Funtion.
+1:24:39
+Why we supporting property? If we calculate some of the distances.
+1:24:45
+Why? Minus.
+1:24:51
+Why are you. Euclidean distance square.
+1:24:58
+All right from one to n this function f y.
+1:25:03
+I want to find a minimum of this function. If you look just precisely cluster variability.
+1:25:09
+When I select point Y as a centre of this cluster, some of the square distance between y and y.
+1:25:18
+The question is when this function has a minimum. First of all, when y goes to infinity, this wants to become very big.
+1:25:26
+So the minimum. His insight says on second before any meaningful function.
+1:25:37
+And yet what is a function has a derivative zero.
+1:25:44
+Remember that y minus y Euclidean distance squared.
+1:25:49
+It's nothing more than scalar product y minus y I y minus y I.
+1:25:54
+It's just scalar product and vector with himself. This will be gradient descent.
+1:26:03
+So my function f y is equal.
+1:26:08
+Some are equal from one to n.
+1:26:11
+Uh. Y minus y I y minus y I.
+1:26:16
+You may want to calculate the gradient on my function f, which means I have some.
+1:26:26
+I want to end gradient of this.
+1:26:31
+Causes a quadratic function. Let me call close this gradient.
+1:26:43
+This will be two. Gradient of.
+1:26:47
+So if you use this function, multiply by gradient y by gradient wise one.
+1:26:53
+So this will be two some. Y minus y I.
+1:26:57
+So this is a great you know, suppose I want this to be equal zero.
+1:27:05
+But all derivative equals zero. Then it's means that some are equal one to m y minus y.
+1:27:10
+Right. So at the end what an l.
+1:27:19
+Well points. Equals zero.
+1:27:26
+So what is some L term sum of the.
+1:27:37
+I equals one to l y minus some.
+1:27:41
+All right. You will want to learn why I equals you.
+1:27:46
+This is l y equal sums over y I from one to l.
+1:27:52
+Every year I have. That's why when I have me is a sum of white, I.
+1:28:07
+I for one to lend you way. But. So this is explain why centre of gravity or centroid is so important.
+1:28:13
+Or when they are one dimensional. They told me the value.
+1:28:26
+Me, the mean value is a centroid. Here, the smallest possible variance between this point and all other point of your data.
+1:28:30
+This is why we like mean value or centroid in dimension.
+1:28:39
+Either because centroid in the in the high dimensional it's nothing because it just means value.
+1:28:43
+Which means that if you recalculate no centroid we have our function even smaller.
+1:28:50
+So every time we want to have non-trivial moves like point guard to claim the centroid and recalculate using it.
+1:28:56
+If you make other function is smaller. And because we have a finite number of the possibilities.
+1:29:04
+It's, you know, it's a guarantee. Stop. Of course.
+1:29:12
+You don't know how. Walk at stake because number of the partition is huge.
+1:29:18
+Maybe it'll take you forever, but it is in units always stop, which is great to know.
+1:29:23
+Perfect. And on on Thursday they are going to go some small tutorial.
+1:29:32
+Yes the hours. So we will see covers perform in the real situation.
+1:29:41
+Okay. We have still 20 minutes left.
+1:29:49
+So I want to start the last glitch here.
+1:29:55
+But it's again. He is supposed to be seven.
+1:29:58
+As this is the last election. In our course.
+1:30:04
+And this is one of my favourite topics. So what's this topic about?
+1:30:11
+It's. Uh, suppose you want to slow some problem, but if occasionally.
+1:30:17
+So you use K-nearest neighbours and you obtain, uh.
+1:30:24
+Thank you. Present. Correct. You use that, you basically have 85% use, you know, left you receive like 90%.
+1:30:30
+You develop several algorithm and you have them.
+1:30:43
+You ask question which I am going to select. The command tells the system you select how good you smaller.
+1:30:47
+The best one. It's to know that it's not best strategy.
+1:30:57
+Sometimes when you have a lot of how good, which may be not very good, but you can combine them in so clever way.
+1:31:03
+Together, they perform better than any separate. How good that you can create this.
+1:31:11
+Approach. Hey, do machine learning is cool.
+1:31:18
+Better upgrade, no matter how good is the falling.
+1:31:25
+If you have several algorithm. Oh good one how good it man is one of your problem.
+1:31:29
+Maybe you do just select the best one. Maybe you should get a new algorithm how to combine them together.
+1:31:35
+That is performed batches at each separate. Okay.
+1:31:47
+So this is a common sense. This is called the wisdom of crowd.
+1:31:51
+So if you want to ask you to make important decision.
+1:31:57
+You probably don't ask what advice him. You probably ask different people with their opinion and you see how you can combine your opinion.
+1:32:01
+And machine learning. Very similar. We need to make a decision. And to make a decision, just let's ask several different algorithm.
+1:32:11
+Of course. Different outcomes. Not just the same outcomes. Many times.
+1:32:19
+And after this question, you have several in this business we call them expert.
+1:32:24
+Which algorithms give you advice or solution because him expert.
+1:32:30
+The question is you have several expert 100. Can you combine them in such a way that you have no even better.
+1:32:36
+So this is the idea how to combine them. It's the main idea behind this algorithm.
+1:32:45
+How to combine known algorithm. So no it's perform better.
+1:32:50
+And one of the most important approach to this one.
+1:32:55
+It's called AdaBoost. Although it's not the aim, it's just adopted.
+1:32:59
+Boosting. Let me tell you a little bit. History.
+1:33:04
+Then in Friedman in 90s, he asked the following question.
+1:33:09
+So you were so it's just some problem for, I guess for.
+1:33:14
+For IBM or somewhere, and you could find very good.
+1:33:19
+Solution, but he was able to find many, many solution, which is.
+1:33:27
+A little bit better than 5050. A little bit better decision.
+1:33:33
+Restart the coup risk. If I have a look at how good each of them.
+1:33:39
+A little bit better than random. Which means that each algorithm captures something about you that look perfect, but at least understand something.
+1:33:44
+So it's not random. And even their independence is algorithm, so they really get some different face of your data.
+1:33:54
+Maybe if you have a lot of them and combine them together, you can have a much better understanding of your data.
+1:34:01
+It's very natural. So he has this problem. Do you think you solve this problem or even decipher this?
+1:34:07
+It's called Nobel Prize in Computer science in Computing prize.
+1:34:13
+And one of the application you all know of this approach is when face recognition in your computer,
+1:34:19
+whatever you comment on its face, uses this game and its dongle.
+1:34:27
+And on trains they usually they use this other boost and good.
+1:34:32
+So. So this this idea. Another common sense idea is that.
+1:34:39
+Uh, if you look into the practice, like Who Wants to Be a millionaire?
+1:34:46
+So usually. And as the crowd has audience.
+1:34:51
+But for much better than the friend of 5050.
+1:34:56
+So this is the main idea about me talking. Uh.
+1:35:00
+So. And especially this.
+1:35:07
+This algorithm. This approach also is very useful so called online learning.
+1:35:13
+It's probably one of the famous applications.
+1:35:18
+So what is online learning. You develop some algorithm to classify it for example user behaviour.
+1:35:22
+You build, you spent time and now you start to.
+1:35:29
+Who employs this in practice. Of course, it's not 100% correct.
+1:35:33
+That doesn't give you a correct answer. Sometimes you give wrong. So what you said is important.
+1:35:40
+Okay. Let's see how good for a couple of months. Collect all data.
+1:35:45
+What algorithm? Perform badly. Whole document. I'll give us correct answer.
+1:35:51
+Because online, you know, after sometimes.
+1:35:57
+Was it good or bad? And after that, we'll retain our model from scratch and deploy again.
+1:36:00
+This is the first approach and second approach. Maybe we will let you conflate.
+1:36:07
+If you're going to use something a little bit of make you a little bit,
+1:36:13
+modify your algorithm so you just don't retain everything and don't wait a couple of months.
+1:36:16
+Collection from cancer. You just improve online. Just call online and let's.
+1:36:21
+Let's have some example of online learning. This is the basic example.
+1:36:29
+Let's suppose this. Better algorithm.
+1:36:33
+And now. So we will see how this work. We don't go to the full details of other boost algorithm because we just want to understand why it's possible.
+1:36:37
+I want to start with the fully no so-called Halloween algorithm.
+1:36:47
+I want to immediately point out that this isn't. Absolutely unrealistic.
+1:36:54
+How good? You can't apply this in practice.
+1:36:58
+It's a true ideal algorithm for real life. But it's nice to look at some sort of.
+1:37:03
+Ideal scenario because after that you will know what should be improved and why it's possible.
+1:37:10
+So when it's possible to do something uh, with uh, combining several expert.
+1:37:16
+So let's do set. Once again, how do you know it's not real algorithm.
+1:37:23
+It's too ideal. Can be useful in practice, but.
+1:37:28
+Let's see what this mean. Suppose we have said to an expert.
+1:37:33
+Or an algorithm. And suppose they ask to give you only to answer yes or no, plus or minus.
+1:37:39
+For example, you develop a lot of algorithm.
+1:37:46
+For classifying your email spam Non-spam.
+1:37:50
+We can do the same for multi-label all. Good bye.
+1:37:55
+You see why it's possible? Let's look into the binary. So I have an expert.
+1:37:59
+Remember, in this business we call expert just. Classification algorithm.
+1:38:04
+Give expert which give you yes or no.
+1:38:11
+You can ask uh, seven of your for example.
+1:38:16
+You can ask many student from. Yeah.
+1:38:20
+Is this topic is interesting or not? You can ask some people opinion about a suitable house or not.
+1:38:25
+You can ask several of your friends and so on.
+1:38:31
+Up to you. Here's some things you don't know. So suppose we have an expert.
+1:38:35
+And so on. And now you. Every time.
+1:38:41
+Uh, so you have time. Once again.
+1:38:46
+And so you have some observation. X1, x2.
+1:38:51
+Because the time is coming.
+1:38:56
+Then you have x1 observation for example stock price or particular company next or user first user, second user, and so on.
+1:38:58
+So we have sequence of observation which depend on time. And.
+1:39:08
+Every moment you supposed to. Predict label of this one.
+1:39:14
+You want to predict label y1 y2 of this observation.
+1:39:20
+So this is our task. And every moment.
+1:39:27
+Each of these an expert tells you which label to put, plus or minus.
+1:39:30
+But you have to take the information and to decide which label to put.
+1:39:36
+After you put this label, for example, you ask 100 experts who they buy this company, say or not.
+1:39:41
+Some experts tell you by some expert tell you sell.
+1:39:50
+You make your base from their advice, you make a decision. It's the next day, you know.
+1:39:56
+They all have to have the end of training after a day of trading.
+1:40:01
+You know what's his decision? Correct or not? So you're immediately after you make a decision, you correct, you collect.
+1:40:06
+Was it good or bad? Because after ten year training, you know, this year you went up or went down.
+1:40:14
+You did mistake by saying go by. So next day you do the same.
+1:40:20
+You ask expert what is their opinion they give you?
+1:40:25
+You make a decision. And after that? After that the 10th of the day, you check your solution and so on.
+1:40:29
+This is a typical example of one like online letting you make a decision based on the expert.
+1:40:35
+After that. After. Sometimes you can verify what decision, good or bad.
+1:40:41
+And so when you continue. No. So this is a general set up.
+1:40:47
+So far so good. When it says this this is an unrealistic assumption is the following.
+1:40:51
+We assume that one of the expert.
+1:40:58
+It's consistent. Which means that you don't know which one, but you assume that one expert gives you always correct prediction.
+1:41:03
+But the question is you don't know which one, but that is the expert because you always correct prediction.
+1:41:16
+So this is why this example is not very realistic.
+1:41:26
+But for the moment issue, of course, if you knew in the beginning.
+1:41:31
+Which one is the best one?
+1:41:36
+Then you just pick him and follow his action. But you don't know.
+1:41:41
+This is a beauty. If you don't know which one of these is best, of course you can win.
+1:41:45
+Wait. What? Here? And now? What is it? Check which one was the best.
+1:41:49
+But it's already too late. Cause you're already. You can't wait to stock market one to find the best.
+1:41:54
+Because it's. It doesn't give you anything. So we have to every moment you have to make a decision.
+1:41:59
+So this is a I was not the jogging cowgirl beautifully. Every moment.
+1:42:06
+We ask that. So as the beginning we have all this expert.
+1:42:13
+And the first day I asked him. What is your prediction?
+1:42:18
+They give me. Thank you.
+1:42:23
+Prediction. Oh I check.
+1:42:26
+Where's their prediction? Good or bad? Okay, so C1 now will be all.
+1:42:32
+From c0 I set. What they predicted.
+1:42:41
+Was a day one, so give me correct answer.
+1:42:48
+Which means a falling. I ask a question? I.
+1:42:53
+I made decisions the following I go with the majority.
+1:43:00
+If what you did, you say plus I will go was a plus in my unit.
+1:43:05
+You said minus. I will go with your minus. If it is a tie, then I pick whatever.
+1:43:09
+Plus or minus. So this is what I would do.
+1:43:17
+But after that I check which one were correct.
+1:43:22
+And everybody who gave me wrong prediction.
+1:43:27
+I remove from my set of exit. So it's a very hard partition.
+1:43:32
+Everybody who gave me wrong key device. I remove completely.
+1:43:37
+Well, the second day I asked him in your next breath, what should I do?
+1:43:42
+Plus or minus? Thank you, Mrs. Wise.
+1:43:46
+I will go with the majority. I may be wrong.
+1:43:50
+Of course, majority can be wrong. Well, I may be right. But after the second day, I removed everybody who gave me.
+1:43:54
+Who gave wrong categories. Which means that the device is not compatible with what they observe, and so on.
+1:44:00
+This is a cool Halloween algorithm where the algorithm, of course.
+1:44:08
+Where they make mistake. Remember, I always go with the majority and even make mistake it means a majority.
+1:44:15
+Give you from cancer. And it means that when I make mistake, I remove at least half of my expert.
+1:44:26
+I remove this majority, which means that my set become less well, you can fill half of previous set of expert.
+1:44:35
+Maybe everybody was correct and they keep going. Maybe one was wrong because it was plus and they make plus perfect.
+1:44:45
+They've become one smaller. But if I pull off but jority and they make a mistake, then he knows it all.
+1:44:53
+Half of them who even more bear fruit. Can I remove this one?
+1:45:01
+So this is a few of them now, which is a beautiful.
+1:45:07
+Mindful of always majority. But if I follow this algorithm, what they know is it does matter how long I follow this algorithm.
+1:45:12
+The largest number of mistakes that I will have. It's.
+1:45:24
+You'll be looked to within. So what it means is you may ask 1000 expert.
+1:45:28
+And then follow the strategy. Sometimes they go wrong, but I will never do more than nine.
+1:45:35
+Mistake. Which is distributed even under have 1000 expert.
+1:45:44
+Why? Because it's. Look to offend and equal stand when and equal 1054.
+1:46:01
+Which means if I have less than 124, this look will be less than ten.
+1:46:10
+But because number one mistake is just using maximum light, I can go for a long time.
+1:46:17
+But I will never do more than one mistake. And this is the beauty of this algorithm.
+1:46:22
+And it's very easy to to prove why?
+1:46:28
+Because. Because whenever I make a mistake, you discuss, I remove more than half.
+1:46:33
+Of my expert. So whatever I make mistake, the next set will be less than half.
+1:46:42
+If I make a mistake. If I make a mistake, the total number of mistake the disciples is set will be less than and divide by two of em.
+1:46:51
+Because every time I divide by by two at least.
+1:47:04
+And then his original parts, remember?
+1:47:09
+You have this beautiful assumption. The set of the expert.
+1:47:13
+It's always begins in one. There's always one. Next one is always correct.
+1:47:18
+Which means it n the way by two to the power.
+1:47:23
+N is always bigger n equal to one or n, because n equal two to the power m or m is less than equal.
+1:47:26
+Log with the base to avoid. And we put the serum.
+1:47:36
+But once again, it's absolutely unrealistic a scenario because of this assumption.
+1:47:45
+That whatever we go with the majority.
+1:47:55
+We always still have non-empty class of experts because one is always correct.
+1:48:00
+If you can assume that. One of them.
+1:48:06
+Always correct. We can end up with just zero number expert because every expert allowed to have at least one mistake,
+1:48:09
+we will just remove them after some number of dip. Building removal expert.
+1:48:16
+So this is a very realistic assumption. But. If you see it full on some strategy, we can have very little small number mistake.
+1:48:21
+So now the question is can we modify a little bit so that you don't have this.
+1:48:32
+Very realistic assumption,
+1:48:39
+but you still can have very good algorithm which give us some one another mistake and as example we will see come to to buy, share,
+1:48:41
+buy or sell, even if you don't know in advance which exit is good,
+1:48:51
+if you still can't develop strategy, you very start because you want to do Bashir you.
+1:48:56
+So then I just want to quickly switch. Okay.
+1:49:08
+It's all for today. So see you on Thursday.
+1:49:23
+For the last three hours of our course. And. Have a nice day and you will finish with this fantastic output.
+1:49:28
+And have a nice day.
+1:49:47

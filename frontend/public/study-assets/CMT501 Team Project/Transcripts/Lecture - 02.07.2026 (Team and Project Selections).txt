@@ -1,0 +1,278 @@
+Details:
+
+Lecture - 02/07/2026 (Team and Project Selections)
+(Carl Jones) Ian went over the assessments. I've left that part in.
+The rest I've edited out because I was just discussion about projects and almost everyone was in the room for that.
+
+Ian Cooper
+--------------------------------------------------------------------------------------
+
+Contents:
+
+,Assessment Proforma
+0:20
+Heading
+2:38
+Heading 1 I Heading 2
+5:38
+--------------------------------------------------------------------------------------
+Captions:
+
+Auto-generated captions may contain errors.
+So the the assessment is in two parts. Uh, there is a report and there is the demonstration.
+0:34
+Okay. So the demonstration we usually do as a an in-person presentation, which is that the university is all into, uh,
+0:43
+sort of what do they call it, shared shared experiences in developing the, uh, the assessments and all that kind of stuff.
+0:53
+Do you want to do an in-person presentation or do you want to do it via video?
+1:02
+It's entirely up to you. I don't really mind. Okay.
+1:08
+Wouldn't it? Be fine.
+1:12
+Hands for in person. Hands for via video.
+1:17
+Video. Let's do that again. Hands for in person. In person.
+1:23
+Hands for in person. One in person.
+1:28
+Demonstration of your, uh. Oh, I don't want to give an impression.
+1:32
+Oh, my hands for video. Oh, you were giving us the presentation.
+1:38
+I was like, oh, I'm not going to give you a presentation. I don't do presentations.
+1:44
+Do you want to present your project at the end of it, or do you want to do a video of it?
+1:48
+Video. Are you okay? Right. So are we ready?
+1:55
+Are we ready for in person?
+1:58
+Who would like an in-person presentation live in a room to us who would like to do a video of it and submit the video of it?
+2:02
+Okay. Right. Well, I'll change the assessment. And now there you go, right in your feedback.
+2:13
+Say we do listen to you okay. Right. So that's that one then.
+2:17
+All right then. So that's the first the first thing is basically it's going to be where 60%.
+2:22
+We will assess your video and you will tell us all about, um, what you've done on your project.
+2:26
+Okay. Um, then you will write a report about it.
+2:33
+Okay. And the important thing is the report is not about what you've actually achieved as much, okay?
+2:37
+It's about the problem definition and it's about how you've worked in a team.
+2:44
+Okay. So this is what Kyle's been saying quite a lot. It's not really about what you are doing.
+2:48
+It's about how you are working. It's the process. Okay.
+2:52
+So we've done this a couple of times before, and a lot of people in their report, the people that fail, basically,
+2:56
+they write about all the technical details about what they have done and they think it's absolutely marvellous, but it gets no marks.
+3:02
+Okay. Unless you actually work as a team, unless you actually break the work down,
+3:09
+unless you actually do what Kyle's just been telling you about over the last couple of sessions, the git stuff.
+3:13
+You won't get any marks and you will fail. Okay. That is the most important thing.
+3:19
+What you come up with, honestly, doesn't matter. Okay. All right.
+3:23
+It's as long as you go through the process. That's what the whole module is about.
+3:27
+It's the process you can go to. You can do your ML coursework to get the actual technical stuff.
+3:31
+Okay. This is the how you actually go about the process of working in teams.
+3:36
+Okay. So you are going to write about, um, these learning outcomes that we are going to deal with.
+3:41
+And it is a, uh, you will do the project and then you'll write a report 1500 word report.
+3:47
+It's not very long report. It should be fine. Okay. 400 words will be on the problem definition.
+3:58
+Okay. So this is basically so that you understand the problem and you know how to break it down into little parts and things like that.
+4:03
+Okay. So you actually understand what you're trying to achieve.
+4:09
+700 words are going to be about the teamwork and critical analysis of the project management.
+4:11
+In other words, what you got wrong. To be honest, it's like if you get it all wrong and it's a complete disaster, it doesn't really matter.
+4:16
+The point is, you're analysing what you're doing and you're saying why you got it wrong.
+4:23
+Okay. For this particular part of the assessment, okay. As long as you can get through that 700 words of saying why you didn't break
+4:27
+the project down enough into small enough chunks because nobody ever does.
+4:35
+That is what will get you the marks and things like that. Okay.
+4:40
+It's actually how you've approached the, the, the, the sort of software development part of it really.
+4:43
+And then 400 words on reflection on your project outputs and critical analysis of how it worked and how it didn't work and things like that.
+4:50
+Okay. So I mean, it is only a 20. It's it feels because it's over the summer.
+4:57
+It feels like the dissertation kind of project. But it's only a 20 credit module.
+5:03
+You know, it's not meant to be massive. Massive okay. It is still a 20 credit module.
+5:07
+So it is in line with that 20 credit module. Okay.
+5:12
+Um, And I will stick this on Learning Central.
+5:17
+Um, next time I get to my desk. Uh, so you'll be able to go through the, um, uh, the criteria for the assessment.
+5:22
+Um, but yeah, basically it just details how you'll get different marks, uh, different mark bands and theta ones.
+5:30
+Right? Yeah. Yeah. Okay. Um, so things like that.
+5:39
+There you go. Okay. Um, teamwork. Uh, again, this is worth 50% of the report.
+5:46
+Um, basically, it's an evaluation of how you have, uh, used tools and techniques to manage your project.
+5:51
+Okay. Which is pretty much what I've been ranting on about. Does anybody have any particular questions on that?
+5:59
+You've got loads of time to digest this and come back to us for the project.
+6:06
+Someone doing the e-voting system project suggested by card.
+6:11
+So the project itself does not make. Doesn't make much of a difference in marks.
+6:15
+Like you said, right. It's the approach. It's the approach. So you're not looking at advanced coding.
+6:21
+I'm not assessing you on your machine learning. Yeah. Okay. You've got a machine learning module for that.
+6:27
+Yeah. Okay. So in in some terms it's better for you to choose the easiest project possible, the most straightforward, simplest project,
+6:32
+you know, nice simple data in a nice bit of like nice project that you can break down into lots and lots of different parts.
+6:44
+Okay. I think that your project has multiple bits.
+6:53
+The. Yeah, yeah, I think that's 80% true, but I think it's nice if there's a mixture.
+6:57
+We argue all the time. Don't worry about it. Right.
+7:09
+Um, it's nice if there's a mixture of easy bits and hard bits, Because then the project management gets a bit harder.
+7:11
+Are you going to put two people on the hard bits? How are you going to split up the hard bits? If they're all easy, you just split it all up.
+7:19
+But you just do your bits and it all comes together at the end really easily. Yeah, if there are hard.
+7:26
+If there are hard bits. Yeah. Are you going to do the hard bits first?
+7:33
+What do we talk about. Maximising learning versus maximising earning.
+7:38
+Right. It's easy to get the web forms done and to get the data in.
+7:43
+But unless you can get some output out by doing the hard bits. Have you got delivered value?
+7:47
+So maybe you want to do the hard bits first, right?
+7:52
+And then your end of your project is. In hindsight, I wish we'd done it in a different order.
+7:56
+Yeah, because that bit proved harder than we thought it was.
+8:03
+Yeah. Or we could have done that easy bit first. Yeah.
+8:07
+That's what Projects are all about. It's picking and choosing the order in which you do the work, in the order in which you learn.
+8:13
+Yeah. So if it's too easy, the report is boring.
+8:20
+You actually want to have the odd trip? Yeah. And the odd stumble and have to correct yourself because that makes the report more interesting.
+8:25
+All right. So I think you've all got easy bits and hard bits. So that'll probably work better.
+8:32
+Okay. Thank you.
+8:37
+Any more. You said I was wrong. Okay.
+8:41
+So I'll rewrite this. Right. Okay.
+8:47
+So this is the this is what I've got currently for the demo, but it was based on a in person demo.
+8:51
+Okay. So I'll have to rewrite it just slightly. But you get you should be able to get the gist from it.
+8:56
+Right. But your video rather than your presentation your video will basically it will be marked 10% on the pitch,
+9:01
+10% on the the content, 1,070% on the project, as demonstrated in 10% as the response.
+9:08
+I'll get rid of that bit then, because you won't be able to answer any questions. Okay.
+9:14
+So I'll figure it out. I'll work it out. Don't worry. Okay. We'll get rid of that.
+9:18
+Um, so there's a lot of, um.
+9:22
+Meets and exceeds realistic expectations of client and supervisor.
+9:28
+Okay. So you will have meetings.
+9:31
+You will, for those of you who are pitching the project, we will come to an agreement with what we expect you to be able to do.
+9:33
+Okay. Um, for the. Yeah. Then you've got, uh,
+9:38
+content of how the project was showcased basically in your video is presented
+9:43
+to its form without exaggerating functionality and all that kind of stuff. Okay.
+9:48
+That's what you want to be looking at. And, uh, the pitch pitched, uh, at the correct level for all participants in a, in the,
+9:51
+in person, uh, presentation, we would have told you who was going to be there for the video.
+9:59
+We will give you a list of people who are going to look at the, uh, the video.
+10:05
+So it will be people. You'll have to pitch it at a level that is good for technical audience and also for a layman audience as well.
+10:11
+So like trying to pitch to both people at the same time.
+10:21
+Okay. So it is going to be a little bit interesting for the video. Um, how long do you want to do a video for?
+10:25
+What do you reckon? I mean, this is worth 20 20 minute video.
+10:32
+Yeah. Well, if it was an in-person demonstration, it would mean a half an hour.
+10:40
+You don't have half an hour of demonstration, so, you know, it'd be a 20 minute and a 20 minute.
+10:44
+Just as long as I can make it. Half an hour if you want.
+10:49
+Are you saying 20 minutes is long or short? Because I'm used to short presentation.
+10:54
+Okay, we do ten minutes and you'll be stressed. Like five minutes.
+10:58
+Okay. Okay. Okay. Okay. Sorry. We're happy with.
+11:03
+We're happy with 20. We're happy. the challenge of making 30.
+11:07
+Make it 40. No, I can do. It right.
+11:11
+20 minutes. Okay, we're gonna do it. 20 minutes. I can't make it ten, including the.
+11:16
+Oh, there's going to be. No, it's a video. So it's a video.
+11:25
+So the Q&A, I'll get rid of the Q&A. Okay.
+11:29
+So yeah. Okay. I'll be in this place or would it just change the slide a lot?
+11:33
+But it could be one voice. Okay, now you're putting me on the spot here.
+11:39
+Sorry. Okay. Um, what do you want in it? Just take it off.
+11:42
+Just take it off. It could be. Just take it off and re jiggle the, uh, the weighting.
+11:46
+Yeah, that'd be good. Yeah, yeah, yeah, yeah, it'll be fun.
+11:52
+Okay. Yeah. All good. Any questions on the on the assessments?
+11:56
+Um, what do you recommend we record with DaVinci? Uh, you can do it on teams.
+12:03
+--------------------------------------------------------------------------------------
+Notes:
+
+
+--------------------------------------------------------------------------------------
+Bookmarks:
+
+
+--------------------------------------------------------------------------------------

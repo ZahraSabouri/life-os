@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><title>TS Study Pack A - L1-L2 - FINAL LOCKED</title><style>
+*{box-sizing:border-box;min-width:0}@page{size:A4;margin:0}html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{margin:0;padding:22px 10px;background:#d0d0d0;color:#111;font-family:"Segoe UI",Arial,sans-serif;font-size:14px;line-height:1.42}
+.page{width:210mm;min-height:297mm;margin:0 auto 24px auto;padding:28px 34px 30px 78px;background-color:#fff;background-image:linear-gradient(#ef8b83 0,#ef8b83 1px,transparent 1px),repeating-linear-gradient(transparent,transparent 27px,#acd1ec 27px,#acd1ec 28px);background-size:70px 100%,100% 28px;background-position:0 0,0 0;box-shadow:2px 3px 12px rgba(0,0,0,.22);page-break-after:always;position:relative;overflow:visible}.header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;gap:12px}.date{font-weight:700;font-size:12px}.subject{font-style:italic;font-size:12.5px;color:#333;text-align:right}h1{font-family:Georgia,"Times New Roman",serif;font-size:27px;line-height:1.15;margin:7px 0 8px}h2{font-size:18px;font-weight:800;display:inline-block;border-bottom:2px solid #111;margin:14px 0 8px;line-height:1.2;padding-right:6px}h3{font-size:15.5px;margin:11px 0 6px;text-decoration:underline}.subtitle{font-size:13.2px;color:#333;font-style:italic;margin-bottom:8px}.toc span{display:block;line-height:25px}.toc span:before{content:"□  "}.exam{background:#fff3cc;border:2px solid #111;border-radius:7px;padding:8px 12px;margin:8px 0;line-height:1.55}.blue{border-left:4px solid #3a86c8;background:#f5f8fd;padding:7px 10px;margin:7px 0;line-height:1.45}.green{border-left:4px solid #2d9d52;background:#f5fff7;padding:7px 10px;margin:7px 0;line-height:1.45}.trap,.warning{border:1.5px dashed #b00000;border-radius:6px;background:#fffafa;padding:7px 10px;margin:8px 0;line-height:1.45}.trap b,.warning b{color:#b00000}.examline{background:#fffdf1;border-left:4px solid #d18b00;padding:6px 10px;margin:7px 0;line-height:1.45}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;margin:8px 0}.grid.one{grid-template-columns:1fr}.card{border:2px solid #111;border-radius:8px;background:rgba(255,255,255,.85);padding:8px 12px;break-inside:avoid;overflow:hidden;line-height:1.35}.label{font-weight:800;font-size:12.2px;color:#333;margin-bottom:4px;line-height:1.25}.mini-table{border-collapse:collapse;width:100%;margin:8px 0;font-size:12px;background:rgba(255,255,255,.78)}.mini-table th,.mini-table td{border:1px solid #999;padding:5px 7px;vertical-align:top}.mini-table th{background:#dde8f5}.mini-table.compact th,.mini-table.compact td{font-size:11.2px;padding:4px 5px}.formula-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;margin:7px 0 9px;align-items:stretch}.formula{background:rgba(255,255,255,.88);border:2px solid #111;border-radius:8px;padding:8px 11px;break-inside:avoid;overflow:hidden}.formula-label{font-weight:800;font-size:12.2px;color:#333;margin-bottom:4px;line-height:1.25}.math{font-family:"Cambria Math","Times New Roman",serif;font-size:15px;background:#fff;border:1px solid #bbb;border-radius:5px;padding:6px 8px;margin:5px 0;line-height:1.35;white-space:pre-wrap}.formula-note{font-size:12px;color:#444;line-height:1.33;margin-top:4px}.q{border-left:4px solid #111;padding:6px 10px;margin:7px 0;background:rgba(255,255,255,.74);line-height:1.42;break-inside:avoid}.sol{border-left:3px solid #3a86c8;background:#f5f8fd;padding:6px 9px;margin:6px 0;line-height:1.35;break-inside:avoid}.calc{border-left:3px solid #2d9d52;background:#f5fff7;padding:6px 9px;margin:6px 0;line-height:1.35;break-inside:avoid}.source{font-size:11px;color:#444;line-height:1.35;margin-top:10px;border-top:1px dotted #aaa;padding-top:4px}pre{margin:7px 0;padding:8px 10px;background:#f7f7f7;border:1.5px solid #111;border-radius:8px;white-space:pre-wrap;font-size:11.5px;line-height:1.35;overflow-wrap:anywhere}code{font-family:Consolas,"Courier New",monospace}.check li,.mistakes li{margin:4px 0}.small{font-size:12px;color:#444}.wide{grid-column:1/-1}@media print{body{background:white;padding:0}.page{margin:0;box-shadow:none}}
+</style></head><body>
+
+<div class="page"><div class="header"><span class="date">12.05.2026</span><span class="subject">MA3508 / MA4508 / MAT508 Time Series</span></div>
+<h1>TS Study Pack A: L1-L2<br/>Introduction, Overview, Smoothing and Decomposition<br/><span style="font-size:18px">FINAL LOCKED</span></h1>
+<div class="subtitle">Exam-focused HTML notes - FINAL LOCKED version. Content source: uploaded Time Series files only. Pack B used only as the visual/style/structure reference.</div>
+<div class="exam"><b>How to use this pack:</b> read L1 for the language of time series, then L2 for the first actual methods: moving averages, exponential smoothing, Holt-Winters, and the R workflow. This pack is designed for one serious study session: concept first, formulas second, R code third.</div>
+<div class="green"><b>Priority note:</b> Pack A is lower direct past-paper priority than Packs B-E, but it is useful for understanding smoothing, decomposition, and R basics.</div>
+<div class="exam"><b>Last-night memory list for L1-L2</b><br/>
+Time series = data gathered sequentially in time; time order matters because neighbouring values may depend on each other; observed series = signal + noise; main tasks: smoothing, decomposition, change-point detection, model fitting, forecasting; components: trend, seasonal, cyclical, irregular; smoothing suppresses noise to estimate signal; SMA formula and first m-1 missing values; centred moving average uses past and future values; weighted moving average normalises weights; small window follows data but retains noise; large window smooths but may lag/miss changes; SES formula E_k = alpha x_k + (1-alpha)E_{k-1}; alpha close to 1 reacts quickly; alpha close to 0 reacts slowly; Holt-Winters has level, trend and seasonal equations; additive vs multiplicative seasonality; R patterns: TTR::SMA(), HoltWinters(), forecast().
+</div>
+<div class="toc"><span>Lecture 1 map and exam duties</span><span>Lecture 1 core ideas, definitions and concept cards</span><span>Lecture 1 interpretation examples from lecture datasets</span><span>Lecture 2 map and exam duties</span><span>Lecture 2 definitions, formula cards and proof skeleton</span><span>Lecture 2 R-code templates</span><span>Mapped exercises and exam radar</span><span>Common mistakes and mini self-test</span><span>Source coverage audit and missing/unclear areas</span></div>
+<h2>Module-level reason this pack matters</h2>
+<div class="blue">The module description says the module introduces time series models, simulation, estimation and forecasting methods; students should be able to simulate models, fit models, use statistical inference, and forecast using methods including exponential smoothing, ARIMA and SSA. Pack A starts that journey: L1 gives the overview and L2 introduces smoothing and exponential smoothing.</div>
+<div class="source"><strong>Source:</strong> module description.docx, p.1; ma3508_lecture1.pdf, p.2-p.4; ma3508_lecture2.pdf, p.2-p.12</div>
+<div class="warning"><b>Scope note:</b> This file covers L1-L2 only. AR, MA, ARMA, ARIMA, spectral density and SSA are named in the syllabus/overview but are not developed here. Do not import later lecture definitions into Pack A except as short “coming next” context.</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 1</span><span class="subject">Introduction and overview</span></div><h1>Lecture 1 - Lecture Map</h1>
+<table class="mini-table"><tr><th>Page/slide range</th><th>Topic</th><th>What I must be able to say/do in the exam</th><th>Flag</th></tr>
+<tr><td>p.1</td><td>Lecture title and module identity</td><td>Know this is the introduction lecture for MA3508/MA4508/MAT508 Time Series.</td><td>Concept</td></tr>
+<tr><td>p.2</td><td>What a time series is; main tasks</td><td>Define a time series and list the main goals: smoothing, decomposition, change-point detection, model fitting, forecasting.</td><td>Concept</td></tr>
+<tr><td>p.3</td><td>Syllabus overview</td><td>Recognise later topics: autocovariance, autocorrelation, spectral density, prediction equations, AR/MA/ARMA/ARIMA, sample theory, Yule-Walker, SSA.</td><td>Concept</td></tr>
+<tr><td>p.4</td><td>Learning outcomes</td><td>Explain that the module aims at fitting, inference, ARMA/ARIMA forecasting, R time-series analysis and AI-assisted R learning.</td><td>Concept/R</td></tr>
+<tr><td>p.5-p.7</td><td>Assessment, timetable, R and AI learning</td><td>Know assessment is exam-based and R/RStudio are part of the practical workflow; use AI carefully for R support.</td><td>R/context</td></tr>
+<tr><td>p.8-p.10</td><td>Application areas and detailed examples</td><td>Give examples of time series from economics, agriculture, engineering, medicine, meteorology, social sciences and more.</td><td>Concept</td></tr>
+<tr><td>p.11-p.12</td><td>Objectives and importance of forecasting</td><td>Explain uses: interpretation, forecasting, control, hypothesis testing, simulation; give practical forecasting examples.</td><td>Concept</td></tr>
+<tr><td>p.13-p.18</td><td>Data examples</td><td>Look at a plotted time series and describe noticeable patterns such as trend, seasonality, irregular fluctuations or possible cycles.</td><td>Interpretation</td></tr>
+<tr><td>p.19</td><td>Components of time series</td><td>Distinguish trend, seasonal, cyclical and irregular components.</td><td>Concept</td></tr>
+<tr><td>p.20</td><td>Homework and basic R practice</td><td>Use R as calculator, create variables/vectors, plot a simple sine sequence and print summaries.</td><td>R</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture1.pdf, p.1-p.20</div>
+<h2>What is conceptual background vs examinable?</h2>
+<table class="mini-table compact"><tr><th>Material</th><th>How to treat it</th></tr>
+<tr><td>Definition of time series and main goals</td><td>Exam-memory material. Be able to write short definitions and explain why time order matters.</td></tr>
+<tr><td>Application examples</td><td>Conceptual support. Use them to explain the idea, not as heavy memorisation.</td></tr>
+<tr><td>Syllabus list of later models</td><td>Orientation only in Pack A. Full definitions belong to later packs.</td></tr>
+<tr><td>R installation / AI-resource slides</td><td>Practical background. Useful for learning, not a mathematical formula topic.</td></tr>
+<tr><td>Data plots and components</td><td>Interpretation material. An examiner could ask you to identify trend/seasonality/noise-like behaviour from a plot.</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture1.pdf, p.2-p.7, p.13-p.20</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 1</span><span class="subject">Core ideas</span></div><h1>Lecture 1 - Core Ideas in Plain English</h1>
+<div class="grid">
+<div class="card"><div class="label">A time series is ordered in time</div>Lecture 1 defines a time series as data gathered sequentially in time. The order is not decoration: the value today may be related to yesterday, last month or last year.</div>
+<div class="card"><div class="label">Why it differs from ordinary data</div>In many ordinary datasets, rows are treated as exchangeable. In a time series, swapping the order can destroy the meaning because the pattern is in the sequence.</div>
+<div class="card"><div class="label">Observed series = signal + noise</div>The lecture gives the model idea “observed series = signal + noise”. The signal is the meaningful underlying part we want to estimate; noise is the random/high-frequency disturbance that hides it.</div>
+<div class="card"><div class="label">Smoothing is the first tool</div>Smoothing tries to reduce noise so that the signal becomes easier to see. It does not automatically forecast the future; it prepares the series for interpretation or later modelling.</div>
+<div class="card"><div class="label">Decomposition splits the series into parts</div>Lecture 1 presents components: trend, seasonal, cyclical and irregular. Lecture 2 starts with a simpler “signal + noise” split and says smoothing supports decomposition.</div>
+<div class="card"><div class="label">Forecasting needs a model</div>Lecture 1 describes forecasting as continuation/prediction of the time series using an estimated model, so forecasting is not just drawing a smooth line forward by eye.</div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture1.pdf, p.2, p.8-p.12, p.19; ma3508_lecture2.pdf, p.2</div>
+<h2>Signal + noise mental model</h2>
+<div class="formula-grid">
+<div class="formula"><div class="formula-label">Observed series idea</div><div class="math">observed series = signal + noise</div><div class="formula-note"><b>Meaning:</b> what you see is a mixture of an underlying pattern and random disturbance.</div><div class="formula-note"><b>Use when:</b> explaining why smoothing is useful.</div><div class="formula-note"><b>Trap:</b> do not assume the signal is known; the goal is usually to estimate it.</div></div>
+<div class="formula"><div class="formula-label">What we usually want</div><div class="math">estimate the signal and forecast it</div><div class="formula-note"><b>Meaning:</b> reduce noise, identify the meaningful structure, then use an estimated model for prediction.</div><div class="formula-note"><b>Use when:</b> connecting L1 overview to L2 smoothing.</div><div class="formula-note"><b>Trap:</b> a smoother historical curve is not automatically a forecast model.</div></div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture1.pdf, p.2; ma3508_lecture2.pdf, p.2</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 1</span><span class="subject">Definitions and exam wording</span></div><h1>Lecture 1 - Definitions and Exam Wording</h1>
+<div class="grid one">
+<div class="card"><div class="label">Time series</div>Data gathered sequentially in time are called a time series.</div>
+<div class="card"><div class="label">Smoothing</div>A time-series task/method used to suppress noise and make the underlying signal or pattern easier to see.</div>
+<div class="card"><div class="label">Decomposition</div>Breaking a time series into components. Lecture 1 lists trend, seasonal, cyclical and irregular components; Lecture 2 describes decomposition as splitting a series into signal and noise components.</div>
+<div class="card"><div class="label">Change-point detection</div>A time-series analysis goal named in the overview: looking for points where the behaviour of the series changes. The lecture names it but does not develop formulas in L1-L2.</div>
+<div class="card"><div class="label">Model fitting</div>Identifying a suitable model, such as AR, MA, ARMA or ARIMA, that describes a given time series and estimating its parameters.</div>
+<div class="card"><div class="label">Forecasting</div>Continuation or prediction of the time series using the estimated model.</div>
+<div class="card"><div class="label">Signal</div>The underlying meaningful component that we usually want to estimate and forecast in the “observed series = signal + noise” model.</div>
+<div class="card"><div class="label">Noise / irregular component</div>The high-frequency, erratic or residual fluctuation that can hide the signal. Lecture 1 calls one component “irregular”; Lecture 2 calls the high-frequency part “noise”.</div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture1.pdf, p.2, p.19; ma3508_lecture2.pdf, p.2</div>
+<h2>Component wording from Lecture 1</h2>
+<table class="mini-table"><tr><th>Component</th><th>Lecture wording</th><th>Plain-English interpretation</th></tr>
+<tr><td>Trend</td><td>Overall, persistent, long-term movement</td><td>The broad direction of the series over time.</td></tr>
+<tr><td>Seasonal</td><td>Regular periodic fluctuations, usually within a 12-month period</td><td>A repeating within-year pattern, not necessarily literal weather seasons.</td></tr>
+<tr><td>Cyclical</td><td>Repeating swings or movements over more or less than one year</td><td>A longer or less regular repeating movement.</td></tr>
+<tr><td>Irregular</td><td>Erratic or residual fluctuations</td><td>The leftover irregular variation after systematic components are considered.</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture1.pdf, p.19</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 1</span><span class="subject">Concept cards and examples</span></div><h1>Lecture 1 - Concept Cards and Interpretation Examples</h1>
+<div class="formula-grid">
+<div class="formula"><div class="formula-label">Time-order card</div><div class="math">time index matters: x_1, x_2, ..., x_n</div><div class="formula-note"><b>Meaning:</b> values are observed in a sequence such as seconds, days, months or years.</div><div class="formula-note"><b>Use when:</b> explaining why time series require special tools.</div><div class="formula-note"><b>Trap:</b> do not treat time-series observations as unordered rows.</div></div>
+<div class="formula"><div class="formula-label">Goal card</div><div class="math">smoothing -> decomposition -> model fitting -> forecasting</div><div class="formula-note"><b>Meaning:</b> early methods reveal structure; later methods fit models and predict.</div><div class="formula-note"><b>Use when:</b> describing the module storyline.</div><div class="formula-note"><b>Trap:</b> change-point detection and forecasting are named L1 goals, not fully solved in L1.</div></div>
+<div class="formula"><div class="formula-label">Application card</div><div class="math">economics, finance, medicine, meteorology, engineering, sports, social sciences</div><div class="formula-note"><b>Meaning:</b> time series appear whenever measurements are recorded over time.</div><div class="formula-note"><b>Use when:</b> giving examples in a written answer.</div><div class="formula-note"><b>Trap:</b> examples support the concept; they are not the mathematical method.</div></div>
+<div class="formula"><div class="formula-label">Forecasting-use card</div><div class="math">policy, demand, enrolment, inventory, portfolio risk</div><div class="formula-note"><b>Meaning:</b> forecasting is used for planning and decision-making.</div><div class="formula-note"><b>Use when:</b> explaining why forecasting matters practically.</div><div class="formula-note"><b>Trap:</b> practical importance is not the same as a fitted statistical model.</div></div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture1.pdf, p.8-p.12</div>
+<h2>Lecture interpretation examples</h2>
+<table class="mini-table compact"><tr><th>Lecture example</th><th>What the slide gives</th><th>What the examiner might ask conceptually</th></tr>
+<tr><td>Milk production</td><td>Monthly U.S. milk production, Jan 1994-Dec 2005, n=144.</td><td>Identify visible trend/seasonality and explain why monthly data often invite seasonal adjustment.</td></tr>
+<tr><td>CREF stock data</td><td>Daily stock values from Aug 2004-Aug 2006, n=501.</td><td>Explain why time order matters and why forecasting stock-like data is hard/noisy.</td></tr>
+<tr><td>Homerun data</td><td>Annual Boston Red Sox homeruns, 1909-2010, n=102.</td><td>Describe long-term changes and irregular variation.</td></tr>
+<tr><td>Earthquake data</td><td>Annual number of large earthquakes, 1900-1998, n=99.</td><td>Discuss irregular fluctuations and possible changes in level.</td></tr>
+<tr><td>Enrollment data</td><td>Annual University of South Carolina fall enrolment, 1954-2010, n=57.</td><td>Describe persistent long-term growth and periods of flattening or decline.</td></tr>
+<tr><td>Star brightness</td><td>Daily measurements over 600 consecutive nights, n=600.</td><td>Look for repeating fluctuations and distinguish regular pattern from noise.</td></tr></table>
+<div class="warning"><b>Honesty note:</b> the lecture slides ask “What are the noticeable patterns?” but do not provide official written answers. The interpretations above are study prompts based on the plotted lecture examples, not official solutions.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture1.pdf, p.13-p.18</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 2</span><span class="subject">Smoothing</span></div><h1>Lecture 2 - Lecture Map</h1>
+<table class="mini-table"><tr><th>Page/slide range</th><th>Topic</th><th>What I must be able to do in the exam</th><th>Flag</th></tr>
+<tr><td>p.1</td><td>Lecture title</td><td>Know this lecture is about smoothing.</td><td>Concept</td></tr>
+<tr><td>p.2</td><td>Motivation for smoothing</td><td>Explain smoothing as suppressing noise to estimate signal; explain the signal/noise decomposition idea.</td><td>Concept</td></tr>
+<tr><td>p.3</td><td>Simple Moving Average (SMA)</td><td>State and use the SMA formula; explain small vs large window behaviour; handle first m-1 values.</td><td>Formula</td></tr>
+<tr><td>p.4</td><td>SMA numerical exercise</td><td>Compute a backward-looking SMA with m=3 for a short sequence.</td><td>Formula/calculation</td></tr>
+<tr><td>p.5</td><td>R: SMA for simulated logistic trend</td><td>Read/adapt R code that simulates trend + white noise, applies TTR::SMA, and plots observed/true/smoothed series.</td><td>R</td></tr>
+<tr><td>p.6</td><td>Centred Moving Average</td><td>State the CMA formula; explain why it uses past and future values and avoids time lag.</td><td>Formula</td></tr>
+<tr><td>p.7</td><td>CMA numerical exercise</td><td>Compute a centred moving average with window length 3.</td><td>Formula/calculation</td></tr>
+<tr><td>p.8</td><td>Weighted Moving Average</td><td>State the weighted formula and understand weight normalisation.</td><td>Formula</td></tr>
+<tr><td>p.9</td><td>Simple Exponential Smoothing</td><td>State SES formula and interpret alpha close to 1 vs close to 0.</td><td>Formula/concept</td></tr>
+<tr><td>p.10</td><td>Smoothing in R with milk data</td><td>Read/adapt the fma milk, SMA and HoltWinters SES code.</td><td>R</td></tr>
+<tr><td>p.11</td><td>Holt-Winters seasonal method</td><td>Explain additive vs multiplicative seasonality and write the level, trend, seasonal equations shown.</td><td>Formula/concept</td></tr>
+<tr><td>p.12</td><td>Holt-Winters in R</td><td>Use HoltWinters(milkTS, seasonal="additive") and forecast(..., h=12).</td><td>R</td></tr>
+<tr><td>p.13</td><td>Use of smoothing in practice</td><td>Match SMA/SES/CMA/WMA/HW to real-time, offline and econometric contexts.</td><td>Concept</td></tr>
+<tr><td>p.14-p.15</td><td>Homework</td><td>Know the requested R/AI tasks and the alpha=1 SES proof task.</td><td>R/proof</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture2.pdf, p.1-p.15</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 2</span><span class="subject">Core ideas</span></div><h1>Lecture 2 - Core Ideas in Plain English</h1>
+<div class="grid">
+<div class="card"><div class="label">Smoothing estimates signal</div>The lecture starts from “signal + noise”. Smoothing tries to suppress the noise so the underlying signal is easier to estimate and see.</div>
+<div class="card"><div class="label">Low-frequency vs high-frequency</div>Lecture 2 says smoothing supports decomposition into a signal, a low-frequency component, and noise, a high-frequency component.</div>
+<div class="card"><div class="label">Small window</div>A small moving-average window follows the data closely. That can be useful, but it retains more noise.</div>
+<div class="card"><div class="label">Large window</div>A large moving-average window gives a smoother line. But it may lag behind rapid changes and blur local behaviour.</div>
+<div class="card"><div class="label">Centred windows reduce lag</div>A centred moving average uses values before and after the current point, so it avoids the backward-looking lag of an ordinary SMA.</div>
+<div class="card"><div class="label">Holt-Winters adds structure</div>Holt-Winters extends exponential smoothing to capture trend and seasonality using level, trend and seasonal components.</div>
+</div>
+<div class="examline"><b>Exam wording:</b> “Smoothing is used to suppress the high-frequency noise part of a time series so that the lower-frequency signal is easier to estimate or inspect.”</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture2.pdf, p.2-p.3, p.6, p.9-p.13</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 2</span><span class="subject">Definitions</span></div><h1>Lecture 2 - Definitions and Exam Wording</h1>
+<div class="grid one">
+<div class="card"><div class="label">Moving average</div>A smoothing method that replaces a value by an average of nearby observations.</div>
+<div class="card"><div class="label">Simple Moving Average (SMA)</div>For window size m, the smoothed value S_k is the average of the last m observations x_k, x_{k-1}, ..., x_{k-m+1}.</div>
+<div class="card"><div class="label">Centred Moving Average (CMA)</div>For window size 2m+1, the smoothed value C_k averages observations from both sides of k: x_{k-m}, ..., x_k, ..., x_{k+m}.</div>
+<div class="card"><div class="label">Weighted Moving Average (WMA)</div>A moving average where nearby observations are multiplied by non-negative weights and then divided by the sum of the weights.</div>
+<div class="card"><div class="label">Simple Exponential Smoothing (SES)</div>A recursive smoothing method for series with no clear trend or seasonality, giving more weight to recent observations through smoothing parameter alpha.</div>
+<div class="card"><div class="label">Holt-Winters</div>An extension of exponential smoothing designed to capture both trend and seasonality simultaneously.</div>
+<div class="card"><div class="label">Trend</div>The long-term movement or current centre/level direction of the data. In Holt-Winters, the lecture separates level L_t and trend b_t.</div>
+<div class="card"><div class="label">Seasonality</div>Regular periodic fluctuation. In Holt-Winters, s_t is the seasonal component and m is the seasonal period, such as 12 for monthly data.</div>
+<div class="card"><div class="label">Residual/noise</div>The high-frequency or irregular part that smoothing tries to suppress; Lecture 2 calls it noise and Lecture 1 calls an erratic leftover component irregular.</div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture1.pdf, p.19; ma3508_lecture2.pdf, p.2-p.13</div>
+<h2>Practice-use wording from Lecture 2</h2>
+<table class="mini-table compact"><tr><th>Method</th><th>Lecture practice note</th></tr>
+<tr><td>SMA and SES</td><td>Typically used for smoothing in real-time / online monitoring.</td></tr>
+<tr><td>CMA and WMA</td><td>Popular for smoothing time series without periodicities in offline mode.</td></tr>
+<tr><td>Holt-Winters</td><td>Very popular in econometrics for monthly time series.</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture2.pdf, p.13</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 2</span><span class="subject">Formula Cards I</span></div><h1>Lecture 2 - Formula Cards: Moving Averages</h1>
+<div class="formula-grid">
+<div class="formula"><div class="formula-label">Simple Moving Average</div><div class="math">S_k = (1/m) sum_{i=0}^{m-1} x_{k-i}</div><div class="formula-note"><b>Symbols:</b> m is window size; x_k is the observed series; S_k is the smoothed value at k.</div><div class="formula-note"><b>Use when:</b> backward-looking smoothing with the last m observations.</div><div class="formula-note"><b>Trap:</b> first m-1 values cannot be computed with this backward-looking window, so define them as NA or use another formula.</div></div>
+<div class="formula"><div class="formula-label">SMA with m=3</div><div class="math">S_k = (1/3)(x_{k-2}+x_{k-1}+x_k)</div><div class="formula-note"><b>Symbols:</b> k must be at least 3 for this example.</div><div class="formula-note"><b>Use when:</b> quick calculation from slide 4.</div><div class="formula-note"><b>Trap:</b> do not average future values; this is backward-looking.</div></div>
+<div class="formula"><div class="formula-label">Centred Moving Average</div><div class="math">C_k = (1/(2m+1)) sum_{i=-m}^{m} x_{k+i}</div><div class="formula-note"><b>Symbols:</b> 2m+1 is the centred window length.</div><div class="formula-note"><b>Use when:</b> smoothing with values from both past and future.</div><div class="formula-note"><b>Trap:</b> endpoints k=1,...,m and k=n-m+1,...,n cannot be centred in the ordinary way.</div></div>
+<div class="formula"><div class="formula-label">CMA with window length 3</div><div class="math">C_k = (1/3)(x_{k-1}+x_k+x_{k+1})</div><div class="formula-note"><b>Symbols:</b> here 2m+1=3, so m=1.</div><div class="formula-note"><b>Use when:</b> slide 7 style numerical calculation.</div><div class="formula-note"><b>Trap:</b> k=1 and k=n are unavailable because the window needs one value on each side.</div></div>
+<div class="formula"><div class="formula-label">Weighted Moving Average</div><div class="math">W_k = [1 / sum_{j=-m}^{m} w_j] sum_{i=-m}^{m} w_i x_{k+i}</div><div class="formula-note"><b>Symbols:</b> w_i are non-negative weights; denominator normalises the weighted sum.</div><div class="formula-note"><b>Use when:</b> nearby observations should not all have equal importance.</div><div class="formula-note"><b>Trap:</b> do not forget to divide by the sum of weights.</div></div>
+<div class="formula"><div class="formula-label">Window-size intuition</div><div class="math">small m -> closer to original, noisier
+large m -> smoother, more lag / missed local changes</div><div class="formula-note"><b>Symbols:</b> m controls the smoothing strength.</div><div class="formula-note"><b>Use when:</b> explaining bias-variance intuition in plain English.</div><div class="formula-note"><b>Trap:</b> there is no universally best m without context.</div></div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture2.pdf, p.3-p.8</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 2</span><span class="subject">Formula Cards II</span></div><h1>Lecture 2 - Formula Cards: Exponential Smoothing and Holt-Winters</h1>
+<div class="formula-grid">
+<div class="formula"><div class="formula-label">Simple Exponential Smoothing</div><div class="math">E_k = alpha x_k + (1-alpha)E_{k-1},   0 &lt; alpha &lt; 1</div><div class="formula-note"><b>Symbols:</b> E_k is the smoothed value; x_k is the observation; alpha is the smoothing parameter.</div><div class="formula-note"><b>Use when:</b> series has no clear trend or seasonality.</div><div class="formula-note"><b>Trap:</b> alpha close to 1 is not “more smooth”; it reacts quickly and follows data more closely.</div></div>
+<div class="formula"><div class="formula-label">Alpha interpretation</div><div class="math">alpha close to 1 -> quick reaction
+alpha close to 0 -> very smooth, slow reaction</div><div class="formula-note"><b>Symbols:</b> alpha controls recent-observation weight.</div><div class="formula-note"><b>Use when:</b> explaining how SES behaves.</div><div class="formula-note"><b>Trap:</b> do not confuse high alpha with heavy averaging of the distant past.</div></div>
+<div class="formula"><div class="formula-label">Holt-Winters level equation</div><div class="math">L_t = alpha(x_t - s_{t-m}) + (1-alpha)(L_{t-1}+b_{t-1})</div><div class="formula-note"><b>Symbols:</b> L_t is level/current centre; s is seasonal component; b is trend; m is seasonal period.</div><div class="formula-note"><b>Use when:</b> additive Holt-Winters with seasonal adjustment.</div><div class="formula-note"><b>Trap:</b> this is the additive formula shown; do not invent multiplicative equations here.</div></div>
+<div class="formula"><div class="formula-label">Holt-Winters trend equation</div><div class="math">b_t = beta(L_t - L_{t-1}) + (1-beta)b_{t-1}</div><div class="formula-note"><b>Symbols:</b> beta smooths the estimated trend.</div><div class="formula-note"><b>Use when:</b> updating the trend part of Holt-Winters.</div><div class="formula-note"><b>Trap:</b> b_t is not the observation; it is the trend update.</div></div>
+<div class="formula"><div class="formula-label">Holt-Winters seasonal equation</div><div class="math">s_t = gamma(x_t - L_t) + (1-gamma)s_{t-m}</div><div class="formula-note"><b>Symbols:</b> gamma smooths the seasonal component; m is seasonal period.</div><div class="formula-note"><b>Use when:</b> updating seasonality in the additive model.</div><div class="formula-note"><b>Trap:</b> for monthly data, the lecture example says m=12.</div></div>
+<div class="formula"><div class="formula-label">Additive vs multiplicative</div><div class="math">additive -> seasonal variation roughly constant
+multiplicative -> seasonal variation proportional to level</div><div class="formula-note"><b>Symbols:</b> seasonal variation means the size of seasonal swings.</div><div class="formula-note"><b>Use when:</b> choosing the model idea from a plot.</div><div class="formula-note"><b>Trap:</b> Lecture 2 describes both but shows additive equations.</div></div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture2.pdf, p.9-p.12</div>
+<h2>Proof skeleton from homework: if alpha = 1 in SES</h2>
+<div class="q"><b>What is being proved:</b> if alpha=1 in SES, the smoothed series is identical to the original series.</div>
+<div class="calc"><b>Key steps:</b><br/>1. Start with the SES equation E_k = alpha x_k + (1-alpha)E_{k-1}.<br/>2. Substitute alpha=1.<br/>3. E_k = 1*x_k + (1-1)E_{k-1}.<br/>4. E_k = x_k + 0 = x_k.</div>
+<div class="exam"><b>Conclusion:</b> when alpha=1, SES gives full weight to the current observation and zero weight to the previous smoothed value, so the smoothed series equals the original series.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture2.pdf, p.9, p.15</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 2</span><span class="subject">Numerical worked examples</span></div><h1>Lecture 2 - Worked Numerical Examples</h1>
+<h2>Example A: SMA with m = 3</h2>
+<div class="q"><b>Task from lecture:</b> compute the SMA with m=3 for x_k = {{3, 7, 2, 5, 4, 8, 6}}.</div>
+<div class="calc"><b>Formula:</b> S_k = (1/3)(x_{k-2}+x_{k-1}+x_k).</div>
+<table class="mini-table compact"><tr><th>k</th><th>x_k</th><th>S_k</th><th>Reason</th></tr>
+<tr><td>1</td><td>3</td><td>NA</td><td>Need 3 observations.</td></tr>
+<tr><td>2</td><td>7</td><td>NA</td><td>Need 3 observations.</td></tr>
+<tr><td>3</td><td>2</td><td>4.00</td><td>(3+7+2)/3</td></tr>
+<tr><td>4</td><td>5</td><td>4.67</td><td>(7+2+5)/3</td></tr>
+<tr><td>5</td><td>4</td><td>3.67</td><td>(2+5+4)/3</td></tr>
+<tr><td>6</td><td>8</td><td>5.67</td><td>(5+4+8)/3</td></tr>
+<tr><td>7</td><td>6</td><td>6.00</td><td>(4+8+6)/3</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture2.pdf, p.4</div>
+<h2>Example B: CMA with window length 3</h2>
+<div class="q"><b>Task from lecture:</b> compute the centred moving average with window size 3 for the same series.</div>
+<div class="calc"><b>Formula:</b> C_k = (1/3)(x_{k-1}+x_k+x_{k+1}).</div>
+<table class="mini-table compact"><tr><th>k</th><th>x_k</th><th>C_k</th><th>Reason</th></tr>
+<tr><td>1</td><td>3</td><td>NA</td><td>No previous observation.</td></tr>
+<tr><td>2</td><td>7</td><td>4.00</td><td>(3+7+2)/3</td></tr>
+<tr><td>3</td><td>2</td><td>4.67</td><td>(7+2+5)/3</td></tr>
+<tr><td>4</td><td>5</td><td>3.67</td><td>(2+5+4)/3</td></tr>
+<tr><td>5</td><td>4</td><td>5.67</td><td>(5+4+8)/3</td></tr>
+<tr><td>6</td><td>8</td><td>6.00</td><td>(4+8+6)/3</td></tr>
+<tr><td>7</td><td>6</td><td>NA</td><td>No next observation.</td></tr></table>
+<div class="trap"><b>Trap:</b> the SMA and CMA produce the same numeric averages here but placed at different time positions. SMA starts at k=3; CMA starts at k=2 and loses both endpoints.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture2.pdf, p.7</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 2</span><span class="subject">R-code Templates I</span></div><h1>Lecture 2 - R-code Template: SMA on Simulated Logistic Trend</h1>
+<pre><code># 1. Simulate data
+t &lt;- 1:100
+trend &lt;- 10 / (1 + exp(-0.15 * (t - 50))) # Logistic curve
+noise &lt;- rnorm(100, sd = 0.5) # Gaussian white noise
+x &lt;- trend + noise
+
+# 2. Apply Simple Moving Average (n=10)
+library(TTR)
+ySMA &lt;- SMA(x, n = 10)
+
+# 3. Plot the results
+plot(x, type = "l", col = "gray", main = "SMA on Logistic Trend")
+lines(trend, col = "blue", lty = 2, lwd = 1) # True trend
+lines(ySMA, col = "red", lwd = 2) # Smoothed signal
+legend("topleft", legend=c("Observed", "True", "SMA"),
+       col=c("gray", "blue", "red"), lty=c(1,2,1))</code></pre>
+<div class="blue"><b>Line-by-line:</b> <code>t &lt;- 1:100</code> creates the time index. <code>trend</code> is the underlying logistic signal. <code>rnorm(100, sd=0.5)</code> creates Gaussian white noise. <code>x</code> is observed series = signal + noise. <code>library(TTR)</code> loads the SMA function. <code>SMA(x, n=10)</code> calculates a moving average of window 10. <code>plot</code> draws the observed series; <code>lines</code> overlays the true trend and smoothed signal; <code>legend</code> labels them.</div>
+<div class="green"><b>What the output means:</b> the grey line is noisy observations, the blue dashed line is the true signal used in the simulation, and the red line is the estimated smoothed signal from SMA. In real data, the true blue signal is usually unknown.</div>
+<div class="trap"><b>Common coding mistakes:</b> forgetting <code>library(TTR)</code>; expecting the first 9 SMA values to be non-missing for <code>n=10</code>; confusing <code>trend</code> with <code>x</code>; putting constants such as <code>col="red"</code> inside a data formula instead of as plotting arguments.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture2.pdf, p.5; R_Comprehensive_Cheat_Sheet.pdf, p.4-p.5</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 2</span><span class="subject">R-code Templates II</span></div><h1>Lecture 2 - R-code Templates: Milk, SES and Holt-Winters</h1>
+<h2>1) Milk data: SMA and SES</h2>
+<pre><code>library(fma) # for 'milk' time series
+data("milk", package = "fma")
+milkTS &lt;- milk
+
+m &lt;- 15 # Simple Moving Average
+library(TTR)
+smoothMA &lt;- SMA(milkTS, m)
+plot(milkTS, type="l")
+lines(smoothMA, col="red")
+mtext(paste0("SMA m=", m), 3, 0)
+
+alpha &lt;- 0.2 # Exponential Smoothing
+smoothES &lt;- HoltWinters(milkTS, alpha, beta=FALSE, gamma=FALSE)
+plot(smoothES)
+mtext(paste0("SES alpha=", alpha), 3, 0)</code></pre>
+<div class="blue"><b>Line-by-line:</b> <code>library(fma)</code> and <code>data("milk", package="fma")</code> load the milk series. <code>milkTS &lt;- milk</code> stores it. <code>m &lt;- 15</code> selects the SMA window. <code>SMA(milkTS, m)</code> computes the simple moving average. <code>plot</code> draws the original series; <code>lines</code> adds the smoothed red line. <code>alpha &lt;- 0.2</code> sets the SES smoothing parameter. <code>HoltWinters(..., beta=FALSE, gamma=FALSE)</code> runs simple exponential smoothing only, without trend and seasonality updates.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture2.pdf, p.10; R_Comprehensive_Cheat_Sheet.pdf, p.4-p.5</div>
+<h2>2) Holt-Winters additive model and forecast</h2>
+<pre><code># Fit Holt-Winters additive model
+HWmodel &lt;- HoltWinters(milkTS, seasonal = "additive")
+
+# Plot the original data and the fitted values
+plot(HWmodel)
+
+# Forecast for the next 12 months
+library(forecast)
+plot(forecast(HWmodel, h=12))</code></pre>
+<div class="blue"><b>Line-by-line:</b> <code>HoltWinters(milkTS, seasonal="additive")</code> fits an additive Holt-Winters model to the milk data. The lecture says R automatically estimates alpha, beta and gamma by minimizing squared prediction errors. <code>plot(HWmodel)</code> plots original data and fitted values. <code>library(forecast)</code> loads forecasting tools. <code>forecast(HWmodel, h=12)</code> forecasts 12 periods ahead.</div>
+<div class="green"><b>What the output means:</b> the fitted Holt-Winters curve should follow level, trend and repeated seasonal structure; the forecast plot extends the fitted pattern into the next 12 months.</div>
+<div class="trap"><b>Common coding mistakes:</b> using <code>forecast()</code> without loading <code>library(forecast)</code>; forgetting that <code>h=12</code> means 12 future periods; using additive seasonality when the seasonal swings visibly grow with the level, where the lecture says multiplicative is the conceptual alternative.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture2.pdf, p.11-p.12; R_Comprehensive_Cheat_Sheet.pdf, p.4-p.5</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Mapped practice</span><span class="subject">Exercises and exam radar</span></div><h1>Mapped Exercises and Exam Radar for L1-L2</h1>
+<h2>Lecture-built exercises</h2>
+<table class="mini-table compact"><tr><th>Reference</th><th>Topic tested</th><th>Worked solution / solution summary</th></tr>
+<tr><td>Lecture 2, p.4</td><td>SMA calculation, m=3</td><td>Use S_k=(x_{k-2}+x_{k-1}+x_k)/3. First two values are unavailable; computed values are 4.00, 4.67, 3.67, 5.67, 6.00.</td></tr>
+<tr><td>Lecture 2, p.7</td><td>Centred MA calculation, window size 3</td><td>Use C_k=(x_{k-1}+x_k+x_{k+1})/3. First and last values are unavailable; computed values are 4.00, 4.67, 3.67, 5.67, 6.00.</td></tr>
+<tr><td>Lecture 2, p.15</td><td>SES alpha=1 proof</td><td>Substitute alpha=1 into E_k=alpha x_k+(1-alpha)E_{k-1}; get E_k=x_k.</td></tr>
+<tr><td>Lecture 2, p.15</td><td>SMA with k=5 and k=20 on L1 datasets</td><td>Not solved in the lecture. The intended learning point is comparison: smaller window follows more detail; larger window gives stronger smoothing.</td></tr>
+<tr><td>Lecture 1, p.13-p.18</td><td>Pattern interpretation from plotted series</td><td>Describe trend, seasonal/cyclical movement and irregular variation from the graph. No official written solutions are provided in the uploaded L1 slides.</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture1.pdf, p.13-p.18; ma3508_lecture2.pdf, p.4, p.7, p.15</div>
+<h2>Past-paper/mock radar</h2>
+<div class="warning"><b>Direct L1-L2 exam coverage is limited in the uploaded past papers.</b> The 2015-2020 past papers and mock exam mainly test later topics: stationarity, stochastic processes, Brownian/Wiener processes, Poisson process, Gaussian simulation, ARMA/ARIMA, prediction equations, filters and spectral ideas. I did not find direct past-paper questions asking for SMA, centred moving average, SES, Holt-Winters or L1 overview definitions.</div>
+<table class="mini-table compact"><tr><th>Source group</th><th>What was checked</th><th>Conclusion for Pack A</th></tr>
+<tr><td>Past exams 2015-2020</td><td>Questions p.2-p.5 scanned for smoothing, decomposition, SMA as Simple Moving Average, exponential smoothing and Holt-Winters.</td><td>No direct L1-L2 smoothing/decomposition/Holt-Winters exam question was found. “Forecast” appears mostly in later model/prediction contexts.</td></tr>
+<tr><td>Mock exam and mock solution</td><td>Question pages and solution pages scanned for L1-L2 smoothing terms.</td><td>No direct SMA/SES/Holt-Winters-style question mapped to L1-L2 was found.</td></tr>
+<tr><td>Exam-like exercises</td><td>Uploaded exam-like exercise files begin at L3.</td><td>No uploaded L1-L2 exam-like exercise sheet is present, so Pack A maps the lecture-built exercises instead.</td></tr></table>
+<div class="source"><strong>Source:</strong> ma0367_2015_exam-.pdf, p.2-p.5; ma0367_2016_exam_.pdf, p.2-p.5; ma0367_2017_exam_.pdf, p.2-p.5; ma0367_2018_exam_.pdf, p.2-p.5; ma0367_2019_exam_.pdf, p.2-p.5; ma0367_2020_exam_.pdf, p.2-p.5; ma3508_mock_exam.pdf, p.2-p.4; ma3508_mock_exam_solution.pdf, p.2-p.9</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Exam readiness</span><span class="subject">Mistakes and self-test</span></div><h1>Common Mistakes and Mini Self-test</h1>
+<h2>Common mistakes</h2>
+<ul class="mistakes">
+<li><b>Trend vs seasonality:</b> trend is long-term movement; seasonality is regular within-period fluctuation.</li>
+<li><b>Seasonality wording:</b> seasonal behaviour does not have to mean literal weather seasons; Lecture 1 says usually within a 12-month period.</li>
+<li><b>Smoothing vs forecasting:</b> smoothing makes patterns clearer; forecasting predicts/continues using an estimated model.</li>
+<li><b>Window too small:</b> it follows the data closely but keeps more noise.</li>
+<li><b>Window too large:</b> it smooths strongly but may lag or hide local changes.</li>
+<li><b>SMA endpoint issue:</b> the first m-1 values are not available in the backward-looking SMA formula.</li>
+<li><b>CMA endpoint issue:</b> centred averages lose values at both ends because they need past and future observations.</li>
+<li><b>Weighted average normalisation:</b> divide by the sum of weights.</li>
+<li><b>SES alpha interpretation:</b> alpha near 1 reacts quickly; alpha near 0 reacts slowly and smoothly.</li>
+<li><b>Holt-Winters formulas:</b> do not invent multiplicative equations; Lecture 2 shows the additive level/trend/seasonal equations.</li>
+<li><b>R as magic:</b> know what the plotted lines mean, not just the command names.</li>
+</ul>
+<div class="source"><strong>Source:</strong> ma3508_lecture1.pdf, p.19; ma3508_lecture2.pdf, p.3-p.13</div>
+<h2>Mini self-test</h2>
+<ol class="check">
+<li>Give the lecture definition of a time series.</li>
+<li>List the five “what can we do with a time series?” tasks from L1.</li>
+<li>Explain “observed series = signal + noise” in plain English.</li>
+<li>Name the four components on the L1 components slide.</li>
+<li>Write the SMA formula and explain why early values may be NA.</li>
+<li>Compute S_4 for x={3,7,2,5,4,8,6} with m=3.</li>
+<li>Write the centred moving average formula.</li>
+<li>Explain why CMA avoids lag but loses endpoints.</li>
+<li>Write the SES formula and explain alpha close to 1 versus alpha close to 0.</li>
+<li>State the three Holt-Winters components in Lecture 2.</li>
+<li>What does <code>HoltWinters(milkTS, alpha, beta=FALSE, gamma=FALSE)</code> represent in the lecture code?</li>
+<li>What does <code>forecast(HWmodel, h=12)</code> ask R to do?</li>
+</ol>
+<div class="exam"><b>Fast answers:</b> 1) data gathered sequentially in time. 2) smoothing, decomposition, change-point detection, model fitting, forecasting. 3) observed values contain underlying pattern plus noise. 4) trend, seasonal, cyclical, irregular. 5) S_k=(1/m)sum_{i=0}^{m-1}x_{k-i}; first m-1 values lack enough previous observations. 6) S_4=(7+2+5)/3=4.67. 7) C_k=(1/(2m+1))sum_{i=-m}^{m}x_{k+i}. 8) it uses past and future values. 9) E_k=alpha x_k+(1-alpha)E_{k-1}; high alpha reacts fast, low alpha smooths slowly. 10) level L_t, trend b_t, seasonal component s_t. 11) simple exponential smoothing without trend/seasonal updates. 12) forecast 12 future periods.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture1.pdf, p.2, p.19; ma3508_lecture2.pdf, p.3-p.12</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Audit</span><span class="subject">Source coverage</span></div><h1>Source Coverage Audit - FINAL LOCKED</h1>
+<div class="green"><b>FINAL LOCKED audit note:</b> This Pack A final locked version preserves the Pack B visual and structural style while using only L1-L2 Time Series content. Pack B was used as style/structure reference only; no L3-L4 mathematical content was copied. Final-lock edits changed candidate labels to FINAL LOCKED, kept the scope strictly to L1-L2, preserved the honesty notes, re-checked Lecture 2 formulas/R templates, and added the priority note near the top.</div>
+<table class="mini-table compact"><tr><th>Uploaded source file used</th><th>Page ranges used</th><th>Content extracted</th></tr>
+<tr><td>module description.docx</td><td>p.1</td><td>Module aims, learning outcomes, assessment, syllabus context: simulation, fitting, forecasting, decomposition, exponential smoothing, ARMA/ARIMA/SSA.</td></tr>
+<tr><td>Learning Materials/ma3508_lecture1.pdf</td><td>p.1-p.20</td><td>L1 title, overview, time series definition, main analysis goals, signal+noise model, syllabus overview, learning outcomes, assessment/R/AI context, application areas, objectives, forecasting importance, six data examples, components of time series, homework R basics.</td></tr>
+<tr><td>Learning Materials/ma3508_lecture2.pdf</td><td>p.1-p.15</td><td>L2 smoothing motivation, SMA formula and exercise, R SMA logistic example, CMA formula and exercise, WMA formula, SES formula and alpha interpretation, milk data R code, Holt-Winters additive equations, additive/multiplicative concepts, HoltWinters/forecast R code, practice-use notes, homework tasks.</td></tr>
+<tr><td>R_Comprehensive_Cheat_Sheet.pdf</td><td>p.4-p.5</td><td>Used only to confirm the course-specific R code patterns already present in Lecture 2: TTR::SMA, HoltWinters, forecast, base plot/lines. No external mathematical content was imported.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2015_exam-.pdf</td><td>p.2-p.5</td><td>Scanned for direct L1-L2 smoothing/decomposition/SMA/SES/Holt-Winters questions; no direct Pack A question mapped.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2016_exam_.pdf</td><td>p.2-p.5</td><td>Scanned for direct L1-L2 questions; no direct Pack A question mapped.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2017_exam_.pdf</td><td>p.2-p.5</td><td>Scanned for direct L1-L2 questions; no direct Pack A question mapped.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2018_exam_.pdf</td><td>p.2-p.5</td><td>Scanned for direct L1-L2 questions; no direct Pack A question mapped.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2019_exam_.pdf</td><td>p.2-p.5</td><td>Scanned for direct L1-L2 questions; no direct Pack A question mapped.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2020_exam_.pdf</td><td>p.2-p.5</td><td>Scanned for direct L1-L2 questions; no direct Pack A question mapped.</td></tr>
+<tr><td>Some solutions/ma3508_mock_exam.pdf</td><td>p.2-p.4</td><td>Scanned for direct L1-L2 questions; no direct Pack A question mapped.</td></tr>
+<tr><td>Some solutions/ma3508_mock_exam_solution.pdf</td><td>p.2-p.9</td><td>Scanned for direct L1-L2 solution material; no direct Pack A solution mapped.</td></tr>
+<tr><td>TS_Study_Pack_B_L3_L4_FINAL_LOCKED.html</td><td>style only</td><td>Used only as visual and structural model: A4 lined-paper, Segoe UI, Georgia headings, colour boxes, formula cards, R-code templates, mapped radar, common mistakes, self-test, audit style. No L3-L4 content imported.</td></tr></table>
+<h2>Uploaded sources not used for content in this pack</h2>
+<div class="blue">L3-L15 lecture/exercise/solution files were not used as mathematical content because this file is scoped to L1-L2. The professor discussion video and L8 mind map were not used. MAT700 materials, if present, were not used as Time Series content.</div>
+<h2>Missing / unclear areas</h2>
+<div class="warning"><b>No L1-L2 exam-like exercise sheet:</b> the uploaded exam-like exercises begin at L3, so Pack A maps the lecture-built L2 exercises and homework tasks instead.</div>
+<div class="warning"><b>No official L2 exercise solution PDF:</b> the SMA/CMA worked examples are copied from Lecture 2 slides, not from a separate solution sheet.</div>
+<div class="warning"><b>L1 data plots:</b> the lecture asks “What are the noticeable patterns?” but does not provide official written answers; interpretation prompts in this pack are therefore labelled as study prompts, not official solutions.</div>
+<div class="warning"><b>Past-paper coverage:</b> the uploaded 2015-2020 past papers and mock do not appear to include direct L1-L2 SMA/SES/Holt-Winters/decomposition questions; they mostly test later mathematical topics.</div>
+<div class="warning"><b>No hallucination statement:</b> this pack does not import outside-course definitions or external mathematical content. Where a topic is only named in L1, such as ARIMA/SSA/change-point detection, it is treated as overview context rather than developed theory.</div>
+<div class="green"><b>Style note:</b> Pack B was used as the style/structure reference. MAT700 material was not used for Time Series mathematical content.</div>
+<div class="source"><strong>Source:</strong> All content sources listed in this audit.</div>
+</div>
+
+</body></html>

@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS entries (
   start_at TEXT,
   end_at TEXT,
   all_day INTEGER DEFAULT 0,
+  favorite INTEGER NOT NULL DEFAULT 0,
   details TEXT DEFAULT '{}',
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
@@ -65,4 +66,16 @@ CREATE TABLE IF NOT EXISTS entry_links (
   to_entry_id TEXT NOT NULL REFERENCES entries(id),
   relation TEXT,
   PRIMARY KEY (from_entry_id, to_entry_id, relation)
+);
+
+CREATE TABLE IF NOT EXISTS spaces (
+  id TEXT PRIMARY KEY,
+  slug TEXT UNIQUE,
+  name TEXT NOT NULL,
+  is_room INTEGER NOT NULL DEFAULT 0,
+  color TEXT,
+  icon TEXT,
+  filter TEXT NOT NULL DEFAULT '{}',
+  position INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL
 );

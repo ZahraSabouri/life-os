@@ -1,0 +1,2305 @@
+3 - MAT700MA4700 Mathematical Methods for Data Mining online class-20260205_151131-Meeting Recording
+Auto-generated captions may contain errors.
+So. I want to share.
+0:02
+Let us remind you what we are doing. You are doing during.
+0:37
+Um. As it describes, there are two approaches.
+0:43
+To build you data science and. Machine learning models because our main task is.
+0:58
+Sampson can say, data says, that he will be able to predict what's happening in your situation.
+1:06
+You're not going to tell what is already there to say. You know what doctor said because you already know this one.
+1:14
+So the main task is you have doctor, you learn something and from this knowledge part of the model,
+1:19
+whatever you want to be able, that is future something arrive, something similar events, similar observations.
+1:26
+This one you can tell what it is I was going to predict future from the past.
+1:33
+So one of the main assumption of data science and machine learning is that, uh, past is a good indicator of the future.
+1:39
+So this we assume this is axiom. Otherwise it will be different.
+1:48
+Predict anything. So these are two approaches. One is called.
+1:53
+If some base. And the second is called Model-based.
+1:59
+So what is it? Eastern base. Every time when you item arrive.
+2:06
+You compare this item with what we already have in your database?
+2:13
+And after that, you make a decision. Like. I want to play this house.
+2:20
+Price. Some particular house. What I will do.
+2:25
+I don't have a magical formula signed for Santa. Yeah. Something like.
+2:30
+Which tell me how house should be. Just depends on many situation.
+2:33
+But common sense tell us that if the houses are similar to the closest houses around him.
+2:38
+Then probably it has the same value or similar to it.
+2:45
+And it's very important because if you want to write a formula just for house price based on the parameter like and heating postcode,
+2:51
+whatever, then it will be very difficult to adjust to market fluctuation.
+3:01
+What's happened? The interest rate in this one. But but how how is it set on setting?
+3:07
+It's a very good indicator.
+3:13
+Every time one agent want to decide what is the probably recommended price, or you want to decide what price, which price you want to sell your house.
+3:14
+You go to Rightmove and you try to find out what is the prognosis around what was the price.
+3:25
+Because go east install base like so this is a picture reason some base.
+3:34
+This is my doctor and doctors already have because this training data.
+3:39
+Because this is what we keep. So when you ask to derive.
+3:43
+You look. What is the most similar and closest?
+3:49
+Uh, item. Looks like. It's like you're not enough to know what is the one house in your neighbourhood.
+3:53
+So you want to look like five, six, maybe around enough to select, maybe average, maybe two price.
+4:00
+If you are selling, call a lowest price if you want to buy. So you always compare with what you already know has is what you make advantage.
+4:06
+It's very good approach is common sense. And also animal behaviour is for example very fantastic behaviour like.
+4:15
+Tuna fish. Avoid shark. Have been in tuna fish.
+4:24
+The. And suddenly you talk.
+4:29
+And somehow was this meeting of tuna. So how was he able to avoid.
+4:34
+This is a beautiful behaviour. But the question is, how do they know?
+4:38
+Because Tuna Fish Insights is brilliant.
+4:43
+He says he doesn't have a clue what's happened. But what this means that this tuna looks like for six neighbours.
+4:46
+And she was. They behave like and they go to the average. And this is a fourth of sort of intelligence because it's looks like this two and a.
+4:54
+Uh, famine is this huge number of children, and they behave in some intelligence way because you don't see the sea shark.
+5:06
+So they try to move in opposite direction. Tuna.
+5:15
+You don't see them? She just some of them move in average as his direction and so on.
+5:19
+So this is propagate to the old. So they're able to avoid or they always look what is around and just call in some base.
+5:24
+Advantage. Very good approach.
+5:36
+Common sense. Plus. General mathematical theorem tell us that if you have enough data with number of items in your data, go to infinity.
+5:39
+That will go to zero, which is a great.
+5:49
+So that's actually not very useful in practice because we don't know how fast it's going to zero okay.
+5:52
+So this means that if I want to have a performance like where only 5%, I can't tell you how many data sample I have to take,
+5:58
+I just take you that if you take more and more, it will be better and better.
+6:08
+Okay. Plus, what is it do to you?
+6:14
+Every time you have to compare with everything that you have, if your data set like house prices in some area, like 100 houses, it's not a problem.
+6:18
+But if you have a million, hundreds of million, billion of items every time you are to compare it to all of them,
+6:28
+you need to do a little calculation to find the closest one.
+6:36
+Plus, you always have to keep your data set with you, which means that if I want to sell this product,
+6:39
+this program, to the customer, to use it, I have to ship.
+6:47
+Not only could calculate years, several neighbours compares them, but that's going to ship them whole dataset.
+6:51
+Okay. Which is for very practical images.
+6:59
+And these are, for example, a self-driving car are trained on the thousands of hours of recording how professional taxi driver, how easy people drive.
+7:02
+And from this is try to understand how should you hold council dry?
+7:14
+And I don't want to to put in such every car you know this uh,
+7:20
+thousands of hours of video just to find what you'll be next, Wolf, and how to go to you every time go through this one.
+7:25
+It's a good practical, but it's clean, some bass.
+7:34
+Sometimes it's good, sometimes a bit. Of course, the ideal way is to have a model base.
+7:37
+It's conclusive. So mathematical model of your data such that you can have.
+7:45
+Does it just throw away or don't use that anymore. But you have a function like for house price it would be nice to have function f.
+7:51
+You should take some parameter and tell you price. Oh.
+8:00
+[INAUDIBLE] off. Sounds like a cop. Because what is important, when you have you put and you have to rotate your view.
+8:06
+Plus minus and what, what gas you should use and what is the pressure on the brake you have to use?
+8:15
+So, you know, you got crazy numbers and it would be great.
+8:23
+Uh. Situation. If my kids are falling, I have sensor.
+8:29
+Sensor. Give me some measurement.
+8:34
+And I have function which immediately from this measurement calculates the city number, the city number from Odyssey and gods pressure.
+8:37
+Brake pressure. Then I don't need all this thousands of hours of Docker.
+8:46
+I just have this formula. And of course, ideally it would be nice to use this formula.
+8:52
+It's both simple but very easy to calculate this whole model base, for example GPT.
+8:56
+Gender said for the one you use holds. This language model is precisely model based.
+9:07
+Yes it's used. Trillion of token of document.
+9:12
+All document on the web. Private. No. Private.
+9:17
+Whatever they can collect. And of course.
+9:20
+But the task is to predict next word. It would be crazy to.
+9:24
+Every time what you you create, you would go through all this data this one.
+9:28
+So they tried to figure out formula. Formula which is for one hand give you good answer.
+9:33
+Second is the first call. It's easy to call, very fast to calculate.
+9:38
+Or maybe a special hardware like GP you or other special keep you you from Google or some
+9:42
+special did you kitchen hardware then we are in business okay so because here to find formula.
+9:49
+So you don't need the previous data anymore. Are you going to plug in formula for your essences?
+9:56
+Plus formula has to be very fast and very efficient and you can calculate it.
+10:02
+Okay. This is a task of model based learning.
+10:08
+So we need some base. It's more or less clear.
+10:13
+Clear. You keep data. You compare.
+10:17
+The question is how to compare it. The question is how to find this closest or more similar right.
+10:20
+We will discuss this. But after that, if you want 5 or 6 more similar item, you can go for majority or average whatever.
+10:26
+It was always. It's much more complicated.
+10:35
+Uh, because the question is, can you make precise definition of what you are looking for?
+10:39
+Because otherwise I could easily be able to prove to you that we did have enough data.
+10:47
+Error goes to zero. But in this case, I would like to have a few of them even more.
+10:53
+I want to have some guarantee to tell you how much doc I have.
+11:00
+Which would I do? Get smaller. But I can't prove anything because let's say you couldn't miss the magical definition.
+11:04
+So the next slide is cream of cream.
+11:12
+Our. The symmetrical.
+11:18
+Framework. Hello. Need help and data science?
+11:28
+Okay. As I said. Let's spend some time inside because.
+11:32
+This is the essence of everything that you do in machine logic. Of course.
+11:39
+Implementation hardware algorithm. It's another question, but this isn't just.
+11:43
+General approach. Which is a kind of universal, we don't know better approach.
+11:50
+Implementing each step. It's a lousy question, but.
+11:56
+So let's go for once again. So this general approach, it's called human mathematical framework for learning.
+11:59
+And I approach formalisation of model based learning is that we know what we are doing.
+12:08
+Maybe we will be able to substitute. Okay.
+12:14
+So first we have. We assume that we are given data.
+12:21
+Okay. Everything in machine learning starts from data.
+12:31
+Because of a. Task is to learn more though from data.
+12:36
+So we assume that we are given. So-called training examples, data for which we already know all answer.
+12:40
+It can be. Netflix. How People Like Movie 2001 2005.
+12:51
+Or it can be handwritten digit prediction. Even generating predictions and usually data.
+12:59
+Well, as a supervised learning dataset come as a bit x and y.
+13:05
+Like X is the image, Y is a label cos. Okay.
+13:12
+So this is a supervised learning. This observation is that it's a path like image.
+13:16
+And. Uh, lip gloss.
+13:23
+What is this? Monarchy horse is the case of language.
+13:28
+X can be some string. You're. Uh, input.
+13:32
+Well, prompt and white is the next word. When you want to predict something.
+13:37
+Does it just. Can use it like likes a movie.
+13:44
+So what is our assumption is consumption.
+13:49
+Nobody can prove this and sometimes it does work.
+13:53
+Our assumption is that all this data.
+13:58
+This is why we space it. But that's a comfortable.
+14:03
+Like for image processing. It's all possible conditional images.
+14:08
+It's not all images because all images getting majorities are noise.
+14:15
+But we assume that this is assumption. Sometimes if are looking for.
+14:19
+Or is it in the case of training ChatGPT or the lost language model?
+14:23
+It's an old text on internet. It's looking at the text.
+14:30
+She's gonna be a lot of noise and a mistake. But it's come from this big circles.
+14:35
+It. Of course. Whoa!
+14:41
+Would you excuse that there is some probability distribution? On this headset.
+14:45
+So what does it mean? Some.
+14:50
+Element of this dataset has a higher probability than other.
+14:56
+For example, I am collecting house houses.
+15:04
+Sample of houses in Cardiff. The price can be different.
+15:07
+But the very low probability that you will have a house with a price is $10 pounds.
+15:13
+Also there is a very low mobility sensitivity.
+15:20
+How would you randomly pick holes in cardio which cost like 50 million?
+15:24
+You don't have such houses, which means that it's not only because you got up, but because we sample randomly.
+15:29
+Then some of them, if he is more often or has a high probability to be honoured.
+15:37
+Because he set his example by creating example of exam paper.
+15:45
+Then of course I randomly pick approximately appropriate question.
+15:50
+But of course, if this is a question from your course,
+15:54
+it's much higher probability to appear in your exam that the for example, question about architecture.
+15:57
+Presume that there is a probability distribution. It's looks like very natural, especially when you collect data which doesn't depend on you.
+16:04
+You collect the images. Come on. It's an nature. If you collect house price, you are not in control.
+16:13
+And. But in social science, this assumption sometimes doesn't work because human doesn't behave according to some unknown probability distribution.
+16:20
+Because one event. That can change everything.
+16:34
+Okay, so something happened or something happened. So we have to be careful.
+16:39
+Usually a rule of the footing. Majority of data that I know, it's always come from some probability distribution.
+16:43
+And it's very nice when you deal with social science.
+16:49
+You have to be a little bit more careful about this assumption. So the different approach is very similar.
+16:53
+And to give you precisely the same system. But you have to adjust.
+16:58
+It's not that you just random people some probability distribution.
+17:03
+You assume that there is a fixed set of people in Cardiff and you just randomly select subset.
+17:06
+Then this is an assumption of randomness, but it's not an assumption.
+17:13
+Somebody has a higher probability P and it is a less probability p.
+17:17
+But this uses this. For example, if I have natural images. So natural images appear more often and more probable than uh what's this one?
+17:22
+This isn't our assumption. So what is here?
+17:32
+The crucial. It is on loan.
+17:36
+It's used a lot. It's like in physics. If you have two shooters, there is a lot of behaviour.
+17:42
+So how do we choose this law? We don't know this one, but we choose it exist.
+17:49
+There's some logic behind. That's always. If there is no logic behind your data, then probably will be difficult to say something.
+17:54
+That's next. So this is a low probability.
+18:02
+Now remember, in most of these I want to find solution.
+18:07
+It's so function f. Maybe I give input some attribute of the house to house price.
+18:12
+Why? I put your image image and I give you a label and so on.
+18:21
+Who are you? You person. And I want to predict what you would like.
+18:28
+So it's always. Okay.
+18:33
+So we want to find function which gives us for you solution.
+18:38
+This is exactly. Just moments ago.
+18:42
+Let me do somebody. So in most of these we have to go model and model.
+18:47
+It's what is a model. It's something that you can put in a computer. But in computer it's always function.
+18:55
+From some setbacks. It was a set way.
+19:01
+Whatever program I have to write. This one is your input.
+19:05
+God, that will be out of that. So the whole task is to find funtion.
+19:08
+We describe our solution. It can be prediction, numerical label and clustering system, but it's always humble first response.
+19:13
+So the question is the first question is which mathematician has to answer the following.
+19:22
+Yes, I want the solution to be funtion. But what kind of function I am going to use.
+19:29
+Because there is an infinite number of functions. You can say I want to use the best function.
+19:35
+The question is to define what is the best answer we need to define to define.
+19:40
+Exactly what kind of function I have to use.
+19:46
+And so this is a main question, which is nobody know in advance what kind of functionalities give you solution.
+19:50
+So what good would we do as a mathematician? We say, yes, I don't know this function.
+19:58
+But I assume. Just wave function f.
+20:04
+Call from some geek space of some interesting function which we call which we call hypothesis space age.
+20:11
+Okay. So this part. It's up to us.
+20:24
+You can't control how data generated. But what type of solution we are looking for?
+20:29
+It's up to us. Is it possible to be able to decide what is this hypothesis space function should be?
+20:35
+Such that we can find solution as a one of this function.
+20:45
+What is the rule? There is no just how good local finance is.
+20:50
+Funds. The rules? The following. Because if you want to find other optimal solution.
+20:54
+We show the problem. And you don't know his optimal solution.
+21:02
+I want to use colossal function h. Such that I can approximate.
+21:07
+This function inside this class my unknown function.
+21:15
+So I will never. I will need some sort of pseudonym. You still use it?
+21:19
+Any continuous function. And I used my universal solution, which I use exist.
+21:23
+Is a continuous function. Small change does make dramatic changes.
+21:31
+Can be approximate. As good as a kid as you want.
+21:36
+By functions from hypothesis space. Would it mean?
+21:41
+Maybe my universal funtion is not part of the hypothesis space.
+21:45
+But at least I know I can approximate very well. Okay.
+21:49
+So this is a first access first rule.
+21:54
+How you select this function h. Second.
+21:58
+Of course, this function has to be some sort of sort that you want.
+22:01
+Like if I want to predict price, that has to be a parameter of the houses and they have to be real number.
+22:05
+If I want to predict label then funtion has to be with predict label.
+22:12
+But this part, you know, the question is you have to select a function which is a dense.
+22:17
+You say dense. You can't approximate any continuous function by function from this hypothesis space.
+22:23
+So far so good. So we. Find hypothesis space.
+22:29
+Example can be. Hopefully those.
+22:35
+Or put in homes of high degree, all for serious or frivolous.
+22:40
+Serious. Or some piecewise linear function.
+22:45
+Whatever that you know is that you can approximate. Very good.
+22:50
+You funtion its work. Of course you know, you want to forget that.
+22:53
+You have to put everything. Take computer. You can help, but medical tutors tell us that, for example, polynomials approximate any function.
+22:59
+For example. Business intelligence.
+23:08
+If you have function f. Which is a continuous function of the interval zero one.
+23:12
+You can always find a polynomial of degree and such a supremum of difference.
+23:20
+Listen. It's whatever you select.
+23:27
+You can find polynomial, maybe very high degree, such that supremum of difference between other function f and polynomials less than epsilon.
+23:31
+Very good. What is the disadvantage of this approach? Is it?
+23:40
+First of all, we don't know how to find this. Put it on. There's no algorithm, this theorem of existence.
+23:44
+Second, even if you try to develop algorithm to find this polynomial, it will be it will not be numerically correct.
+23:50
+Because to have better and better prediction you need to have higher power.
+24:00
+If you put it up, for example, who finds it will put it on, but semantically it has to have degree 1000.
+24:06
+So this means that if you're polynomial of x to 1000 some coefficient, but you can't calculate this,
+24:15
+you can't even calculate a computer like one over two in power in power 64.
+24:22
+Because from point of view, computer just zero. So yes, you can find theoretically put it all with a high degree.
+24:30
+But when you try to substitute exercises put, you know, and you got to calculate, calculating the points you have starting may be with degree 20.
+24:37
+All of them will be zero. Which means that, yes, you know, but in fact you can calculate this one.
+24:46
+This is a one way example. Why put it up is not very good for very complicated situation.
+24:52
+Because first of all you can calculate Paul. Second, you don't know how to find an approximation for small degree.
+25:00
+It's okay if you see that your data like degrees three, four, five, six it's reasonable.
+25:06
+But of course for higher degree of this one it will never work.
+25:11
+Okay. So you can select put objects here. Following the Fourier analysis you can prove that you can approximate any Fourier series.
+25:16
+But once again we don't know how many Fourier coefficients we have to take.
+25:23
+Then it's not so good. Of course like 20 years ago people do.
+25:28
+People found that there is even better space in the Fourier is called wavelets.
+25:33
+It's analogy for some problem like finger uh, recognition for a guy who has cognition just became much better.
+25:37
+It means that you need less calculation and less degree.
+25:47
+To to find the. So it's doable. But unfortunately for content problem it does look very well.
+25:55
+But it was okay. Let's clean this one.
+26:03
+For a moment. You. So assume that we are in business.
+26:09
+So you know we have this process.
+26:15
+We decided. What should be decision Funtion.
+26:20
+And from which special form should you I'm going to take?
+26:27
+Maybe next time we will go through one example just to just write Python code that we just do all step for precise example,
+26:30
+how we select hypothesis space, what we do currently of course.
+26:39
+Uh, the best selection for hypothesis space, especially for documentaries, is it's called neural net utilities.
+26:45
+So in many. I swear he wouldn't.
+26:54
+Even some people tell you that it's me because of a brave.
+26:59
+But. Mathematically. Utilities are just some.
+27:04
+Type of funtion, which is in most cases piecewise linear function plus some some small.
+27:09
+But of course, it's much better to use with neural net because it's it's cool, but it's a very special function.
+27:18
+And by the way, you know, shielding from not just that, any continuous function that can be approximated,
+27:23
+but, you know, let this very special type of function from a symmetrical point of view is nothing special.
+27:28
+Just. Most cases piecewise linear for linear function.
+27:34
+And you have to use it. So we have to select.
+27:40
+This hypothesis space. It's a simple function.
+27:46
+But usually. All this function like, put it on, put it over the pad.
+27:52
+What is it? Put it on. It's not function which depend on coefficient.
+27:58
+You should give your coefficient. I know, put it on.
+28:02
+If you give me a coefficient of some piecewise linear function for you to let, I know you're on it.
+28:06
+If you give me a coefficient for Fourier analysis for you serious I know for you series.
+28:11
+So in all cases when you define say that this is a hypothesis piece.
+28:17
+In most cases. If you say this is a cost function of this particular type, which depend on parameters.
+28:22
+Through some set of parameters, maybe meaning parameters.
+28:34
+For example, GDP or regional was depending on the age, be the parameter.
+28:38
+No. Is it 80,000,000,100 billion parameters.
+28:43
+But there was a list. You always specify a function as a sum.
+28:47
+Be symmetrical expression with a low.
+28:52
+With unknown set of parameter dependent parameters like polynomial coefficients.
+28:57
+This one. So what does it mean?
+29:02
+If I want to find what function. It means that I'm just looking for this very good special parameter.
+29:06
+Which cube is the best approximation? Two, uh, functions that I want to file for a solution.
+29:17
+So now when I try to find the best solution, I am trying to spatial parameters to find this one.
+29:26
+Reproduce in the best possible possible. Uh, us.
+29:36
+But no. What does it mean? The best possible answer. It means that somehow I have this way.
+29:42
+For example, I have my. Ideal function f stars that they want to find.
+29:49
+And. Can I look at this function, which depends on the parameter cultural dimension.
+29:58
+How close my function is to this ideal.
+30:06
+Then of course, if we can measure, I can't say okay, I want to find perimeter, which give you the closest function there, man.
+30:12
+But I don't know this function. So this means it.
+30:19
+Somehow I have to be able to measure how good is my solution.
+30:25
+My function from this class. It's good for my problem. And for this we need to ask who is.
+30:30
+That's our responsibility as a mathematician. Did you find the loss function?
+30:39
+So in this business, what we have to do mostly is to.
+30:45
+At the beginning. Two things.
+30:50
+First, you decide what type of solution I am going to look for hypothesis space, and second, which solution I want to be able to measure.
+30:52
+How good is this solution? You would have to define loss function.
+31:03
+So for each loss function. It has to tell me.
+31:09
+What if I use this function f? Oh my God.
+31:15
+For example, if I use my function f as a solution and I apply this doctor z.
+31:21
+And I. I can calculate. How good is this solution?
+31:29
+For example. If personal. Great example.
+31:36
+What is the loss function? I calculate how many how many points you lose.
+31:40
+You didn't examine. So usually people say they want to maximise profit but minimise losses.
+31:44
+So in this case for each solution or for each parameter, they have to see how good it is.
+31:53
+So this is our responsibility because nobody knows we have to decide what for us for a particular problem.
+31:59
+Law says, for example, he might predict what would you user like to watch?
+32:06
+Then what is a loss? It's the difference between my prediction and I.
+32:13
+What do you what do you think in his opinion about this movie? You may want to predict house price particular house.
+32:17
+What is the loss? It's actually. What house? What I predicted an actual price is this house will be sold or okay in future.
+32:24
+So whatever difference my prediction from what should be its whole loss function.
+32:34
+And it's our responsibility to define this function as if it is depends problem.
+32:39
+But in this problem, whatever we decide that people ask us, we know what is a good look is a bit.
+32:44
+So it means that if we know what is a bet. So for example, in house price is a bet to predict something that difference by 50,000 from price.
+32:50
+So we know what is bet and we want to minimise this bet.
+32:59
+So now if we have this loss function or measure how good is our solution and hypothesis space.
+33:02
+Now we have beautiful symmetrical problem. Which tell us what you want to do.
+33:10
+What I do, I pick parameters. I take function f.
+33:20
+Which depends on parameters used for my hypothesis space. No.
+33:27
+Yeah, I know when I pick a random dataset I can calculate loads of the function f.
+33:34
+When I applied to this dataset. If I pick randomly cause I can't play his place.
+33:44
+I can. I didn't, I won't. What was the real price? And I will calculate the difference.
+33:53
+So my lungs depend on my solution. Sigma and of course, d'Arthur, for which I applied my function.
+34:00
+So sometimes. If I ask you a question in my exam about architecture, probably you will have a big picture book where you close.
+34:10
+And of course, the probability that this question depends on paper is very low.
+34:23
+So what you want? Really? We want us to be small.
+34:29
+Well, what's your hazard? I have real high probability to appear.
+34:35
+What are your images? I won't have good prediction, but if you give me a noisy image.
+34:39
+And I make a mistake, okay? The rule is I want to find functions to.
+34:45
+Solution. Sunset is give you small error for Sampson is a high probability and Decatur error.
+34:53
+Maybe I don't care for Sampson that has probability zero in Napier.
+35:01
+And this is precise the expected value. So what is expected value of any random variable?
+35:05
+Expected value of any random variable x, y is the sum of the value of this function.
+35:13
+Multiplied by probability of getting this value.
+35:23
+So as for full function, I wasn't following in probability because I want to have small error, but do probability zero I don't care.
+35:27
+This is why we measure. One recent quality of my solution sheet by calculating expected value.
+35:37
+Of loss function, which depends on parameters theta and z.
+35:48
+So this is my task. I want to minimise.
+35:55
+Over. Expected error.
+36:01
+When I apply my solution. And of course. If I find the minimum, the point that give me this minimum, this will be my solution.
+36:05
+So if I want to find a solution based model based approach, the target is the fully defined loss function.
+36:17
+Define hypothesis space and try to find minimum of expected parameters theta which give you for all possible solution.
+36:26
+Minimum of expected loss. Okay, so before we continue.
+36:38
+Those causes. Give me.
+36:48
+Give me signs that everything you understand and everything clear.
+36:55
+Oh, perfect. Thank you. So no questions so far.
+37:03
+Fantastic. So this is a front to you.
+37:11
+The full description of. Mathematical based.
+37:22
+The Semantical framework, the most common framework. For loading.
+37:28
+Okay, people, of course, during the last 60 years, people try to find different approaches.
+37:35
+And this one was, it seems, a similar task to I was called to guide to to not just to make data science and machine learning just
+37:41
+know because these things these days this one but somehow develop surely behind search it is guided us.
+37:49
+You couldn't get action. It's like in physics. Yes, but we have quantum mechanics of course.
+37:57
+Equation of quantum mechanics never calculate you precisely what you observe.
+38:03
+But learning about this in basic principle and how to calculate at least you know where to look.
+38:07
+The same here. The ideal situation for the disease to give you, uh, give us guidelines.
+38:12
+What you should you do. So try to I would call this not only understands this light.
+38:18
+But if you wrong, if you even memorise this. Because whatever you do in your life is a data science machine.
+38:26
+Yeah. It's always used the implementation of this one.
+38:33
+Whatever. You you. Whatever. Yeah. For example, the company I was sitting, the company decided to develop some solution for.
+38:37
+No problem. They always try to convince you that data is some sort of rule.
+38:44
+The science is not. Okay.
+38:50
+People play chess. I want you to play chess.
+38:54
+Of course, as you said, there is some sort of logic behind chess because Grandmaster can play so very well and beginners not very well.
+38:58
+So of course there is some sort of maybe best solution, but at least there is some rule of which which movies are better than others.
+39:05
+After that, they have to decide. What type of things you're going to have.
+39:15
+How am I going to calculate next movie chess? And how are you going to calculate loss?
+39:19
+Of course, it is much more difficult because I can't tell you that this particular move is a better good.
+39:26
+To your Louis cub. It's the end of the game. Who let the game on you lose.
+39:36
+You knows that you lose when you draw or you win. So this is a modification supervised learning which currently has a special name.
+39:40
+It's called reinforced learning reinforced to you. It's like supervised learning but.
+39:48
+Uh, it's, you know, aren't say, damned good for each particular move.
+39:54
+Whatever you have.
+39:59
+Who's game full behaviour from the beginning to the end, then you have solution reinforced learning is like supervised learning, but observation.
+40:01
+It's not some particular move. But this is just a whole trajectory of move.
+40:12
+And of course. Just, you know, when you have some sort of game, you know, you lose or win.
+40:19
+So in this case, loss function is just automatically too low.
+40:26
+Through strategies or hypothesis space you have to select something that minimise you.
+40:30
+You're losing this game. Okay. So far, so good.
+40:36
+Pullman's magical. Uh. Description.
+40:41
+And now. We have one very important question.
+40:46
+I want to minimise this function. The question is how are we going to calculate this function?
+40:56
+We know the definition of probability of expected value is the sum.
+41:09
+Of value multiplied by probability. Or it was a continuous random variable.
+41:15
+He just integral value multiplied by density. Probability density function.
+41:21
+We are precisely symmetrical. So as long as you know probability distribution p I.
+41:28
+All probability density function for continuous random variables.
+41:34
+We can calculate this. Expect this for you.
+41:38
+Of course you have to be reasonable. You just function as a gradient of possible value.
+41:45
+Then it's really difficult to calculate, but intuitive.
+41:51
+As long as you know the value function and you know probability distribution, you can calculate.
+41:55
+Let's have a look in what is the main assumption. Unknown process.
+42:02
+Effect. In this probability distribution calculation.
+42:11
+This is a big problem. I don't know probability.
+42:17
+And usually you will never know. You didn't lose this number and I don't know probability distribution.
+42:22
+Okay. So this is the one real huge obstacle.
+42:31
+Can you imagine this pewter, misty, magical, gentle approach?
+42:37
+So the question is how in machine learning can data science we overcomes this obstacle?
+42:44
+What I want to do now. I would love ten minutes break.
+42:51
+Because understanding can be very important and they want to just pay time to the locks
+42:57
+or just once again to look through this one and prepare yourself for the next hour.
+43:02
+So see you in ten minutes and just relax and think about this again.
+43:09
+Okay. Welcome back. Okay, so so no questions that you want to decide is.
+55:35
+What are you going to do about expected value of functions that you don't know?
+55:43
+Probability distribution.
+55:49
+And just as a main advantage, why have you formulate many problems in machine learning and data science in the AI as a minimising expectation?
+55:51
+Why? Because even if you don't know probability distribution expectations, they have remarkable property by law of large numbers that.
+56:02
+Uh, so let me add some page. If you have them.
+56:18
+If you have function f, which depend on z.
+56:30
+And that is it from some space with some probability distribution.
+56:35
+Then of course, let us know that the click object is the expected value of f, but by the law of large number,
+56:45
+even if you don't know this probability distribution, what we can do, we can approximate.
+56:56
+And then as the number of samples goes to infinity it goes to zero zero.
+57:02
+And we can approximate by if I, if I give you here and points at once a to Z, then, then I can calculate f the points at one plus.
+57:08
+Efforts appointed them. You write by then.
+57:22
+So this average. It was a good approximation and its average.
+57:28
+When and goes to infinity. Goes to the real mean value on this call.
+57:36
+Empirical mean and this call real mean.
+57:42
+And not only it goes to this one, but for example, if you know variance and we can estimate, we can even estimate how fast is go.
+57:48
+So this is a one. Most problem in data science in the year if you try to write as a problem of.
+57:58
+Minimisation or maximisation, or somehow replace this as a of calculation of expected value.
+58:09
+Because be able to approximate the expected value by empirical mean.
+58:17
+So if you look back you know was this one. Uh, I want to minimise over the expected value of loss of function, which depends on parameters.
+58:23
+Theta NZ. But we already are given data.
+58:36
+Is it just one that then? So what I will do, in fact, what I have to minimise its approximation of real.
+58:44
+Mean. By empirical mean.
+58:55
+So. I will calculate so called empirical mean.
+59:00
+I can calculate the loss of my function f to. When I implied to the first value of my daughter.
+59:05
+So we went to this function after the first data point. How would this my solution?
+59:12
+Lost all this. Empirical means.
+59:18
+Hey! Houses! Losses. All my solution.
+59:22
+Do you weigh ban? And this is what they can calculate because that is given.
+59:28
+If I give you a parameter I know function I can calculate this number.
+59:34
+So now minimising over heater. It's a well defined problem.
+59:38
+Which of course, when Sita. From the huge vector space maybe contain like 8,000,000,200 billion parameters like in GPT,
+59:46
+then finding function of 200 billion parameters to find minimum.
+59:58
+It's it's a mismatch problem of course numerical numerical analysis.
+1:00:03
+But it's not straightforward. It's not so simple. But nevertheless now we have everything in place.
+1:00:09
+We define input to the space as a function depends on some parameters.
+1:00:17
+If you define a loss function after that, when you have this, you can't calculate.
+1:00:22
+Really. Me or my laws.
+1:00:29
+But I can always calculated political mean. And now when I have the empirical mean, I need to calculate parameters.
+1:00:32
+I was used small as this value. And of course it's not so horrible because you can ask yes, suppose I have beta parameter, but also this one.
+1:00:44
+That then is an old document or an iterator, some training document that is just huge.
+1:00:55
+What? This mutation dude in 100 he is doing a huge amount of very stable numerical methods like stochastic gradient descent, hard dumps and so on.
+1:01:01
+Which is why we're able now to calculate this empirical mean and minimise this very fast and very efficient.
+1:01:13
+Okay, so no another principle.
+1:01:26
+But this is just principle which is that we use very often.
+1:01:30
+If you have many solution. Then the next solution was, which is, which is simplest possible.
+1:01:34
+Yes. Nobody guarantee you that today that you for this there is only one parameter that give you this.
+1:01:43
+Some more or less empirical mean or whatever approximations it can be made to.
+1:01:50
+Solution. Which one to pick? Honestly, it selects simplest one.
+1:01:53
+Usually the simplest one will feel much better.
+1:01:58
+For example, if you find that your daughter can be approximately 40, no more physically 12 and put it on with degree 40.
+1:02:02
+Of course, go to the movies itself because it's more reliable, more stable.
+1:02:09
+You don't have to calculate before this one. So this colour combination principle.
+1:02:13
+It's not mathematical theorem. Uh, unless you have to define what does it mean.
+1:02:19
+Simplest hypothesis and so on.
+1:02:24
+But in general, it's a very good principle for us to do understand what we should do.
+1:02:28
+Okay, now let's continue. So let's once again see what you need.
+1:02:52
+Sweetie, sweetie, if we repeat this too often. But. This is nearly crucial.
+1:03:06
+So the first is not under our control.
+1:03:12
+And three. We always, we always mean you might see people come in because otherwise we don't have any as a way to approximate the unexpected value.
+1:03:18
+So they said in other cases, it's up to us to decide what function and hypothesis space.
+1:03:31
+And as long as you say this one. We can run some optimisation and try this one.
+1:03:40
+So let's see examples in supervised learning. But what's wrong with our observations that it's always been?
+1:03:47
+X and label. So our task is.
+1:03:56
+Are you input the function f? Which map input?
+1:04:02
+Who's the target? Okay, so what is it?
+1:04:08
+Most common? Uh, loss function.
+1:04:15
+This is say. I put in space, we select from what we need.
+1:04:18
+But the norm? Yeah, if it comes with the neural net, whatever.
+1:04:25
+But using the loss function also. In majority cases, if your problem is a regression this type of loss function you want to predict label eg from x,
+1:04:29
+you want to predict y using the function f. Of course the question is naturally you want a pleasant function f to x.
+1:04:41
+How close I am to the real way. And we measure this difference between them as it quadratic distance squared.
+1:04:50
+And of course what you want to do. You want to get our prediction.
+1:05:01
+Should be as close as possible to. Should be as close as possible to this very way.
+1:05:07
+It's very natural. You can ask questions just for curiosity.
+1:05:20
+Why two? Because I can put just.
+1:05:26
+SFX went this way. Who I can put Power City over to?
+1:05:31
+Reason is the following. Yes, you can use them and Intuit is supposed to give you very close.
+1:05:37
+But. Two is good because.
+1:05:42
+Quadratic function. To find the minimum, you have to take.
+1:05:47
+Derivative. Derivative. Quadratic function is easy to calculate.
+1:05:50
+Because it's a linear function and finding zero linear function, it's it's it is a linear algebra.
+1:05:56
+It doesn't mean it's easy, but at least it's doable. But you have more complex nonlinear functions of the derivative.
+1:06:02
+To find meaningful will be complicated. Function z to find zero or stability is one.
+1:06:09
+It's another question. So usually we use this one power two.
+1:06:15
+Oh one. In machine learning, this is a two choices, which is the most useful.
+1:06:20
+And two, it's easy to calculate. One it's more stable with respect to outlier if your prediction is correct.
+1:06:27
+But there are several outlier big even only for a few points, then this will be really not very good.
+1:06:34
+The measure of performance. No.
+1:06:43
+But. But what about classification? Because if you use a classification problem.
+1:06:50
+So let me do this again. Classification problem.
+1:06:56
+I want I have x, y q, which. And I want to predict labour.
+1:07:07
+And label it to some old maybe like in handwritten digits, ten classes or 1000 classes.
+1:07:14
+So from X I have to predict not real number, but some discrete value of possible classes.
+1:07:20
+On the one hand, we want to have this function.
+1:07:29
+Continuous but even smooth functions. You can calculate what you.
+1:07:35
+Why? Because it's and we have to calculate minimum. But you want to calculate minimum using optimisation.
+1:07:39
+You need some sort of control on how to calculate derivatives.
+1:07:45
+So if I want to be able to calculate this minimum or at least very close to the minimum.
+1:07:49
+From us.And Funtion which take on the end trail.
+1:07:55
+You never can be continuous. So how are we overcomes this difficulty?
+1:07:59
+We will come with the following. We don't immediately predict G+.
+1:08:05
+We predict probability of being this class so far away from image X, like handwritten digit, I predict nine.
+1:08:11
+Tillable probability zero. Probability of being zero.
+1:08:18
+Probability that this is a label one. Probability that this is the label.
+1:08:22
+Then we don't have any restriction. This number can be anything.
+1:08:35
+The only one restriction. Remember, pi has to be bigger than equal zero and some of the pi equal one.
+1:08:46
+What you are going to predict. Usually it's.
+1:08:55
+Not level immediately, but probability of having this label.
+1:09:00
+By the way, in all in all image pretty. You know the machine learning even want to have more.
+1:09:05
+We want this to be sticky. Because as you. You will see for this why reason.
+1:09:11
+Very simple. We want to be able to calculate local probability. But nevertheless this is what you would you want.
+1:09:16
+Well so this is the final maybe main task of uh supervised classification to predict not immediate label but predict probability of having this label.
+1:09:23
+This is my problem. But of course, if you follow this program, it will be they will be easy to predict class.
+1:09:35
+I calculate probability and there's a class solution I select class with the highest probability.
+1:09:42
+If you will. For example, one class predictability 0.9 is or less is a much smaller.
+1:09:49
+This way going to my prediction is the many cases many ten.
+1:09:54
+To top classes or cities, they have the same probability.
+1:10:00
+Then just honestly, they pick random. But in any case, from now on, even in classification problem in which users you are going to calculate.
+1:10:03
+Probability. Of prediction.
+1:10:14
+So now what will the loss function? Suppose I have my axe.
+1:10:17
+Data from X, they calculate probability of being first class, second class, and class N.
+1:10:25
+What's correct solution is a way. One of these classes.
+1:10:38
+So what I want. When I take this for class Y probability, I want this p y to be big b y, ideally close to one.
+1:10:43
+And so that's close to zero. You don't like to work directly through probability, because when you have independent observation,
+1:10:56
+probability of this tuple is a product of probabilities.
+1:11:04
+Probabilities are small now, but when you have like 2000 example and you multiply the probability of this big observation with the product of.
+1:11:08
+Uh, if you have probability of something small numbers, then it should be almost uniform computer point of view.
+1:11:21
+So we use look probability. And I want this to be close to zero.
+1:11:27
+But low probability is the negative. So I put this minus.
+1:11:36
+And this will be my loss function for this particular swipe because it's my probability close to one.
+1:11:42
+Low probability to be close to zero, but because they put minus, it will be positive positive by close to zero if any probability close to zero.
+1:11:50
+The balance of probabilities will be very negative. Not a bit.
+1:12:02
+Why? Because I want to have. Because I put wireless. So it should be a very big positive number.
+1:12:06
+And this how we measure loss function for classification problem.
+1:12:13
+So this is precisely what I told you now. As the loss I select.
+1:12:17
+Why this? Low probability of my prediction? And.
+1:12:25
+In literature, it's called negative conditional log likelihood.
+1:12:33
+As this is what you use traditionally in.
+1:12:38
+But you're doing the data science for classification task. For example, in GP2 you.
+1:12:43
+I give you prompt. How do you want to predict me? Next would. Uh, there is no 100% one solution for change.
+1:12:50
+Predict. Probability. This base model of each.
+1:12:58
+What is the probability? Of course, we will select the probability of maybe one of the five highest.
+1:13:03
+But when we. Lives this mortal as a mortal parameter of our loss will be precisely this one.
+1:13:11
+And having this loose and having class of function, we can calculate, uh, condemn you an empirical likelihood.
+1:13:20
+And by using some symmetrical algorithm, we can calculate, you can find minimum.
+1:13:30
+And this will give a solution if taking ages for huge problem.
+1:13:36
+But nevertheless I want you to keep in mind the precise.
+1:13:40
+Boss from the beginning to the end. In know end machine learning data science.
+1:13:47
+What you have to do. But this was her fourth.
+1:13:50
+Supervised learning, which is much more simpler to understand.
+1:14:00
+For unsupervised learning equations is more difficult because the question is.
+1:14:04
+What is the hypothesis base? So it depends what you want to find out.
+1:14:09
+For example, if I have data. And my question is what is the probability distribution of this data, then I want to find itself as a density estimation.
+1:14:14
+Then of course. In probability theory, there is a definition of distance between density and ideal density.
+1:14:25
+Then you want to minimise this one so we can define loss and so on.
+1:14:37
+So in any cases and in each problem we try to approach this problem as the from
+1:14:41
+this set of possible solution for in some sense and give me best solution.
+1:14:48
+For best solution we use loss function. And we have to decide for ourselves what solution we want.
+1:14:53
+Another kind of. Uh, unsupervised learning, which is a little bit different, what I told you before.
+1:15:02
+But people also use this, which many times in this business it's called learning curve.
+1:15:12
+New representation from your data. What is this?
+1:15:18
+It's not surprising that it does have precise mathematical formulation,
+1:15:25
+but because people use this buzzword many times, it's very even one of the top two components in AI.
+1:15:29
+It's called a learning course. That's a representation.
+1:15:35
+So it's not it's nice to know what people are trying to do. So if you have your data set.
+1:15:40
+And you have some problem. That's a representation.
+1:15:47
+It's to try to replace the concept map into another form of the W subject, your problem, which is difficult in this space.
+1:15:54
+It becomes easy in this space w representation learning.
+1:16:06
+You already know this. For example, uh, you know, to calculate integral, which is very difficult.
+1:16:11
+You do schedule variable Saturdays becomes simple integral you wonderful differential equation very complicated.
+1:16:18
+If you try to find schedule variable to find another representation of your coordinate so that in new coordinate it's become even simpler.
+1:16:25
+And I see examples traditional from history. So people say this is why.
+1:16:34
+Reason why a Roman Empire collapse in for it is, you know.
+1:16:39
+But in Roman times, Roman empires, they use Roman system of representation.
+1:16:45
+So it was a it is an opposite, but it's the same numbers.
+1:16:51
+It but. The use of only representation, for example.
+1:16:55
+This is 40. This is 17 and so on.
+1:17:00
+This was a very nice system, which is one. And which is not bad.
+1:17:05
+It was a problem. Now suppose your problem is. Like this one.
+1:17:18
+I give you the following numbers. Like from school.
+1:17:27
+And so on. What is the next step? Would be difficult to put on one child to solve this problem.
+1:17:52
+But for us, it's easy because we transpose this now because this is a nine.
+1:18:02
+1827 3645 then next will be 54.
+1:18:06
+Very natural solution because you immediately see this representation, which Colorado and IP system, you could easily see that very simple rule.
+1:18:13
+But of course. This was the main problem that Roman has.
+1:18:23
+Then they need to be able to to build weapon. And to build weapon, you have to be.
+1:18:27
+You have to be able to calculate loss and multiplication.
+1:18:33
+Which they found incredibly difficult. For example, how it's easy to calculate 27 and of 60.
+1:18:38
+Another big system. Why? Because they use power ten.
+1:18:45
+And multiplying power is very easy. But try to explain how to calculate multiplication in this for these two numbers.
+1:18:49
+For people who don't know decimal representation, it was so much pain that even it was a fool of me.
+1:18:58
+It was a letter that said, people say there's a feeling that if you want to learn how to other romance, but you have to study this in Rome.
+1:19:05
+But if you want to understand how to do multiplication, you have to spend several years in Milan.
+1:19:15
+Okay, so this is example of representation learning the same problem.
+1:19:21
+Multiplication two number in one representation, which is the correct representation for the same integer numbers.
+1:19:25
+Problem become incredibly hard. And in another presentation, probably multiplication or plus become almost legal.
+1:19:33
+So one part one, one big part of them. Hey, I am a machine learning now.
+1:19:43
+They trying to find. For example, I have image and image represented by pixel.
+1:19:48
+But somehow we don't think about pixels. If I ask you, looking into each image, what particular pixel value you say, I don't know.
+1:19:55
+I can't see, I don't care. Somehow you have another representation in your brain telling me what is insight.
+1:20:02
+So how to transfer, for example,
+1:20:10
+pixel representation into another form representation so that your problem becomes simple physical representation learning.
+1:20:12
+And before 2010. This was a state of the art.
+1:20:21
+Which particular area of data science and one expert develop the most useful representation of your data for particular problem because,
+1:20:26
+for example, for image, then you just follow the perception.
+1:20:36
+It's very important edges. You separate one object from another because you change.
+1:20:40
+For us, a problem is very, very important to see some job maybe or so.
+1:20:47
+Whatever. Uh, for the colonised face, then it's very important to have, I know, cynicism.
+1:20:51
+So if you excise this feature, maybe you don't need old pixel value.
+1:20:58
+This couple of feature will be nice, but also. So this was the art.
+1:21:02
+It's Google's feature engineering. We didn't know any tool how to make it automatically.
+1:21:06
+But after the after period in 2011 1012 and deep learning, suddenly we found that when we tried to learn to train deep learning model.
+1:21:13
+Its aftermath insight in all this layer learned very non-trivial representation of the data such that it helped to solve all the final problem,
+1:21:26
+which was a very big excitement, because now if you have some sort of universal way, how to find better representation for the problem.
+1:21:37
+Okay. So now. Let's summarise what you have.
+1:21:48
+What are the main step of data mining and of course, machine learning.
+1:21:56
+So let us assume the following scenario.
+1:22:00
+You come to the company. Somebody give you data?
+1:22:05
+It's give you Gotham. And the question is, would you do.
+1:22:20
+The first step. You look inside and you check. Who's your daughter represented?
+1:22:27
+You stand up for? If it's not, you spend somebody with that I provided and this some time to write data in this table.
+1:22:32
+Each row is an example of that. Each column is the attribute of your data.
+1:22:43
+O parameters your data always make standard for reason.
+1:22:49
+Very simple. Many, many algorithms are implemented in Start-Up.
+1:22:54
+Software like scikit learn, TensorFlow, PyTorch.
+1:22:59
+They by definition to choose a data commons is one otherwise concrete example option.
+1:23:04
+Okay. Perfect.
+1:23:12
+So now just step one. Step two. You have to somehow check.
+1:23:17
+You have to introduce. Distant measure for measure of similarity between your item.
+1:23:25
+To understand when your eyes are closed.
+1:23:33
+It's like predicting house price. You understand that?
+1:23:37
+Somehow you have to mention what does it mean to put your houses close?
+1:23:42
+When you want to predict image. Face to face.
+1:23:48
+It would be nice to have some cold measurement when you emerge close to face to face and so on.
+1:23:52
+We need this definition of. Distance, measure or measure of similarity.
+1:24:00
+So just. One reminder. Yeah.
+1:24:07
+People in machine learning you can either use. Some people use distance as other people use measure.
+1:24:12
+So what is the difference? Distance is it if distance move.
+1:24:18
+Said. If you say that, they're very close. Or we say they're very similar from similarities.
+1:24:25
+Opposite of distance. The more similar image you data to data point are, the smaller distance between them.
+1:24:35
+It just complimented it. It's very easy to go between distance and similarity, like if you know distance between two objects.
+1:24:44
+You can always go click. Land is exponent of this distance and this will be your measure of similarity.
+1:24:52
+Because if distance is zero, then the same. This similarity equal one when distance increase.
+1:24:59
+This exponentially decreases. We become one with you. But you have to remember, this is two important things.
+1:25:07
+Distance, measure and similarity. What? It's important.
+1:25:15
+The almost equivalent was important because when you use sound throttle from scikit learn or library,
+1:25:19
+some algorithm which is the wolf distance or similarity measure as a as a parameter of default,
+1:25:27
+you have to be sure that you put correct, because if going to work with the measure of similarity and where you as a parameter put is distance,
+1:25:35
+you will have row of rows also because it's just opposite.
+1:25:43
+So always before you run any algorithm, just check what is the default parameter and what they mean.
+1:25:46
+Okay. So this is a step to. This moment.
+1:26:03
+When you decided. Well.
+1:26:22
+Two items are similar in this one. The main question is.
+1:26:25
+Is your daughter satisfied? Group which is local.
+1:26:32
+Local generalisation. What does it mean?
+1:26:36
+That item was a which are similar or very close.
+1:26:40
+Has a similar property. Similar pricing. Yes, I can introduce.
+1:26:45
+Like a measure of similarity between two houses. Yeah, the distance between them.
+1:26:52
+And you can. And you say, okay. If two houses are closed.
+1:27:00
+By distance, then they have similar price. You look in yours.
+1:27:06
+Your data suggests he or she sees two houses.
+1:27:10
+Distance between one miles is very similar.
+1:27:14
+But price is a huge difference. So what does it mean?
+1:27:18
+Maybe there is some sort of real between them.
+1:27:21
+Some traffic on motorway and one area is good. Another area is a crime area.
+1:27:27
+And this one. So to play anything you want to predict, at least you have to be sure.
+1:27:32
+Is it? Luckily, it's work for Gotham, which is a close.
+1:27:39
+You really have prediction because, you know, my prediction is a continuous function.
+1:27:44
+It's supposed to be small changes will no changes dramatically.
+1:27:48
+It was. The main idea of data mining is you have to examine your data.
+1:27:54
+The similar item has a similar property. It's just called local generalisation.
+1:28:00
+This is the main idea of data mining. No, you have this.
+1:28:05
+So perfect. You have got a uniform. You understand how to measure distance or similarity between data.
+1:28:10
+And you know, that's locally close that that's a nice property.
+1:28:17
+So continuous function is good. So now it's time to pick a pick algorithm.
+1:28:21
+You can do all of your own algorithms. Or you can use.
+1:28:27
+Some of the least. There is a book. It's called ten.
+1:28:32
+Most. Important. Algorithm of data science.
+1:28:38
+Oh, that's a data mining. Who goes through 4 or 5 of them here.
+1:28:44
+So it's always a good step just to try them, not because they give you final solution yet.
+1:28:51
+So first of all, they only implemented in software. They work just from books.
+1:28:56
+You don't have to to think very much. Plus, if you're on something, 1 or 2 of you already have a feeling what you have to do.
+1:29:02
+For example. You use K-nearest neighbours and after K-nearest neighbours applying, you see that you have correctly performance 60%.
+1:29:09
+It's not something that maybe you can do better, but it is. You know that this is something that you have to improve.
+1:29:21
+You know, you base on and you get 85% or much better.
+1:29:27
+Maybe you use Support Vector machine or something else.
+1:29:31
+So it's always nice to to try several canonical algorithm to see what's going on with your data.
+1:29:35
+Did you have a feedback? Plus, even if you have like in units, neighbours or uh, support vector machine or whatever, how good you have error.
+1:29:45
+You can always look inside this point and ask yourself why they classify with error.
+1:29:55
+Then you usually you'll be able to find out that you have to adjust something as well to cover this part and so on.
+1:30:04
+And this is will be it's and that's what we will discuss at the very last lecture.
+1:30:12
+The approach is called AdaBoost. Or assemble that in its approach.
+1:30:17
+Where? Yes, you can think of any algorithm. This one got a grant money?
+1:30:24
+A lot of it is a thousand of our good.
+1:30:30
+But the miracle is. Even if we each give you like a 60, 50, 55%.
+1:30:35
+This one. There's always possibility to combine them in such a way.
+1:30:41
+Clever tablet such that you are much better at each one.
+1:30:47
+It's called Wisdom of Crowd. You have 100 experts.
+1:30:52
+Usually they perform better. Separate each expert and we will prove some of them.
+1:30:56
+How to combine them? Precisely. Uh, you get this.
+1:31:02
+Okay, so this is usually what we do. See step in data science that is going to perform check local generalisation understand similarity.
+1:31:07
+Run several algorithm. After that, use AdaBoost.
+1:31:17
+Tub. Sometimes it's. Stay forward for some data.
+1:31:22
+You can see that yes is good, but somehow they should give you not very good vision.
+1:31:27
+Also good, which is very, very, very important to understand the semantics,
+1:31:34
+because it's good for most people who this algorithm tell you for use this calculation.
+1:31:39
+But if you look behind this, there's always mathematical theory which tell us that if your data such that blah blah blah then supports vector,
+1:31:46
+but she'll give you good answer. Sometimes people forget about what is the condition of this one and they just run them happy.
+1:31:56
+How good does look the reason may be. Is because it does his condition.
+1:32:06
+Which I agree was supposed to work. So no, in my symmetrical assumption of agreeing, it's a crucial if, say,
+1:32:13
+if what you have, it's not up to your expectation you to have something better.
+1:32:19
+But all this paper was so good. It does do something. So maybe your data is very strange and you have to do something additional.
+1:32:23
+Okay. So now. You know all means step.
+1:32:33
+Now, of course. You have to implement this step.
+1:32:41
+But before the implementation of this step and explaining this one, there are some.
+1:32:46
+As any theory in linear algebra, you need to know what is a vector space?
+1:32:52
+Differential equation. You need to know some kind of idea with just one in which it is.
+1:32:56
+It is a fact that since very useful to know what and you have to know if you are working in this area.
+1:33:01
+So in this section we are going to do the following. We are going to explain I am going.
+1:33:08
+What is a softmax function is. And they said.
+1:33:14
+Memorise this definition for the rest of your life. You will see so much action in your work and just business.
+1:33:19
+Almost every day. We defined what is a cross entropies.
+1:33:26
+Council universal approach to introduce laws function as will be introduced.
+1:33:32
+Historically some measure of importance.
+1:33:41
+Always. Which before. ChatGPT was probably the most important approach to analysing textual data.
+1:33:45
+But even know if, for example, you have. Small, private in some company or small number of documents like 1000.
+1:33:56
+And of course you read because it's a private or.
+1:34:07
+It's classified or whatever. You, you you know that this algorithm ChatGPT never used for trading to this chat.
+1:34:12
+GDP never saw this. So this means that you can't experiment if you want to.
+1:34:22
+GPT was a last language model to summarise.
+1:34:26
+This data will tell you this data. Or for times to give this data and to give you.
+1:34:30
+They never saw this data. It's out of scope.
+1:34:34
+But even worse, in some cases you can provide this all data to the chat GPT and it's figured out, but because it's not maybe it's a medical record,
+1:34:38
+maybe it's a lawyer company, maybe it's a military contract or someone you're not going to send this document to GPT or Gemini or author.
+1:34:48
+So the question is you want to have to, which is a walking precisely for what you have.
+1:34:59
+Okay. And if you don't have a lot of size documents.
+1:35:06
+So this tf IDF approach, it's still very useful.
+1:35:10
+What you see is very interesting historical answer. And it's for you ask all step.
+1:35:14
+How do you use some measurement in this document.
+1:35:19
+Because GPT one is a black box it's nice to use, but because you don't understand what's really going on inside.
+1:35:22
+You know, increase our understanding of mathematics insight.
+1:35:30
+But at least here, if I give you perfectly what the standard how we do now with text generation.
+1:35:34
+He was for two days generation text processing tool. So we go through this one plus.
+1:35:40
+I have the language. Remember I told you that to to be successful in data science and AI.
+1:35:48
+You have to have good knowledge of linear algebra. Probability theory.
+1:35:57
+Calculus. Congrats, Yuri. Because I cannot see what else, what universal language.
+1:36:03
+This is what people are usually talking about. Uh huh.
+1:36:09
+So I look at you as a, you know, have you concept and definition and you expert in graph theory, but in fact, we don't need graphs here.
+1:36:15
+There is all this Q and A and so on. What we need, we just.
+1:36:25
+Glossary of these. What it's mean. Some definition of words and that's what main concept.
+1:36:31
+We're not going to go to see what it means to you. You may be some exercise couple, but here's what we need to know.
+1:36:38
+And we say, this is the ground. We will be ready to start our precise journey with the algorithm and how we calculate something in data science and I.
+1:36:44
+Let's start. With one hero of our story.
+1:36:55
+As his hero called. Softmax function.
+1:37:02
+But what is a softmax function? Is a fully function.
+1:37:09
+Okay. If I have function, it would have variable x y z.
+1:37:16
+And they calculate function which is a mux. Of x, y, z.
+1:37:22
+This function is not differentiable.
+1:37:29
+Of course. When x and y you x when y because.
+1:37:35
+Because you're going to give you y and there is a jump. You do x, y.
+1:37:41
+So this function is not differentiable. And for example, suppose function x function.
+1:37:47
+Box. And.
+1:37:55
+That was as much as not differentiable, which means that I can't use this function when I need to calculate derivatives on.
+1:38:04
+So the question is can you replace box by some sort of function?
+1:38:13
+It means that yes, you get x give you not just value.
+1:38:18
+You get. Why give your largest value to one? It's like mocks, but it's still differentiable.
+1:38:23
+So this is a first year second. Remember, uh, you know, where they want to classify what they really calculated.
+1:38:29
+I. It's not really class. It's a probability.
+1:38:40
+So softmax allowed us to map number to the probability.
+1:38:45
+It's the largest number goes to higher probability. But what does it mean.
+1:38:50
+Suppose I have a number z1.
+1:38:55
+That case we came up with. And you know I want to upset.
+1:39:00
+Into probability. Which is probability one being one and this one.
+1:39:12
+What I want. I want that image was a probability.
+1:39:26
+Function is a differentiable. And the lodge is it?
+1:39:30
+Do you realise? You probably. So for these people and to use the full information that's the name of this function is softmax.
+1:39:36
+So what do you think? It takes this vector z one. Z then.
+1:39:46
+And this concludes the following. Vector. Softmax.
+1:39:52
+Each of the powers. That one. It was it.
+1:39:59
+But was it too? It was supposedly.
+1:40:02
+But, you know, just leave this as it is. Yes, they all know it depends on the positive exponent.
+1:40:08
+This is strictly positive. But sorbet is not equal one.
+1:40:14
+To make this number equal one, I have to divide by total sum.
+1:40:19
+This is called normalisation. Then of course, you see all this now, but strictly positive.
+1:40:32
+And Sam Mcquillen. Just by definition. For this function.
+1:40:43
+This is the function in. But this is a just.
+1:40:50
+So there's a many reason why we should use this function. There's a magical theorem which tells us why we should use this function.
+1:40:54
+This is the explanation from a physics point of view, because in statistical physics,
+1:41:01
+this is nothing more than a so-called Boltzmann distribution of functions that.
+1:41:06
+Maximise entropy with the same the resource method.
+1:41:10
+Principle of maximum entropy because of this concept. This is a universal function that people use in this business.
+1:41:17
+How to transform key numbers. Any numbers into the vector of probabilities.
+1:41:24
+So. You have to know this. And.
+1:41:32
+It's better to memorise its function and it's easy. You just calculate exponent of each coordinate.
+1:41:38
+And not because you want to equal one. You just divide this vector by some.
+1:41:49
+It's all. Okay. So this is a softmax function.
+1:41:53
+The next. This is the. To quote Chris Entropy.
+1:42:01
+Let me explain. Before. What is the origin of this one?
+1:42:08
+But once again, is it better just to remember for. Suppose I have.
+1:42:14
+Several outcome. And this is a probability of first outcome p1 p2 pk.
+1:42:21
+But I do not know this outcome. I have some data.
+1:42:34
+But I don't have to. I don't know what is if real probabilities are not.
+1:42:39
+I want to approximate this probability, but some. Probability hypothesis space.
+1:42:47
+For examples, my probability probabilities come from some. Probability distribution, which depends on some parameter.
+1:42:56
+For example, I observe data. I, if he uses his data, is a sort of Gaussian.
+1:43:04
+So Goshen has a two parameter mean and variance. So the question is how to select mean and variance.
+1:43:12
+So it's approximate by probability. For this.
+1:43:19
+What we need. We need to define so-called.
+1:43:24
+Distance or divergence. Somehow I want to measure how close.
+1:43:30
+Probability should appear. And I want to minimise this distance.
+1:43:36
+I want to find parameters that make it as close as possible.
+1:43:43
+So this is main idea. I have to find distance. The problem is that.
+1:43:48
+To find distance between two objects, I need to know first object and second object.
+1:43:55
+But remember, in most cases we don't really know probability to generate our data.
+1:43:59
+So the question is how to find distance. From my family.
+1:44:06
+To something that I don't know. And it's still the same beautiful genius idea.
+1:44:16
+You have to write something that you want to find out as expected value over this unknown.
+1:44:25
+And because now you can approximate expected value by empirical mean.
+1:44:34
+You can do your calculation. So this is the main idea of how to calculate divergence or closeness between two probability distribution.
+1:44:40
+Even if one of them you don't know. So what is this?
+1:44:51
+Let's calculate. So.
+1:45:02
+Would you want to calculate probability distribution and probability p I don't know, but q I know because it depends on my parameter.
+1:45:10
+So I want to calculate this number. T, I represent this number as the expected value with respect to unknown probability.
+1:45:21
+This is why is this number so good? Because. Look.
+1:45:31
+Q I know, but p I don't know. So I write something which is expected value.
+1:45:34
+And by the name of this expression it's called cross entropy.
+1:45:40
+It's come from compression theory. What is the best algorithm for compression?
+1:45:46
+But it does matter though. What is the beauty of this object?
+1:45:50
+This? This object is.
+1:45:55
+Number is. Entropy of P.
+1:46:02
+To cook and de vengeance. What is this?
+1:46:10
+Let's do the following. This number is expected value of P.
+1:46:15
+Of. Why? Let's look. Beef.
+1:46:25
+This number is expected value of P.
+1:46:31
+Look. PGA.
+1:46:36
+But you. Okay.
+1:46:42
+This is first number. This is the second one.
+1:46:46
+Is there sum is equal. This will look.
+1:46:49
+Look, look, the overkill. This time it's nothing more than.
+1:46:58
+Expected value of peer. Why this look?
+1:47:05
+Could you ever be? Coming up.
+1:47:10
+Is it. Look X it's minus look.
+1:47:13
+One of X. Okay. So now if we add this number.
+1:47:19
+And this number will take a live. Expected value of P.
+1:47:26
+Why in this look? He. Mind this.
+1:47:32
+Look. Could you ever be?
+1:47:40
+Because expected sum of expected value is the sum of expected value because [INAUDIBLE] be expected value minus.
+1:47:51
+Look B plus look.
+1:48:00
+Two over three. Remember that?
+1:48:05
+Look, some of the two look, it's a local product. So this review will look.
+1:48:09
+Minus p multiplied by q over p and q p minus q.
+1:48:17
+It's precisely this expression. So is this expression.
+1:48:25
+So no. So this number. It's called entropy.
+1:48:32
+Of people. This number.
+1:48:40
+It's called public label divisions. So this one.
+1:48:50
+Now. What is the beauties? Z and cross entropy.
+1:48:57
+It's always remember I want to find a cute. Which is a closed loop.
+1:49:04
+It's possible. And it a low probability cross entropy event property that when q equal to p is q smallest number.
+1:49:10
+We'll have to find a q amp to minimise cross-entropy. Cross entropy two but two.
+1:49:22
+Term. Entropy of p and cubic label divisions.
+1:49:29
+I want to minimise respect to Q but.
+1:49:35
+This expression. Does it depend on?
+1:49:40
+Q. So it just comes back to Q so what you can I need to minimise this one.
+1:49:43
+There's a problem with finding the closed distribution. It's a problem of finding smallest parameter, which gives you a smaller system.
+1:49:52
+And this Kullback-Leibler divergence has a fantastic property.
+1:50:03
+It's always non-negative, and it's zero only when people q.
+1:50:06
+So if you find q which gives this number zero, you just found perfect.
+1:50:11
+Who you like to minimise this plus because Kullback-Leibler divergence it's expected value.
+1:50:16
+Be overkill. You can replace this expected value, but by, uh.
+1:50:26
+You can replace this value by experience. By empirical mean.
+1:50:34
+So it's music now. What do you have to do to minimise?
+1:50:43
+Let me write. Somebody if you talk to Frank, not the best class, but for all probability, with the best approximation.
+1:50:48
+You look in this number. And you have to minimise the slump.
+1:50:59
+But no because this is expected value with respect to probability P would you do?
+1:51:11
+You just replace it by empirical mean over your data. Because he could doctor X1X and prove empirical distribution p.
+1:51:18
+So what you do you just calculate minus.
+1:51:30
+Yeah. Look. Queue at x1 plus look of q of x, then you wait.
+1:51:35
+Bam! And now you try to minimise this. So this call cross entropy.
+1:51:45
+And this one you want to compare one density estimation from another.
+1:51:49
+Okay. It's. So let's have some break. It's already 503.
+1:51:55
+So you have ten minutes break. Okay.
+1:52:00
+I'm back. So. We are going to do.
+2:03:47
+It's the last 45 minutes just to put everything that we learned till now.
+2:03:53
+All this I want framework for function cross entropy model based.
+2:04:01
+In one simple example it's called mNIST classification, which is a hello world on machine learning and data science,
+2:04:10
+which means that whatever you're working in this area, you have can use this example.
+2:04:19
+And very often people doing an interview or discussion always discuss this in the many article people use this example.
+2:04:27
+So what is a problem? Problem is that we are given.
+2:04:35
+60,000. Images, which is a 28 by 28 pixel.
+2:04:43
+Images are black and white, which means that we use only grey level.
+2:04:56
+So inside the images. Every pixel has value between zero, 20 and 55.
+2:05:02
+But we will divide by 255. Says that its pixel has a value between 0 and 1.
+2:05:08
+So which image you need? 28 by 28 numbers.
+2:05:14
+So you took a dimension. Dimension of each image. Each image is a point in and 784.
+2:05:18
+This is how many numbers you need to represent. This was in fact small.
+2:05:29
+It was 28 by 20, and it's already a vector in the space of dimension 784.
+2:05:35
+As he mentioned, 60 came. They're given labels so we can, you know, answer between 0 and 9.
+2:05:43
+What is this? What is this image zero, one, two and so on.
+2:05:52
+This is a typical example from this database. So what is our task?
+2:05:56
+Our task is to construct classifier. Function f.
+2:06:01
+Which takes this image x. Any image X which is from this space.
+2:06:08
+And give us vector of the ten. Probability.
+2:06:16
+Probability of being number zero. Probability of being number one.
+2:06:26
+And so. Probability of being number nine. So this our task.
+2:06:30
+Such that if it's the. I use this rule that I will label my image with the class which correspond to high probability.
+2:06:36
+It's perform as good as possible or as a way.
+2:06:46
+Because I won't be able to have higher probability and we're able to have low probability, which means that I have to minimise.
+2:06:50
+Negative log likelihood. Which we already discussed.
+2:07:01
+So this look at my loss function. So the question is I know what work function I know.
+2:07:05
+How I am going to classify my image. No.
+2:07:13
+The beauty is that.
+2:07:18
+I have to obtain ten probabilities for obtaining ten probability every time when you say, oh, I have to keep some equal one or negative.
+2:07:21
+It's complicated. It's what people do. They don't care.
+2:07:29
+They try to map x into the vector R them, any vector, somehow some transformation.
+2:07:33
+And after that you softmax. Into our ten.
+2:07:40
+And this will guarantee you that when you first of all, nampak, somehow you dimensioned 10,000 useful marks as a and you have got a key probability.
+2:07:46
+This is a task. The question is. After that, after building the system.
+2:07:56
+How are you going to check if the system is good? There is a ten key.
+2:08:03
+Doctor. We are not allowed to touch. We will not touch you to the very end until we build this model.
+2:08:10
+These ten key images. One key for each clause was the labels.
+2:08:17
+It's the opposite of C is a completely different example from this one.
+2:08:23
+Now after constructing this function f. I'm going to apply this function to these ten key images, and I will check if it's okay or not.
+2:08:29
+How good is my performances? When I see an example. Remember data science and machine learning in the AI?
+2:08:38
+It's not important to find out good, which performed very well on the data that you already don't want.
+2:08:45
+The most important is called generalisation. How good is going to be on data?
+2:08:50
+That will be the future. Of course we don't know precisely future, so our approach should be the following.
+2:08:55
+You have some data which we keep never touch. And when you uses data, it's like something coming from future.
+2:09:03
+Then you want to see how it's going to perform on unseen data.
+2:09:11
+What for this one what I'm going to do.
+2:09:17
+I'm going to write something that we can use Jupyter Notebook, which by the way, you can find on your learning centre.
+2:09:21
+And if you want, you can run by yourself. But remember, I'm not asking an exam python on this one.
+2:09:28
+He just for you to see how it's done. So what you did was strategy.
+2:09:34
+We take this image. 20 by 28.
+2:09:44
+And. Which is each pixel its number between zero 255 and I divide by 255.
+2:09:52
+Because I like to work with a number between 0 and 1 and not each other.
+2:10:02
+This is our first step. Now I will have 6000.
+2:10:06
+60,000. Vectors.
+2:10:11
+Of the dimension 784.
+2:10:17
+And each number here between 0 and 1. The question is.
+2:10:22
+That's his daughter. Nothing can do this. This data was generated.
+2:10:27
+It was necessary to do the standard in 1990, beginning of 90s.
+2:10:31
+You just collect from thousands of random letters how people put their postcode.
+2:10:35
+So, no, this is my image with. In her.
+2:10:43
+Seven. I never know what a man would have to do.
+2:10:52
+I have to define hypothesis space. I don't have to define loss function because loss function we are going to use no negative log likelihood.
+2:10:56
+So the question is what is your hypothesis space. And remember it's and I have to receive vector.
+2:11:07
+We said ten parameters and after that I will use softmax.
+2:11:16
+You give me ten probability. So this is the structure of my function.
+2:11:23
+So the question is what I put here. The simplest way.
+2:11:28
+Human factor. Of dimension 784 to the vector of dimension ten is the linear transformation.
+2:11:34
+I can't see anything as simple as that. Just linear transformation. So make us formation here will be supported.
+2:11:45
+I remember x vector into. Hey, Backticks.
+2:11:51
+Thank you. A-plus went to be. So what about X?
+2:11:57
+Is as they dimension 784 to obtain a vector of dimension two.
+2:12:03
+He has to be the following size. 784 ten.
+2:12:08
+And a factor B has to be just ten numbers.
+2:12:14
+I can pick any number of this size, any that be.
+2:12:21
+And I have a map. From. Spatial images to Z ten dimensional space.
+2:12:25
+And after that are you so marks and maybe left probabilities.
+2:12:33
+So this will be my hypothesis space.
+2:12:38
+I don't know whether it's good, maybe it's bad, but as you can see, the number of parameters in this hypothesis space.
+2:12:40
+This way. Function f depends on parameters. So how many parameters they have?
+2:12:49
+How many parameters I have inside. Of this metrics.
+2:12:56
+Seven, eight, four multiplied by ten plus ten.
+2:13:02
+So I have. 7840 plus ten 78450 parameters.
+2:13:07
+Not too much, but it is like almost 8000 parameters.
+2:13:18
+It will pick randomly parameter. I will have function.
+2:13:23
+And then look how good this prediction. Of course.
+2:13:27
+Because a random crazy funtion prediction will be very bad.
+2:13:32
+Oh no, I want to minimise. This.
+2:13:36
+Look at you. Look like you would. Oh, my. Adam. For this, I'm going to use steepest descent or Adam's.
+2:13:41
+I got to minimise it. There are several standard functions which minimise your function because its function is actually a function.
+2:13:50
+An example will come to some point.
+2:13:59
+Unfortunately, this iteration process will begin in places.
+2:14:03
+You might mean you might. But you have to stop what is really rich local minimum because at some point you can even start to increase.
+2:14:10
+Let's you have a code. So this was our image.
+2:14:20
+Okay. So this is our transformation.
+2:14:28
+That told you if you take image with coordinate excite and if you calculate linear transformation plus shift.
+2:14:36
+It literally is evidence. So was the image the glass eye, as if you get evidence?
+2:14:46
+If it's more probable. And now I have license marks.
+2:14:52
+Precisely what I say I call clear genius. Of course, he is a double you how to use potentially.
+2:14:58
+And that's the reverse of box of this lovely evidence.
+2:15:04
+No, because I want to calculate the cost of gradient descent or the last optimisation.
+2:15:09
+I don't want to write this. It's too complicated.
+2:15:16
+Plus 8000 parameters. It'll be a little bit headache.
+2:15:19
+So I will use standard package library, which people use in AI and machine learning as a science for doing minimisation optimisation.
+2:15:24
+It's called TensorFlow from Google or PyTorch from Mathur.
+2:15:32
+I'm using TensorFlow because I'm more familiar with the Google product.
+2:15:38
+Then there's method product. I I just I so.
+2:15:43
+What they have here. Import TensorFlow.
+2:15:53
+Okay. So how would TensorFlow disappear from my.
+2:16:06
+Let me see. Okay.
+2:16:15
+Somehow with TensorFlow disappear from my online.
+2:16:59
+So what we can do. Okay?
+2:17:07
+No problem. If he disappear here.
+2:17:11
+I use Google up. Uh, we'll use another.
+2:17:16
+Uh, you know. Okay.
+2:17:27
+Okay, we'll do it. This. This in. Google fill up a one.
+2:18:44
+So I ain't TensorFlow. Now I want to look at this dataset.
+2:18:53
+And in TensorFlow there is a standard. So let's copy this.
+2:19:08
+So there you say TensorFlow is that is that Keras dataset.
+2:19:17
+And I will import this dataset. He's done so well that you have this list and t notation.
+2:19:21
+I have train data and a train label test image and test data.
+2:19:31
+Now you can see the question is what is in train? Image zero.
+2:19:39
+This is image five. She said at age 28, by 28.
+2:19:51
+And in fact, if you read through you, what is the image here?
+2:19:57
+And that's what it gives you. Numerical values here, the vertical value of pixel.
+2:20:01
+It's an integer number between 0 and 250 5 to 2205.
+2:20:04
+It's a very bright you know, it's a black white.
+2:20:12
+This looks like this one image. So because majority is black.
+2:20:17
+Because it's a white letter on the ground. So we don't know this one.
+2:20:21
+So now let's look into the image shape.
+2:20:28
+All the all our data train images. It's contained 60,000 images each year in 2020, and it was expected.
+2:20:42
+Labels, trends and train labels give me 60,000 labels.
+2:20:57
+And the question is what is inside to the.
+2:21:04
+Between 0 and 9 is precisely. Give me what is the label correct for precisely which.
+2:21:10
+Okay. You what they do? I do right by this image.
+2:21:17
+Tell you. What is this? So I reshape this image because I don't want to have this two dimensional array.
+2:21:27
+I want to put this 28 by 28 number as is just one vector.
+2:21:37
+Out of shape since 60s, and it keeps the same because it's the same image.
+2:21:42
+But now there will be one dimension 28 by 28, and after that they do eight by 2055 to have number between zero one.
+2:21:47
+We already discussed this. So what you do next?
+2:21:55
+This is. I transfer label to the more useful notation just for TensorFlow.
+2:22:08
+It's not important. No. But now I create more, though.
+2:22:17
+Precisely. This is most interesting. So this is how we create model.
+2:22:22
+Model will be sequential. One function after another.
+2:22:32
+So my input 28 by 28. The fact is, if the fed said, uh.
+2:22:36
+Okay, let me just. This one.
+2:22:44
+So next I will add linear transformation.
+2:22:52
+Layer density precisely means a linear transformation from -784 to the dimension ten.
+2:22:56
+And. I have to say that I use softmax function or linear transformation plus softmax function.
+2:23:08
+So this is my model precisely that we discussed here linear transformation and softmax.
+2:23:22
+So let's run this code. More defined and it's not complete.
+2:23:37
+The next one. I'm telling you, what would my model is going to use?
+2:24:08
+So as the loss function. Hello. This is how we define a by function hypothesis space H,
+2:24:21
+known as the loss function I use I use cross entropy, which already we discussed as the optimiser I use.
+2:24:30
+It's very popular. One of the two of the many of them.
+2:24:37
+How to find minimum function. She just declares that I'm going to use it.
+2:24:41
+And that's why I want to calculate accuracy. So how often my prediction give me correct answer.
+2:24:47
+That's all you see is with compile.
+2:25:09
+But it does mean we need to compile. Compile in TensorFlow means that it's checked that everything find all dimensions mattresses, selection.
+2:25:13
+Of course, if that is okay, if it passes, it means that your model is ready.
+2:25:21
+You know what I do? I'm going to try to find this minimum.
+2:25:25
+Trying to find this minimum is that it's where I want to feed my daughter.
+2:25:35
+And my label to this one is the budget.
+2:25:41
+It's a group of 128, and I will go ten times over all 60,000.
+2:25:44
+Because they're going to iterate to find better and better medium. And we will see what's going on.
+2:25:52
+She. How how long it is going down.
+2:26:01
+And this is accuracy, which means that 92%.
+2:26:10
+I can do again. Continue another ten.
+2:26:19
+Which continue to improve as the same model.
+2:26:24
+But as you can see, my iteration doesn't change very much because it's almost the same and performance almost the same.
+2:26:33
+So there is no reason to to go further and sometimes to go more even creates a problem.
+2:26:43
+So, Majesty, it's our performance. What was the question is?
+2:26:50
+What is my. Performance on unseen data.
+2:27:21
+This was glasses that they use. But we knew that the that's not what is meant performance.
+2:27:31
+And as you can see, it's not. It's not actually back.
+2:27:38
+It's 91%. Usually it's always on the future data.
+2:27:43
+It's worth it because what we do is we adjust our parameters to be better and better for data that you already have.
+2:27:48
+If there is not any guarantees for future that it should be the same. And usually it's law.
+2:27:56
+But what you want to try to avoid, it's so-called overfishing when all your training data you have like almost 90%,
+2:28:02
+99% you're happy, you celebrate how good it is.
+2:28:13
+But when you try to use for your data, suddenly performance like 10% to 20% to just call overfitting because remember what you did?
+2:28:17
+You tried to adjust our model. For one thing, you got a better and better if you don't know how it's performed in future.
+2:28:27
+But here you see what's so bad. Let's hear.
+2:28:34
+Let's breathe. I could kiss you. She was going on.
+2:28:40
+So 92% is drop. But because a very close we can see our model not so bad.
+2:28:49
+How can I make this model even more? Interesting.
+2:28:57
+I can't say perfect. What about?
+2:29:13
+I do the following. I may have x.
+2:29:18
+Not directly enough of them. Amen. Backs into her.
+2:29:24
+512. After that I may have access to art in.
+2:29:30
+And after that softbox. She is much more complicated in the composition, and here I use linear function.
+2:29:37
+X go to a1 x plus b1.
+2:29:48
+And here I use use a function. It's a way. And this is it.
+2:29:52
+Z is equal a2 z plus b2.
+2:29:59
+Looks nice. How many parameters I am going to do for this metrics?
+2:30:05
+Will you be. Seven 512 by 700.
+2:30:09
+For this function I will have.
+2:30:14
+512. Multiply by seven.
+2:30:18
+If it's four plus five, 12 parameters.
+2:30:23
+And for this matrix I only have ten, five, 12 plus ten parameters xi plus.
+2:30:28
+There is thousands of parameters this looks like. Maybe I can do better approximation.
+2:30:38
+The problem is that this is important, that I can't use this directly because it's a very single parameter, right?
+2:30:44
+Because if I leave as it is linear function and linear function composition of two linear transformation is a linear transformation.
+2:30:52
+So in fact this will be still the same linear transformations.
+2:31:00
+And before it does methods that have many many parameters they just redundant.
+2:31:04
+They depend on each other. So to avoid this this composition linear transformation.
+2:31:08
+What you do if you use linear transformation we use small sinks.
+2:31:14
+It's called non-linearity which is usually a L for each component vector.
+2:31:20
+See a play function, so call it Apple. Which is.
+2:31:28
+Box of zero. So it's a function which looks like this.
+2:31:34
+If there is a -0, if it's positive, it's a small non-linearity.
+2:31:39
+But now first of all, few them tell us that if you look the you can approximate any function.
+2:31:44
+As its value. This linearity is very simple. Let's try to do this.
+2:31:53
+So first of all, I have here in my window.
+2:32:02
+What they will do. I start with the little 512.
+2:32:09
+I remember. So after obtaining seeds, I will use.
+2:32:15
+Uh, here. I don't know yet, I use this.
+2:32:28
+How are you supporting? I'm up to 512.
+2:32:59
+I do activation of that. After that, I do.
+2:33:04
+Then after activation. ReLU. Plus some of my function is end.
+2:33:12
+Hello. I compiled this model because the same parameter.
+2:33:25
+And. Let me change this model.
+2:33:38
+The same premise. Of course, those take more time because much more parameters.
+2:33:51
+But can you see it's already you have much better approximation, at least on the test set.
+2:34:10
+Performance was already 99% and looks much, much smaller.
+2:34:18
+If you have the lowest like 22.3 and now you see what the beautiful loss is.
+2:34:24
+And when we go to almost 100%. This is when people start to worry.
+2:34:35
+Maybe our model is overfitting. It's a very good thing because you have so many parameters.
+2:34:39
+You just adjust parameters. That is all give you almost perfect solution.
+2:34:46
+Get it here. 99.67% accuracy.
+2:34:59
+Well, the thing is that they always get everything fine. Perfect.
+2:35:06
+No. Usually it's a sign of digit.
+2:35:11
+So this way we want to calculate what is the real performance will be on the unseen data.
+2:35:18
+Which is very pretty. But it's not so bad.
+2:35:31
+Chief, would we have accuracy?
+2:35:42
+98%? So no, we can honestly say that I expect that in the future.
+2:35:47
+Whatever I use this algorithm, this simple model function, well, I can save this model.
+2:35:54
+I can forget about my original images. It's a very nice, simple function, very small file.
+2:36:00
+And I can run this for the new images. And I expect with the high probability that in future it will give me a call that comes in 98% cases.
+2:36:06
+Which is not. By the way, this was a like in the 90s, and it was considered just state of the art for post offices performance.
+2:36:17
+You look as if he could be the antagonist.
+2:36:28
+You will see this fantastic history. The people try to beat this record, of course, and at some points it's the best record.
+2:36:31
+You know, student goes to a student from Euclid Technological Institute when they make the best possible solution,
+2:36:41
+at least when he has to go over there last time so they can see very correctly all test images in part three.
+2:36:52
+So he just see was mis classified by. So it's very pretty.
+2:37:00
+But even this model as you can see very impressive performance.
+2:37:04
+So as a summary what we have here. In this calculation we saw that.
+2:37:09
+We just follow all our procedure in this example and don't forget you.
+2:37:20
+You can always run. Because I put this Jupyter notebook into the code.
+2:37:25
+So as you can see here what you did. We just.
+2:37:33
+Follow our. They'd step.
+2:37:41
+Our daughter was already in standard form. Of course, this was an array of the daughter.
+2:37:47
+After that, we decided to use some algorithm. And we use neural net.
+2:37:56
+And after that we just ran and this one was up to us.
+2:38:02
+We defined hypothesis space as the first time as a linear transformation.
+2:38:07
+It sort marks the second phase. We use two linear transformation and we put some non-linearity between them.
+2:38:12
+And even in this case, we achieve what she does in 98% of performance.
+2:38:21
+So it's pretty good. Okay.
+2:38:29
+So I think it's all for today. Our next lecture will be on Monday.
+2:38:39
+First of all, thank you. Thank you everybody for coming and have a nice weekend and see you on Monday.
+2:38:52
+And remember, because I teach you from home, if you have any questions just send me mail.
+2:38:58
+Or if you want to discuss you can ask and you can send me invitations.
+2:39:03
+We have a team or zoom meeting and we can all discuss details if you want.
+2:39:08
+Okay, have a nice weekend and thank you very much. Thank you.
+2:39:13
+Have a nice weekend. Thank you. Have a good weekend.

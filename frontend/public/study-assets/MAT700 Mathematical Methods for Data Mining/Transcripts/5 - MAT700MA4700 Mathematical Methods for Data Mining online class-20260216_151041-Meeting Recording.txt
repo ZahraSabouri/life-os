@@ -1,0 +1,1766 @@
+5 - MAT700MA4700 Mathematical Methods for Data Mining online class-20260216_151041-Meeting Recording
+Auto-generated captions may contain errors.
+Okay. Uh, in the last lecture, we started to learn what is a distance measure is.
+0:17
+In data science and in general mathematics. So to measure similarity between two data points or.
+0:28
+Distance between them. We use the standard mathematical definition of distance measure or just distance.
+0:38
+So what this does is, is if you have set omega.
+0:47
+Then distance, measure or distance function until the game is through which for any to point x and y.
+0:53
+Calculate distance between zero. Some real mob.
+1:05
+So in general, distance is a function from regard to set of pairs into real numbers.
+1:09
+But to call this function a distance, measure or distance.
+1:19
+This function has to satisfy for property.
+1:24
+First it has to be non-negative. So distance can be a negative number.
+1:28
+Second and distance equals zero if and only if x equal y, which means the distance between x and x is zero.
+1:34
+And if distance between two point x and y zero, it's been x equals y.
+1:44
+Distance has to be symmetric. The distance between x and y equals distance between y and x.
+1:49
+So usually, as I said, the first city property, it's very easy to check.
+1:58
+The most important from a symmetrical point of view property is it, which is usually not so easy to check.
+2:03
+It's called triangle inequality, which tell us.
+2:10
+Even calculate distance between x and y, plus distance between y and z.
+2:16
+This will be greater than equal the distance between x and z.
+2:23
+So this way it's called triangle inequality. So let's see example, the most famous example which we all know from school.
+2:26
+It's called Euclidean distance. The square root sum of squares of of differences between coordinate.
+2:36
+It's a classical Euclidean distance, but even in this case proving.
+2:44
+Triangle inequality is not so obvious. But of course it's not negative.
+2:51
+It is symmetric. And of course if it's zero it means that x y equal y more general norm.
+2:55
+Which is a generalisation of L2 norm. It's called l r norm, but only for r because n equal one.
+3:07
+It's defined by a similar function, but we replace two by r.
+3:15
+Then this is also eating out.
+3:23
+It's also distance. It's a display of all four properties.
+3:26
+But only four are bigger than equal one and triangle inequality.
+3:31
+In this case it's very nontrivial. Inequality is called mean inequality.
+3:36
+We are not going to discuss, but this is a very popular choice as well. The limited case of L1 norm.
+3:41
+It's called in our norm 107 article one.
+3:48
+And it's called Manhattan Distance, which. People use.
+3:54
+When your data is you expect it is subject some big outlier.
+3:59
+So you have several data point and you expect that maybe several of this point in general data is good but several point really outlier.
+4:06
+So it's much better to use L1 norm in L2 norm because L1 norm is not so central for outlier and also opposite.
+4:14
+When all goes to definitive, you have an infinite. Which is defined as a maximum of x I minus y I over all dimension.
+4:22
+So this is a classical. Norm in the Euclidean space R in.
+4:32
+Vector are in. No, of course not.
+4:40
+Everything vectors in this life. So the next.
+4:44
+Famous distance is so called Jaccard distance. So let's discuss one again.
+4:51
+Jaccard. Jaccard distance is a distance.
+4:57
+Between two set X and Y. Which we define by definition.
+5:02
+Is the one minus jaka similarity. Between X and Y.
+5:09
+It is called jihadists. So.
+5:17
+But this is because is in its existence. But you have to check for axiom.
+5:22
+The first is that it's non negative.
+5:27
+And this is true because we know the similarity between x and y.
+5:33
+It's always viewed as n equals zero and less than equal one. Second Jaccard similarity of x, y equals zero.
+5:39
+If and only if x equals y, which is also true.
+5:50
+If x equals y similarity equals one, then Jaccard distance equal one zero.
+5:56
+And that's what we know that if. You can't have equal equals zero.
+6:03
+It means that similarities equal one and one.
+6:07
+Similarity between x and y equals one is mean x equals y.
+6:12
+Said property. You got a distance of x, y is equal jakar distance between y and x, which is also true because.
+6:16
+Similarity between x and y is equal similarity between y and x.
+6:31
+So what is non-trivial is. It's a four year curse.
+6:40
+It's a clan inequality. You know, a good question, mark, because we have to prove this.
+6:46
+Okay, so I want to prove this. Inequality.
+7:08
+And as I said in previous lecture, I don't know this inequality to me and just.
+7:17
+Just the simple manipulation of sets X and Y. But what we are going to use was this I will serum.
+7:23
+About probabilistic interpretation of similarity.
+7:31
+I will remind you the similarity between x and y.
+7:35
+It proves this is a probability just for them to.
+7:41
+Mucus function or random permutation. Mucus really works equal.
+7:47
+Munich failed. This is our.
+7:53
+You're from previous station. So what is in play?
+8:00
+You know, the probability of any event a it's a one minus probability, not a complement.
+8:06
+So which means it distance Jaccard distance between x and y.
+8:16
+Is equal because it's a one minus probability.
+8:22
+Since they are equal, then this will be probability of compliment to the event.
+8:26
+It means the probability that h pi x.
+8:32
+North Equal Age Byway. So this is a probabilistic meaning of Jaccard similarity.
+8:37
+And we are going to use this to prove our triangle inequality.
+8:46
+So what do you have to prove? I will add a right triangle inequality in terms of this probability.
+8:51
+So if you want to prove. Probability of each point x.
+8:59
+North. Equal age. Which is this part of?
+9:15
+Of inequality plus probabilities at age by.
+9:23
+Not equal age, boy said.
+9:31
+Big isn't equal to just what little doing to prove the probability h y x nought equal h y y.
+9:37
+So this is our task to prove this. So how are you going to prove this?
+9:52
+I don't want to write this look exponential.
+9:56
+So we just, you know, this event is a. This event is believed.
+10:00
+And this event was a different sea. So I want to prove that P of E.
+10:08
+Must be obeyed. Because an equal probability of C.
+10:14
+So how are we going to process? What I am.
+10:32
+What I am claiming that. She is part of a.
+10:48
+Be. Would this mean?
+10:55
+That if you see happened, it means it is it is true or be true indeed.
+11:02
+If h pi x would equal h y y sin.
+11:10
+Or A is true or B is true. Because if A is not true, it means that h by x equal play white.
+11:17
+And if b is not true, it means that h play y equal h by z.
+11:26
+Then it immediately imply that hp x equals hp y.
+11:32
+Because if if you are in from excuses to not to where you are different that it is a has to be true or be true,
+11:41
+otherwise is a the magic implies it this to value equal.
+11:49
+So this is our main observation that she is a part of a.
+11:55
+At least if you know that she happened, I can be sure or say happen.
+11:59
+Or as it was, I just have you know, you throw your probability is it if one event it's part of his another event then probability of see.
+12:03
+Less an equal probability of A and B.
+12:17
+It just for probability theory. Big event has a larger probability.
+12:23
+Second, we use property from a probability.
+12:29
+The probability A or b is always less than equal.
+12:33
+We'll beat it your way. Plus probability will be. It goes from strength to strength.
+12:39
+From probabilities. You'd. As a result, you can see that we just prove our inequality.
+12:42
+Because this what you wanted to prove. Okay, so it's beautiful proof.
+12:51
+Not so obvious, but it's use is heavily rely on love interpretation.
+12:57
+That similarity is the probability of some event.
+13:02
+So this is the probability of the opposite event.
+13:06
+And we use this fact to prove the Jaccard similarity. Jaccard distance is in the distance.
+13:10
+Okay. So we just process. And there's a distance.
+13:17
+Very famous. It's called. Cosine distance.
+13:22
+What is a cosine distance? So if I have Docker in our in.
+13:34
+Like images. For example, I have two images, image one and image two.
+13:49
+And I want to measure how similar these two images.
+13:57
+So, but it's not so obvious because image can be the same, but one knows it means a dark environment.
+14:01
+So the vector will be. Small this small in length or in the bright environment.
+14:08
+So all pixel has a much higher rate. But it's still the same image.
+14:16
+If I want to understand semantic of images in the standard way, it's to normalise this vector.
+14:21
+So I normalise where I got the x. Into vector of the unit length.
+14:28
+I do want to just balance. So my daughter.
+14:35
+No. It's on a sphere of silence.
+14:39
+One. And cosine distance between any two points.
+14:43
+It just induces distance when it's filled. Or you may just angle between these two vector and vertical cosine because.
+14:49
+You might have two vector of the unit length then cosine.
+15:01
+In general cosine between any two vectors x and y.
+15:07
+Is equal scalar product x y. You want to buy Norm X?
+15:11
+Multiply by little way. All this is equal scalar product x d y balance x.
+15:17
+Why do you want to balance way? So if I choose as my point x and y.
+15:26
+I owns a unique sphere. Then. And then I can calculate anything between them.
+15:36
+You see there. And this is precisely, uh, of course, and distance between two.
+15:42
+Unit vectors. So it's the same vector, the same distance we use very often when our data doesn't change under multiplication of scale,
+15:52
+which means that the same vector will select 100 times higher.
+16:06
+It's still the same object. Maybe doc maybe sums.
+16:11
+Then we measure just angle between them. No.
+16:15
+What's the next distance? It's very popular for you the distance, but it's called edit distance.
+16:19
+And which is very popular when we're dealing with the text and different sequential data.
+16:36
+So what do you mean? Homepage.
+16:44
+What is your distance, general? Suppose you are given some alphabet.
+16:58
+Some. Crazy characters.
+17:04
+He won a two and it's going to be just English language or computer Ascii code, so whatever.
+17:07
+You have some building blocks of your data and now you x.
+17:14
+Is a string. Of.
+17:20
+Elements. From.
+17:25
+Hey. So see is actually the sequential data.
+17:30
+What time series with sequential data with each element is sample from some set a.
+17:36
+For example, it can be set to all, uh letters.
+17:41
+Then I have text and x. Just think of letters.
+17:46
+Or it can be a can be just all all world words.
+17:51
+Which means it should be just documents which contain words.
+17:55
+I can have binary code zero, one, zero one and so on.
+18:01
+And in this case it's just zero and one. So anyways, suppose I have access this thing on the set of strings.
+18:04
+I can introduce so-called edgy distance. Between X and Y.
+18:12
+What does this mean? For each thing, which is a sequence of element.
+18:20
+I allowed to do one of the two operation. Operation one.
+18:29
+I can delete one letter or one element of alphabet.
+18:32
+Second, I can instead hear another. AG.
+18:37
+So I have two operation. I can delete and I can insert.
+18:42
+No. If I take any two things, x and y.
+18:50
+Lengths of x equal to n and legs lengths of one equal m, which means that x is in characters and the y is m characters from alphabet.
+18:55
+That was then. By using this operation, I can always go from x into Y.
+19:05
+The most trivial of a central operation is the following. First, I remove from x all.
+19:13
+Letters or, uh, all elements and just require an operation.
+19:21
+Because I did it. And simple. And after that I insert symbol from way.
+19:26
+So this means that I can always go from any x to Y and plus m operation.
+19:32
+But maybe I can do better. For example, if I need to go from x o hey b b.
+19:41
+To a BBC. I can do it in one step.
+19:50
+I don't have to delete everything here. And after that, instead of this possible in general same operation, I can just insert one sheet.
+19:56
+So in general, there are many possibilities to go from x into the y.
+20:04
+Since it is a one pass with the smallest number of operation of insert and delete.
+20:10
+So this smallest normal operation of insert and delete its precisely age distance.
+20:18
+So this is a definition. Just.
+20:24
+So. I have one string.
+20:37
+And then I just think. I can't do inception.
+20:43
+All I can do. Deletions and the smallest numbers.
+20:48
+This is a. He is a crucial word. The smallest number of such operation is called edit distance.
+20:53
+Okay, so let's check. Age. Distance is indeed.
+21:03
+Legend is in the distance. What do you have to do?
+21:08
+We have to check. So we have things x and y. And Z, and I want to check for actual first.
+21:20
+This age. Distance. Because n equals zero.
+21:30
+Which is obviously true because you can't have. Negative number operation.
+21:35
+Second. How did you distance between x and y equals zero if and only if x equals y,
+21:42
+which is also obviously true because if x equal to y you don't get any operations zero.
+21:52
+And if you have zero, it means that you can go from X to Y without any change, which means x equal to y.
+21:58
+Three. Y d x y.
+22:05
+Equal distance between y x. So if you go from here, you can go from X into Y.
+22:11
+In some number step. So you insert several letters and you delete several.
+22:21
+Then you can go back. It's the same number of stamp but no insert to insert.
+22:27
+Can you do deleting what you insert before and after insert of uh deleting you do insert.
+22:34
+So it will be the same operation. So it's symmetric. Long as the question is how to prove triangle inequality.
+22:41
+So what do we need to prove it? How did you distance between x and y.
+22:49
+Plus age distance between y and Z. Because equals v equals A.
+22:55
+This is a distance between x and z. So how to prove this inequality.
+23:02
+It almost immediately follows from definition.
+23:08
+Suppose I have string x. I have seen why, and I have seen that because he x y is a distance between x and y.
+23:12
+It means that there is. I don't know what, but it is.
+23:23
+I know it is. There is the one possibility to move from X to the Y is this number of steps.
+23:27
+Yes, it's the smallest number of stamps, but at least it's a number of steps that exist.
+23:35
+I can move from x to y the same between y and z.
+23:40
+I can go through. What was it? In this number of operation.
+23:45
+Once again, it's a smallest number operation between y z, but such possibility exists.
+23:52
+So it's means that in general I can go from x.
+24:00
+Into the why in this text.
+24:05
+Why was he? Why is it operation?
+24:08
+So at least there is a possibility. But remember the definition of distance.
+24:13
+This is the smallest. Normal operations that required this number.
+24:26
+These number operations. We. This number operation exist.
+24:33
+And real distance is the smallest. Which means it.
+24:40
+It is it. This sum or even smaller.
+24:44
+This is why we have this inequality. Because he said it almost immediately from definition.
+24:49
+Because it has a keyword smallest, so don't forget.
+25:02
+When you define distance to users with smallest, this is important.
+25:08
+And so his example. For example, if this is a string ABCd.
+25:15
+And what is this thing? And suppose you an exam.
+25:24
+I ask you to calculate distance between x and y.
+25:29
+So what does it mean? Remember definition already? Distance.
+25:33
+It's the smallest number of step that you need to perform.
+25:38
+Was a standard operation. Insert or delete. And you can move from X to Y.
+25:43
+So if I ask you to calculate this distance then you have to do two things first.
+25:50
+If you claim, for example, like in this example, the distance equals three.
+25:56
+You have to produce me two things. First, you have to show me that there is a path of the length three that you move from x to y.
+26:00
+And second, you have to prove that you can't do better because you have to prove else what is the smallest.
+26:10
+In this particular case x and y. You can check that using these three things.
+26:17
+If you did, you for example, feel a, b, c, d e if you delete b.
+26:25
+In seventh of this year. And it said, you have to eat.
+26:33
+You will obtain a way. Would we just show that?
+26:41
+Real distance between x and y. Less than equals.
+26:52
+We didn't calculate this as yet. We just show that you can do this in three steps.
+26:58
+And because definition of distance is the smallest number of step.
+27:05
+So we just show by show me partial response that you know the distance only less than equal three.
+27:09
+Okay, so what do you have to show for it? If I want to prove. The distance is three.
+27:19
+Indeed. We have to show is that there is no sequence of users in Siri insertion and deletion.
+27:27
+You can convert text away. And then you can see this distance.
+27:39
+You can see why you can't do better than three. We just show the distance between x and y.
+27:45
+Is less than equals three. So suppose we can do this as a smaller number of steps.
+27:52
+So smaller number of steps. That is a possibility. Zero 1 or 2.
+27:58
+Okay. Of course, you can't do this in funeral number steps because.
+28:05
+X is not equal to y z any different. So you have to do something.
+28:11
+So zero. It's impossible. No.
+28:19
+Why is one impossible? Because if you can see.
+28:26
+And y y contain two new letters, F and G, which are not present in X.
+28:32
+Which means that you need to insert two. With this, you need to do two insertion.
+28:41
+I think this means that one is also impossible. So how to check that you can't do this into operation?
+28:48
+And it's the reason he's offering. What is the length of x?
+28:56
+His five. What is the length? Why?
+29:01
+It's six. And suppose you can do in two operations.
+29:04
+Know every time when you insert. You change.
+29:11
+If your length was even number. After one instead is become odd.
+29:16
+And if it's old number, it's become even the same with a deletion.
+29:22
+Do you delete? You put it just in case you're length or number.
+29:27
+If you delete one table, it should be you in them.
+29:31
+And if it was even number when you delete it will be odd number which means it if you perform two operation.
+29:34
+If original steam was even lent. It has to be.
+29:43
+Even if it was old woodlands. It has to be used, which means that you can't go from.
+29:46
+Strength. Strength of the woodlands. To just think of the even lends into operation because of the operation.
+29:54
+If original boss was owed, you will have owed.
+30:03
+It was even. It's even so.
+30:06
+This story proves that you can't do with the zero, 1 or 2 step, since you prove the distance equals three.
+30:09
+Different problem. Like if you have your data which you can represent the vector, you have Euclidean norm or an Ottoman or an infinity or L1 norm.
+30:18
+Also, if you care only on the direction of the vector,
+30:29
+you can use cosine that if you're doing dealing with sequential data like stock market price, binary data language model.
+30:33
+So one then we have this very beautiful idea distance which you can measure how to think.
+30:45
+What is the distance between the. But the beauty is there.
+30:51
+There is the one. This. Does it always exist? It does matter.
+30:56
+What is your daughter? It's very okay.
+31:00
+It's very primitive distance. But at least this distance is always exist and it's called Hamming distance.
+31:04
+So remember, the always is you, the doctor. Come in. This thunderstorm.
+31:13
+In data science. Is it table? So this is a.
+31:18
+Example one, example two, and so on. And this attribute a1 a2 and.
+31:29
+So what is a climbing distance? If we take some example one.
+31:37
+An example two. So Hamming distance is important.
+31:43
+I look in this row for want this for one example.
+31:49
+I look into them. Rule of the second example.
+31:54
+And I will count in how many positions they are different.
+32:00
+Sometimes they are different, like here a and here or here and here.
+32:05
+See different. So I count in how many positions here different.
+32:10
+And this number is called Hamming distance. And it always exist.
+32:15
+It doesn't matter. It doesn't mean that it's a good distance. In many cases it's not very good distance.
+32:21
+But remember this distance is always exist. So what does it mean?
+32:28
+There are several algorithms we will learn data science which depend only on distance between your observation.
+32:34
+And. After that is they produce some sort of algorithm how to calculate some property.
+32:43
+But of course, it's heavily dependent on the quality of this. Are you really measured?
+32:50
+But at least I mean, this always existed. And you can always run this algorithm with a Hamming distance for any that.
+32:54
+Okay. Performance can be very bad. But it gives you a baseline which you know what you have to improve.
+33:03
+But it is. It's always a good starting point because when you have just data and you don't have a clue what's inside, how is behave.
+33:12
+It's always nice to have something. Sometimes.
+33:19
+I mean, this is not bad, especially when you talk about categorical data.
+33:22
+Look, numerical. Because, for example, uh, you medical doctor is not very good.
+33:27
+Because if house price one price is like.
+33:33
+Uh 30, 2000. 320.
+33:38
+And then I just said, you 3000. Then, of course, they're very close.
+33:43
+It's enormous. But according to Hammond, this was a completely different.
+33:49
+So. But if your daughter is a categorical small big apple tree, just labels, just categorical data.
+33:55
+This is a very good metric, very good distance. So the least you can do an algorithm always can you have someone's.
+34:02
+So let's look in this type of algorithm. Which depend only on distance.
+34:12
+This is probably one of the most famous algorithms. In machine learning and data sizing, said data science.
+34:19
+It is a special name, lazy learner and is just.
+34:28
+Lazy to learn anything. It's always existed. This is the beauty of this algorithm.
+34:33
+It's always nice to have a starting point of this algorithm. As this algorithm depends only on distance.
+34:37
+And this, by the way, how, as I said, for example, predicting a home price depend you can go a distance between two homes.
+34:47
+So just real distance on this. But how similar number flat is that.
+34:56
+The heating allows the parameters. And of course if they're located close have very similar future then you expect them to have similar price.
+35:01
+So this is your main idea of the. Neighbour classification.
+35:10
+Because if there is something unknown, you just.
+35:15
+Ask several friends or you look some neighbourhood close and you go with a majority.
+35:19
+Who are some modifications? Discuss. So let's see example. And what is important?
+35:26
+It's only depends on distance. So let's look into a very simple example.
+35:31
+Suppose you have two data point. This is the first and this is the second.
+35:37
+Abcdef. It's attribute. Glass.
+35:44
+It is just label. Maybe it's some sort of some magical related.
+35:48
+Some measurement A, B and so on. And now you have a new item.
+35:55
+If you. And I ask you.
+36:01
+Which label you put here. Negative or positive.
+36:06
+So when you look at this new data and you look in these examples that the original ones.
+36:14
+Example one. An example to the first.
+36:19
+Very similar. Yes. Perfect. Second.
+36:27
+Close to first. Seth. Close to first as well.
+36:30
+6.6. Close to first. Eight close to first.
+36:34
+Little close to us. So you see that this new daughter.
+36:38
+Very close to the first item. But look to the second.
+36:42
+Then what I will do. I will declare this new item.
+36:47
+Negative. So this is the main idea.
+36:51
+You have several data points. You look which is the most similar or close to my new data, and I go with a majority.
+36:56
+So let's make this formal definition. So we assume that we have.
+37:05
+I would not come from some set of omega and there is a distance between any two points.
+37:12
+Uh, is this a kilometre? And? In this letter.
+37:19
+Omega, we are given. Some examples.
+37:24
+When we no one's. This is a possible.
+37:33
+Labels. Star, cross or circle.
+37:41
+No. Suppose. You are my life.
+37:50
+And I want to find a label. So I fix the I fix is the beginning of doing.
+38:03
+I fixed the key. And this is why it's called K-nearest neighbours.
+38:10
+Okay. And then. Which means it is a hyperparameter.
+38:15
+You have to decide in advance. Nobody tell you how. Worst case would be.
+38:19
+But after. That algorithm is very simple. You just look into their.
+38:24
+K closest points, for example, when k equals three.
+38:30
+The closest point to my new item will be these three points.
+38:35
+Why select three? Nearest neighbours and I look.
+38:43
+From these three nearest neighbours that they know answer what is the majority?
+38:50
+In this particular case, majority is a single. So I declare my.
+38:55
+New item is a second key.
+39:01
+So in general, you look into the K-nearest neighbours.
+39:05
+Of course, you have to calculate distance to all of your data and select case closest.
+39:08
+After that, you just look in the label of this k closest point and you look which label has a majority,
+39:15
+who you declare you and you item with this label. Now there is a toy and you have several labels.
+39:24
+With the same highest number of filament causes.
+39:31
+Neighbours. You just.
+39:35
+Randomly pick one of those in. So this is a K-nearest neighbours.
+39:39
+It's a fantastic algorithm. What? It's fantastic because.
+39:45
+We can prove serum. That. We're number of points.
+39:51
+This training set goes to infinity.
+39:57
+The header of this prediction goes to zero. So as long as you have enough data, you can prove that we can prove that the error goes to zero.
+40:02
+Which is a fantastic, like almost universal algorithm. Collect a lot of data and usage.
+40:11
+And you go to small error. Ideally you will almost zero only one.
+40:18
+This is theory of existence. Though, would you tell you if I won't give the error of just 1%?
+40:25
+I don't know how big it has to be, so I know it is a good in theory,
+40:33
+but for any particular at a level I can't say yet, or if I want to have another 1%.
+40:39
+This is not above that. I have to take you seriously, but in theory it's a very good argument.
+40:46
+So this is a beauty set. This is the beauty of this ugly part.
+40:53
+Of course. There is a lot of disadvantages there.
+40:58
+Even one of them is. For particular add on.
+41:02
+We don't know how many eggs you have to take.
+41:05
+And second calculation pretty heavy because for any new item arrive you have to calculate distance to all your points.
+41:08
+And if it's a lot of points. And you want to have a look.
+41:19
+Westmorland. Then if you'll be very slow. Of course, in practice.
+41:23
+There is a very similar probabilistic algorithm. What we did before.
+41:31
+Much faster al green, but which give you not precise distance.
+41:36
+Give you some distance there. But it's still very good and very fast.
+41:41
+Estimated this. Okay.
+41:45
+So. Truth is a key point.
+41:48
+Does it affect performance? First of all.
+41:55
+We have to choose not. It's the beginning.
+42:00
+We don't know what the case would be one, two, three or so on.
+42:05
+So how are we dealing with this? We did it.
+42:10
+Quizzes? No. No. Really? Do you? And show you how?
+42:15
+This is a standard within within don't know key.
+42:21
+Which is because it means that this is a hyperparameter. I have to fix this hyperparameter many times.
+42:27
+So people do. The allowances algorithm.
+42:32
+For kit. You call one for k equal to for k equals three and so on.
+42:40
+So it goes with some possible engine parameters, and then calculate Adam on unseen data on some test set.
+42:46
+So usually what's happened. When you take k equal one or is very big enough to go down there.
+42:55
+But up to some point it will start to go up. The reason for this.
+43:06
+Over here. We will discuss it. So it this case, after doing this experiment you select this like for example five in this case.
+43:12
+And this is how you select your key for future application. Also, there is another problem.
+43:23
+Is this all good? Which we discuss? Let me show you.
+43:31
+Example problem. Suppose you have a new item.
+43:36
+And you don't know that? No, it is the one label square.
+43:46
+Both. And distance equal one. There is another circle.
+43:52
+And then there's a circle. This is distance two and this is a distance three.
+44:00
+And these three points are my neighbours. Three k equals three.
+44:07
+And for my new data C closest neighbours one is a square and two.
+44:13
+Labels which label cycle according to classical K-nearest neighbours.
+44:22
+My solution will give you the majority.
+44:28
+So I will declare that my new point is just the single.
+44:32
+Because from this three point I have two circles and one square.
+44:37
+But somehow it's not very natural because, look, square is a very close to this.
+44:43
+And we know that if two items very close. Sometimes a jump.
+44:50
+So, you know, if some points are very close, then they're supposed to have close links.
+45:11
+So what is a solution? Is it so called weighted ugly. If you take this k nearest neighbours but for each uh element and you wait.
+45:19
+So for each point. X1, X2, x3 and so on.
+45:31
+I will create labour so x I will have weight one over distance square between my new point and x I.
+45:39
+So now I look into the law.
+45:51
+In this particular case weight of x if you would be one over four.
+45:55
+It's A4X1. 4X2 way to be one over nine.
+46:02
+And for x3 to which will be one.
+46:08
+So no, what they will do. I have two circles. So I had all the weight of my cycles.
+46:13
+So in general classical you'll have weight one over four plus one overnight.
+46:20
+And then label one label square.
+46:27
+We'll have. Wait till I sum all the weight of all schools in this neighbourhood.
+46:31
+This kitchen should be one. And after that, I go with a class with the highest weight.
+46:36
+Because one is biggest in the weight of the sickle.
+46:43
+Then my solution will be square, which is much more natural.
+46:46
+So this. Uh, modification is equal weighted.
+46:52
+Yeah, it's near, but so good. Is this what you usually use in practice?
+47:01
+Because it's much more reliable and take closer point with the higher wage laws in.
+47:07
+Okay. So. This was the final first algorithm.
+47:18
+K-nearest neighbours algorithm. Which is. Let me summarise.
+47:24
+He is the one hyperparameter k, so we have to somehow decide in advance or by cross-validation to find all this key.
+47:31
+This is a universal algorithm. It's work everywhere, but is a distance.
+47:40
+Plus in the book then most important algorithm that I signed because this is algorithm number one.
+47:44
+Why? Because it's always exist. You can always start. Also, there are some status quo guarantee which is not practical.
+47:51
+But still, it's nice to know that if there's a point that goes to infinity and it goes to zero.
+48:00
+Plus, from practical point of view, it's much more much better to use logic.
+48:06
+Straightforward. Analytical. K-nearest neighbours. But so were you.
+48:11
+So called weighted K-nearest algorithm, where you calculate each point with a weight.
+48:15
+After that, for each label you know its own weights by segment weight of points with this label.
+48:23
+And if you go with the highest weight. And if there is a tool labelled with the same highest weight, you just pick randomly.
+48:28
+And these are the first very practical algorithm.
+48:38
+But the next question we will discuss is who will develop a lot of output.
+48:43
+But the question is you develop say in a logarithm. How can you be sure that what we develop is good?
+48:50
+So this means that our next topic will be. So-called model evaluation and model selection.
+48:57
+Which we will do after a break. So see you in ten minutes. Okay.
+49:04
+Welcome back after break. So now what you want to discuss is.
+1:00:45
+Uh, suppose somebody gave you that thing? The company you built?
+1:00:52
+Model. It's predict something.
+1:00:57
+But the question is, how do you evaluate how you can sell this to management or towards the customer?
+1:01:01
+Our model is good and reliable. So this is a question how do you have a great model?
+1:01:08
+For example. And suppose.
+1:01:15
+You use data from previous cell to build classifiers to predict customer behaviour.
+1:01:21
+If is a customer going to buy this or not to buy, then so what you want to do?
+1:01:27
+You want to estimate.
+1:01:36
+Performance and accuracy of this classifier, but not when you're done for something you already know once or for future customer.
+1:01:39
+So this is the main question. You built model based on your current data, whatever you have.
+1:01:47
+But now you have to answer the question. If somebody ask you if I deploy to deploy my model.
+1:01:55
+What is it you expect to have? Because on your data that you already know?
+1:02:04
+What's it? You can build more than just you just memorise this module, put that on the hard drive.
+1:02:09
+And for this data, you have 100% correct prediction because you already know once.
+1:02:16
+So when you're talking about evaluation, you always ask the question what's happened in the future when you deploy this model?
+1:02:20
+But nobody no future. So the question is how do we deal with this?
+1:02:29
+An idea is you say stabilise statistics.
+1:02:33
+You always assume that your future data will come from the same probability distributions that your original data.
+1:02:36
+It's not something that you build classifiers to predict. Houses in Cardiff I suddenly start to use this for predicting houses in Brazil.
+1:02:44
+So we have some notes with more precise assumption.
+1:02:53
+So if you ask question in the future, does that come from the same probability distribution that your daughters that you used to study?
+1:02:57
+What is the chance? What is the accuracy? What does that will be for this future data.
+1:03:05
+So we want to estimate accuracy as the question is.
+1:03:11
+What is accuracy? How can we estimate this accuracy?
+1:03:17
+Is there any measures in just accuracy which is a more appropriate for our problems is just accuracy.
+1:03:25
+And second, how we can obtain reliable estimation.
+1:03:33
+How can be sure? Is that what you predict? How each model will behave?
+1:03:38
+It's really. I was going to go over the label estimation.
+1:03:42
+So let us look in. What is the problem is?
+1:03:48
+And you can estimate. I built my model, I really estimate error when the training.
+1:04:00
+Seth. We can say that you have this classification error on the training set.
+1:04:11
+I want to predict some labels for customer with customer.
+1:04:19
+Going to watch. And that's why I can use coach performance, which I used to train my model.
+1:04:24
+This is called misclassification error on training set. What they said.
+1:04:32
+What we are interested in really in data science.
+1:04:38
+It's so cool. Generalisation.
+1:04:41
+Error. The energy you get when you play is not the only future that.
+1:04:45
+Of course, nobody can see it as it goes east once again. But would we assume that this new data come?
+1:04:57
+Use the same probability distribution. And of course, this is a new doctor if you don't use his doctor on the duty training module.
+1:05:05
+So why is it happened that. Misclassification rate and training sessions are very small.
+1:05:17
+On a future date that we perform very badly. And one of the biggest sin.
+1:05:26
+Data science. It's cool. Overfitting.
+1:05:38
+This is really. The biggest sin of data science.
+1:05:45
+So would it be overfitting?
+1:05:52
+You create a model which is so complicated, so big, that all your training done so that you have to perform fantastically well.
+1:05:55
+Maybe even error is a 0%.
+1:06:09
+If you. Who plays his daughter. This model for future daughter.
+1:06:16
+Something to you? Have horrible performance. Future.
+1:06:22
+So what is the reason for this? There is a reason for it that when you.
+1:06:26
+Fit your model very precisely. We start with what you have.
+1:06:33
+Then each data, whatever you collect, that it doesn't matter how good is the data is always contained to part.
+1:06:38
+Good part and noisy part. There's always noise in your data.
+1:06:46
+Uncertainty.
+1:06:50
+So when you precisely model your current training data, it means that you not only model data itself, but you also model this particular noise.
+1:06:51
+But in future, noise can be different. And its reasons is why you have so bigger.
+1:07:02
+Well that's. See example. Supposed to have six blue points.
+1:07:11
+Okay. And perhaps this.
+1:07:17
+Point x hi y I.
+1:07:22
+Is it? Blueprints. And I want to predict this behaviour.
+1:07:27
+So I want to build function f of x. So at this point f of x y it's approximately equal to y I and how many points I have.
+1:07:31
+Let me count. I have to have 19 points.
+1:07:44
+I have 19 points. You unfortunate.
+1:08:01
+I have 21 points. And I want to find funtion which give me a good approximation.
+1:08:07
+Look in the future. Left and right. Then I can ask myself, okay then what is the caring for function f?
+1:08:15
+And that's why I want this function f of x to be positive low. To some degree the.
+1:08:23
+Degree of polynomial. For example, he went for the best approximation was a point of degree for ten.
+1:08:38
+This will be great for my put it on, which is pretty good for all of our data.
+1:08:52
+No I can't. No. Wouldn't it be pretty good if when you put it in the future, you'll be somewhere here?
+1:08:58
+And my point will give this point value, which is a pretty good quality to this behaviour.
+1:09:07
+But no, I could do that for 20 points, the 21 points.
+1:09:14
+And in mathematics we know that if you have 21 point, you can build a unique polynomial of degree 20.
+1:09:19
+Which looks not only close to this point, but precisely so.
+1:09:28
+So would put it of degree 20. I can't quite put it on when header on this docker that they have just you it precise value.
+1:09:33
+But you see how crazy that is pulling over looks like. Which means that if I.
+1:09:46
+Take point. Come on. You're close to here.
+1:09:52
+The value. I expect to be somewhere here around because it's good, but my values will be huge number.
+1:09:57
+This is a crazy behaviour. So once you get repeated where you precisely follow it very vaguely with your data.
+1:10:07
+But in fact, on real data, you create huge. To help Toby avoids the situation of his overfitting.
+1:10:17
+What do you do? We have gotten. And this is what we have.
+1:10:27
+Because we don't have data that will come in the future.
+1:10:33
+This is our data. It just turned that way, which I use.
+1:10:37
+Many people use it. I divide this data into three pieces.
+1:10:43
+60% annual training data.
+1:10:48
+20%. It's a cross validation that.
+1:10:54
+And 20% tested. 60%.
+1:11:02
+20% and 20%. So this meal, first of all.
+1:11:10
+When I have doctor, I always reshuffles it. That. Because maybe that does it.
+1:11:16
+Somebody gave you some special alphabetical order of users and so on, and I don't want to have the user restart facility.
+1:11:23
+So the first thing you do, you reshuffle data and after that you devise is done in just three pieces.
+1:11:31
+Some people use it like 80% and that is what I use.
+1:11:40
+So what this mean? First of all, you never touch test data.
+1:11:45
+You're keeping it simple. This will be on the look of your future daughter.
+1:11:52
+Just will arrive. And because we assume the data come from the same probabilistic distribution,
+1:11:57
+it means that your test example also promises future probabilistic distribution of the same.
+1:12:02
+We have a model like, for example, K-nearest neighbours. And you have this model for k equals one, for k equal two and so on.
+1:12:13
+No. I want to select hyperparameters to select hyperparameters.
+1:12:24
+Remember, you never touch test data. It's always a future for test parameter.
+1:12:29
+I will use cross validation that. I calculate my error for k equal one for k equal two for k equal three, and I find the best possibility.
+1:12:35
+So then you do example build model.
+1:12:47
+But model can depend on hyperparameter. Cross-validation.
+1:12:50
+Example. It's example where you try to find out some parameter.
+1:12:54
+For example you neural net and you don't know which architecture is the best.
+1:13:01
+You try one architecture, containers, architecture and so on.
+1:13:06
+But if you try to use this estimation. This architecture different on the test example it means that information from test example is a leakage.
+1:13:11
+You have to your model build it. You say we assume that you don't know in advance about test example.
+1:13:20
+So you train model on the training example.
+1:13:29
+How do you do cross-validation? Finding hyperparameter.
+1:13:33
+Unzipped cross-validation. Example. And only after that, when you build your model and you find a hyperparameter,
+1:13:37
+for example number k K-nearest neighbours, then you do final evaluation for test example.
+1:13:44
+And if you have make up a larger 2% of correct answer as this you report as accuracy.
+1:13:52
+Note your performance on this set because you adjust your model specifically for this example.
+1:14:00
+Look, you are accuracy for cross validation set only for.
+1:14:06
+I see an example to test your performance.
+1:14:10
+And this is what you report to customer to management when they ask you what is accuracy of your model?
+1:14:15
+Okay. So let's see example. For example I want to classify handwritten digits.
+1:14:25
+We already did using utility. But now I want to use K-nearest neighbours.
+1:14:30
+So what I will do. So this is my daughter. I want to watch what one of those and nine numbers and.
+1:14:36
+My strategy will be the following. I tried to use K-nearest neighbours.
+1:14:43
+For example, for k equals c. You and I will think how many example would can happen bet.
+1:14:56
+For example, let's see this in development. Suppose my training doctor is here.
+1:15:07
+I just randomly generated some rule by doctor blue and red and this white cast example, which I don't touch.
+1:15:13
+So I want to figure out which card to use. What is interesting.
+1:15:23
+Suppose k equal one. So what this mean? Because.
+1:15:29
+For training guys. I don't want to take away from training set.
+1:15:35
+The closest point for that snack. Oh, you did that circle for.
+1:15:41
+Closest point to the blue hill. The blues I say. So my.
+1:15:47
+When I apply this to one of the training set, that one will be zero.
+1:15:51
+Bottle tasting set. I don't know if you did. 15%.
+1:15:57
+And this black black is quote a decision boundary.
+1:16:05
+It's when you have, uh, two points.
+1:16:11
+Was. It was the same distance. Red and blue. Oh, you are not sure?
+1:16:16
+So if k equal to k equals three. Uh, Adam.
+1:16:23
+You'll be 7% increase. Well, then you said.
+1:16:32
+But on this you said it's become 30%.
+1:16:36
+That's a decision boundary. It's become much more smoother.
+1:16:39
+And I can do here some experiments continue.
+1:16:45
+Seven. She bounded to become even more smoother. Error on training set.
+1:16:50
+Increase. But error on tensions. Heated. Decrease.
+1:16:54
+Which is not fantastic because what I need to practice.
+1:16:59
+I did keyboard error over the training set. I won't go the testing set on future decimal error and you continuous source you for 21.
+1:17:04
+We have this area stabilised here of 9%. And so.
+1:17:14
+As it result. You see, when a kid is pacifier, it becomes smoother.
+1:17:21
+But then you've got to increase. But when I do cross validation, I can see that the error decrease.
+1:17:28
+They found the kid was the smallest. So when I use the same approach.
+1:17:36
+For their hands. Anything. Digit. And I want to use this kind of Euclidean distance.
+1:17:40
+And I want to find Jay Z is to note that with the k equals seven.
+1:17:49
+For the test example, I will have 3% of all. It's not as good as you build before you your neural net.
+1:17:58
+When you have like 99%. 40 years ago.
+1:18:08
+This was one of those the best possible algorithm because.
+1:18:16
+It was very natural. You calculate distance, you select several several nearest neighbours and you go with the majority.
+1:18:21
+Elevated majority give you a better result. Okay, but this is accuracy when I say out of 5%, which means it.
+1:18:29
+In 95%, I predict correct label. But even 5% I will predict for look at the label.
+1:18:43
+So this is a general call accuracy. But the question is sometimes we need a little bit more accuracy.
+1:18:52
+Let me give you a historical very interesting example.
+1:18:59
+It was from newspaper. It used to be several years ago.
+1:19:03
+It was a fantastic article. When people say in BBC news that some scientist.
+1:19:07
+Develop for such specific occurrences. You there, Agnes.
+1:19:16
+And they found. And then you. Constant classification the agonist as he sends it.
+1:19:22
+This new test. But it was correct in 99% cases.
+1:19:33
+And to give you only 1% error. Because it only grants the greatest 1% error and the 99% correct diagnosis.
+1:19:39
+But when you look carefully about this particular country to know that you knew in UK only half percent of people have this concern.
+1:19:51
+So it means that, well, I can even resort to this investment.
+1:20:04
+Three, eight. The following question for you.
+1:20:08
+For each person. I will tell that he does have concern. Okay.
+1:20:12
+You don't spend any money. I can create a classifier. Whatever person here.
+1:20:18
+You know, personally, I shall not consider this particular case. And I will be correct in 99.5% cases.
+1:20:23
+No, just in 99% cases. So somehow he understands that this is a high school.
+1:20:33
+Is it something for you? So it just general accuracy how many times you correct you wrong?
+1:20:38
+It's not very reliable in this case. Why?
+1:20:44
+Because we have a classifier with the two outcome plus or minus two label.
+1:20:49
+But it's very skewed classes, which means that it's not just 50% to one class, 50% of another class.
+1:20:57
+So there's a huge this balance between element in this class. For example it has refugees.
+1:21:05
+It means. It be used? It was a balance situation.
+1:21:10
+So each. Number zero, one two and so to none.
+1:21:16
+They all have the same number of element is a three. You've got six k and they have the same number of element.
+1:21:21
+The test data. Why the k. But in this case.
+1:21:29
+Data is very important. So the question is how do we deal with this?
+1:21:34
+So what you have to deal with this is a falling. Suppose you have two classes, plus and minus or 1 or 0.
+1:21:42
+This is. And. They not only just balances in our budget, but.
+1:21:53
+For some reason predicted overlay of correctly class plus.
+1:22:01
+It's more important that everything comes. So what this means is the kids look out.
+1:22:07
+Do you want to do the ID for people in Wisconsin?
+1:22:14
+You want to be sure? Very good performance in predicting Council.
+1:22:18
+And for people without consent. You alone?
+1:22:26
+Okay. It's not nice if somebody if you saw it coming, said. And the doctor told him.
+1:22:30
+Yes. You have to answer. It's stressful.
+1:22:34
+It's a disaster. It's a pleasure this. But it's.
+1:22:37
+And it should be second and third test. And it's not kind of school then it's somebody results coming through the years the concert.
+1:22:41
+It's not life setting. I tell you, feel personal.
+1:22:50
+Wisconsin's. If you doesn't have concern, it's a life threatening.
+1:22:53
+So we want to especially to be true for this particular important case.
+1:22:57
+It's like back to precisely know who is going to go to Fairlawn if they decide that somebody is going to fail, but it's not a big deal.
+1:23:03
+But if somebody says anti, the evil will be good, but he is failing law somehow.
+1:23:14
+It's a it's a very unpleasant football. So suppose we we are building classifier with a two outcome for many outcome formula will be similar.
+1:23:19
+You can have many labels and. Label plus one.
+1:23:28
+Is there any cases when you want, especially to be correct?
+1:23:34
+So what do you do if you create a so-called table which is.
+1:23:39
+Call it just actual actual classes, actual plus an actual minus.
+1:23:47
+And Andrew, it's a prediction what you predict and you have to feel this for numbers.
+1:23:53
+And this is the standard terminology which you have to memorise what is called true positive.
+1:24:00
+True positive which means it. You declare something?
+1:24:06
+Positive. It is true. You have correct result.
+1:24:13
+So whatever you predict. This is the second letter.
+1:24:18
+It's true. What is here?
+1:24:21
+It's a false positive. It means that. Yes, you predicted class is a plus, but it's false equals false positive.
+1:24:25
+So your prediction. His false.
+1:24:34
+What is a false negative? You predict a negative.
+1:24:38
+He might live here, but it's false. If two negative, you predict that his classes are minus in this.
+1:24:42
+By this. So he builds his four numbers. With it.
+1:24:49
+What is ideal classifier? Ideal classifier.
+1:24:59
+When? His two number diagonal.
+1:25:04
+Over there. Are zero or very small.
+1:25:11
+So you don't have a lot of false prediction, false positives and false negatives.
+1:25:18
+So this is an optimal class to have this matrix almost diagonal as a zero element old site.
+1:25:24
+But you never can actually use this.
+1:25:33
+We could use a pooling characteristic or such, but if you remember what you call plus one, it's something that we really care about.
+1:25:35
+Then you create three several numbers, which is that classical number of data sets.
+1:25:46
+What is called precision. So what is this? True positive.
+1:25:54
+True positive. You to buy some of these too.
+1:26:02
+Okay. What does it mean? That this number of course precision.
+1:26:12
+Between 0 and 1. Zero is a very bad you don't predict correctly.
+1:26:19
+So one is optimal because one has happened when false positive equals zero.
+1:26:26
+So the bigger precisions are better. What is very cool.
+1:26:32
+So very similar. But though you do want to push it, you buy some of this to.
+1:26:37
+It's the same recall. Between 0 and 1 zero.
+1:26:45
+It's a bit. You don't have to put.
+1:26:52
+One is fantastic because you don't have at point false negatives.
+1:26:58
+So the better number precision recall is better. Of course there is a suited there.
+1:27:02
+How often you predict negative. And of course there is a general accuracy right before.
+1:27:10
+How many correct prediction do you mean by total number of? Predictions.
+1:27:18
+But in practice it's over. This is a general accuracy, as we discussed before.
+1:27:26
+But in general, the most interesting gives this two number precision and recall.
+1:27:31
+So this is a two parameter which you want to be big.
+1:27:37
+It's a better question for you. What is the disadvantage of these two numbers?
+1:27:45
+Okay, so would you say that if your daughter is in balance, we prefer to calculate the precision and recall.
+1:27:53
+Just accuracy. But what is a problem?
+1:28:00
+Then your mother has a hyperparameter K. I, K-nearest neighbours or other architecture.
+1:28:05
+Remember how we select hyperparameters? It takes this hyper parameter k become collate error with respect to these different values hyper parameters.
+1:28:14
+It's time to declare decay and after that increase.
+1:28:25
+And we pick k. Oh I see. But I meet the hyper parameters.
+1:28:28
+I'm going to have a small number. Well but now we have two number.
+1:28:32
+Which you want to make as big as possible. Oh, positive.
+1:28:39
+Suppose you have white paper on the metre key and now you build graph.
+1:28:43
+Precision. Originally, precision is not very good.
+1:28:47
+After that, it's become more and more precise. And after that it starts to go down.
+1:28:51
+Now we have another. The cool, which maybe like this.
+1:28:58
+And I suggested that one. So the question is which parameter to select.
+1:29:10
+Well the first precision is time to go down or seconds to go and so on.
+1:29:15
+This is why it's not very nice to have to. To measure of performance.
+1:29:21
+This is why, you know, everybody accepted. This is the best possible one to reduce it.
+1:29:27
+Describe your system. It's so called F. A.
+1:29:33
+Or sometimes they say F1 measure. That's just a definition.
+1:29:40
+All the same. You can check that it said the two you are but one with precision.
+1:29:49
+One over. In mathematics because it's harmonic mean.
+1:30:04
+So f measure or f1 measure, it's a harmonic mean of precision and recall.
+1:30:10
+So this is usually the most acceptable measure one for your classifier.
+1:30:16
+And if you want to find the best hyperparameter, you want to find hyperparameter when this information become.
+1:30:23
+Increase at each maximal and go down.
+1:30:31
+So this is a fourth. A binary classifier is to label positive and negative.
+1:30:38
+Very similar formulas exist for. While still able to classify it.
+1:30:45
+And in fact, in any standard machine learning closet library.
+1:30:50
+Python like scikit learn. Calculating precision recall.
+1:30:56
+This is a standard function. Whatever you build more than you can up to date, quote unquote just messaging this model.
+1:31:02
+Precision recall F1 and it's you really give you up.
+1:31:10
+But if you have this very unbalanced diet, then you won't have very care about one class plus this every other mode that is going to be performed.
+1:31:15
+And we report our notification and performance of your model.
+1:31:26
+Cool. So this is we just call them.
+1:31:35
+Let me summarise what we just did. You just discuss.
+1:31:41
+When you build your model. You always have to divide your model into.
+1:31:52
+Test set. Cross-validation and training set.
+1:31:58
+You build your different model only using test set and I just parameter g cross validation set.
+1:32:02
+And only after that you just once apply.
+1:32:11
+What. That's it. If you're unhappy, you have to do it from the beginning.
+1:32:14
+But don't with the same partition. Because if you start to look at this, it is a train.
+1:32:19
+Better, better. It means that you use all your data for training and this mean for future.
+1:32:26
+You don't know how it's going to behave. First second situation when we have very good behaviour on the test set.
+1:32:32
+We go with the training sets with him and very bad behaviour on the test set.
+1:32:42
+It's called overfitting and it's the highest causes.
+1:32:47
+It's a weak point of many hungry men and everything.
+1:32:52
+What you do in data science, if you have to involve it, you have to avoid overfitting.
+1:32:56
+This is ways that in any model there is a so-called regularisation when you add something to avoid overfitting.
+1:33:01
+Once you get over feature fantastic behaviour on your training data and the very best behaviour in the future that.
+1:33:10
+Plus you can have situations when you don't need bombs.
+1:33:19
+You have few examples for one class. And just.
+1:33:23
+Most example of the. Uh.
+1:33:30
+And lots of glass. For example, when I was doing some prediction of of crime in some area.
+1:33:35
+It sounds good. Number of criminal is much less. It's a larger public.
+1:33:42
+Of course, if but you become a criminal, then maybe not a criminal.
+1:33:47
+You can call some criminal, but. So you have you have this balance that you want to measure,
+1:33:50
+how you correctly predict crime will be committed or this there's a big chance to commit a crime.
+1:33:58
+But just for this class, for this tape, you do not use accuracy.
+1:34:04
+Or as you measure, you use three measure, precision recall and f measure you see is symmetric.
+1:34:09
+Measure because they all involve. True positive.
+1:34:19
+In the denominator. In the numerator. So this means that you highly concentrate on be.
+1:34:26
+Prediction for the positive class. So what this is, is to measure, and I want you to keep in mind that when you have to measure,
+1:34:38
+it's a difficult for hyperparameter to find which is a better because for one measure it's the maximum point.
+1:34:48
+I'd say it's not. So which one to select. So we want to have one measure.
+1:34:56
+That's the classical choice. Currently it's just so called f measure or harmonic mean.
+1:35:00
+Mean of precision and equal. Perfect.
+1:35:06
+So. No. Let us continue.
+1:35:12
+So you know how to select. How to measure performance.
+1:35:23
+We know that we have to avoid some overfitting and so on.
+1:35:28
+Plus, we just discussed before the positive example was the least we just discussed one algorithm which is called K-nearest neighbours.
+1:35:32
+So correlation algorithm which is. So that it can be supposed to be very good.
+1:35:43
+But there are some disadvantages if you don't know what is good.
+1:35:49
+The next. Classifier. Which is also one of the ten most important.
+1:35:56
+It's called Bayesian classifier. Visual classifier is a classifier which built on the.
+1:36:03
+Statistical Foundation in K-nearest neighbours was simple calculate just use its neighbours distance and go with the majority.
+1:36:23
+In version 25. If you want to.
+1:36:35
+Roughly speaking to predict label, which has the most evidence in your data?
+1:36:41
+This is correct. Figures. There are two approaches to probability theory.
+1:36:48
+One is called frequentist and the logical Bayesian. Um you special.
+1:36:54
+This is a satisfies the same axiom of a probability theory.
+1:37:00
+This is why we call them a project of a religious unit.
+1:37:05
+The idea is there is a different. Idea of frequency analysis is just.
+1:37:09
+Use frequency to approximate. Uh, probability.
+1:37:15
+Bayesian approach is a different approach. It ask you can I want to predict and sometimes think.
+1:37:20
+Do I have enough evidence for this one? Not despite the fact that.
+1:37:28
+Global evidence and frequencies. This is where all actual probability theory.
+1:37:34
+Philosophically, these are different, uh, different approaches to probability theory and of course, Bayesian classifier.
+1:37:39
+It's built on the formula of baby Bayesian. We'll use word probability even for Bayesian classification.
+1:37:48
+But if you want to be precise, you could say it would be much better to use with evidence.
+1:37:59
+But traditionally for hundreds of years people use with probability.
+1:38:04
+So we keep the same with. So Bayesian classifier.
+1:38:09
+Based on. Okay.
+1:38:14
+We'll use his baby shower him too. Did you say it?
+1:38:22
+What evidence do I have in my training?
+1:38:26
+Data to predict some label. Who am I?
+1:38:29
+So this is a correct label. For example, I have a new image and I want to predict what is the handwritten digit.
+1:38:33
+I look, you know, previously handwritten digit. I ask myself what evidence?
+1:38:40
+Insight. Faster than the ones who can help me.
+1:38:45
+And I'm to predict new. Labour.
+1:38:49
+But if you just apply Bayes theorem. It's a nice, nice Hewlett.
+1:38:57
+Nice formula. But you won't be able to calculate what is inside this one.
+1:39:02
+So we will get another assumption about your daughter.
+1:39:07
+It's called the you, Bishop. Which will give us ability to really calculate evidence.
+1:39:12
+For some event for some label in this database. So what is an EU based.
+1:39:23
+Precise definition? But it's roughly speaking that if I know label.
+1:39:29
+Remember my dad. All of his attribute.
+1:39:35
+Roy's example and last column is the label keep.
+1:39:41
+Oh class. What is your assumption?
+1:39:46
+What are you base visual? If I know label for example, if I know does this is the number zero then all of the attribute.
+1:39:51
+Become independent variable. This means that your.
+1:40:01
+Description of that the very tight. There is no attribute.
+1:40:06
+We just depend on each other or just you could just repeat the same.
+1:40:11
+Call them any time. So assumption is that data is of course class conditional independence.
+1:40:16
+So whether or not you do, once it has it all this attribute is independent.
+1:40:24
+How we can change this in practice. There are two possibilities.
+1:40:30
+You to check. One. Use physics class and use statistical tests to check if you attribute I started writing dependent or not.
+1:40:33
+Second you just built, assuming that this is correct.
+1:40:45
+After that, when you apply this classifier to your data, you see that is a huge error.
+1:40:49
+Compare what you expected. This was similar to training example data.
+1:40:55
+Then you definitely know they did something wrong.
+1:41:00
+Which means if class conditional dependencies were true. Let's now go to more precise definition.
+1:41:03
+Suppose I have got a. So this means that I have data x.
+1:41:13
+Was the attribute a1, a2 and.
+1:41:21
+But I do not know. Label or no class. Uh, I don't.
+1:41:27
+No must. So let's see about what I want to predict.
+1:41:34
+Suppose that I am. Okay, let's put him.
+1:41:44
+So important. This is a class you want. Let me check.
+1:41:50
+What is meditation? You. Please don't use this imitation.
+1:41:55
+So I have. Tribute.
+1:42:04
+As and when I meet him. Classes see him.
+1:42:08
+And for this data that I received, I won't to predict which class is belongs to.
+1:42:15
+Silkeborg is a. I put a station in.
+1:42:20
+Statistics. I can ask you.
+1:42:27
+My hypothesis is that x. It's different cos you want.
+1:42:31
+Can you ask me what evidence I have for this hypothesis?
+1:42:38
+Accepted or reject. I could do the same for two and so on.
+1:42:43
+And. I will. Accept hypothesis with the highest number of evidence.
+1:42:48
+What was the highest probability of correct? Okay.
+1:42:58
+So let's be more precise. Suppose in general suppose h is the hypothesis.
+1:43:01
+That X belongs to some particular class. What I want to do.
+1:43:10
+I want to calculate evidence of probability. So what is it?
+1:43:16
+Once again, Bayesian analysis is evidence. Was this hypothesis to be true?
+1:43:20
+When I observed my ex because I was a genius UX.
+1:43:27
+Who in general. Language of probability. What is a probability of conjecture X to be hypothesis correct?
+1:43:31
+When I observe my daughter x. I want to be able to go places.
+1:43:40
+To calculate this. Evidence or probability.
+1:43:48
+I will use this. Probably one of the myths, you know, probability theory.
+1:43:52
+It's caused by CO2. The probabilities that they want to calculate from the left.
+1:43:58
+The product of X and the condition h multiplied by probability hypothesis derived a probability x.
+1:44:08
+So what is the beauty of this formulas? You may have several hypotheses.
+1:44:16
+I can rightfully hypothesise this woman. But they all have the same denominator.
+1:44:22
+There is no hypothesis in denominator.
+1:44:33
+Which means that you may want to find hypothesis with the largest probability or the largest evidence I have to maximise just uses.
+1:44:36
+I have to be able to just. I don't care about. I if I will be able to calculate numerator.
+1:44:55
+For different hypothesis. Then I will take. Hypothesis was this highest human nature and its music.
+1:45:05
+This will be highest. But evidence for hypothesis agent conditionings next, because they have all the same.
+1:45:15
+Denominator. So question is how to calculate this expression.
+1:45:26
+It's to know that everything is a probability, which it's very easy to calculate.
+1:45:35
+For example, if I have my dataset dataset. Then each hypothesis.
+1:45:42
+Each class has the same number of example. So probability where they pick random x to be any of this.
+1:45:48
+Um. Everything. Digital TV one over ten.
+1:45:57
+They all have the same. But if I have any balanced that I like 1% or one class and 99% of the class.
+1:46:02
+Then it doesn't look like I know probability. So from weight test data or training data, I can always figure out probability of age,
+1:46:11
+because it's precisely I count proportion of my class in my data set.
+1:46:21
+So the biggest challenges to calculate first expression.
+1:46:28
+Probability of x and the conditional make a or put.
+1:46:34
+In general, it's impossible to calculate without any additional assumption.
+1:46:40
+And this is why you have a subset of so called the UV Bayesian or class conditional independence.
+1:46:45
+Because in this case we will be able to easy to calculate and efficiently system.
+1:46:53
+So let's. Go to precise definition.
+1:47:01
+So what is it that you Bayesian or simple base classifier?
+1:47:06
+We are given. Dataset. And each example is.
+1:47:15
+To be described by that attribute and loses causes attribute a1, a2 and it can be pixel, which can be about customer data.
+1:47:25
+What he bought as he saw. Who is moving in a, uh, best all.
+1:47:38
+Okay. So. Suppose if you have impossible label or classes.
+1:47:47
+Which you want to predict. So what do you do?
+1:47:54
+If I have x. My daughter said, I want to.
+1:48:01
+Be able to calculate. What is the evidence of the ability of having a particular class where the already knows the time I have x and from this.
+1:48:07
+So I have to calculate this number for each class.
+1:48:20
+And I want to select the largest one. So when I select just one.
+1:48:25
+If probability belongs to the closest class one, the observer X is the largest from all of them.
+1:48:31
+Of course, if there is a seven of largest, we just pick randomly. And this is a call.
+1:48:38
+Highest posteriori probability conditioning on this and this should be our prediction.
+1:48:45
+This is how this is the definition of Bayesian classifier.
+1:48:54
+But below is a general. What's next for calculating this evidence?
+1:49:00
+We use Bayesian formula. Because you want to find the largest.
+1:49:08
+Probability. Of course on the X.
+1:49:17
+You're looking, only you cumulate. Because you have to maximise because all of these number contain.
+1:49:21
+Denominator is the same. Though.
+1:49:32
+These products contain two probability of class and.
+1:49:37
+Probability of X and the condition C. For you.
+1:49:42
+Probability of class. Are you?
+1:49:48
+Are you just using a balanced diet? They will have the same. And you just don't think they count.
+1:49:51
+But if you have gone in balance, then you just call frequency of your class all possible classes and this will be probability.
+1:49:58
+Of course, these punches are very easy. But it's not easy.
+1:50:07
+It's hard to come with this one. And in general, it's impossible. This is why we as humans insist that this is like a closed cross class.
+1:50:12
+Conditional independence. Which means that if you fix this class, all these attributes are independent.
+1:50:22
+So you don't use. Dependent attribute because it will be useful for classification.
+1:50:29
+So this means that even if I fixed my class.
+1:50:36
+Give me an x is equal. X1XN.
+1:50:42
+All this. Or do not become independent.
+1:50:48
+So I can phrase the formula. And no.
+1:50:54
+I do not have this huge difficult problem to calculate this general number.
+1:51:01
+I have just for each value. To calculate this number and take product.
+1:51:06
+And after that. We don't have. All the probability and ification.
+1:51:13
+So now it's a little bit more abstract. So. It'll do some exercises here and we can calculate this.
+1:51:23
+But it's already 5:00 and.
+1:51:33
+Despite the effects. Specifically in my timetable I have.
+1:51:39
+For some reason Syria was. I guess you have supposed to have two hours.
+1:51:47
+In my calendar. I have two one two hours and just three hours.
+1:51:58
+So my question is. What is in your.
+1:52:04
+Can you tell me what is in your. Calendar such that we will have 3 hour or 2 hours.
+1:52:11
+Two hours. Perfect. Okay. And I'm happy that it's two hours.
+1:52:22
+Because they said after two hours, it's very difficult to understand.
+1:52:26
+So it's all for today. Thank you for coming and see you on Tuesday.
+1:52:32
+But on Tuesday I will see you for three hours. So enjoy the rest of your day and have a nice time.
+1:52:38
+Thank you. Thank you.
+1:52:46
+And remember, if you have any other question, you can always stay when we finish and ask you a question if you need.
+1:52:53

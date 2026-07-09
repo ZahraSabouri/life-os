@@ -1,0 +1,2280 @@
+6 - MAT700MA4700 Mathematical Methods for Data Mining online class-20260219_151057-Meeting Recording
+Auto-generated captions may contain errors.
+Okay. Once again, let me. Mind me a little bit as much.
+0:13
+In the last lecture, we start to discuss the very famous classifier, the one of the ten most important classifiers for data science.
+0:22
+It's called Bayesian. Go for it.
+0:33
+So this is a statistical classifier. When I say statistical, it's mean.
+0:41
+It's trying to, uh, create probability or evidence.
+0:45
+Or some hypothesis. We are thinking about supervised learning.
+0:53
+When you have to give label to your You data is simply a hypothesis.
+0:59
+For example, if I have used handwritten digit then I have that hypothesis.
+1:04
+For class of my, um, image. It can be zero, one, 2 or 9.
+1:12
+So we have just ten hypotheses. So we evaluate what is a probability or what is the evidence for each of these hypotheses to be true.
+1:17
+And after that we select hypothesis with the largest probability to be true or uh, the largest amount of evidence to be true.
+1:27
+So this way it's called statistical classifier because.
+1:36
+We predict probability, and after that it's up to us.
+1:42
+Maybe some times people say, okay, I will just predict class with the highest probability,
+1:46
+but maybe I will predict two of the highest probability is that to be a more safe side and so on.
+1:52
+But in any way the main idea of statistical classifier, it's a for each class to produce probability.
+1:58
+Okay. We just calculate that this class can be our answer.
+2:06
+Okay. So this classifier based on.
+2:11
+Business unit. Okay. So business you.
+2:17
+It's another approach to probability theory.
+2:21
+And the main idea of business unity is, uh, if I observe something.
+2:24
+So now I have a new item for what evidence I can use.
+2:32
+To accept or not accept some particular outcome.
+2:39
+Patients suing him. It's, uh, just updating your hypothesis based on evidence that you already have.
+2:43
+Okay. And for calculating Bayesian classifier, we can write general formula,
+2:54
+but it's still very difficult to calculate because it involves some calculation of some probability or evidence, which we.
+3:01
+To be able to calculate, you have to have some sort of special assumption.
+3:09
+And this special assumption it's called. The you base of the classifier and the main assumption will be true called class conditional independence.
+3:13
+So what do you mean? If I have about patient.
+3:26
+Uh several attribute. Several measurement.
+3:32
+So I want to ask question if there is some dependence between this measurement and in general usually does matter.
+3:36
+But what we assume that if we already have some sort of disease or uh, have answered it, this is a number one.
+3:44
+So we have already know labelled then all this, uh, attribute become independent.
+3:52
+There is, of course, a reason for this, that we don't want to fill our table for our data with a lot of attributes which depend on us,
+3:58
+because our because we are just overlook our, uh, data table without really producing information.
+4:09
+But you don't know in advance if it's true or not.
+4:16
+So, but we assume for sake of vision, because you have to be able to calculate that you have this class conditional independence.
+4:19
+It's mean. Once again, if I know label that all attributes become independent.
+4:27
+How we can check this in practice? First of all, you can look at this, you know, in your example with some particular label.
+4:32
+And we can run statistical test on independence.
+4:40
+And if this class a disk fail, this means some of them is, uh, dependent on them.
+4:44
+You remove them if you can, and so on. This is the one way to figure it out.
+4:50
+If you have just class conditional independence. Second is you assume that it's true and you produce this classifier,
+4:55
+and now you see that it's, uh, perform horribly wrong on test data, then it means it.
+5:03
+Our assumptions of this classic conditional independence is fail. Is wrong.
+5:10
+But this is a very good thing to quantify. Why?
+5:15
+Because we know precisely what that does satisfy.
+5:19
+To have some guarantee. And by the way, why we also like this classifier?
+5:23
+Because if class conditional independence is really true.
+5:28
+Then these classifiers perform. I am better in the K-nearest neighbours.
+5:34
+This means that the same number of data. Error is a half of error with K-nearest neighbours.
+5:44
+Okay, which is great. You have to understand this.
+5:51
+This is true only if you can guarantee that you have class conditional independence.
+5:56
+Then of course, Bayesian classifiers is much better.
+6:00
+But if it's not true, then K-nearest neighbours just universal classifier.
+6:04
+So let's go through how to apply Bayesian few of them and this new assumption in our normal life and in tutorial.
+6:09
+We will see how we just calculated. No, it was just theoretical formula.
+6:21
+But if you go to the later we will just have some example and we try to calculate.
+6:26
+This for some concrete example.
+6:33
+Okay. Lets me just clean the screen. So what is our setup?
+6:38
+If we assume that we have doctor X, this would arrive.
+6:51
+If you just attribute x1, x2. And we don't know label is just new item arrive.
+6:58
+Okay. So. We have some hypotheses about this picture or a backward example.
+7:07
+If you handwritten digit arrive, you can say maybe it's one, maybe zero.
+7:18
+So have an hypothesis. Suppose H is hypothesis. Some property of X label I put this is it this x?
+7:23
+Don't do specific. Classy. Well, you may have had maybe zero, maybe one.
+7:44
+So no, I want to calculate, of course, for each class, which is hypothesis probability.
+7:50
+Probability of each. Under condition X.
+7:59
+So what does it mean? The standard approach from probability theory or Bayesian analysis.
+8:05
+What is a conditional probability? So when you have such a notation.
+8:11
+Which means that we assume that x we already observe.
+8:17
+Yes, we have these x arrive, so we know that we are dealing with x.
+8:21
+So no conditional probability or just evidence.
+8:25
+It's odd that we are asking what evidence of probability do we have about age.
+8:31
+Well we already know that we have x. Okay.
+8:37
+So this is what you want to calculate. Of course they're higher.
+8:41
+So actually do you have any class with a higher probability.
+8:45
+Or more evidence is preferable as a classification of X.
+8:49
+They're just class with a low probability. We need to calculate just up.
+8:54
+What evidence or probability of hypothesis H.
+9:00
+And the condition? X yourself, and for this you use.
+9:06
+One of the most important formulas from probability theory, which looks trivial, but it's one of the most important.
+9:15
+So it's not difficult. This formula, from a symmetrical point of view, from a symmetrical point of view, is almost trivial because I remind you.
+9:24
+So what is the definition? The probability h of x is by definition.
+9:33
+Probability of H and x.
+9:41
+You worry about probability X? So.
+9:46
+Which means it. What is written on the left side? Probability of H and x.
+9:49
+Do you worry about? Probability of x? What is see on the right hand side?
+9:56
+Probability h and x. This time.
+10:01
+Do you worry about probability H? Multiply by probability age.
+10:06
+Do you worry about probability x? Obviously this is an equal.
+10:12
+So from mathematical point of view, Bayesian CRM it just.
+10:18
+You can explain this to schoolchildren. So what does it mean?
+10:27
+So what is the important obeisance? Here it is.
+10:33
+It's our interpretation. How are you? How are you going to do interpretation for all this term?
+10:37
+But I said from point of view, algebra manipulation, it just tells you.
+10:43
+But despite being so trivial. It's probably one of the most important tool of any intelligence.
+10:52
+Because it's acceptable that our brain is that use Bayesian approach.
+11:02
+So every time when we when you observe our world for couple of millisecond, we calculate what is going to happen.
+11:09
+And if something happened with this happened. But you didn't expect this.
+11:18
+And you. This is when you make your another decision.
+11:22
+So this is some some people say that our brain is just vision machine.
+11:25
+But those are going to use this formula. Let's say precisely what you are going to do.
+11:32
+More precisely. But of course, if you look here.
+11:41
+It's interesting. Yeah. I was just wondering so I would ask this question, is this one.
+11:49
+What you want to estimate. No right hand side.
+11:56
+But the question is how are you going to calculate? You know, let's do let's go ahead.
+12:02
+And this is why we will introduce uh, simple basing on a you because classifier just to be able to calculate this.
+12:08
+So once again set up. So we have. G is a training set of data.
+12:16
+Attribute a1, a2. Hated.
+12:30
+So each. It just. Tuple of and measurement and what you measure.
+12:35
+You measure a1, a2 and. And dimensional.
+12:44
+Uh, tuvo. Now suppose we have M classes.
+12:50
+She wants you to share. So our question is we want to decide which class.
+12:57
+Below. This is what you don't know.
+13:08
+So what do you say? You say the following. As I said before, we want to conclude evidence of probability of each class.
+13:13
+Under conditions that we observe. So we need to have this miscalculation.
+13:25
+Y equal one up to him. And.
+13:32
+After this probability is called posterior probability.
+13:37
+And what will go on to which cluster? Select the cluster with the highest probability.
+13:41
+Posterior probability with x. This means it.
+13:46
+Uh okay. Let's be equal. So we select class I such that his probability or evidence for for x to be inside this class is big as an equal of all other.
+13:51
+And we declare that XS has this label class.
+14:06
+If you have 2 or 3. Uh, classes with the same high probability that we just picked random.
+14:11
+So this is a strategy. Okay, so this is cognitive ification with the you Bayesian.
+14:18
+But the question is how we're going to calculate this. You can say whatever you want, but the question how we're going to calculate.
+14:28
+So we have to logically use Bayesians. You. So if you look at this in this formula.
+14:35
+What we can see that our task is. To.
+14:52
+Maximise left hand side.
+14:58
+So I want to find the class which gives me maximum of posterior probability, a maximum probability of class and the conditions that I have x.
+15:00
+Now looking to the right side. For all classes high.
+15:13
+The denominator of this. Right hand side or the same.
+15:21
+Which means it. If I want to maximise this expression, I don't need denominator.
+15:29
+I just have to maximise numerator. And this is a very big simplification.
+15:36
+Why? Because I don't know what is the probability you give me.
+15:43
+I don't have a clue. What is his probability high school. It's from a low probability distribution.
+15:47
+But the great thing is that they all are the same.
+15:54
+Well, they need to really, uh, I need to calculate numerator.
+15:58
+Which turned out, is much simpler to calculate. I don't know if Tusk is.
+16:05
+Maximise. To maximise this expression.
+16:12
+Okay. What is this expression? We have two terms.
+16:30
+Probability of glass. And now I ask question.
+16:38
+If I know that I have class II. What is the probability of observing that it's going to go opposite?
+16:44
+If I have a handwritten digit and I ask what is a class?
+16:51
+And I want to calculate this. In this forum.
+16:55
+I ask you opposite question. Now I know that I am.
+17:04
+I'm in class one. What's the chance that X is?
+17:09
+I will observe x. If I think that this is a seven.
+17:14
+What's the evidence? What is the probability that this particular x come from seven.
+17:20
+We have this two number. So this is the opposite probability.
+17:26
+So you know how we calculate probability of the class.
+17:29
+It's easy because if you have a balanced dataset, it's mean.
+17:36
+Each class has the same. Number of examples.
+17:39
+Which means it probability when I pick something from this class is the same.
+17:45
+They all have the same probability. And to maximise.
+17:52
+Expression. I need to just maximise this first in.
+17:59
+Because all of this second term. It is the balance that you've got to load.
+18:07
+Balance. Like you have with one disease less patient that is in your dataset.
+18:14
+Then we just calculate what is the size of your dataset.
+18:20
+And then we have a resume that our dataset collected randomly and independently from some unknown probability distribution.
+18:25
+And this is the size of my dataset. This is the size of example with such particular label psi and I just calculate this expression.
+18:32
+And this will be a way place probability by frequency over a period of some particular clause in my table.
+18:47
+What does it mean that in practice college.
+18:55
+You. P of C is not a problem.
+18:58
+If immediately you can choose from your. From your table or from your dinner table.
+19:02
+Now the question is how to calculate p of x under the condition psi.
+19:11
+And. So this is a question. And this is not trivial because it turns out the question is in fact this call.
+19:20
+More or less generative AI. It's like I want to generate.
+19:34
+Number one. So what is the probability of each particular x being something which a higher probability will be one less probability of.
+19:42
+A. Look at this. This opposite is coming from a generative model.
+19:54
+When I want to now generate image from low labour.
+19:58
+And in general. There is no way to calculate this because you don't know how x.
+20:06
+Depend on your class. So what's so special? When people write number seven.
+20:14
+They want to read number seven. What's make them do this?
+20:20
+Okay. Okay. Some people just copy other some other.
+20:24
+So for every two digit you can even try to explain.
+20:30
+But for more general. So what make face to face. I know the image contain face.
+20:33
+Well, no. I want to generate an image with the face. What makes.
+20:39
+Well, what should I do? So this is a question of how to quizzes.
+20:43
+And in general there's no any formula or approach to how to calculate this.
+20:49
+But if you make some additional assumption which call this class conditional independence.
+20:55
+So what do you mean if I know class II?
+21:04
+Fix it if it's fixed. Z will attribute to map x.
+21:09
+There's anything you'd. A1, A2.
+21:16
+Hey. X1, x2.
+21:23
+Accept all this attribute become dependent variable.
+21:27
+So this is assumption. And what does mean independence?
+21:33
+Is it probability or observe x? I'm that condition psi.
+21:38
+It's in fact probability product. This is the definition of independence.
+21:44
+Remember in probability theory if you have three event. A and B, the independence means a probability a b equals a multiplied by probability b.
+21:49
+Okay. And of course it's the same for many variables.
+22:02
+So assumption is it all. Component of.
+22:07
+X1, x2. When they no claws become independent, this is helpful.
+22:12
+And now with such very strong consumption, we can calculate each of these numbers.
+22:20
+Come to conclusions. For example, when I look at old data.
+22:30
+Which glacier are you? I click on that in my table.
+22:36
+With Glacier I. Well, this is not.
+22:40
+No. For example, I look. Suppose that is it.
+22:44
+Okay over there. I look how many time some particular value x1 appear.
+22:50
+And I do wait a long period of several weeks, one by one.
+22:59
+The number of examples that I have, uh, this particular class.
+23:04
+And I do this. For any.
+23:09
+I think for every attitude in an example it'll do, you'll see precisely that.
+23:13
+It's really not difficult to do.
+23:18
+So we can calculate this. Now let's consider some of those.
+23:23
+There can be one problem. This is a definition which is better, okay.
+23:32
+But in practice we replace all this by frequency.
+23:39
+Which is good approximation, but. So if you have a lot of data.
+23:46
+Then of course each x1, x2 there appears about several times.
+23:51
+Otherwise, if you have some variable attribute with some particular value, never PM.
+23:56
+So it means that we just remove it.
+24:02
+So what's happened if you don't look big enough at some of these numbers, which are replaced by frequency, they become zero.
+24:05
+Then it's me. Is this product? No one elements, you know.
+24:17
+So it is speculatively with other. It always was you.
+24:22
+And so it's means that this probability is zero. But maybe just because we don't have enough data.
+24:26
+And in fact this is not unique for this. For this problem with Bayesian inference.
+24:32
+This is a general problem in statistics. So what they mean.
+24:41
+Suppose you have a coin and you have to figure it out.
+24:45
+What is the probability that and they'll.
+24:53
+And you don't know if it's a fair coin or not. And you want to estimate from your experiment if, uh, what is the probability of.
+24:58
+And it had. And probably you haven't. Suppose you have access only two.
+25:10
+Three. Three. Experiment. Well, when you mention you have a head.
+25:14
+Head and it. If you have this as a result of your experiment, what you will tell me or I will replace the ability by frequency,
+25:20
+which means that I will replace this by one three divided by three and probability of k will be zero.
+25:31
+But you understand that? Yes. It's to happen. Three times you would take a coin.
+25:42
+And you can have city hat in a row. But from just this experiment, especially when you have, uh,
+25:47
+something it's very expensive to do some experiment that declares that this coin has a probability of years,
+25:55
+or you always, in the future will have a head and never will have tell you.
+26:02
+It's a very strong statement.
+26:07
+And this especially happens when you have some sort of experiment with the result, which is it was expensive to experiment.
+26:12
+So you can have just 100 experiment. Of course, you can throw coin 1000 time and it still only had that.
+26:19
+It's just you. You see something from, but just from three of them.
+26:28
+You're not going to tell me that probability of head is equal one. The probability of equal zero and you ain't pussies invasion.
+26:32
+And you Bayesian uh, formula is give me zero because one of this time.
+26:39
+So what you do in statistic in this case we do so called Laplace regularisation.
+26:43
+So what it's mean. That if you FZ you want to perform some experiment.
+26:48
+And. Suppose you have outcome, some possible outcome like maybe several outcome but like two possible outcome.
+26:57
+So what you do you assume. That as a beginning you are to do your experiment.
+27:10
+That each outcome happened once. You say, oh, I will starve to something that hasn't happened.
+27:17
+If I have to overcome them, then I will. For example, if I have.
+27:27
+Then I will say, okay, before starting an experiment, I will have one, two, three, four, five and six happened.
+27:34
+Then I perform experiment. For example, know if I should quit and assume that what hasn't head and tail.
+27:46
+I will have the following to experiment. And then what they have, the probability of age will be.
+27:54
+Uh four over five and probability of tail will be one over five, which was more realistic.
+28:03
+Of course, if it's easier to perform 1,000th experiment and it's always will be ahead, then I just want one element.
+28:10
+It's gonna change. It's gonna be zero. But what this approach guarantees that you never have one of probability.
+28:21
+What do you replace? The frequency zero just means whatever you calculate in formula one as a product, as this one, you never have zero.
+28:29
+We just kill everything else at the same here.
+28:36
+I don't know if my dice is correct. So I put this one.
+28:40
+And now if I perform some experiment and I have 665, three, one.
+28:44
+Then of course, if you have just this experiment result, you can say probability of two zero probability of zero.
+28:51
+But because you have. Each outcome happened at least one.
+28:59
+Then you don't have this probability. This call Laplace regularisation.
+29:05
+And by the way where you don't have to. It's nice to know.
+29:08
+What if you you say quickly and then you library and you have this, uh, Bayesian classifier?
+29:13
+Do you start the built in class? Then they should that you for it.
+29:21
+Then in this library performance this regularisation automatically.
+29:26
+Oh. What? What do you say? You. So. Which means that when you want to calculate frequency, you don't just calculate outcome divide by total.
+29:32
+We do so called observed account, which means that if for each particular attribute AJ.
+29:40
+I have MG outcome like he has a tail or one of six, ma'am or.
+29:50
+Any other label you may have is m g outcome.
+30:00
+So I assume that each of these mg outcome happens one.
+30:04
+So no. When they calculate what is the probability of some particular value x j and the condition.
+30:10
+So I calculate how many times it's happened in my experiment I add one.
+30:18
+Like before. He I this one was this one.
+30:26
+So each experiment I had one. And no idea by total love, but my outcomes.
+30:32
+And this is a total number of what they put at the beginning.
+30:43
+I get whatever I want to calculate. For example, probability of what I will have five have happened.
+30:51
+Times the sequence he did here, but it was a lot of you'll be five from my experiment plus six possibility.
+30:58
+Precisely this one. And it's called several counting. And we use this for or replace replacing in Naive Bayes classifier probability by frequency.
+31:11
+And that's what we show is it does not have equal zero. So it does kill all of the calculation.
+31:23
+Of course, if I have situations that. Arc is a continuous attribute.
+31:30
+Like house price or temperature.
+31:37
+Then, of course, we don't calculate. Uh, just.
+31:41
+Frequency. We do what we do in statistics vs code parameter estimation, but we're not going to cover issues of course.
+31:46
+So for continuous continuous value attribute we used to do so.
+31:56
+So called parameter estimation. And this is.
+32:02
+Everything that they want to. Tell me about Bayesian classifier.
+32:13
+And now we will be ready to start. How would you like?
+32:27
+Okay. After break we will do one example. I will upload some file and we will do just example one of these Bayesian.
+32:40
+I was really I was working. Okay, so now we start a new election.
+32:47
+And this is a probably one of my favourite topics.
+32:57
+And this is in fact, they're going to talk about. Google.
+33:02
+How good. Was my favourite topic.
+33:13
+First of all, it's always nice to see formula which may google from some small Start-Up.
+33:22
+Whisky, which was created by two student from Stanford.
+33:30
+One of those, the most valuable company in the world. So we will have formula which was at some point just for this particular fuel formula.
+33:35
+The market value was $10 billion this year with some formula.
+33:43
+Very simple. Uh, we said at the time market value of 10 billion.
+33:47
+And as the time it was a patent, Google applied for patent.
+33:54
+And for many years, uh, as a search engines, they weren't allowed to use it.
+33:57
+But of course patent no expired. So everybody can use it as well.
+34:03
+So this algorithm even in in your library of machine learning services, this one.
+34:06
+But the important of this, uh, algorithm is not just to make money for Google.
+34:11
+And that's what can calculate this is it was a very genius approach to the general problem of ranking.
+34:17
+I'll let you know what you discussed in the beginning. So very often we have the following problem.
+34:25
+We have many answer. And if I have made the answer, I want to be sure.
+34:30
+I want to have some of strategy how to select this. And.
+34:37
+The best possible strategy to select this is was what we already discussed in Bayesian classifier.
+34:43
+If I have docker x, observe. And they have several outcomes possible.
+34:51
+How many possible outcome. So the question is which one I select.
+35:06
+This is a standard. The power of Bayesian approach is that if I will be able to estimate high.
+35:12
+On the condition X. Then I will up my outcome.
+35:21
+According to this number, I will put in the beginning.
+35:27
+This is a top ranking substance that is the highest evidence or high probability.
+35:31
+Second and so on. So this is. This is a general idea which, uh, uh, especially become very popular with the girl because we already saw one example,
+35:36
+uh, that I have assumption maybe I can calculate just numbers,
+35:52
+but Google page on how to demonstrate because even when you sometimes you don't have assumption of linearity,
+35:58
+you can make another type of assumption and you still will be able to calculate it.
+36:07
+So this is a general problem of rank. For example, if you use GPT.
+36:11
+What you are doing. You. You sent this prompt.
+36:17
+List of tokens. And you ask what will be next?
+36:22
+Okay. Well next would. So what is it doing?
+36:27
+Nothing can work. It's calculate. Probability of next him.
+36:32
+When you give input. And it's wrong.
+36:42
+The next token according to this probability. And select.
+36:46
+Your husband will be with you. May be. Some sampling from this probability distribution, and after that it adds to the sequence and continue.
+36:51
+In fact, ChatGPT it just you can think about this.
+37:01
+It's called after regression. It's like very big Bayesian.
+37:05
+In which you give input and it's start to estimate in probability of all possible output.
+37:10
+This reasonable to conclude it's not just concrete probability of five this.
+37:19
+If you don't have say she said 300,000 tokens.
+37:24
+Which means that for each next word it's do 300,000 calculations for each of them.
+37:29
+Probability ranks them in order and after they do calculation.
+37:35
+So this is why not only training but even inference of this model.
+37:39
+It's expensive and consumes so much energy. Okay.
+37:45
+So it's nice to have them for free.
+37:49
+But you have to understand that behind each next token calculation it's a it's again 300,000 calculation with several billion coefficient.
+37:50
+So it's really consume a lot of energy and a lot of computer power.
+38:01
+But it's still the same approach from all possible answer I want to create rank.
+38:06
+It's a general approach to ranking algorithm. And.
+38:12
+Once again classical approach before it was used.
+38:18
+Just the you Bayesian approach. But in real life, life is not only.
+38:22
+So Google demonstrates that sometimes we can do better.
+38:27
+He would result assumption over you'd like to take history.
+38:32
+So history of Google algorithm and all this come from you don't remember?
+38:38
+You are too young. I remember my good in Israel our.
+38:43
+Computer internet was just 67th computer which was connected to worldwide web and it was a time when everything just started and at the time.
+38:50
+People. Try to create a look over a page. So the main business where people created the page for themselves.
+39:01
+And of course, when you have 100 pages, then we all know each other.
+39:10
+But in one year it was 2000. And even it is no one do you after it is become introduced, we had like 15,000 web pages.
+39:16
+The question is how to find information at site. So the first approach was very simple when.
+39:25
+For example, it is a friend of mine, Institute of Technology. You just go through all of them and you classify them.
+39:32
+You read them. You look inside and you say, this is about the car.
+39:39
+It's about house price. It's about our food. So we create like 50 categories.
+39:43
+Have you put it on a page and hit publish on the web. So people want to find they go there.
+39:48
+But of course it's not sustainable because it starts to grows exponentially.
+39:53
+So company decided to develop search engine just to figure out where to find information.
+39:58
+And in the beginning it was simple.
+40:05
+For example, it was maybe the shortchanging is the time it was probably most popular was Yahoo should change and after that it was introduced to the.
+40:07
+Like. So it was a lot of Netflix. So yeah, they all did.
+40:21
+So idea for example, at the beginning, like like Jaco was very simple.
+40:25
+You want to find you want to find uh, the page which contain Honda car.
+40:29
+So they look and say the pages which contain Honda car.
+40:38
+And they say count how many times this would appear on computational Wikipedia.
+40:44
+They document and they rank according to frequency.
+40:49
+The key document contained 100 mention of the car and then I said document contain only.
+40:53
+Thank you. Then of course with 100 is more reliable.
+41:00
+So we immediately. And this was very important for company because whatever you type, your query.
+41:03
+You have a list of possible leaks. And of course, it's very important to be in the top because people usually look in two, three, four, five top.
+41:14
+They don't look legit. So companies start to pay good money if you can guarantee them.
+41:25
+That somehow. As a search engine optimisation if you can get them to do.
+41:32
+Top five. Okay, so it was a very nice business.
+41:39
+Okay. So change in time to create such little criteria.
+41:43
+How to rank and so called optimiser web optimiser.
+41:47
+They try to figure out how to use this input. If you pay me money, I will put your repurchases.
+41:52
+When you count frequency, it stay there because, uh.
+41:58
+Uh, what was the solution? Okay. I want to welcome.
+42:02
+Would you type the guy P on the top? I just add to my web pages in white font.
+42:05
+So user comes to uses like. One something time with a combination.
+42:11
+Hold the car. This means that whatever Honda currently pay, you have this.
+42:18
+So as you see, it's very easy to diffuse the search engine just by the keys.
+42:23
+And second. And so I don't know if you go the side start to use this thing because for example, it was at some moment was it.
+42:29
+It doesn't matter what you type up. You always go to porn site because what what they did, they put examples.
+42:39
+They file a lot of mention of what they were. People tried to follow house car thousand times.
+42:46
+Whatever you type car it immediately go you go.
+42:51
+This site is this one. It was completely unreliable. After that, people decided to.
+42:54
+And it was many, many agreed. But all of them were.
+43:01
+Not very reliable because whatever gave algorithm it was, it was a nice game.
+43:06
+I remember I took part in this game. It's a time that you just look cosy around.
+43:14
+We don't know. Of course it was. They kept secret, but I could play with something.
+43:20
+You can always figure out what they're doing. It was very difficult.
+43:25
+And after that, we would just modify and customise the websites as you pass on this notification algorithm company and put you in the face top five.
+43:29
+And it was a good business. Still.
+43:44
+Google ugly fear and they create. Uh, based on algorithm and the good.
+43:50
+It was a two people who created Google and.
+43:59
+One of those. It was Lady Paige and.
+44:06
+Page rank algorithm come from this Larry Page. We invented the main idea and created Google.
+44:10
+What you will do. Now just we look at the semantics behind this one because mathematics is already beautiful.
+44:17
+And so what was idea? Idea which appeared in.
+44:29
+1998. So let me.
+44:36
+Explains this idea because idea was.
+44:41
+Really beautiful. Okay, well, let's you set up what we have.
+44:47
+Suppose you type a query Q. Honda.
+44:52
+Now. I look on the internet on all possible website.
+45:03
+So is it just a website? Any webpage?
+45:10
+What? Do you do it, of course, that I believe lives in. But suppose so.
+45:14
+Now ask question. If I knew that user type Honda car that was based on approach.
+45:19
+For each web page w, I want to calculate what is the probability.
+45:28
+Of. Or evidence for this particular web page to be chosen or to be good.
+45:36
+And the conditions that user ask me this query.
+45:44
+So once again I stuck with the query. And now I have not just ten hypotheses like I like a.
+45:48
+I have a billion hypotheses. Each web page can be.
+45:55
+Suitable as there on set for my query.
+46:00
+So no, I'm asking how can I calculate probability that this web page is good for my query and even able to calculate it somehow?
+46:03
+Then I will rearrange my all these pages according to this probability and I will show my answer.
+46:15
+When you tap something Google said, you have this list over pages and Google orders them according to this number.
+46:25
+Yeah. You can have 10,001 million answer with some particular query.
+46:35
+What is this number? So see this is a pure Bayesian approach to.
+46:41
+Can I have a can of some multiple output because any pitch can be theory usable for your answer.
+46:48
+So the question is. How to calculate this probability.
+46:55
+Okay. So. Okay, let's have some break.
+47:02
+And after that, you will see this. In fact, it's not so difficult to calculate just probability, just as this will be different case for it.
+47:07
+Opposite on the case. It's not the you assumption is you'll get an assumption.
+47:15
+Okay. So let's have some break ten minutes and see you after break.
+47:20
+Okay. Welcome back. So, no, once again I will remind you what you are going to do.
+59:38
+You want to rank all possible the pages according to relevance to our query.
+59:45
+Once again, we are giving this query. This will use a type.
+59:54
+And now we want to estimate what is the probability for each webpage to be good.
+1:00:00
+By the way, any spellchecker that you use in your computer work in a similar way.
+1:00:08
+You type something and. If it's contained some mistake, misprint, misprint, then a computer wrong.
+1:00:12
+All possible correction according to relevance to your typing.
+1:00:22
+So this is probably the most general approach of the modelling.
+1:00:27
+Anything under uncertainty. But you have several possible answer and you want to put them in order according to priority or whatever message you have.
+1:00:32
+This is a standard way to do this using basic idea.
+1:00:41
+So let's see. So I will I have a look of web pages billions of them.
+1:00:45
+And they want to order them according to this probability.
+1:00:51
+So I've come clear. We will use this formula. For more.
+1:00:56
+Keep. No, I won't do that. Oh, they're my all the pages.
+1:01:10
+According to this raid, you. The larger world will be fast, next one, and so on.
+1:01:15
+Because as before, all this now before any web pages, they contains the same denominator.
+1:01:21
+Then you may want to run them. I will be running. I will do.
+1:01:30
+King. According. To numerator p of q three multiplied by PUF w.
+1:01:35
+So no, I have to get very similar what you did in Gaussian. I need to calculate this number.
+1:01:52
+But remember what you had in here. Then you get a new Gaussian.
+1:02:00
+The information for the system was easy to calculate.
+1:02:05
+The difficult was calculating this one. But now you will have opposite situation.
+1:02:10
+Suppose I know that I have repeated.
+1:02:17
+So what is the evidence that it's relevant to my query?
+1:02:23
+It's zero, 1 or 0 because users would query inside W.
+1:02:29
+It's one. If there is not is zero evidence.
+1:02:36
+So what is the evidence that this query insight may document?
+1:02:43
+It is. It still exists or not. So now this first number, it's very easy to calculate.
+1:02:47
+This means that what they have to do now. I look only in the webpages w which contains this query.
+1:02:54
+It's still can be the middle of pages. Which contains this query.
+1:03:03
+And no, I look only in them and I have to order them according to probability of W.
+1:03:11
+Which means that I do. So I somehow have to calculate what is the probability of each webpage.
+1:03:20
+Because now what I will do irrespective of the query, I have the following.
+1:03:30
+You gave me question. I look only I know how I calculate in advance probability for each webpage.
+1:03:35
+Because there is no any query inside this.
+1:03:44
+There is no. It says this webpage we were able to calculate during night in advance all this numbers.
+1:03:49
+There are no more. I'll give you a very simple you type query Q I look only in the web pages which contains this query,
+1:03:59
+and I will order them according to number which already calculate.
+1:04:10
+So this was the minute you. It was the first idea.
+1:04:18
+In fact, I can pick up something in advance, especially when I have a bit of a business.
+1:04:22
+It's better to calculate something in advance. Pretty calculate in advance.
+1:04:28
+But when you put calculations all the way to wall with pages how important they are.
+1:04:33
+You just tell somebody time query. You just look for pages which contains them and you just who does them according to them.
+1:04:40
+And in fact, you could even pre-order all the pages for an internet day before his order according to this.
+1:04:50
+Probability of web pages. So what we went type query I just look I keep the same word there but they look only in zero pages.
+1:05:01
+It contains this query and it just extracts have been put in the same order.
+1:05:08
+So in advance you're going to calculate this number. Also put them in order all the pages.
+1:05:12
+So extracting information will be very fast. So far, so good.
+1:05:18
+The question is what is the catch? The catch was.
+1:05:24
+How to calculate this number. It's completely opposite what we had before.
+1:05:30
+In the case of the you've got if you've got a question for you.
+1:05:39
+We had a problem. We use naivete. To calculate.
+1:05:44
+Just number. You give me. Hypothesis.
+1:05:50
+Klaus and I have to calculate probability of. Uh, each particular axe.
+1:05:56
+Now you don't have this problem. You don't put up a big problem.
+1:06:03
+Probability of this. So how to calculate this probability of W.
+1:06:06
+So this is the internet model of internet and we don't want to read any web pages.
+1:06:14
+This is also very important advantage. I don't want to read any web pages but it's good.
+1:06:20
+So what they have now I have a graph directed I think about worldwide web as a directed graph.
+1:06:25
+Maybe the city itself and so on. Bigger and bigger.
+1:06:32
+Bigger because we can move the internet by directed graph.
+1:06:37
+When we have a link for one page to another. So you don't want to use any more information.
+1:06:44
+It means that we don't want to treat. Why it's doable.
+1:06:51
+Well it's interesting. It means that, for example, Google at the beginning, they used.
+1:06:55
+I was hope. They didn't produce any smart robot.
+1:07:02
+You read? Yeah. I think the pages in this one. They just use.
+1:07:05
+They make money on the things that people already did because of the beginning of internet.
+1:07:11
+People really worry because as the web pages and if you like them, you put.
+1:07:18
+Reference or link to this for pages. Which means that this internet was not just collection of documents and links, it's contained knowledge.
+1:07:24
+Because people really put links at the time. When they like something, or they think that it's important what Google did.
+1:07:33
+In fact, it still, this sounds as if millions of people did by themselves and just make money,
+1:07:41
+which was a genius idea, is a time when people recognise it.
+1:07:48
+You can take something from billions of people.
+1:07:53
+And make money. So this was a pilot. You could use knowledge of people.
+1:07:58
+Second, you can use private information. This is what Facebook did in normal situation.
+1:08:03
+They never. If somebody asked for personal information you will never do this.
+1:08:08
+But for some reason when Facebook started to appear, everybody's body was happy to give private information.
+1:08:14
+School job. And this one. Okay. So somehow if you forced millions of people to give something to their value and what value people have,
+1:08:20
+they can pay money or they can give their private information or they can give their knowledge.
+1:08:29
+So Google you knowledge, Facebook use private information and Amazon use money.
+1:08:35
+Okay. You buy something. So. Of course, with the time you have to somehow improve because currently people don't put.
+1:08:40
+Uh, like in ten years ago, Google sat a few some things that quality go down because before people the way I read it and put links.
+1:08:51
+But um, to some because Google was so, so successful that people was thinking, oh, come on, you please have information, just Google.
+1:09:01
+This means that people didn't put enough links between the pages in this one and immediately algorithm,
+1:09:09
+because all could depend only on this link structure.
+1:09:15
+So. No. When I want to calculate probability of any event.
+1:09:19
+I have to ask the question. Probability. Oh, would I have to design probabilistic or stochastic process will generate probability.
+1:09:26
+And the idea of Google was the following. It's cool.
+1:09:36
+Uh. Random server, which means that we assume that person randomly started ten pages.
+1:09:40
+You must use it at the beginning. You start in which if you have any webpages, you start with any web pages with a probability one over n.
+1:09:49
+And of course, if you follow links. You from this web page you have to delete.
+1:09:59
+You just randomly jump? From one of these links to one of these three and so on.
+1:10:06
+So the stochastic process was the following. As a beginning I start randomly.
+1:10:12
+I started travelling. And then you met page. And after that I played this game.
+1:10:20
+I even have similar links. I jump with equal probability for existing.
+1:10:29
+And so on. And even the end use you let us assume that is so radically the same way you travel on the internet for millions of years.
+1:10:33
+And if there is a so-called limiting distribution, how often?
+1:10:44
+If you have other laws, you can calculate what is the frequency of.
+1:10:48
+Visit some particular website. And this will be a model for our probability.
+1:10:51
+So we want to travel a lot and we see how often if you follow this rule, we have a web site.
+1:10:59
+So this was Google was what Google called probability of double.
+1:11:05
+Why it makes sense because. What is important.
+1:11:09
+You son of a [INAUDIBLE]! Peak numbers is according to this definition of probability.
+1:11:14
+What does it mean? First of all, it has a lot of links to itself because each web page doesn't have link to itself that you create one page,
+1:11:22
+then you create a web page and you create thousands of links from your page.
+1:11:33
+It does matter because if there is no link from outside to your web page, nobody will come here, which means that it doesn't have any value.
+1:11:38
+So let's kill the following. It doesn't matter what you do with your full page unless I have reference to you, your effort is worthless.
+1:11:47
+But even more, yes, you can create. Page.
+1:11:56
+You can create 1000 and that's a dummy webpage.
+1:12:01
+And you put links. See this webpage.
+1:12:05
+But it still doesn't help you because all this time.
+1:12:11
+Links. They don't have links to itself, so you don't come to know when you come to them.
+1:12:14
+Which means that it's not only enough for you.
+1:12:21
+Put this over page to have a lot of links from other pages,
+1:12:25
+but it's also important that those links come from another with pages with just higher probability of visit.
+1:12:31
+This is why, for example. Uh. Wikipedia has a hierarchy because there are a lot of pages, even important, with a reference to.
+1:12:39
+To this webpage. Of course, if for some reason your webpage has a reference for pedia Z,
+1:12:53
+it will be even more important because people can go to Wikipedia and after they go to you can always.
+1:13:01
+It's a very similar what what was in the time in academia just reference to us article.
+1:13:07
+So if article has a lot of references from important articles.
+1:13:13
+Then. It is a high ranking send us article.
+1:13:18
+It's not only have when they want to rank some scientific article,
+1:13:24
+it's not only important that there is a source with reference to your article, because maybe it's a dummy article or some sort of stupid oath.
+1:13:29
+There is a company which can increase your reference to your article to just pay money.
+1:13:37
+They create several some fake articles and put reference to your article, but they're very, very similar.
+1:13:44
+Your article become important, if not only just some references, but the references come from important article.
+1:13:52
+This was a kind of model in this one. So this was idea.
+1:13:59
+So let's put this idea into precise mathematical because remember end.
+1:14:03
+If you have to write program and you have to be able to calculate sums.
+1:14:08
+So let's start. Okay, before we start, this is what I said to here.
+1:14:13
+This approach is so universal. We still call them PageRank algorithm, but this is a general approach to to rank some information.
+1:14:22
+Very popular algorithm, by the way. It's that, uh, part of the take it long and in many library.
+1:14:32
+Let's let's no defy. Make a definition. How would you are going to calculate?
+1:14:45
+Okay. So suppose we have this W1WN.
+1:14:53
+Call. Lip. Pages.
+1:15:01
+By the way. Very similarly. Good work when when you want to run tennis player because tennis player I can think about them as a vertices of graph.
+1:15:07
+Okay. And if one beat another, I put out her case.
+1:15:17
+Which means that. Now the question is, which one is the more important?
+1:15:21
+So what page long function is? You want to calculate function f.
+1:15:26
+Which for each webpage. You mean, but so called importance.
+1:15:31
+And the higher numbers, the more important these web pages.
+1:15:37
+And we use this number for on. And we want to use all the structure of the web.
+1:15:42
+It's like for when they want to rank tennis player. I don't I don't want to go to the mine though.
+1:15:51
+Who's going to tell us this particular about what player he's playing.
+1:15:56
+He's and I think you have a page and you can put I did actually for a bit I put direction a bit bit.
+1:16:00
+And in this case I want to go down this. Okay, so we will think about Glip as a directed graph, which is a more general.
+1:16:08
+You can think about web, you can think about articles. And on the internet you can see a lot of other, uh, direction.
+1:16:17
+You can tell, for example, friendship. Okay.
+1:16:26
+So you connect? Yeah. You connect. For example, if people on the Facebook one person follow another person, I create directions,
+1:16:30
+which maybe I want to figure out who is particular on the X or Facebook is the more important.
+1:16:40
+So I look all people are vertices and if there is it,
+1:16:46
+if there's a follow b I put it's like reference which means a to calculate the importance of the page or person.
+1:16:52
+It's just not enough to know that he has a little follower. This fall over I have to have a lesson, also a little follow and so on.
+1:17:01
+So this is a very general setup, but for the sake of.
+1:17:09
+Going to just keep in mind some picture.
+1:17:15
+Let's think about this is the internet. So we say your internet is connected with pages.
+1:17:18
+And if there is a link between page P1 and P2.
+1:17:25
+You just use this link because we have directly proof. This was precisely our definition of density graph.
+1:17:31
+There is some point and there is a link between them. Yes, these can happen from p1, p2 as well.
+1:17:37
+Back. It's possibility and that's from there is a possibility to the link from the patient itself.
+1:17:44
+So we generated that extra graph. So you don't want to go through all this multi billion web pages.
+1:17:51
+Let's see if this is our internet. So we have only four web pages.
+1:18:00
+Or maybe four players playing. Him and.
+1:18:08
+A, B, C, and D, and this is a link between them.
+1:18:15
+Very simple. So looking in these internet I want to calculate.
+1:18:19
+F away f will be. FC and therefore did.
+1:18:25
+It's called ranking causes. Web pages. And to say which pages are more important.
+1:18:32
+If this is my actual internet and which is a less important. So forgiveness is what we need.
+1:18:39
+First of all, somehow you're not going to draw this graph or picture for multi billion collection all the pages.
+1:18:46
+So you need to have some mathematical representation. And the best way to represent the internet.
+1:18:57
+It's. Which you could.
+1:19:03
+Transition matrix. Before we go in transition matrix, let me say what you want.
+1:19:08
+So what are you doing? You want to have a PJ. And you want to some role models if warning if there is a link from webpage H for example killings.
+1:19:15
+To pick you up if you want. You do.
+1:19:29
+So somehow I want to included the following information. That.
+1:19:36
+If we're as a A. I have probability one over k, because remember from the pitch I can jump to according to Olympics randomly.
+1:19:42
+If I have killings there is probability one over.
+1:19:53
+I can go to b1, one over, k to the proved to the one, and so on and zero.
+1:19:57
+Who loves it. So if I don't have links.
+1:20:05
+There's a probability to go from A to Z. Is you.
+1:20:11
+So here's what I want to somehow encoded. This is ideal for Israel PGA.
+1:20:15
+How you create column. Of all possible web pages and web pages where they can jump.
+1:20:27
+For example, this is a you to be one. I put number one over k one, over k two and zero otherwise.
+1:20:34
+And I will do this for each. And I combine them together into this big matrix, which in fact has a special name.
+1:20:44
+It's called. Transition metrics of the web.
+1:20:54
+Okay. This is what you just defined. What is the transition matrix of the web?
+1:21:01
+If. I have webpages w one.
+1:21:09
+W. Then matrix M.
+1:21:14
+First of all, it's n by n metrics. It's just a matter of course.
+1:21:20
+When I lose a small, I can write it. But of course, if n is that.
+1:21:27
+Hundreds of billion, which is not a web page, is internet, then of course it's not the best way to write just object inside computer.
+1:21:33
+But we need this just to extract some final phone. Swallow.
+1:21:41
+What is this? Each column corresponds to a page.
+1:21:46
+And each row correspond to a page. This is very important here.
+1:21:52
+What you do if you go combing by column.
+1:21:57
+For each column. VI.
+1:22:05
+I put here what they said before going over a key number.
+1:22:10
+The probability to jump in this particular row zero otherwise.
+1:22:16
+So once again here is important. Is it am I j of this matrix.
+1:22:22
+And remember it's a column. G.
+1:22:28
+Ly. This is a notation. It's the probability of jumping from from this element to this element.
+1:22:31
+Or otherwise. Okay, so let's see what this methinks will be for our Ethernet.
+1:22:41
+So what are you, the messenger for this particular interview with him? First of all, it's 4x4.
+1:22:52
+And each row corresponds to a D. The.
+1:23:00
+No. Let's look away. There is from a.
+1:23:11
+I have three links. This, this and this.
+1:23:16
+Which means that I can't jump to a with one over three.
+1:23:20
+I will jump to B, which one over three?
+1:23:25
+I jumped ship in one over three. I jumped.
+1:23:29
+Now, Ruby, if you can see, I can jump to a.
+1:23:34
+And then you can jump pretty. So from B I can jump weights one over two probability because I have two possibilities.
+1:23:40
+Jump to eight and I can't jump to B.
+1:23:49
+I can jump to C and I have one over two. Low from.
+1:23:53
+See, I have only one possibility. He jumped.
+1:23:58
+Be 1000. Everybody I can jump to be.
+1:24:04
+Or see so can't jump to zero.
+1:24:12
+I can jump to be one over two. I can jump to this.
+1:24:16
+You want all the tools? You. She is.
+1:24:20
+This is. This is my transition matrix for this particular case.
+1:24:23
+Okay, some interesting observation. As you can see in this particular case.
+1:24:36
+First of all, all element non-negative. Because it's a probability zero probability of you.
+1:24:41
+Second, in this particular case, the sum of all element in each column equal to one.
+1:24:48
+Okay for this particular as nice observation. Why?
+1:24:59
+Because if you repeat, you have a possibility to jump in each of them.
+1:25:02
+Probability one over key. You are just number one.
+1:25:08
+This is not true. If you have a page. If you sold out links.
+1:25:14
+If you have a pitch when you can't jump out, it's really all zero because you can't go anywhere.
+1:25:20
+You're stuck it and you will deal with it.
+1:25:27
+But in this particular case, it's a very easy cinematics all element in the negative and some of each call of equal one.
+1:25:29
+By the way, such metrics which no negative element and symbol element in each column equal one.
+1:25:38
+It's called stochastic matrix because it's can.
+1:25:47
+Be. You can think about this as a some probability of distribution of jumping from one to another.
+1:25:52
+This is a particular case. This is our ethics.
+1:25:59
+The vision metrics of intimate. Now let's look more precise.
+1:26:06
+Is this what you just calculated? That.
+1:26:14
+Was this our internet? This is our metrics and I just want to get it repeated.
+1:26:18
+In this particular case, all alum all column just sound equal.
+1:26:24
+One and all this little nugget. So.
+1:26:28
+Well, what? It means that. But sometimes bad things look necessary.
+1:26:36
+Sum of equal zero sum are equal to one because you can have intuitive web page, which I not only use inside this page, but there is no readout.
+1:26:46
+And now what you want to do. And.
+1:27:05
+What is our strategies. So this method is defined as probability of jump.
+1:27:12
+Though we start in the beginning with all probability equal one over and.
+1:27:23
+And. If you continue to this. From this uniform distribution to beginning.
+1:27:32
+And we follow these metrics over probability distribution and we jump.
+1:27:40
+But before doing this, then it can't be one big problem.
+1:27:45
+Just moment. So why were eastern example stochastic?
+1:27:51
+Some of them. But. If you have a PGA and you have several links from this webpage, then of course column which corresponds to a if you have key.
+1:28:18
+Element in each one of a key, so some equal one.
+1:28:35
+But suppose you have a pages of. Of course they can be web page that you have links to this web page.
+1:28:41
+But no ring out. Then, according to this definition, a.
+1:28:50
+Because I can go from anywhere. All elements will be zero.
+1:28:58
+In fact, if I generate matrix M. For any directed graph, particularly internet.
+1:29:04
+What's get happened? First of all, of course all elements non-negative.
+1:29:12
+Some calls. Some of these are called equal want or else I can have, all of which contain all zeros.
+1:29:18
+Such methods is called semi stochastic. Semi stochastic.
+1:29:31
+It's. If you have a zero column sum equal to one but sometimes you can have.
+1:29:34
+Uh, hold them, which all of you. And this is mean precisely that they have a page eight.
+1:29:43
+With link inside to this webpage.
+1:29:51
+But looking out, it's always bad because if I start anywhere and they arrive to this web page, I don't know where to go.
+1:29:55
+I stuck there. So if I was to have many sites pages, which is a sequel, didn't you arrive and you can't leave it?
+1:30:06
+Which means in all probability distribution when you go there will be considered at this point, because at some point you arrived there and you stuck.
+1:30:15
+And you can't go anywhere else. And of course, it's not good because maybe you start somewhere.
+1:30:23
+You immediately arrive to the tent and you're stuck and you don't have any hey, any stochastic process, you don't explore it all as a possibility.
+1:30:29
+So such situations cool didn't. So how are we dealing with the 10th in stochastic process in probability?
+1:30:40
+It's a very simple idea. It's just come from common sense.
+1:30:46
+If in your life you're stuck somewhere and you don't know what to do.
+1:30:51
+So that's only advice. Just jump randomly.
+1:30:55
+Ideas are falling. If you have didn't. And you arrive at the 10th.
+1:31:00
+Then what? I will tell you. Okay, then. In this case.
+1:31:09
+You don't have a choice. Randomly jump to any web pages on the internet.
+1:31:12
+What is mean in this matrix? If you have zero column.
+1:31:17
+We replace his, you know, call by one over in so they load can jump to all web pages.
+1:31:25
+So low probability one over n. And so now we assume that we.
+1:31:31
+This video. We didn't, so we started this one. So what?
+1:31:39
+And we create metrics and.
+1:31:42
+If medicine exam doesn't have zero column perfectly stochastic, but if he says zero column, we replace all this column by one over.
+1:31:45
+And I will keep this a new math exam which I keeps the same notation them.
+1:31:55
+So what this means that we really can jump. It's was something we stuck with.
+1:32:01
+Then we are right. We can go to the next and so on. Suppose this is my internet.
+1:32:05
+Would you be my math exam? Matrix and will be a, b, c, d 4x4.
+1:32:37
+So from here I can jump to. One over three one over three, one over three.
+1:32:51
+From bacon jump to D. From here, I can jump to deep.
+1:32:59
+And from there I can't jump anyway. So this is my original metal exam.
+1:33:10
+See, I have definitely. This is the which is very, very easy to find out.
+1:33:17
+So as it's meant to examine according to definition. And after that you check if you have column which contains zero and no added plays.
+1:33:24
+Its missing by the same matrix. So I keep each nonzero column as the same.
+1:33:32
+But now Eddie plays each element by one over M and an equal.
+1:33:44
+And I use the same notation them. So from now on, we assume that whatever you have directed graph you create transition metrics.
+1:33:54
+And after that if it has zero column we replaced by this rule.
+1:34:02
+So we don't have this problem anymore. Okay, so no, what this means.
+1:34:07
+So no. Let's write off one. And.
+1:34:14
+What I want to call Clayton. And I think what we do.
+1:34:21
+Now, I want to do this. Random.
+1:34:27
+Travelling random exploration of my internet within pages, and I start initially with my vector of probabilities.
+1:34:32
+Each web page has a probability one over. So no, if I do first jump, it will be another vector of probability.
+1:34:43
+So this is a vector of probability of a page at a time zero.
+1:34:54
+I can pick any one. I go to pick this one.
+1:34:58
+I ask what will be the distribution of probabilities after the first jump.
+1:35:02
+After that I want to calculate the vector two probability distribution at so on and.
+1:35:09
+I want to calculate what will the probability distribution have to jump.
+1:35:16
+And they will go for the limit when n goes to infinity of this.
+1:35:20
+If it exists. If exist.
+1:35:24
+And this will be my. Limiting distribution of probabilities.
+1:35:28
+I was hooked up to travel for a long time.
+1:35:34
+Okay, so how you can calculate. And in that speech.
+1:35:39
+Let's start. So my vector. Suppose I have this vector v.
+1:35:47
+When you. Which is a probability of distribution.
+1:35:57
+If it's a probability of distribution.
+1:36:11
+So let me call this. It's.
+1:36:15
+What is the probability distribution will be for each and the pages from one till end of the key step.
+1:36:24
+So I know what original zero version.
+1:36:33
+It's. One over n one movie.
+1:36:39
+So I want to find the relation. What is the relation between v k plus one vector?
+1:36:43
+And Vicky. Suppose I want to point out probability distribution after k plus one step.
+1:36:49
+To do this. First of all I have to do the k step. And after that I will use my jump.
+1:36:58
+So what this means is if I want to find. What is the probability of distribution?
+1:37:04
+To be as a page I have to keep. Let's jump.
+1:37:11
+What I have to do. I have to arrive.
+1:37:15
+I have to jump. Keep jump to something very, very big.
+1:37:20
+And after that, I have to jump. Chrome web page.
+1:37:26
+This is API and this will be sum over all possible g to arrive at the web page I.
+1:37:33
+I need to arrive before it's any of this page.
+1:37:44
+Before. Enough does that one a year.
+1:37:48
+I know my probability of jumping. This is just this matrix element of transition matrix.
+1:37:51
+So as you can see here just this multiplication.
+1:37:57
+So I can write that vector v k plus one is equal matrix m multiplied by a vector v k.
+1:38:01
+There are very simple formula though. I start with v0.
+1:38:11
+So if you want will be m multiply v0.
+1:38:16
+V two is will be MV1 or m square v zero.
+1:38:25
+That's all I can write the formula of the key step.
+1:38:32
+My probability distribution will be M to the public key multiplied by a vector v0.
+1:38:38
+Fantastic. So we have everything for us. So now the question is.
+1:38:47
+Kelly complete. Limiting distribution and to the public view.
+1:38:54
+First of all, I have two but symmetrical question. If this limit exist.
+1:39:04
+And if this limit exists, how to calculate it? But no real precise mathematical formulation.
+1:39:10
+What you are going to find out. We are going to find the limit.
+1:39:16
+Of multiplication many many time by math exam of original.
+1:39:22
+We just. Did what they. Describe you before.
+1:39:31
+So every time you start from zero, after one step, you have MV0, after that m square, and so on.
+1:39:39
+And if I multiply eight times. It's given me probability distribution after I steps.
+1:39:52
+So this is what we just established. What did it mean, though?
+1:39:58
+We know general formula. The probability distribution of the key step is equal.
+1:40:12
+To support Public Key. Zero.
+1:40:24
+And that should be a formula that if you keep plus 1X1 is equal MDT.
+1:40:29
+But the question is how to calculate this? It's okay.
+1:40:41
+You can say okay. And there were two concrete limit.
+1:40:46
+When K goes to infinity. This probability distribution.
+1:40:51
+You can say, okay. Just multiply many times by a math exam and you see what is going.
+1:40:57
+First of all. We don't know if limits exist.
+1:41:07
+For some sequence limits. Look, you know, if you remember from calculus, sometimes limiting is sometimes limited.
+1:41:14
+And second, even if he. Knows its limits exist.
+1:41:21
+And remember, the internet is a big set of webpages.
+1:41:27
+Billions. So math exam will be. Billion by billion metrics.
+1:41:32
+So it's a billion square of element. This one.
+1:41:40
+When you tried to multiply math things by. By himself.
+1:41:45
+You'll be totally confused with them to do multiplication.
+1:41:54
+You thought it's you'll be like billion to the policy of multiplication.
+1:41:58
+And of course, unless you're eaten as like four pages or ten pages, there is no way we will be able to calculate for 100 kids.
+1:42:03
+Okay, we can multiply metrics with 100 by 100 many times.
+1:42:10
+But if it becomes thousand million, it's become invisible.
+1:42:14
+So the question is. How we can calculate.
+1:42:20
+This was not trivial question. And the great thing was that these two people who created Google.
+1:42:25
+They took some course on. Harmonic analysis from graph Ferris wheel course.
+1:42:32
+And they look in this course as it's a new addition. Somehow they figured out how to solve this problem before before people cry.
+1:42:39
+But they didn't have enough mathematical background sources.
+1:42:47
+So let's see what we need really. Suppose limit exists.
+1:42:51
+There exist vector V which is equal limit.
+1:43:01
+K goes to infinity v k. Once again, we do not know.
+1:43:06
+Resources work. So what does it mean?
+1:43:11
+It means the following. That's right of equation.
+1:43:14
+VK plus one vector is equal and.
+1:43:21
+Multiply vector vk. No.
+1:43:26
+I can take it from both sides. Though if vector v.
+1:43:32
+Is the limit v k plus one. Then of course, if I shift by by one it's still the same limit.
+1:43:57
+So this part is equal victory.
+1:44:04
+It doesn't matter if you have sequence and you start to count from second element, you still have the same limit.
+1:44:08
+Of course. Limits. What's happened? Infinity.
+1:44:15
+You know what you did? The beginning. Low limit magic.
+1:44:18
+That means to fix it does depend. And you know that limit of sammys the sum of limit.
+1:44:23
+Limit multiplication by constant is a constant multiplied by limit.
+1:44:29
+So this size will be m. I can take my exam outside.
+1:44:33
+His house will be wrecked. No, I have a question.
+1:44:44
+She. Let's bet. Look, I know now you may want to find Miss Vector v Liberty distribution.
+1:44:57
+I do not have this. A lot of multiplication.
+1:45:06
+I know that we know this equation. And of course they can try to solve this equation.
+1:45:10
+And we know that even if it exists. This limit satisfies this equation.
+1:45:17
+But once again, it's not. Very easy to follow because.
+1:45:25
+So what is means is. Equation.
+1:45:30
+It means that. Remember. They get value.
+1:45:35
+Definition of making value. General definition of eigenvalue of matrix.
+1:45:40
+Vector. So our results show that if this limiting distribution exist.
+1:45:49
+Limiting distribution is the eigenvector with taking a value one.
+1:45:59
+And you can control this equation. And it's very unstable.
+1:46:08
+Right. Because if you change this matrix a little bit and we always because it's a huge matrix.
+1:46:13
+And you use computer precision. So when you try to solve this equation.
+1:46:24
+And there is a huge chance that it does have a solution.
+1:46:32
+Mathematically, it has a solution, but if you approximate them very close,
+1:46:36
+it's no sensitive solution because they can really with a small change, your method can be changed.
+1:46:42
+But there was a less pure magic of, you know, that if limited distribution exist.
+1:46:50
+It's has to be a good value with a good value one.
+1:46:56
+And if you try to solve this equation, hopefully we will be able to find if this matrix M is a small.
+1:47:01
+But if it is a big matrix, we would be able to find which means it.
+1:47:08
+It's nice, but it's not practical. What was solution of.
+1:47:15
+Google. They said, okay, maybe I was able to weight limit precisely.
+1:47:23
+But because I have this. Formula.
+1:47:31
+What I will do. Baby. If I eat today like 100 times, multiply babies will be very close to the delivery distribution.
+1:47:37
+And in fact, because computer has a finite precision, if you multiply this by 200 step or 300 step, it doesn't change.
+1:47:49
+It's supposed to theoretically change, but because there's a small error, because it could be the calculation, it always doesn't change.
+1:47:59
+So in fact, what we need just you need to be sure that limit exists.
+1:48:05
+Then we just multiply it by metrics like 100 times, which was a Google algorithm 200 times.
+1:48:09
+And we will find our probability distribution in advance and we will be able to solve our problem.
+1:48:15
+So Lord you have. Very important problem.
+1:48:23
+Where does this limit exist? And let's have some break.
+1:48:30
+This will be our main topic of legislation. Okay.
+1:48:39
+Welcome back after the break. So now. You know, probably the most important question when this limit.
+1:59:54
+In fact, this problem was solved 100 years before Google started to develop the algorithm.
+2:00:14
+Because what we have. Was this surfing on the internet?
+2:00:23
+No. In classical pensions.
+2:00:29
+Theory of Markov process. You don't know.
+2:00:33
+You don't need to know anything about Markov process. But the main idea.
+2:00:38
+Markov process is the following. That next step.
+2:00:42
+Uh, of your process. This depends where you know.
+2:00:47
+And does it depend on previous history? So this is an example of self is an example of this.
+2:00:51
+Because where you jump next depends currently where you are in which you are page and doesn't depend how you arrived before.
+2:00:57
+So when you have a situation, when your decision next up doesn't depend on the whole history, but on your current situation.
+2:01:07
+This you recall Markov process, which is a robot,
+2:01:16
+is the next most important part of probability theory of the definition of independent independent variable.
+2:01:20
+By the way, chess, when you play chess, it's also example of Markov process.
+2:01:29
+Because when grandmaster chess player decided to make a move.
+2:01:35
+He just is more dependent on what is currently on the board.
+2:01:41
+It doesn't depend on how he arrived here, how many steps he did before his next move depend only on the current situation.
+2:01:45
+So just when he has a board game, it's also example of Markov process.
+2:01:53
+It's a very rich theory. It's it describes a huge number of possibility.
+2:01:59
+And even if, for example, when you try to develop.
+2:02:05
+Program to automatically draw behaviour when drawn have to find its target.
+2:02:10
+It's also example of Markov process because the next move a drawn is does matter.
+2:02:16
+So here I will just position.
+2:02:23
+It will depend on clarity where he is and what is his battery and what is a win condition, but not what was like one hour before.
+2:02:24
+So this is a general Markov process. And. Uh from pseudo Markov process.
+2:02:34
+We know that this is unit by Markov.
+2:02:41
+This limiting distribution exist. And if we successfully establish that you satisfy our equation, you get really one.
+2:02:45
+If and only if you ever set foot in property. Of a graph.
+2:02:57
+Do that. This graph.
+2:03:05
+Where do you have? Is strongly connected.
+2:03:09
+So this means that. That frees you up from each web page.
+2:03:16
+You can arrive to either a page by following links.
+2:03:26
+Okay. So let's see, you know with. Original graph.
+2:03:32
+It was example of why we did it. Oh, he's.
+2:03:39
+He got strongly connected. Yes.
+2:03:59
+From here you can arrive to be. You didn't see no problem from before.
+2:04:03
+You can arrive to a and after that everywhere. From here you get a knife to a and after death everywhere.
+2:04:10
+And from there you get a left. You see after that to a and after death everywhere.
+2:04:18
+This means this is nothing strongly connected. So when Mark was here, and we know that this Liberty protests exist, it's a display.
+2:04:22
+This equation. And by the way.
+2:04:39
+This solution to this equation is a unique.
+2:04:45
+What if we need to check? And that in our graph.
+2:04:53
+Our graph is strongly connected. Okay.
+2:05:02
+Don't suppose I give you graph? I've eaten it.
+2:05:08
+The fact. Growth of internet is not strongly connected.
+2:05:17
+It doesn't mean it's not connected, because you can have some local web pages connected between them and that's it.
+2:05:22
+And there is no link between them. So serial internet is not strongly connected.
+2:05:31
+Of course, the first idea was important because it was strongly connected.
+2:05:40
+Let's figure it out with some. Component, which allow it to be strongly connected.
+2:05:44
+And if there is not efficient, you. You can't. You figure out all the config connected component of the graph.
+2:05:52
+What is huge internet?
+2:05:59
+So this was a problem because we did really lose an internet connected component that was a huge amount of component inside graph,
+2:06:02
+which is not connected to outside of this one. And so the question is that for real internet, there is no solution to this equation.
+2:06:10
+So how to deal with this? Then idea of Google was.
+2:06:21
+Very beautiful idea. By the way, he is example that if I start with my, uh.
+2:06:32
+Example, one day I must apply the knife to this limited distribution.
+2:06:42
+What was idea by Google? Let me just summarise that we have two problem.
+2:06:47
+First of all, didn't. When method is not stochastic.
+2:06:53
+But you already did discuss how we deal with this. We just replace or call it by one over.
+2:06:59
+But another problem is the glove is not strongly connected,
+2:07:08
+which means that there is a part of the graph which for one vertex you can't reach enough of it.
+2:07:13
+What is happened? It's called spider trap, where it's caused by the trap.
+2:07:22
+Because. When people develop internet and they start to index all the pages of the internet, what they did,
+2:07:26
+it was a program which was the name spider, and it's a program dissappointed looking at the page after that, it's index is web page.
+2:07:34
+After that it's looking at going off of a page which is connected to other links, and we index on this one and so on.
+2:07:45
+So it's full follow only 2 to 3 different pages. But what can happen.
+2:07:52
+You can. You don't have. And then like for example, you have this. Webpages here.
+2:07:58
+There's little to them, but. Like this one, maybe.
+2:08:04
+But for this part of the internet, you have.
+2:08:09
+Leaks only inside. You don't have any outside.
+2:08:14
+There is no didn't. Because you're a page, you can jump.
+2:08:20
+But from us.And if you arrive to this set of vertices, you're stuck here.
+2:08:24
+This is it. Sparkle will stop. This program spider was trap.
+2:08:31
+It's full of links, but it's never can be able to get out.
+2:08:36
+As if precisely the graph is not strongly connected when he has spider tracking site.
+2:08:42
+No, didn't, because you already decided to come to deal with a dead end. But the question is what to do with despite the trap.
+2:08:49
+And you can't just. Remove them on this one.
+2:08:59
+So the idea was the following. Okay. What does he mean by the trump?
+2:09:03
+These set of pages you can't believe. But maybe we'll do the full.
+2:09:09
+Let's do the following. Loosely, we will follow links.
+2:09:13
+But with non-zero probability, be allowed to jump everywhere.
+2:09:19
+And because we have this small ability to jump everywhere. We never trump even if you fall.
+2:09:24
+Sometimes we spent in this. Did used to be Trump.
+2:09:29
+At some point with a small probability they can jump to somewhere outside.
+2:09:35
+So this was what they did in fact.
+2:09:41
+So let me summarise with the event. We already solved this problem.
+2:09:45
+Because metrics for web because it is a web pages.
+2:09:50
+We just did and it was stochastic.
+2:09:54
+So we replace this equation by just one over here.
+2:09:58
+Is this what they said? This. If you take over that.
+2:10:04
+If there is, is, you know, call him. Very pleased by this invitation, by the way.
+2:10:09
+You bet. Here is A11110 column by E.J. Ben.
+2:10:16
+Which is well over in one. Over. Okay, so from now on, I see that there is no space of time.
+2:10:25
+But. What is this example? If I have this internet and you see from there, uh, see, I can't go anywhere.
+2:10:37
+Then I was just his math exam over this one.
+2:10:49
+So now I have to accept, but I don't know since it's metrics, and if I follow this metrics, I will be able to go from any vertex to another vertex.
+2:10:54
+So this problem, this whole other problem of the then but there's also problem of spite the top.
+2:11:09
+Because for example, I can have the following webpage.
+2:11:15
+Hey! Okay, as you can see.
+2:11:21
+This wreath. There's no dead end. Room is replaced.
+2:11:39
+You can go somewhere by this event. This is the trap.
+2:11:42
+Which means you may start here. I will always be inside this.
+2:11:47
+After that, I go to one of these and I will grab here.
+2:11:51
+What are you? Wait. What did you this time today is this message. Is this I will say there.
+2:11:56
+For some reason this graphics. You have zero probability.
+2:12:02
+It means that this look will be somehow, uh, important.
+2:12:07
+Even if there are some important pages which look at this with pages.
+2:12:12
+What I feel like here. After that, I go to this trap and I will continue to stay here.
+2:12:16
+So how the how we get to this place by the thumb. And idea was.
+2:12:24
+Taxation, which means that.
+2:12:31
+We allowed a little bit to pay tax.
+2:12:35
+You arrive to the page and you mostly follow this rule link, but with a little slow probability you can jump anywhere.
+2:12:38
+Uh. Just moment. So let me explain how to do this more precisely.
+2:12:52
+So who did you meet? So it's a regional review full of metrics and stochastic metrics ability to jump so low.
+2:13:03
+What I want to do, I want to say is the following okay.
+2:13:13
+I will use metrics M. Only.
+2:13:19
+With probability beta. Which means suppose I arrive to way to the PC.
+2:13:25
+And I have a coin. Head and tail.
+2:13:33
+Probability of head equal beta ability.
+2:13:39
+Tail of equal one. When is beta? So what they will do?
+2:13:42
+Well, I am going to jump is 8 to 8.
+2:13:48
+I am slowly going. And if.
+2:13:51
+It's. Head. I will follow them.
+2:13:56
+But if I have to, I will jump anyway.
+2:14:02
+So would it mean? Probability when I go to formula for probability.
+2:14:08
+Probability of. Going anywhere, it will be probability to arrive in some site.
+2:14:16
+X will be probability of X on the conditional head multiplied by probability of head.
+2:14:25
+Plus probability of tail multiply by probability of tail.
+2:14:35
+So. No, but his head, I follow em. Multiplied by bit.
+2:14:44
+But if it still. I will multiply by one by this beta.
+2:14:51
+And they can jump anywhere. What do you mean they can jump anywhere?
+2:14:57
+I will have the following metrics. One over n one over n one over, n one over and and on.
+2:15:02
+Notation is e divided by n. But since he is not identity matrix, it just matrix which contain all ones.
+2:15:12
+This metrics anyway. Bad. So this means that no way transition matrix will be supported.
+2:15:27
+Not original. But beta multiply M plus.
+2:15:35
+One man is bitter, multiply over n.
+2:15:43
+So this will be my new matrix. Matilda. What I can say about this matrix.
+2:15:52
+Ampthill though. I can see it falling, said Matilda.
+2:15:59
+Is stochastic, methinks. Why?
+2:16:12
+Look at this matrix. Take any call. First of all, as these contain no negative element because they contain no negative element and no negative.
+2:16:21
+And the beta is the probability. So beta one minus beta between 0 and 1.
+2:16:32
+No. If I won't even have any column in this matrix and I want to add all elements equal, then my song will be better.
+2:16:37
+Multiplied by some volume in such m.
+2:16:47
+Which is one. Plus one minus beta.
+2:16:52
+Sum of element inside each of n, which is also one equal one so m fields.
+2:16:56
+That is a very good stochastic matrix. Loss is strongly connected because with non-zero probability they can jump anywhere as long as beta equal one.
+2:17:04
+Then I know if you beta. One and tilled up.
+2:17:18
+Uh, would you give me? He said.
+2:17:26
+Limiting. Distribution.
+2:17:32
+So this is no situation what we want to do. So let's summarise.
+2:17:43
+So we created math exam. It's a beginning.
+2:17:49
+We replace M by M. Remove.
+2:17:54
+Dead end. After this play and by mentalism tilde, the same notation which is I will replace him by.
+2:18:01
+Beta m plus one minus beta.
+2:18:13
+White band. Can I use this method?
+2:18:18
+Of course, it's not precisely my, uh, gravity.
+2:18:23
+You just length. Which means that. Yes.
+2:18:28
+I don't look these, but sometimes I do random jump, and now I'm perfectly happy.
+2:18:32
+There is limited distribution. And by the way, they demonstrate this procedure.
+2:18:37
+But I start from w0 and then multiply by m tilde.
+2:18:46
+It's vector V1. After that, they multiply them to give you one.
+2:18:54
+If you give it enough to 100 times.
+2:19:01
+This virtual stuff to to. So it's like limited distribution.
+2:19:14
+And this will tell you what I will have. So this was a regional algorithm by Google that you just create this metrics.
+2:19:17
+You iterate 100 times and it's and you have this fact that you can calculate every night.
+2:19:28
+Because we interchange some UCP assumptions digitally.
+2:19:36
+So it was about leave the information and for good.
+2:19:40
+But everything nice once Berekum. Consequences.
+2:19:43
+They calculate this huge vector of ranking of all of the page on the internet and after the users issue a change.
+2:19:47
+Okay, so what is a problem though? Currently what is the problem is the problem is.
+2:19:56
+Okay. So we know that beta is not equal to one.
+2:20:02
+Because we still want to have this. Yeah.
+2:20:08
+Stochastic behaviour. Jump everywhere to be sure that you have strong connect.
+2:20:12
+And of course beta is not equal. Zero, because when beta equals zero, we just forget about things and we just randomly jump on the internet.
+2:20:17
+So they all have the same value. So there is no. So beta has to be between 0 and 1.
+2:20:28
+And remember we don't know in advance which means that beta is a hyperparameter.
+2:20:33
+So what they did how they found and they use beta 085.
+2:20:39
+Why? Because. They hire some many, many student.
+2:20:46
+They. Some have some money. Seed money. And they ask them for giving it beta 0.10.20.92 Mark.
+2:20:51
+What do you think about this particular, uh, particular at this point?
+2:21:03
+And then select Peter with the best possible.
+2:21:10
+It's a very similar basically with how how people develop ChatGPT live chat part, because at the beginning it was just more the more that we generate.
+2:21:13
+But now they asked us to ask question and it's produced several answer and human Select.
+2:21:24
+Which also is a better. And so they're just model to produce better result.
+2:21:31
+And after that we have this GP2 is a pretty good result because originally.
+2:21:38
+It's not necessary to produce what we expect. This was also an example of reinforced learning, but you just basic model you defined.
+2:21:44
+But now you want to find these hyperparameters to adjust to produce better results.
+2:21:55
+So once they found that it was just 0.8 to 0.9 produce reasonable result, they start to look in this area and as ends they end up.
+2:22:00
+Is this value as a parameter? Is it tutorial.
+2:22:09
+And also in the examples? Yeah, it will use value 0.8.
+2:22:13
+Why? Because it's easy to calculate. Because this is just four over five.
+2:22:19
+When when I want to calculate something from that 60 by 3 or 4 by four, we will keep 0.8 by original Google 0.35.
+2:22:25
+By the way, if you look here, you try to run some other application.
+2:22:32
+Then you have to adjust this beta. Okay, so what's the problem?
+2:22:36
+She know we have to solve this equation or do iteration?
+2:22:43
+And this will give us a solution to our problem.
+2:22:52
+Okay. We're almost done. What is it? What is it?
+2:22:57
+Problem with this equation. And I can just look and see what's the problem with this equation?
+2:23:04
+Let's use this equation. Worth it.
+2:23:12
+I want to iterate. So my question is.
+2:23:18
+W vector w is equal. The beta m plus one minus beta.
+2:23:23
+Easy way. But then. Vector v.
+2:23:31
+Or if I want to iterate. Then I would use the following.
+2:23:36
+The next step is equal beta m plus one minus beta.
+2:23:41
+Uh. He overheard. After the.
+2:23:49
+So my solution to the despair equation.
+2:23:56
+But I can always start with some vector v. And I do this iteration process and I go help my limiting solution.
+2:24:01
+There is one problem. I need to raise this maybe 100 times.
+2:24:10
+So what is the problem is the problem is that the members it's M is a size n by N.
+2:24:16
+The internet is a huge matrix. They must replace this method by another set again as a huge calculation.
+2:24:22
+Trillions. But if you look carefully.
+2:24:31
+Patrick's Emmys. Not so bad. Because matrix M is described.
+2:24:36
+Links connection between web pages and on average each web page has like 4 or 5 connections.
+2:24:42
+This means that in this math exam. In this column displays the size of this column.
+2:24:50
+Abelian only on average 5 or 6.
+2:24:57
+Zero element. The rest is a majority zero.
+2:25:01
+So matrix M is a very sparse matrix. It's connected.
+2:25:05
+Huge amount of zero elements. And multiplication of magic includes a huge amount of zero.
+2:25:09
+It's very easy. It's not too bad, but zero. It will be zero.
+2:25:15
+You don't have to even multiply. And this is in Latin.
+2:25:18
+You might have got Python in any reasonable library. There is always a library for dealing with so called sparse matrix.
+2:25:22
+We'll just only say it position of non-zero element.
+2:25:30
+And after that it's doing fantastically fast multiplication.
+2:25:34
+He's a great. But the problem is with this matrix.
+2:25:39
+You. Which is one one, one one, one one, and so on.
+2:25:42
+Which of course was stochastic. Oh no no no it's partially. And it gets a little calculation.
+2:25:52
+So if you try to directly implement this iteration it's your problem.
+2:25:59
+You want to deal with this? And we will. Thank you last week.
+2:26:04
+And then we are ready to just. We have to Google algorithm.
+2:26:12
+Look at this iteration. Oh.
+2:26:17
+First equation. I can read this like this. Peter m v.
+2:26:21
+Plus one minus beta. Victor.
+2:26:28
+You you Abraham, you multiply vector v.
+2:26:32
+Who it will take iteration it going to be. No kidding.
+2:26:38
+Simplifies its expression, and that's easiest.
+2:26:59
+Let us calculate what is here. Want the play by Victor.
+2:27:03
+These. Remember he is 11111.
+2:27:08
+And vector V is just okay v1 v2.
+2:27:16
+Then if I multiply vector you with this vector v, I will have matrix I will have v one plus.
+2:27:21
+Then if you want plus Hillview, they all will be the same.
+2:27:31
+But no, because every time when we iterate, it's the probability of to be the next step.
+2:27:39
+And. In this iteration, or if its distribution is to probability.
+2:27:47
+So all this sum is equal to one. So you can think this is a vector e.
+2:27:54
+Which is 111. Which means that in all in all my equation I can replace.
+2:28:00
+He and Victoria. But just work to E.
+2:28:11
+Which I don't have to calculate. It just.
+2:28:18
+111. Knows this is what you use.
+2:28:25
+This is a and just iteration. So you don't have to wonder what.
+2:28:30
+I have to multiply only by this matrix.
+2:28:34
+And it's become incredibly fast as this can be calculated up to 100 iteration the ranking or value or probability of selecting a particular webpage.
+2:28:37
+And this is an exact summary. Well, just. I told you.
+2:28:52
+That my ideal function satisfies this equation.
+2:29:00
+But we don't have this equation for the future linear equation because you know that our limiting distribution.
+2:29:06
+He's just limit of iteration. So we iterate the following procedure 100 time.
+2:29:19
+And if you have other metrics of probability over pages.
+2:29:26
+This is what Google do. 100 to 100 times the iterate and have this mathematics.
+2:29:31
+No. If I ask you to do an exam, I never ask you to do, and he goes in four and we'll get two offer two, 3 or 4.
+2:29:38
+In this case, I don't want you to iterate when I ask you to calculate PageRank.
+2:29:48
+It's the same in tutorial. I want you to solve this equation.
+2:29:54
+Give me a precise answer. Not after several iteration, because I don't want you to feel like must have betrayed 100 time.
+2:29:59
+But because they have one, two, 3 or 4, you just system of quasi linear equation of four, then you can solve it and you have results.
+2:30:08
+Okay, let's see what what we can have. Suppose this is our map right before.
+2:30:19
+Have you seen x beta equal 0.3?
+2:30:28
+Then. But I am. This is a beta.
+2:30:33
+It's a four over five of the following metric zero.
+2:30:40
+One over three, one over 3U1 over 2001 over two.
+2:30:46
+0010. Zero one over two.
+2:30:54
+One over two. Zero four over five.
+2:30:58
+The beta. It's a precisely this first part. The second part is remember, one man is beat up the way by and vector 1111.
+2:31:02
+What is the equal for? So when n equal for.
+2:31:14
+What do I have. For. 1111.
+2:31:17
+And because pizza is over 511 is better. It's one over five.
+2:31:23
+One over five. So this is equal one over 21 over 21 over 21 over 20.
+2:31:33
+She is they have for iteration. Or if I want precise answers without decoration, I just register equation result iteration.
+2:31:43
+The vector displays. The system will read the equation. And.
+2:31:55
+Even if today's is the busiest one. But you don't need it for this particular simple case.
+2:32:04
+Iterate and we can solve this. Precisely.
+2:32:11
+And. Uh, do you have the same answer?
+2:32:15
+If for this mortal enemy, it would be thankful precisely for what we have said the highest morality will be she.
+2:32:23
+B and C will have the same rank and as the smallest of.
+2:32:34
+Let us see this picture. So why?
+2:32:40
+He has a huge lump. Because he said, a lot of collection sites you from g from a.
+2:32:44
+And of course from B you can arrive to fuse it. So there are so many possibilities to arrive you.
+2:32:53
+It's like I cracked everything. Of course there is a possibility to arrive.
+2:32:58
+Yeah, but you see, there is only one possibility. To be in his arms.
+2:33:03
+The same. Okay, so we almost finished.
+2:33:09
+So I don't want to start a new topic because you already probably exhausted.
+2:33:22
+But at least now we know how Google calculates PageRank.
+2:33:27
+And the biggest lesson is that this approach using visual modelling and Markov process, its effect is universal.
+2:33:32
+We. To rank.
+2:33:41
+Uh, possible answer. It's a problem, but you have multiple answer.
+2:33:46
+And this this approach used not only for what page rank or display it.
+2:33:51
+Even when I teach some computer to play, it's a very simple.
+2:33:57
+From each position of chess, I have many possibility, I have many moves.
+2:34:01
+So the question is which move is the best? And.
+2:34:07
+It's use the same idea like we did before.
+2:34:12
+Businesses who cause it's much more difficult to implement because for chess you have enormous amounts of state or vertices.
+2:34:16
+It's much. It's I if you look into the game, go for each position.
+2:34:26
+It's like vertex, you know, ground and a graph.
+2:34:33
+But it was a whip. You have like several billion web pages.
+2:34:37
+Position of the game go down above the position of artists Museum, the electron and universe.
+2:34:42
+So of course, there is no way we can do this just for using similar algorithm.
+2:34:49
+And this is why deep deep learning is playing a role in this one. But idea is a very beautiful.
+2:34:54
+Somehow you have to calculate. What is the value or probability of evidence for where we are going and.
+2:34:59
+Just example. It's first of all, it's all Google was built on this one.
+2:35:12
+But in general, mathematical ideas are beautiful. Okay, many things for today.
+2:35:17
+Enjoy your weekend and have a nice day.
+2:35:22
+Thank you. And then you said that you're exhausted.
+2:35:28
+But it's life. Thank.
+2:35:37

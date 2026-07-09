@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><title>TS Study Pack C - L5-L7 - FINAL LOCKED</title><style>
+*{box-sizing:border-box;min-width:0}@page{size:A4;margin:0}html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{margin:0;padding:22px 10px;background:#d0d0d0;color:#111;font-family:"Segoe UI",Arial,sans-serif;font-size:14px;line-height:1.42}
+.page{width:210mm;min-height:297mm;margin:0 auto 24px auto;padding:28px 34px 30px 78px;background-color:#fff;background-image:linear-gradient(#ef8b83 0,#ef8b83 1px,transparent 1px),repeating-linear-gradient(transparent,transparent 27px,#acd1ec 27px,#acd1ec 28px);background-size:70px 100%,100% 28px;background-position:0 0,0 0;box-shadow:2px 3px 12px rgba(0,0,0,.22);page-break-after:always;position:relative;overflow:visible}.header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;gap:12px}.date{font-weight:700;font-size:12px}.subject{font-style:italic;font-size:12.5px;color:#333;text-align:right}h1{font-family:Georgia,"Times New Roman",serif;font-size:27px;line-height:1.15;margin:7px 0 8px}h2{font-size:18px;font-weight:800;display:inline-block;border-bottom:2px solid #111;margin:14px 0 8px;line-height:1.2;padding-right:6px}h3{font-size:15.5px;margin:11px 0 6px;text-decoration:underline}.subtitle{font-size:13.2px;color:#333;font-style:italic;margin-bottom:8px}.toc span{display:block;line-height:25px}.toc span:before{content:"□  "}.exam{background:#fff3cc;border:2px solid #111;border-radius:7px;padding:8px 12px;margin:8px 0;line-height:1.55}.blue{border-left:4px solid #3a86c8;background:#f5f8fd;padding:7px 10px;margin:7px 0;line-height:1.45}.green{border-left:4px solid #2d9d52;background:#f5fff7;padding:7px 10px;margin:7px 0;line-height:1.45}.trap,.warning{border:1.5px dashed #b00000;border-radius:6px;background:#fffafa;padding:7px 10px;margin:8px 0;line-height:1.45}.trap b,.warning b{color:#b00000}.examline{background:#fffdf1;border-left:4px solid #d18b00;padding:6px 10px;margin:7px 0;line-height:1.45}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;margin:8px 0}.grid.one{grid-template-columns:1fr}.card{border:2px solid #111;border-radius:8px;background:rgba(255,255,255,.85);padding:8px 12px;break-inside:avoid;overflow:hidden;line-height:1.35}.label{font-weight:800;font-size:12.2px;color:#333;margin-bottom:4px;line-height:1.25}.mini-table{border-collapse:collapse;width:100%;margin:8px 0;font-size:12px;background:rgba(255,255,255,.78)}.mini-table th,.mini-table td{border:1px solid #999;padding:5px 7px;vertical-align:top}.mini-table th{background:#dde8f5}.mini-table.compact th,.mini-table.compact td{font-size:11.2px;padding:4px 5px}.formula-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;margin:7px 0 9px;align-items:stretch}.formula{background:rgba(255,255,255,.88);border:2px solid #111;border-radius:8px;padding:8px 11px;break-inside:avoid;overflow:hidden}.formula-label{font-weight:800;font-size:12.2px;color:#333;margin-bottom:4px;line-height:1.25}.math{font-family:"Cambria Math","Times New Roman",serif;font-size:15px;background:#fff;border:1px solid #bbb;border-radius:5px;padding:6px 8px;margin:5px 0;line-height:1.35;white-space:pre-wrap}.formula-note{font-size:12px;color:#444;line-height:1.33;margin-top:4px}.q{border-left:4px solid #111;padding:6px 10px;margin:7px 0;background:rgba(255,255,255,.74);line-height:1.42;break-inside:avoid}.sol{border-left:3px solid #3a86c8;background:#f5f8fd;padding:6px 9px;margin:6px 0;line-height:1.35;break-inside:avoid}.calc{border-left:3px solid #2d9d52;background:#f5fff7;padding:6px 9px;margin:6px 0;line-height:1.35;break-inside:avoid}.source{font-size:11px;color:#444;line-height:1.35;margin-top:10px;border-top:1px dotted #aaa;padding-top:4px}pre{margin:7px 0;padding:8px 10px;background:#f7f7f7;border:1.5px solid #111;border-radius:8px;white-space:pre-wrap;font-size:11.5px;line-height:1.35;overflow-wrap:anywhere}code{font-family:Consolas,"Courier New",monospace}.check li,.mistakes li{margin:4px 0}.small{font-size:12px;color:#444}.wide{grid-column:1/-1}@media print{body{background:white;padding:0}.page{margin:0;box-shadow:none}}
+</style></head><body>
+
+<div class="page"><div class="header"><span class="date">12.05.2026</span><span class="subject">MA3508 / MA4508 / MAT508 Time Series</span></div>
+<h1>TS Study Pack C: L5-L7<br/>Spectral Methods, Linear Forecasting and Estimation<br/><span style="font-size:18px">FINAL LOCKED</span></h1>
+<div class="subtitle">Exam-focused HTML notes. Content source: uploaded Time Series files only. Pack B used only as the visual/style/structure reference.</div>
+<div class="exam"><b>How to use this pack:</b> learn the theorem statements and formula cards first, then practise the worked prediction and estimation examples, then read the R-code templates line by line. This pack is more calculation-heavy than Pack A/B.</div>
+<div class="exam"><b>Last-night memory list for L5-L7</b><br/>
+Mercer expansion; Karhunen-Loeve expansion; Bochner-Khinchin continuous/discrete cases; spectral density ↔ covariance integral; ordinary frequency ν=λ/(2π); sinusoid spectrum = Dirac peak; spectrum of sum = sum of spectra; filter spectrum multiplies base spectrum; convolution y_k=∑q_j x_{k-j}; periodogram estimates 2πf(λ); FFT periodogram code; BLUP/MSE predictor; Γ matrix and b_h vector; a=Γ^{-1}b_h; prediction variance R(0)-b_h^TΓ^{-1}b_h; Gaussian prediction interval; sample mean is unbiased; sample autocovariance formulas; correlogram ρ̂(k)=R̂(k)/R̂(0); periodogram formulas; estimator vs true theoretical quantity.
+</div>
+<div class="warning"><b>High-yield warning:</b> L5-L7 are mathematically high-yield because uploaded mock/past papers repeatedly test theorem statements, spectral density to covariance, filtering interpretation, best linear prediction, prediction bounds, sample covariance/correlation estimation, periodogram code and forecasting R code. Do not treat these lectures as “just concepts”.</div>
+<div class="examline"><b>Do not mix these:</b> theoretical covariance <b>R(k)</b> vs sample covariance <b>R̂(k)</b>; spectral density <b>f(λ)</b> vs periodogram <b>P(λ)</b>; time-domain convolution <b>y_k=∑q_jx_{k-j}</b> vs frequency-domain filtering <b>f_y(λ)=f_x(λ)f_q(λ)</b>; best linear predictor coefficients <b>a=Γ^{-1}b_h</b> vs ARMA model coefficients.</div>
+
+<div class="toc"><span>Lecture 5 map, theorems, formulas and R templates</span><span>Lecture 5 mapped exercises and spectral/filtering templates</span><span>Lecture 6 map, BLUP/MSE formulas and worked predictions</span><span>Lecture 6 R templates and exam-like exercises</span><span>Lecture 7 map, estimation formulas and R templates</span><span>Lecture 7 mapped exercises and estimation templates</span><span>Past-paper/mock radar for L5-L7</span><span>Common mistakes and mini self-test</span><span>Source coverage audit and missing/unclear areas</span></div>
+<div class="source"><strong>Source:</strong> ma3508_lecture5.pdf, p.2-p.16; ma3508_lecture6.pdf, p.2-p.20; ma3508_lecture7.pdf, p.2-p.16; ma3508_mock_exam.pdf, p.2-p.4; ma3508_mock_exam_solution.pdf, p.1-p.10; past exam papers 2015-2020, p.2-p.5</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 5</span><span class="subject">Spectrums and filtering</span></div><h1>Lecture 5 - Lecture Map</h1>
+<table class="mini-table"><tr><th>Page/slide range</th><th>Topic</th><th>Exam duty</th><th>Flag</th></tr>
+<tr><td>p.2</td><td>Mercer and Karhunen-Loeve expansions</td><td>State the theorem/expansions using the lecture notation.</td><td>Theorem</td></tr>
+<tr><td>p.3</td><td>Bochner-Khinchin theorem, continuous case</td><td>State spectral distribution/density representation and process representation.</td><td>Theorem/formula</td></tr>
+<tr><td>p.4</td><td>Bochner-Khinchin theorem, discrete case</td><td>State the discrete limits −π to π and spectral representation for x_k.</td><td>Theorem/formula</td></tr>
+<tr><td>p.5-p.8</td><td>Signal interpretation, transmission, mixing/demixing</td><td>Explain frequency-domain thinking in plain English.</td><td>Concept</td></tr>
+<tr><td>p.9-p.10</td><td>Sum of sinusoids and temporal/spectral representations</td><td>Identify sinusoid frequencies, angular/ordinary frequency, and sum of spectra.</td><td>Formula/concept</td></tr>
+<tr><td>p.11</td><td>Periodogram sketch exercise</td><td>Explain how noise level affects the temporal plot and periodogram background.</td><td>Interpretation</td></tr>
+<tr><td>p.12-p.13</td><td>Filtering/de-mixing and numerical filtering</td><td>Use filter indicator spectrum to keep frequencies inside a band and remove others.</td><td>Formula/calculation</td></tr>
+<tr><td>p.14-p.15</td><td>Convolution and ideal/approximating filters</td><td>Write convolution formula; explain truncation makes an ideal filter imperfect.</td><td>Formula/concept</td></tr>
+<tr><td>p.16</td><td>Homework</td><td>Understand AI/R tasks: periodogram, filtering, moving-average convolution and truncation.</td><td>R/concept</td></tr>
+<tr><td>R supp p.1-p.2</td><td>Periodogram, FFT and filtering code</td><td>Read/adapt Pgram(), fir1(), freqz(), filter(), audio/signal examples.</td><td>R</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture5.pdf, p.2-p.16; ma3508_lecture5_R_supplement.pdf, p.1-p.2</div>
+<h2>Lecture 5 core ideas in plain English</h2>
+<div class="grid">
+<div class="card"><div class="label">Time domain vs frequency domain</div>The temporal representation is the sampled time series x_k. The spectral representation describes which frequencies contribute to the series.</div>
+<div class="card"><div class="label">Spectral density tells contribution</div>A larger spectral density at frequency λ means that the frequency λ contributes more strongly to the stationary process or signal.</div>
+<div class="card"><div class="label">Sinusoids make peaks</div>A pure sinusoid has a concentrated spectrum at its frequency. A sum of sinusoids gives a sum of spectral peaks.</div>
+<div class="card"><div class="label">Filtering modifies frequency content</div>A filter can keep selected frequencies and remove others. In the spectral domain, the filtered spectrum is the product of the base spectrum and filter spectrum.</div>
+<div class="card"><div class="label">Convolution is the time-domain filter</div>In the time domain, filtering has the form y_k=∑q_jx_{k-j}. The q_j are filter coefficients.</div>
+<div class="card"><div class="label">Periodogram estimates spectrum</div>From one observed finite series, the periodogram gives an estimated spectral picture: peaks suggest important frequencies.</div></div>
+<div class="source"><strong>Source:</strong> ma3508_lecture5.pdf, p.5-p.14; ma3508_lecture7.pdf, p.10-p.11</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 5</span><span class="subject">Theorems and definitions</span></div><h1>Lecture 5 - Definitions and Theorems to Write</h1>
+<div class="grid one">
+<div class="card"><div class="label">Mercer expansion</div>If x_t is defined on [a,b], E x_t=0 and R(t,s)=E x_tx_s is continuous, then R(t,s)=∑_{j=1}^∞ λ_j φ_j(t)φ_j(s), where φ_1,φ_2,... form an orthonormal basis of L²([a,b]).</div>
+<div class="card"><div class="label">Karhunen-Loeve expansion</div>Under the same setup, x_t=∑_{j=1}^∞ ε_j√λ_j φ_j(t), where {ε_j} is white noise with unit variance.</div>
+<div class="card"><div class="label">Bochner-Khinchin, continuous case</div>For a zero-mean weakly stationary continuous process with R(t-s)=E x_tx_s, there is R(t)=∫_{-∞}^{∞}e^{itλ}dF(λ). If F is absolutely continuous, R(t)=∫_{-∞}^{∞}e^{itλ}f(λ)dλ, where f is the spectral density.</div>
+<div class="card"><div class="label">Bochner-Khinchin, discrete case</div>For a zero-mean weakly stationary discrete process with R(k-m)=E x_kx_m, there is R(k)=∫_{-π}^{π}e^{ikλ}dF(λ). If F is absolutely continuous, R(k)=∫_{-π}^{π}e^{ikλ}f(λ)dλ.</div>
+<div class="card"><div class="label">Spectral density / spectrum</div>When the spectral distribution is absolutely continuous, f(λ) is called the spectral density or spectrum.</div>
+<div class="card"><div class="label">Filtering</div>Filtering transforms a base series into a filtered series. The lecture writes “filtered series = Filter(base series)”. In the frequency domain, the filtered spectrum equals the product of the filter spectrum and the base-series spectrum.</div>
+<div class="card"><div class="label">Periodogram</div>In L7, for a zero-mean finite series, P(λ)=T_c²(λ)+T_s²(λ) is called a periodogram and serves as an estimator of 2πf(λ).</div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture5.pdf, p.2-p.4, p.12-p.14; ma3508_lecture7.pdf, p.10-p.11</div>
+<div class="trap"><b>Common theorem trap:</b> Do not mix continuous and discrete Bochner-Khinchin limits. Continuous uses −∞ to ∞; discrete uses −π to π.</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 5</span><span class="subject">Formula cards</span></div><h1>Lecture 5 - Formula Cards</h1>
+<div class="formula-grid">
+<div class="formula"><div class="formula-label">Mercer covariance expansion</div><div class="math">R(t,s)=∑_{j=1}^∞ λ_j φ_j(t)φ_j(s)</div><div class="formula-note"><b>Symbols:</b> λ_j eigenvalues; φ_j orthonormal basis functions.</div><div class="formula-note"><b>Use when:</b> Asked to state Mercer expansion.</div><div class="formula-note"><b>Trap:</b> It expands covariance R(t,s), not the observed data path directly.</div></div>
+<div class="formula"><div class="formula-label">Karhunen-Loeve expansion</div><div class="math">x_t=∑_{j=1}^∞ ε_j √λ_j φ_j(t)</div><div class="formula-note"><b>Symbols:</b> ε_j white noise with unit variance.</div><div class="formula-note"><b>Use when:</b> Asked to state KL expansion.</div><div class="formula-note"><b>Trap:</b> Keep √λ_j with the process expansion.</div></div>
+<div class="formula"><div class="formula-label">Continuous spectral density</div><div class="math">R(t)=∫_{-∞}^{∞} e^{itλ} f(λ)dλ</div><div class="formula-note"><b>Symbols:</b> λ angular frequency; f spectral density.</div><div class="formula-note"><b>Use when:</b> Continuous stationary process.</div><div class="formula-note"><b>Trap:</b> Only if F is absolutely continuous.</div></div>
+<div class="formula"><div class="formula-label">Discrete spectral density</div><div class="math">R(k)=∫_{-π}^{π} e^{ikλ} f(λ)dλ</div><div class="formula-note"><b>Symbols:</b> k integer lag.</div><div class="formula-note"><b>Use when:</b> Discrete stationary process.</div><div class="formula-note"><b>Trap:</b> Use −π to π, not −∞ to ∞.</div></div>
+<div class="formula"><div class="formula-label">Frequency conversion</div><div class="math">ν=λ/(2π)</div><div class="formula-note"><b>Symbols:</b> λ angular frequency; ν ordinary frequency.</div><div class="formula-note"><b>Use when:</b> Interpreting periodogram frequency scale.</div><div class="formula-note"><b>Trap:</b> Period length T corresponds to ordinary frequency 1/T and angular frequency 2π/T.</div></div>
+<div class="formula"><div class="formula-label">Sinusoid spectrum</div><div class="math">x_k=sin(ak) has f(λ)=δ_a(λ), λ∈[0,π]</div><div class="formula-note"><b>Symbols:</b> δ_a is a point mass/Dirac delta at a.</div><div class="formula-note"><b>Use when:</b> Identifying peaks for sinusoids.</div><div class="formula-note"><b>Trap:</b> Coefficients are squared in the spectrum in the lecture filtering examples.</div></div>
+<div class="formula"><div class="formula-label">Filter in spectral domain</div><div class="math">f_y(λ)=f_x(λ) f_q(λ)</div><div class="formula-note"><b>Symbols:</b> f_q filter spectrum; f_x base spectrum; f_y filtered spectrum.</div><div class="formula-note"><b>Use when:</b> Band-pass/indicator filtering exercises.</div><div class="formula-note"><b>Trap:</b> Remove only frequencies outside the filter interval.</div></div>
+<div class="formula"><div class="formula-label">Convolution filter</div><div class="math">y_k=∑_{j=-∞}^{∞} q_j x_{k-j}</div><div class="formula-note"><b>Symbols:</b> q_j temporal filter coefficients.</div><div class="formula-note"><b>Use when:</b> Time-domain filtering explanation.</div><div class="formula-note"><b>Trap:</b> Infinite filters must be truncated in practice, making the spectrum imperfect.</div></div>
+<div class="formula"><div class="formula-label">Periodogram trigonometric form</div><div class="math">P(λ)=T_c²(λ)+T_s²(λ)</div><div class="formula-note"><b>Symbols:</b> T_c=(1/√n)∑x_j cos(λj), T_s=(1/√n)∑x_j sin(λj).</div><div class="formula-note"><b>Use when:</b> Defining periodogram from finite data.</div><div class="formula-note"><b>Trap:</b> In L7 this is for data centred to mean zero.</div></div>
+<div class="formula"><div class="formula-label">Periodogram complex/FFT form</div><div class="math">P(λ)=1/n |∑_{j=1}^n x_j e^{iλj}|²</div><div class="formula-note"><b>Symbols:</b> i imaginary unit.</div><div class="formula-note"><b>Use when:</b> Explaining FFT periodogram code.</div><div class="formula-note"><b>Trap:</b> FFT gives computational shortcut, not a different target quantity.</div></div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture5.pdf, p.2-p.4, p.9-p.14; ma3508_lecture7.pdf, p.10-p.13</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 5</span><span class="subject">R templates</span></div><h1>Lecture 5 - R-code Templates</h1>
+<h2>1) Periodogram function from the R supplement</h2>
+<pre><code>Pgram=function(xts,title=&quot;time series&quot;)
+{
+n=length(xts); I = abs(fft(xts-mean(xts)))**2/n;
+P = (4/n)*I[1:(n/2)]; nu = c(0:(n/2-1))/n;
+plot(nu, P, type=&quot;l&quot;, xlab=&quot;Frequency&quot;,main=title,
+ylab=&quot;Scaled Periodogram&quot;); return( cbind(nu,P) )
+}</code></pre>
+<div class="blue"><b>Line-by-line:</b> xts is the observed time series; subtracting mean centres it; fft() computes Fourier coefficients; abs(...)²/n gives raw periodogram intensity; P keeps the first half of frequencies and rescales; nu is ordinary frequency; the plot shows estimated spectral strength against frequency.</div>
+<div class="green"><b>Exam adaptation note:</b> Past papers ask for periodogram R code with different length, mean and variance. Change the simulated x line, keep the Pgram/FFT structure.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture5_R_supplement.pdf, p.1; ma3508_lecture7.pdf, p.13</div>
+<h2>2) Sinusoid plus noise and periodogram</h2>
+<pre><code>f=7; FS=1000; ObsTime=3;
+N=FS*ObsTime;
+t=c(1:N)/FS;
+x=sin(f*2*pi*t);
+plot(t,x,type=&quot;l&quot;,main=&quot;signal x = sin(7 2pi t), t in (0sec,3sec)&quot;)
+points(t,x,pch=19,cex=0.4)
+dev.new(); pgram=Pgram(x,&quot;Periodogram of series x&quot;);
+x2=sin(13*2*pi*t)+sin(43*2*pi*t)+rnorm(N,0,1.9);
+dev.new(); plot(t,x2,type=&quot;l&quot;,main=&quot;signal x2 = sin(13 2pi t)+sin(43 2pi t)+1.9WN&quot;)
+dev.new(); pgram2=Pgram(x2,&quot;Periodogram of series x2&quot;);</code></pre>
+<div class="blue"><b>Output meaning:</b> the time plot shows oscillation plus noise; the periodogram should show peaks near the sinusoid frequencies. Extra white noise raises background fluctuations.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture5_R_supplement.pdf, p.1</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 5</span><span class="subject">R filtering templates</span></div><h1>Lecture 5 - Filtering R Templates</h1>
+<h2>Band-pass filter using signal::fir1</h2>
+<pre><code>fLen=100;
+fPassInterval=c(30,50)/(FS/2);
+fCoef=fir1(fLen,fPassInterval,&quot;pass&quot;);
+dev.new(); freqz(fCoef,Fs=FS);
+y2=filter(fCoef,x2);
+dev.new(); plot(t,y2,type=&quot;l&quot;,main=&quot;y2 = filter(x2), filtering [30Hz,50Hz]&quot;)
+points(t,y2,pch=19,cex=0.4)
+dev.new(); pgramy2=Pgram(y2,&quot;Periodogram of series y2&quot;);</code></pre>
+<div class="blue"><b>Line-by-line:</b> fLen sets filter length; fPassInterval gives the pass band scaled by the Nyquist frequency FS/2; fir1 builds filter coefficients; freqz plots filter characteristics; filter applies the filter to x2; Pgram checks the spectrum after filtering.</div>
+<div class="trap"><b>Common coding trap:</b> fPassInterval must be normalised by FS/2 in this R code. If the interval is entered as raw Hz, the filter will be wrong.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture5_R_supplement.pdf, p.1</div>
+<h2>Audio example pattern</h2>
+<pre><code>data(wav);
+FS=wav$rate;
+x4=wav$sound;
+t=(1:length(x4))/FS;
+plot(t,x4,type=&quot;l&quot;,main=&quot;signal of sound, x4&quot;)
+pgram4=Pgram(x4,&quot;Periodogram of series x4&quot;);
+play(x4,rate=FS);
+fLen=200;
+fPassInterval=c(400,600)/(FS/2);
+fCoef=fir1(fLen,fPassInterval,&quot;pass&quot;);
+freqz(fCoef,Fs=FS);
+y4=filter(fCoef,x4);
+play(y4,rate=FS);</code></pre>
+<div class="blue"><b>Output meaning:</b> the same spectral/filtering workflow can be applied to real sound data. The filter keeps frequencies in the selected band, then the result can be played and inspected.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture5_R_supplement.pdf, p.2</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 5</span><span class="subject">Worked examples</span></div><h1>Lecture 5 - Worked Filtering and Spectral Examples</h1>
+<div class="q"><b>Lecture example:</b> x_k=sin(2πk/25)+2sin(2πk/15)+3sin(2πk/9), filter f(λ)=1_[0.1π,0.2π](λ).</div>
+<div class="sol"><b>Method:</b> list angular frequencies: 2π/25=0.08π, 2π/15≈0.133π, 2π/9≈0.222π. Only 2π/15 lies in [0.1π,0.2π]. The lecture writes the spectrum as δ_{2π/25}+2²δ_{2π/15}+3²δ_{2π/9}. So the filtered spectrum is 2²δ_{2π/15}, and the filtered series is y_k=2sin(2πk/15).</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture5.pdf, p.13</div>
+<h2>Mapped exam-like exercises L5</h2>
+<table class="mini-table compact"><tr><th>Question</th><th>Topic tested</th><th>Solution summary</th><th>Common trap</th></tr>
+<tr><td>L5 Q1</td><td>Band-pass filtering of sinusoids</td><td>Frequencies 2π/21, 2π/14, 2π/6. Only 2π/14 lies in [0.1π,0.2π]. So f_y=3²δ_{2π/14} and y_k=3sin(2πk/14).</td><td>Square the coefficient in the spectrum but keep the original amplitude in y_k.</td></tr>
+<tr><td>L5 Q2</td><td>Band-pass filtering</td><td>Frequencies 4π/17 and 7π/19. Only 7π/19 lies in [0.3π,0.5π]. So f_y=2²δ_{7π/19}; y_k=2sin(7πk/19).</td><td>Compare frequency divided by π: 7/19≈0.368.</td></tr>
+<tr><td>L5 Q3</td><td>Band-pass filtering</td><td>Frequencies 2π/8=0.25π, 2π/12≈0.167π, 3π/16=0.1875π. The last two are kept by [0.1π,0.2π]. y_k=3sin(2πk/12)+2sin(3πk/16).</td><td>Do not keep 2π/8; it is outside the interval.</td></tr>
+<tr><td>L5 Q4</td><td>Temporal/spectral sketch, different noise level</td><td>Both have the same peak frequency 2π/25; x has higher noise, so its periodogram has greater fluctuations away from the peak.</td><td>Peak frequency unchanged; noise changes background roughness.</td></tr>
+<tr><td>L5 Q5</td><td>Sketch, different frequencies</td><td>Same noise level and amplitude. x peak at 2π/9, y peak at 2π/18. Time plots have different periods.</td><td>Do not say one is noisier; noise level is the same.</td></tr>
+<tr><td>L5 Q6</td><td>Sketch, different frequency and amplitude</td><td>x peak at 2π/7 with amplitude contribution 1; y peak at 2π/21 with amplitude contribution 2²=4. Same noise level.</td><td>Coefficient 2 makes the spectral peak taller.</td></tr></table>
+<div class="source"><strong>Source:</strong> exam-like-exercises-L5.pdf, p.1; solution-exam-like-exercises-L5.pdf, p.1-p.2</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 6</span><span class="subject">Linear forecasting</span></div><h1>Lecture 6 - Lecture Map</h1>
+<table class="mini-table"><tr><th>Page/slide range</th><th>Topic</th><th>Exam duty</th><th>Flag</th></tr>
+<tr><td>p.2</td><td>Prediction equation in time domain</td><td>Distinguish forecasting ahead, backward forecasting and interpolation.</td><td>Concept</td></tr>
+<tr><td>p.3</td><td>h-step ahead forecast</td><td>Write linear estimator x̂_{n+h}=a_0+a_1x_1+...+a_nx_n.</td><td>Formula</td></tr>
+<tr><td>p.4-p.6</td><td>MSE predictor and solution</td><td>Define MSE/BLUP, state a_0 and a=Γ^{-1}b_h.</td><td>Formula/derivation</td></tr>
+<tr><td>p.7</td><td>MSE variance theorem</td><td>State/prove MSE=R(0)-b_h^TΓ^{-1}b_h.</td><td>Theorem/proof</td></tr>
+<tr><td>p.8</td><td>Prediction bounds</td><td>Write Gaussian prediction interval and remember qnorm(1-0.05/2)=1.96.</td><td>Formula</td></tr>
+<tr><td>p.9-p.10</td><td>Algorithms for unknown/known mean</td><td>Follow 6-step algorithm; know when to estimate μ and when not to.</td><td>Algorithm</td></tr>
+<tr><td>p.11-p.15</td><td>Worked hand examples</td><td>Set up Γ, b_h, a, y, and x̂ step by step for n=2 or n=3.</td><td>Calculation</td></tr>
+<tr><td>p.16-p.17</td><td>R script for MSE predictor</td><td>Read/adapt code for multi-step forecasts and confidence bounds.</td><td>R</td></tr>
+<tr><td>p.18-p.20</td><td>Homework</td><td>Practise inverse matrices and 1-/2-step prediction by hand.</td><td>Exam prep</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture6.pdf, p.2-p.20</div>
+<h2>Lecture 6 core ideas in plain English</h2>
+<div class="grid"><div class="card"><div class="label">Prediction as weighted average</div>The forecast is a linear combination of observed values plus an intercept. The weights are chosen using covariance information.</div><div class="card"><div class="label">MSE minimisation</div>The best linear predictor is the one that minimises expected squared prediction error.</div><div class="card"><div class="label">Covariance matrix logic</div>Γ stores covariance among observed values; b_h stores covariance between observed values and the future value.</div><div class="card"><div class="label">Uncertainty matters</div>A point forecast is incomplete. For Gaussian processes, the lecture gives prediction bounds using the prediction standard deviation.</div></div>
+<div class="source"><strong>Source:</strong> ma3508_lecture6.pdf, p.2-p.10</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 6</span><span class="subject">Formula cards</span></div><h1>Lecture 6 - Definitions and Formula Cards</h1>
+<div class="formula-grid">
+<div class="formula"><div class="formula-label">Linear estimator</div><div class="math">x̂_{n+h}=a_0+a_1x_1+...+a_nx_n</div><div class="formula-note"><b>Use:</b> h-step ahead forecast setup.</div><div class="formula-note"><b>Trap:</b> h is forecast horizon, not sample size.</div></div>
+<div class="formula"><div class="formula-label">MSE criterion</div><div class="math">Ψ(a_0,...,a_n)=E(x̂_{n+h}-x_{n+h})²</div><div class="formula-note"><b>Use:</b> definition of MSE predictor / BLUP.</div><div class="formula-note"><b>Trap:</b> The coefficients are chosen by minimising expectation, not by eyeballing the data.</div></div>
+<div class="formula"><div class="formula-label">Coefficient solution</div><div class="math">a=(a_1,...,a_n)^T=Γ^{-1}b_h
+
+a_0=μ(1-∑_{j=1}^n a_j)</div><div class="formula-note"><b>Use:</b> best linear predictor.</div><div class="formula-note"><b>Trap:</b> Do not forget a_0 if working with uncentred x values.</div></div>
+<div class="formula"><div class="formula-label">Γ matrix</div><div class="math">Γ=(R(i-j))_{i,j=1}^n</div><div class="formula-note"><b>Use:</b> covariance among observed data.</div><div class="formula-note"><b>Trap:</b> It is symmetric and Toeplitz for stationary discrete time.</div></div>
+<div class="formula"><div class="formula-label">b_h vector</div><div class="math">b_h=(R(h+n-1),...,R(h+1),R(h))^T</div><div class="formula-note"><b>Use:</b> covariance between observed vector and x_{n+h}.</div><div class="formula-note"><b>Trap:</b> The order is from x_1 to x_n, so the last entry is R(h).</div></div>
+<div class="formula"><div class="formula-label">Centred algorithm</div><div class="math">y_i=x_i-μ or y_i=x_i-μ̂
+Y=(y_1,...,y_n)^T
+ŷ_{n+h}=a^TY
+x̂_{n+h}=μ+ŷ_{n+h}</div><div class="formula-note"><b>Use:</b> practical computation by hand/R.</div><div class="formula-note"><b>Trap:</b> If μ is unknown, use sample mean μ̂; if μ is given, do not estimate it.</div></div>
+<div class="formula"><div class="formula-label">Prediction variance / MSE</div><div class="math">σ̂²_{n+h}=MSE(x̂_{n+h})=R(0)-b_h^TΓ^{-1}b_h</div><div class="formula-note"><b>Use:</b> prediction bounds.</div><div class="formula-note"><b>Trap:</b> Take square root before multiplying by 1.96.</div></div>
+<div class="formula"><div class="formula-label">Gaussian prediction bound</div><div class="math">(x̂_{n+h}-z_{1-α/2}σ̂_{n+h}, x̂_{n+h}+z_{1-α/2}σ̂_{n+h})</div><div class="formula-note"><b>Use:</b> prediction interval/bounds.</div><div class="formula-note"><b>Trap:</b> The lecture’s 95% value is z_{1-0.05/2}=1.96.</div></div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture6.pdf, p.3-p.10</div>
+<h2>Proof skeleton: MSE variance theorem</h2>
+<div class="calc"><b>What is proved:</b> MSE(x̂_{n+h})=R(0)-b_h^TΓ^{-1}b_h.<br/>1. Work with centred vector X=(x_1,...,x_n)^T and forecast a^TX.<br/>2. Expand E(a^TX-x_{n+h})² = R(0)-2a^Tb_h+a^TΓa.<br/>3. Substitute a=Γ^{-1}b_h.<br/>4. Simplify to R(0)-b_h^TΓ^{-1}b_h.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture6.pdf, p.7</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 6</span><span class="subject">Worked examples</span></div><h1>Lecture 6 - Worked Prediction Examples</h1>
+<div class="q"><b>Example 1:</b> Compute x̂_3 for x_1=6, x_2=4 and R(k)=e^{-|k|}.</div>
+<div class="calc"><b>Setup:</b> n=2, h=1, μ̂=(6+4)/2=5, Y=(1,-1)^T.<br/>Γ=[[1,e^{-1}],[e^{-1},1]], b_1=(e^{-2},e^{-1})^T.<br/>Γ^{-1}=1/(1-e^{-2}) [[1,-e^{-1}],[-e^{-1},1]].<br/>a=Γ^{-1}b_1=(0,e^{-1})^T.<br/>ŷ_3=a^TY=−e^{-1}; therefore x̂_3=5−e^{-1}.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture6.pdf, p.11</div>
+<div class="q"><b>Example 2:</b> Compute x̂_4 for x_1=6, x_2=4 and R(k)=e^{-|k|}.</div>
+<div class="calc"><b>Setup:</b> n=2, h=2, μ̂=5, Y=(1,-1)^T.<br/>b_2=(e^{-3},e^{-2})^T. The same Γ and Γ^{-1} are used.<br/>a=Γ^{-1}b_2=(0,e^{-2})^T.<br/>ŷ_4=−e^{-2}; therefore x̂_4=5−e^{-2}.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture6.pdf, p.12</div>
+<div class="q"><b>Example 3:</b> Compute x̂_4 for x_1=17, x_2=15, x_3=16 and R(k)=1/(1+√|k|).</div>
+<div class="calc"><b>Setup:</b> n=3, h=1, μ̂=16, Y=(1,-1,0)^T.<br/>Γ≈[[1,0.5,0.41],[0.5,1,0.5],[0.41,0.5,1]], b_1≈(0.37,0.41,0.5)^T.<br/>Γ^{-1}≈[[1.4,-0.55,-0.31],[-0.55,1.55,-0.55],[-0.31,-0.55,1.4]].<br/>a≈(0.13,0.17,0.36)^T. Then ŷ_4≈0.13(1)+0.17(-1)+0.36(0)=−0.04, so x̂_4≈15.96.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture6.pdf, p.13-p.15</div>
+<div class="green"><b>How to check any BLUP calculation:</b> Γ must be symmetric; b_h must get smaller as the future point moves farther away for decaying covariances; the forecast should move from μ toward the most relevant recent observations; the prediction variance must be non-negative and no larger than R(0).</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 6</span><span class="subject">R and exercises</span></div><h1>Lecture 6 - R-code Template and Exam-like Exercises</h1>
+<h2>Official R predictor template</h2>
+<pre><code>x=c(1,5,2,7,0,3,2,4); xpred=rep(0,3); xsig=rep(0,3);
+givenCov=function(k) { return(2.3*exp(-0.5*abs(k))); }
+n=length(x);
+mu=mean(x);
+y=x-mu;
+Gamma=matrix(0,n,n);
+for(i in (1:n))
+for(j in (1:n))
+Gamma[i,j]=givenCov(i-j);
+plot((1:n),x,xlim=c(1,n+5),pch=19,main=paste(x,collapse=&quot;,&quot;))
+for(h in (1:3)) {
+bh=rep(0,n);
+for(i in (1:n))
+bh[i]=givenCov(n+h-i);
+a=solve(Gamma) %*% bh;
+ynh=y%*%a; xpred[h]=mu+ynh;
+xsig[h]=sqrt(givenCov(0)-bh %*% solve(Gamma) %*% bh);
+points(n+h,xpred[h],col=&quot;red&quot;,pch=19)
+points(c(n+h,n+h),xpred[h]+xsig[h]*
+qnorm(1-0.05/2)*c(-1,1),col=&quot;blue&quot;,pch=19)
+}</code></pre>
+<div class="blue"><b>Line-by-line:</b> x is observed data; givenCov defines R(k); mu estimates the mean; y centres the data; Γ stores covariances among observations; each h creates b_h; solve(Γ)%*%b_h gives a; xpred stores point forecasts; xsig stores prediction standard deviations; red points are forecasts and blue points are prediction bounds.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture6.pdf, p.16-p.17</div>
+<h2>Mapped exam-like exercises L6</h2>
+<table class="mini-table compact"><tr><th>Question</th><th>Topic tested</th><th>Worked solution summary</th><th>Common trap</th></tr>
+<tr><td>L6 Q1</td><td>Unknown mean BLUP and 95% bounds</td><td>x=(97,102,101), μ̂=100, Y=(-3,2,1), Γ≈[[1,0.5,0.2],[0.5,1,0.5],[0.2,0.5,1]], b_1=(0.1,0.2,0.5)^T, a≈(0.036,-0.086,0.53)^T. ŷ_4≈0.26, x̂_4≈100.26, σ̂_4≈0.86, 95% interval ≈(98.56,101.94).</td><td>Use sample mean because mean is not given.</td></tr>
+<tr><td>L6 Q2</td><td>Known mean BLUP and 95% bounds</td><td>x=(14,11,13), μ=12, Y=(2,-1,1), Γ≈[[1,0.33,0.26],[0.33,1,0.33],[0.26,0.33,1]], b_1≈(0.22,0.26,0.33)^T, a≈(0.11,0.14,0.26)^T. ŷ_8≈0.34, x̂_8≈12.34, σ̂_8≈0.92, 95% interval ≈(10.53,14.15).</td><td>Do not estimate μ; it is given as 12.</td></tr></table>
+<div class="source"><strong>Source:</strong> exam-like-exercises-L6.pdf, p.1; solution-exam-like-exercises-L6-L7.pdf, p.1</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 7</span><span class="subject">Estimation</span></div><h1>Lecture 7 - Lecture Map</h1>
+<table class="mini-table"><tr><th>Page/slide range</th><th>Topic</th><th>Exam duty</th><th>Flag</th></tr>
+<tr><td>p.2</td><td>What is estimated</td><td>Distinguish true μ, R(k), f(λ) from estimates based on one realization.</td><td>Concept</td></tr>
+<tr><td>p.3</td><td>Sample mean unbiasedness</td><td>State/prove E X̄_n=μ.</td><td>Theorem/proof</td></tr>
+<tr><td>p.4</td><td>Variance of sample mean</td><td>State nVar(X̄_n)→2πf(0) and know proof outline.</td><td>Theorem/proof</td></tr>
+<tr><td>p.5</td><td>Normality and CI for mean</td><td>State asymptotic normality and CI formula as given.</td><td>Theorem/formula</td></tr>
+<tr><td>p.6</td><td>Autocovariance estimators and correlogram</td><td>Compute R̂(k), R̃(k), and ρ̂(k)=R̂(k)/R̂(0).</td><td>Formula/calculation</td></tr>
+<tr><td>p.7</td><td>Worked covariance example</td><td>Compute mean and R̂(k) for 4,1,4,5,1.</td><td>Calculation</td></tr>
+<tr><td>p.8-p.9</td><td>R code for correlogram</td><td>Read/adapt covg/corrg loop and barplot.</td><td>R</td></tr>
+<tr><td>p.10-p.11</td><td>Periodogram theory</td><td>Define T_c, T_s, P(λ), FFT form, covariance-estimator form.</td><td>Formula</td></tr>
+<tr><td>p.12-p.15</td><td>R code for periodogram and examples</td><td>Use manual periodogram and FFT drawPlots; interpret sinusoid/noise examples.</td><td>R/interpretation</td></tr>
+<tr><td>p.16</td><td>Homework</td><td>Explore estimator comparison and solve L7 exercises.</td><td>Exam prep</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture7.pdf, p.2-p.16</div>
+<h2>Lecture 7 core ideas in plain English</h2>
+<div class="grid"><div class="card"><div class="label">True vs estimated</div>μ, R(k), ρ(k) and f(λ) are theoretical characteristics of the process. X̄_n, R̂(k), ρ̂(k) and the periodogram are estimates from finite data.</div><div class="card"><div class="label">One realization problem</div>In time series, we often have only one path, so we estimate process features by averaging over time.</div><div class="card"><div class="label">Correlogram</div>The correlogram estimates correlation at different lags and helps reveal dependence structure.</div><div class="card"><div class="label">Periodogram</div>The periodogram estimates frequency contribution and helps reveal periodic behaviour.</div></div>
+<div class="source"><strong>Source:</strong> ma3508_lecture7.pdf, p.2-p.13</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 7</span><span class="subject">Formula cards</span></div><h1>Lecture 7 - Definitions and Formula Cards</h1>
+<div class="formula-grid">
+<div class="formula"><div class="formula-label">Sample mean estimator</div><div class="math">X̄_n=(1/n)∑_{j=1}^n x_j</div><div class="formula-note"><b>Use:</b> estimate true mean μ.</div><div class="formula-note"><b>Trap:</b> It is unbiased under stationarity but its variance depends on dependence.</div></div>
+<div class="formula"><div class="formula-label">Mean unbiasedness</div><div class="math">E X̄_n=μ</div><div class="formula-note"><b>Use:</b> short proof question.</div><div class="formula-note"><b>Trap:</b> Use E x_j=μ for all j.</div></div>
+<div class="formula"><div class="formula-label">Asymptotic variance</div><div class="math">n Var(X̄_n) → 2π f(0)</div><div class="formula-note"><b>Use:</b> theorem statement/proof outline.</div><div class="formula-note"><b>Trap:</b> Requires f(0) nonzero and finite in the lecture statement.</div></div>
+<div class="formula"><div class="formula-label">Mean confidence interval</div><div class="math">(X̄_n - z_{1-α/2}√(2πf(0)/n), X̄_n + z_{1-α/2}√(2πf(0)/n))</div><div class="formula-note"><b>Use:</b> asymptotic CI for μ.</div><div class="formula-note"><b>Trap:</b> This uses spectral density at zero.</div></div>
+<div class="formula"><div class="formula-label">Biased autocovariance estimator</div><div class="math">R̂(k)=1/n ∑_{j=1}^{n-k}(x_j-X̄_n)(x_{k+j}-X̄_n)</div><div class="formula-note"><b>Use:</b> course correlogram calculations.</div><div class="formula-note"><b>Trap:</b> Denominator is n, not n-k.</div></div>
+<div class="formula"><div class="formula-label">Alternative autocovariance estimator</div><div class="math">R̃(k)=1/(n-k) ∑_{j=1}^{n-k}(x_j-X̄_n)(x_{k+j}-X̄_n)</div><div class="formula-note"><b>Use:</b> compare estimators.</div><div class="formula-note"><b>Trap:</b> Lecture says smaller bias but larger MSE than R̂(k).</div></div>
+<div class="formula"><div class="formula-label">Correlogram</div><div class="math">ρ̂(k)=R̂(k)/R̂(0), k=0,1,2,...</div><div class="formula-note"><b>Use:</b> estimate correlation function.</div><div class="formula-note"><b>Trap:</b> Use R̂(0) in denominator.</div></div>
+<div class="formula"><div class="formula-label">Periodogram components</div><div class="math">T_c(λ)=1/√n ∑x_j cos(λj)
+T_s(λ)=1/√n ∑x_j sin(λj)</div><div class="formula-note"><b>Use:</b> manual periodogram formula.</div><div class="formula-note"><b>Trap:</b> Data are assumed centred to mean zero on the slide.</div></div>
+<div class="formula"><div class="formula-label">Periodogram estimator</div><div class="math">P(λ)=T_c²(λ)+T_s²(λ)</div><div class="formula-note"><b>Use:</b> estimates 2πf(λ).</div><div class="formula-note"><b>Trap:</b> It is not the true spectral density itself.</div></div>
+<div class="formula"><div class="formula-label">Periodogram via sample covariance</div><div class="math">P(λ)=∑_{k=-(n-1)}^{n-1} R̂(k)e^{iλk}=∑_{k=-(n-1)}^{n-1} R̂(k)cos(λk)</div><div class="formula-note"><b>Use:</b> one of the three formulas past papers ask for.</div><div class="formula-note"><b>Trap:</b> Bounds are finite because data length is finite.</div></div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture7.pdf, p.3-p.13</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 7</span><span class="subject">R templates</span></div><h1>Lecture 7 - R-code Templates</h1>
+<h2>Correlogram loop</h2>
+<pre><code>x=c(4,1,4,5,1); n=length(x); mu=sum(x)/n; y=x-mu;
+covg=rep(0,n); corrg=rep(0,n);
+for(i in (1:n))
+{
+covg[i]=sum(y[1:(n+1-i)]*y[i:n])/n;
+corrg[i]=covg[i]/covg[1];
+}
+print(rbind(c(0:(n-1)),covg,corrg))
+barplot(corrg,names.arg=c(0:(n-1)), main=&quot;correlogram&quot;,
+ylim=c(-1,1))</code></pre>
+<div class="blue"><b>Line-by-line:</b> x is the data; mu is sample mean; y centres data; covg[i] stores R̂(i−1); corrg[i] stores ρ̂(i−1); barplot depicts the correlogram.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture7.pdf, p.8</div>
+<h2>MA process correlogram</h2>
+<pre><code>eps=rnorm(90,0,0.8);
+x=0.9*eps[4:90]-0.6*eps[3:89]+0.3*eps[2:88] +0.1*eps[1:87];
+n=length(x); mu=sum(x)/n; y=x-mu;
+covg=rep(0,n); corrg=rep(0,n);
+for(i in (1:n))
+{
+covg[i]=sum(y[1:(n+1-i)]*y[i:n])/n;
+corrg[i]=covg[i]/covg[1];
+}
+par(mfrow=c(2,1));
+plot(c(1:n),x,main=&quot;time series: MA process&quot;,pch=19);
+barplot(corrg,names.arg=c(0:(n-1)), main=&quot;correlogram&quot;, ylim=c(-1,1))</code></pre>
+<div class="blue"><b>Output meaning:</b> the first plot shows the simulated MA process; the correlogram shows estimated dependence across lags.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture7.pdf, p.9</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 7</span><span class="subject">Periodogram R templates</span></div><h1>Lecture 7 - Periodogram R Templates</h1>
+<h2>Manual periodogram</h2>
+<pre><code>x=rnorm(200,0,1.5);
+n=length(x); y=x-mean(x);
+nu=c(0:(n/2-1))/n;
+lambda=2*pi*nu;
+Tc=rep(0,length(nu)); Ts=rep(0,length(nu));
+for( j in (1:length(nu)))
+{
+Tc[j]=sum(y*cos((1:n)*lambda[j]))/sqrt(n);
+Ts[j]=sum(y*sin((1:n)*lambda[j]))/sqrt(n);
+}
+I=Tc*Tc+Ts*Ts;
+P=(4/n)*I;
+plot(nu, P, type=&quot;l&quot;, xlab=&quot;Frequency&quot;, ylab=&quot;Scaled Periodogram&quot;)</code></pre>
+<div class="blue"><b>Line-by-line:</b> simulate white noise; centre it; create ordinary frequencies nu and angular frequencies λ; compute cosine and sine transforms; add squares; scale and plot.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture7.pdf, p.12</div>
+<h2>FFT periodogram helper</h2>
+<pre><code>drawPlots=function(xts,title=&quot;time series&quot;)
+{
+n=length(xts); y=xts-mean(xts);
+I = abs(fft(y))**2/n;
+P = (4/n)*I[1:(n/2)];
+nu = c(0:(n/2-1))/n;
+par(mfrow=c(2,1));
+plot(c(1:n), xts, main=title,pch=20);
+plot(nu, P, type=&quot;l&quot;, xlab=&quot;Frequency&quot;,
+ylab=&quot;Scaled Periodogram&quot;); return(list(nu,P));
+}
+x=rnorm(200,0,1.5);
+pdata=drawPlots(x,&quot;time series: white noise&quot;)</code></pre>
+<div class="blue"><b>Output meaning:</b> the top panel is the time series; the bottom panel is the scaled periodogram. For white noise, no strong frequency should dominate systematically.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture7.pdf, p.13</div>
+<h2>Sinusoid/noise examples</h2>
+<pre><code>n=200; tm=c(1:n);
+x=sin(2*pi*tm/50)+2.5*rnorm(n,0,1);
+p1=drawPlots(x,&quot;time series: sin(2pik/50)+2.5WN&quot;)
+x=sin(2*pi*tm/22)+rnorm(n,0,1);
+p3=drawPlots(x,&quot;time series: sin22+WN&quot;)
+x=sin(2*pi*tm/50)+3*sin(2*pi*tm/22)+rnorm(n,0,1);
+p5=drawPlots(x,&quot;time series: sin50+3sin22+WN&quot;)</code></pre>
+<div class="blue"><b>Interpretation:</b> the periodogram peak location changes with the sinusoid period; increasing noise raises background fluctuations; larger sinusoid coefficient makes that peak stronger.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture7.pdf, p.14-p.15</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Lecture 7</span><span class="subject">Worked exercises</span></div><h1>Lecture 7 - Worked Estimation Examples</h1>
+<div class="q"><b>Lecture example:</b> Estimate mean and covariance for 4,1,4,5,1.</div>
+<div class="calc">X̄=(4+1+4+5+1)/5=3, so centred values are 1,-2,1,2,-2.<br/>R̂(0)=(1²+(-2)²+1²+2²+(-2)²)/5=14/5.<br/>R̂(1)=(1·(-2)+(-2)·1+1·2+2·(-2))/5=-6/5.<br/>R̂(2)=(1·1+(-2)·2+1·(-2))/5=-1.<br/>R̂(3)=(1·2+(-2)·(-2))/5=6/5.<br/>R̂(4)=1·(-2)/5=-2/5.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture7.pdf, p.7</div>
+<h2>Mapped exam-like exercises L7</h2>
+<table class="mini-table compact"><tr><th>Question</th><th>Topic tested</th><th>Worked solution summary</th><th>Common trap</th></tr>
+<tr><td>L7 Q1</td><td>R̂(0), R̂(1), R̂(2)</td><td>x=(12,7,11), X̄=10, centred values 2,-3,1. R̂(0)=(4+9+1)/3=14/3≈4.667. R̂(1)=(2·(-3)+(-3)·1)/3=-3. R̂(2)=(2·1)/3≈0.667.</td><td>Use denominator n=3, not n-k.</td></tr>
+<tr><td>L7 Q2</td><td>Sample autocorrelation</td><td>x=(11,13,11,15,10), X̄=12, centred values -1,1,-1,3,-2. R̂(0)=16/5=3.2; R̂(1)=(-1·1+1·(-1)+(-1·3)+3·(-2))/5=-11/5=-2.2; R̂(2)=((-1)(-1)+1·3+(-1)(-2))/5=6/5=1.2. ρ̂(1)=-0.6875, ρ̂(2)=0.375.</td><td>Divide by R̂(0), not by lag or by n.</td></tr></table>
+<div class="source"><strong>Source:</strong> exam-like-exercises-L7.pdf, p.1; solution-exam-like-exercises-L6-L7.pdf, p.1</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Exam radar</span><span class="subject">Past paper / mock mapping</span></div><h1>Mapped Past-paper / Mock Radar for L5-L7</h1>
+<div class="warning"><b>Honesty note:</b> Official full solutions for 2015-2020 past papers were not uploaded. Rows below give source-linked strategy, not official marking solutions. The mock solution is used where available.</div>
+<table class="mini-table compact"><tr><th>Paper/question</th><th>Topic</th><th>Source lecture</th><th>Short solution strategy / marks-style expectation</th></tr>
+<tr><td>Mock Q1(i)</td><td>Mercer and KL expansions</td><td>L5</td><td>State both expansions exactly: covariance expansion plus process expansion with white-noise coefficients.</td></tr>
+<tr><td>Mock Q1(iii)</td><td>h-step forecast R code</td><td>L6</td><td>Use givenCov, build Γ, loop over h=1:4, compute a, forecast and 95% bounds.</td></tr>
+<tr><td>Mock Q2(v)</td><td>best linear predictor and bounds</td><td>L6</td><td>Estimate μ, centre data, form Γ and b_1, compute a=Γ^{-1}b, x̂ and bounds.</td></tr>
+<tr><td>Mock Q2(vii)</td><td>covariance from spectral density</td><td>L5</td><td>Use R(k)=∫_{-π}^{π}cos(kλ)f(λ)dλ.</td></tr>
+<tr><td>Mock Q3(ii)</td><td>continuous linear predictor derivation</td><td>L6</td><td>Set up MSE minimisation with observed values and covariance matrix/vector.</td></tr>
+<tr><td>Mock Q3(v)</td><td>filtering sinusoid spectrum</td><td>L5</td><td>Write spectrum as squared amplitudes times Dirac peaks; keep peaks inside filter band.</td></tr>
+<tr><td>2015 Q1(i)</td><td>Mercer/KL</td><td>L5</td><td>Definition/theorem statement; 2 marks.</td></tr>
+<tr><td>2015 Q2(v)</td><td>best linear predictor</td><td>L6</td><td>Use Γ,b,a algorithm for next observation and prediction bounds.</td></tr>
+<tr><td>2015 Q2(vii)</td><td>covariance from spectrum</td><td>L5</td><td>Compute inverse spectral transform for f(λ)=1+|λ|.</td></tr>
+<tr><td>2015 Q3(iii)</td><td>periodogram R code</td><td>L7</td><td>Simulate length 130 white noise, centre series, use FFT or manual periodogram.</td></tr>
+<tr><td>2015 Q3(v)</td><td>temporal/spectral sketch</td><td>L5/L7</td><td>Peaks at different sinusoid frequencies; compare noise backgrounds.</td></tr>
+<tr><td>2015 Q4(ii)</td><td>continuous linear predictor derivation</td><td>L6</td><td>Derive smallest-MSE linear predictor using covariance matrix/vector.</td></tr>
+<tr><td>2015 Q4(v)</td><td>filtering sinusoid spectrum</td><td>L5</td><td>Keep frequencies in [0.25π,0.3π]; write filtered series.</td></tr>
+<tr><td>2016 Q1(i)</td><td>filtering procedure</td><td>L5</td><td>Explain temporal coefficients and spectral multiplication.</td></tr>
+<tr><td>2016 Q1(iii)</td><td>covariance estimation R code</td><td>L7</td><td>Use covg/corrg style loop for a given series.</td></tr>
+<tr><td>2016 Q1(vii)</td><td>covariance from spectrum</td><td>L5</td><td>Use inverse transform with f(λ)=1+λ².</td></tr>
+<tr><td>2016 Q2(iii)</td><td>2-step forecast R code</td><td>L6</td><td>Use MSE predictor code with h=1:2 and covariance 1.8e^{-0.7|k|}.</td></tr>
+<tr><td>2016 Q2(iv)</td><td>filtering sinusoid spectrum</td><td>L5</td><td>Keep only frequencies inside [0.45π,0.55π].</td></tr>
+<tr><td>2016 Q2(v)</td><td>best linear predictor</td><td>L6</td><td>Form Γ,b_1, solve and compute bounds.</td></tr>
+<tr><td>2016 Q3(i)</td><td>periodogram definitions/formulas</td><td>L7</td><td>Give definition plus three formulas: T_c/T_s, complex modulus, covariance-sum form.</td></tr>
+<tr><td>2016 Q4(ii)</td><td>covariance from spectral density</td><td>L5</td><td>Use inverse transform and symmetry/cosine form.</td></tr>
+<tr><td>2017 Q2(i)</td><td>Bochner-Khinchin theorem</td><td>L5</td><td>State continuous and discrete cases with correct integration limits.</td></tr>
+<tr><td>2017 Q2(iii)</td><td>periodogram R code</td><td>L7</td><td>Length 140 from specified white noise; use Pgram/drawPlots.</td></tr>
+<tr><td>2017 Q2(v)</td><td>filtering sinusoid spectrum</td><td>L5</td><td>Band-pass selection by frequency interval.</td></tr>
+<tr><td>2017 Q2(vi)</td><td>best linear predictor</td><td>L6</td><td>Compute x̂_5 and bounds with R(k)=1.6e^{-|k|/2}.</td></tr>
+<tr><td>2017 Q3(i)</td><td>Mercer/KL</td><td>L5</td><td>State expansions.</td></tr>
+<tr><td>2017 Q3(ii)</td><td>variance of sample mean theorem</td><td>L7</td><td>Show nVar(X̄_n)→2πf(0) using covariance-sum proof.</td></tr>
+<tr><td>2017 Q3(iii)</td><td>h-step forecast R code</td><td>L6</td><td>Use lecture MSE predictor R template.</td></tr>
+<tr><td>2017 Q4(v)</td><td>temporal/spectral sketch</td><td>L5/L7</td><td>Compare sinusoid frequencies and noise.</td></tr>
+<tr><td>2018 Q1(iii)</td><td>periodogram R code</td><td>L7</td><td>Compute periodogram for length 90 white-noise realization.</td></tr>
+<tr><td>2018 Q1(iv)</td><td>filtering sinusoid spectrum</td><td>L5</td><td>Keep frequency components in [0.66π,0.7π].</td></tr>
+<tr><td>2018 Q1(v)</td><td>best linear predictor</td><td>L6</td><td>Compute x̂_6 and bounds with provided covariance.</td></tr>
+<tr><td>2018 Q2(i)</td><td>filtering procedure</td><td>L5</td><td>Explain temporal/spectral domains.</td></tr>
+<tr><td>2018 Q3(iii)</td><td>correlogram R code</td><td>L7</td><td>Use covg/corrg loop and barplot.</td></tr>
+<tr><td>2018 Q4(vi)</td><td>forecast from AR model</td><td>L6/later AR</td><td>Forecast next two months and confidence intervals; note AR model content belongs later but uses prediction ideas.</td></tr>
+<tr><td>2019 Q1(i)</td><td>Mercer/KL</td><td>L5</td><td>State expansions.</td></tr>
+<tr><td>2019 Q1(vii)</td><td>covariance from spectral density</td><td>L5</td><td>Inverse spectral transform.</td></tr>
+<tr><td>2019 Q2(v)</td><td>best linear predictor</td><td>L6</td><td>Γ,b,a algorithm with bounds.</td></tr>
+<tr><td>2019 Q3(i)</td><td>periodogram definition/forms</td><td>L7</td><td>Definition and three formulas.</td></tr>
+<tr><td>2019 Q3(v)</td><td>temporal/spectral sketch</td><td>L5/L7</td><td>Compare cos frequency and noise.</td></tr>
+<tr><td>2019 Q4(ii)</td><td>continuous linear predictor derivation</td><td>L6</td><td>Derive MSE predictor formula.</td></tr>
+<tr><td>2019 Q4(v)</td><td>filtering sinusoid spectrum</td><td>L5</td><td>Band-pass selection by frequency interval.</td></tr>
+<tr><td>2020 Q1(i)</td><td>Bochner-Khinchin</td><td>L5</td><td>State continuous and discrete cases.</td></tr>
+<tr><td>2020 Q1(iii)</td><td>h-step forecast R code</td><td>L6</td><td>Use lecture predictor code pattern.</td></tr>
+<tr><td>2020 Q1(v)</td><td>filtering sinusoid spectrum</td><td>L5</td><td>Keep frequencies in [0.5π,0.6π].</td></tr>
+<tr><td>2020 Q1(vi)</td><td>best linear predictor and bounds</td><td>L6</td><td>Compute x̂_5 and prediction bounds with R(k)=1.8e^{-|k|}.</td></tr>
+<tr><td>2020 Q2(i)</td><td>Mercer/KL</td><td>L5</td><td>State expansions.</td></tr>
+<tr><td>2020 Q2(iii)</td><td>periodogram R code</td><td>L7</td><td>Length 150 white-noise periodogram.</td></tr>
+<tr><td>2020 Q2(vii)</td><td>covariance from spectrum</td><td>L5</td><td>Use inverse transform for f(λ)=3+cosλ.</td></tr>
+<tr><td>2020 Q3(ii)</td><td>sample mean variance theorem</td><td>L7</td><td>Show nVar(X̄_n)→2πf(0).</td></tr>
+<tr><td>2020 Q4(v)</td><td>temporal/spectral sketch</td><td>L5/L7</td><td>Different frequencies/amplitudes/noise levels affect peaks and background.</td></tr>
+<tr><td>2020 Q4(vi)</td><td>forecast from AR model</td><td>L6/later AR</td><td>Prediction/confidence interval structure, but AR formula details are later lectures.</td></tr>
+</table>
+<div class="source"><strong>Source:</strong> ma3508_mock_exam.pdf, p.2-p.4; ma3508_mock_exam_solution.pdf, p.1-p.10; ma0367_2015_exam-.pdf, p.2-p.5; ma0367_2016_exam_.pdf, p.2-p.5; ma0367_2017_exam_.pdf, p.2-p.5; ma0367_2018_exam_.pdf, p.2-p.5; ma0367_2019_exam_.pdf, p.2-p.5; ma0367_2020_exam_.pdf, p.2-p.5</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Mistakes</span><span class="subject">L5-L7 danger list</span></div><h1>Common Mistakes</h1>
+<div class="warning"><b>Spectral density mistakes:</b><ul class="mistakes"><li>Mixing continuous and discrete integration limits.</li><li>Forgetting that periodogram estimates 2πf(λ), not exactly f(λ) in the L7 wording.</li><li>Confusing ordinary frequency ν with angular frequency λ.</li><li>For a sinusoid with coefficient c, forgetting the spectral weight c² in filtering exercises.</li></ul></div>
+<div class="warning"><b>Filtering mistakes:</b><ul class="mistakes"><li>Keeping every sinusoid instead of checking whether its frequency lies inside the filter band.</li><li>Writing the filtered spectrum but forgetting the filtered time series.</li><li>Forgetting that truncating an ideal filter makes the spectrum imperfect.</li></ul></div>
+<div class="warning"><b>Best linear predictor mistakes:</b><ul class="mistakes"><li>Using raw x instead of centred y when applying a^TY.</li><li>Estimating μ when the question gives μ.</li><li>Putting b_h in the wrong order.</li><li>Using σ̂² in the interval without taking square root.</li><li>Forgetting that Γ must use R(i-j), not R(i+j).</li></ul></div>
+<div class="warning"><b>Estimation mistakes:</b><ul class="mistakes"><li>Confusing true R(k) with estimated R̂(k).</li><li>Using denominator n-k for R̂(k), although the main course correlogram uses denominator n.</li><li>Dividing by the wrong value when computing ρ̂(k).</li><li>Not centring data before covariance/periodogram code.</li></ul></div>
+<div class="warning"><b>R code mistakes:</b><ul class="mistakes"><li>Forgetting to define n before using 1:n.</li><li>Using solve(Gamma)*bh instead of matrix multiplication solve(Gamma) %*% bh.</li><li>For filters in the R supplement, not normalising the pass interval by FS/2.</li><li>For FFT, forgetting to subtract the mean first.</li></ul></div>
+<div class="source"><strong>Source:</strong> ma3508_lecture5.pdf, p.3-p.14; ma3508_lecture5_R_supplement.pdf, p.1-p.2; ma3508_lecture6.pdf, p.6-p.17; ma3508_lecture7.pdf, p.6-p.13</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Self-test</span><span class="subject">L5-L7 quick exam drill</span></div><h1>Mini Self-test</h1>
+<ol class="check">
+<li>State the Mercer expansion.</li>
+<li>State the Karhunen-Loeve expansion.</li>
+<li>Give the continuous and discrete Bochner-Khinchin spectral-density formulas.</li>
+<li>What is the difference between angular frequency λ and ordinary frequency ν?</li>
+<li>A sinusoid is outside a filter band. What happens to it in the filtered series?</li>
+<li>For x_k=3sin(2πk/12), what spectral weight appears in the filtering exercise style?</li>
+<li>Write the convolution formula for filtering.</li>
+<li>Write the linear h-step forecast estimator.</li>
+<li>What are Γ and b_h?</li>
+<li>Write the prediction MSE formula and the Gaussian prediction interval.</li>
+<li>Explain the difference between R(k) and R̂(k).</li>
+<li>Compute R̂(0) for x=(12,7,11).</li>
+<li>Write the correlogram formula.</li>
+<li>Give the trigonometric definition of the periodogram.</li>
+<li>In the FFT periodogram code, why subtract the sample mean?</li>
+</ol>
+<div class="exam"><b>Fast answers:</b> 1) R(t,s)=∑λ_jφ_j(t)φ_j(s). 2) x_t=∑ε_j√λ_jφ_j(t). 3) continuous: R(t)=∫_{-∞}^{∞}e^{itλ}f(λ)dλ; discrete: R(k)=∫_{-π}^{π}e^{ikλ}f(λ)dλ. 4) ν=λ/(2π). 5) Removed. 6) 3²=9. 7) y_k=∑q_jx_{k-j}. 8) x̂_{n+h}=a_0+∑a_jx_j. 9) Γ is observed covariance matrix; b_h is covariance vector with future value. 10) R(0)-b_h^TΓ^{-1}b_h and x̂±zσ̂. 11) true process covariance vs sample estimate. 12) 14/3. 13) ρ̂(k)=R̂(k)/R̂(0). 14) P(λ)=T_c²+T_s². 15) To remove mean/zero-frequency level before spectral estimation.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture5.pdf, p.2-p.14; ma3508_lecture6.pdf, p.3-p.10; ma3508_lecture7.pdf, p.3-p.13; solution-exam-like-exercises-L6-L7.pdf, p.1</div>
+</div>
+
+<div class="page"><div class="header"><span class="date">Audit</span><span class="subject">Source coverage</span></div><h1>Source Coverage Audit - FINAL LOCKED</h1>
+<div class="green"><b>FINAL LOCKED audit note:</b> This version preserves the Pack B locked style and the Pack C candidate structure. Final checks focused on L5 theorem/formula wording, L6 BLUP matrix setup and prediction bounds, L7 estimation/periodogram formulas, the compact “do not mix these” box, and final label/audit updates.</div>
+<table class="mini-table compact"><tr><th>Uploaded source file used</th><th>Page ranges used</th><th>Content extracted</th></tr>
+<tr><td>Complete lecture notes/ma3508_lecture5.pdf</td><td>p.2-p.16</td><td>Mercer/KL expansions, Bochner-Khinchin continuous/discrete cases, sinusoid spectra, temporal/spectral representation, filtering, convolution, ideal/truncated filters and homework scope.</td></tr>
+<tr><td>Learning Materials/ma3508_lecture5_R_supplement.pdf</td><td>p.1-p.2</td><td>Periodogram Pgram function, FFT pattern, signal simulation, band-pass filtering using fir1/freqz/filter, and audio filtering workflow.</td></tr>
+<tr><td>Complete lecture notes/ma3508_lecture6.pdf</td><td>p.2-p.20</td><td>Prediction problem definitions, h-step forecast, MSE/BLUP criterion, Γ and b_h setup, prediction variance theorem, Gaussian bounds, algorithms, worked hand examples and R forecasting code.</td></tr>
+<tr><td>Complete lecture notes/ma3508_lecture7.pdf</td><td>p.2-p.16</td><td>Estimation of mean/covariance/spectrum, sample mean theorems, covariance estimators, correlogram, periodogram formulas, FFT code and example interpretation.</td></tr>
+<tr><td>Learning Materials/exam-like-exercises-L5.pdf</td><td>p.1</td><td>L5 filtering and spectral sketch exercises Q1-Q6.</td></tr>
+<tr><td>Some solutions/solution-exam-like-exercises-L5.pdf</td><td>p.1-p.2</td><td>Scanned handwritten solution summaries for L5 Q2, Q3, Q5 and Q6; Q1/Q4 demonstration solutions taken from exercise sheet text.</td></tr>
+<tr><td>Learning Materials/exam-like-exercises-L6.pdf</td><td>p.1</td><td>L6 BLUP / prediction interval exercises Q1-Q2.</td></tr>
+<tr><td>Learning Materials/exam-like-exercises-L7.pdf</td><td>p.1</td><td>L7 autocovariance and autocorrelation estimation exercises Q1-Q2.</td></tr>
+<tr><td>Some solutions/solution-exam-like-exercises-L6-L7.pdf</td><td>p.1</td><td>Worked L6 Q1-Q2 and L7 Q1-Q2 numerical answers plus R code.</td></tr>
+<tr><td>Some solutions/ma3508_mock_exam.pdf</td><td>p.2-p.4</td><td>Mock question mapping for Mercer/KL, forecasting R, best linear predictor, covariance from spectrum, continuous predictor derivation and filtering.</td></tr>
+<tr><td>Some solutions/ma3508_mock_exam_solution.pdf</td><td>p.1-p.10</td><td>Official mock solution patterns for theorem statements, forecasting code, BLUP calculation, spectral inverse transform, continuous prediction derivation and filtering solution.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2015_exam-.pdf</td><td>p.2-p.5</td><td>L5-L7 radar rows: Mercer/KL, best linear predictor, spectral inverse transform, periodogram R code, spectral sketch, continuous predictor and filtering.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2016_exam_.pdf</td><td>p.2-p.5</td><td>L5-L7 radar rows: filtration, covariance-estimation code, spectral inverse transform, forecast R code, filtering, BLUP and periodogram formulas.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2017_exam_.pdf</td><td>p.2-p.5</td><td>L5-L7 radar rows: Bochner-Khinchin, periodogram code, filtering, BLUP, Mercer/KL, sample mean variance theorem and forecast R.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2018_exam_.pdf</td><td>p.2-p.5</td><td>L5-L7 radar rows: periodogram code, filtering, BLUP, filtration procedure, correlogram code and forecasting references.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2019_exam_.pdf</td><td>p.2-p.5</td><td>L5-L7 radar rows: Mercer/KL, spectral inverse transform, BLUP, periodogram definitions, spectral sketch, continuous predictor and filtering.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2020_exam_.pdf</td><td>p.2-p.5</td><td>L5-L7 radar rows: Bochner-Khinchin, forecast R, filtering, BLUP, Mercer/KL, periodogram R code, spectral inverse transform and sample mean variance theorem.</td></tr>
+<tr><td>R_Comprehensive_Cheat_Sheet.pdf</td><td>p.4-p.5</td><td>Used only as a confirmation checklist for course-supported periodogram/filtering code patterns already present in the L5/L7 materials; no external mathematical content imported.</td></tr>
+<tr><td>TS_Study_Pack_B_L3_L4_FINAL_LOCKED.html</td><td>style/structure only</td><td>Used as canonical visual/style/structure reference only: A4 lined-paper style, boxes, formula cards, R templates, radar, self-test and audit format.</td></tr>
+</table>
+<h2>Uploaded sources not used for content in this pack</h2>
+<div class="blue">L1-L4 and L8-L15 lecture/exercise files were not used as mathematical content because this pack is scoped to L5-L7. Pack B was used only as a style reference. MAT700 files were not used for Time Series mathematical content.</div>
+<h2>Missing / unclear areas</h2>
+<div class="warning"><b>Past-paper official solutions:</b> official solutions for 2015-2020 past papers were not uploaded. Therefore the past-paper radar gives strategy and marks-style expectation, not official solutions.</div>
+<div class="warning"><b>L5 solution scan:</b> solution-exam-like-exercises-L5.pdf is scanned handwritten work with no extractable text. The pack uses the visible scan content for Q2, Q3, Q5 and Q6 and the exercise sheet’s own demonstration solutions for Q1 and Q4.</div>
+<div class="warning"><b>AR/MA/ARMA overlap:</b> several past-paper questions combine L5-L7 with later ARMA/Yule-Walker content. This pack flags them only where the L5-L7 part is relevant; full ARMA solutions belong in later packs.</div>
+<div class="green"><b>No hallucination statement:</b> The pack does not import outside-course theorem statements, definitions, or R workflows. Any strategy beyond an uploaded official solution is marked as a strategy, not an official answer.</div>
+<div class="source"><strong>Source:</strong> All content sources listed in this audit; TS_Study_Pack_B_L3_L4_FINAL_LOCKED.html used for style/structure only.</div>
+</div>
+
+</body></html>

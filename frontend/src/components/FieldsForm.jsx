@@ -1,5 +1,23 @@
 import { ENTRY_TYPES } from '@shared/entryTypes.js'
 
+function buildTypeGroups() {
+  const groups = new Map()
+
+  Object.entries(ENTRY_TYPES).forEach(([type, config]) => {
+    const rooms = Array.isArray(config.rooms) && config.rooms.length ? config.rooms : ['general']
+
+    rooms.forEach((room) => {
+      const current = groups.get(room) || []
+      current.push([type, config])
+      groups.set(room, current)
+    })
+  })
+
+  return Array.from(groups.entries()).map(([room, types]) => ({ room, types }))
+}
+
+const TYPE_GROUPS = buildTypeGroups()
+
 function valueFor(details, name, schema) {
   if (details[name] !== undefined) return details[name]
   if ('default' in schema) return schema.default
@@ -78,3 +96,5 @@ export default function FieldsForm({ details, onChange, type }) {
     </div>
   )
 }
+
+export { TYPE_GROUPS }

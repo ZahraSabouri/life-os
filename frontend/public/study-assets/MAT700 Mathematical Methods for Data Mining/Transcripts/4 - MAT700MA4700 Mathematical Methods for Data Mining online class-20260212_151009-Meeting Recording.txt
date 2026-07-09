@@ -1,0 +1,2241 @@
+4 - MAT700MA4700 Mathematical Methods for Data Mining online class-20260212_151009-Meeting Recording
+Auto-generated captions may contain errors.
+Davies talks lecture number three. Which is we going to go from the very beginning?
+0:15
+With the very end. One particular example of how we do data mining.
+0:23
+Okay. It's huge. It is very nice, but it's always nice to have one examples as we go from very start to very beginning and see some problems that we.
+0:29
+Uh. Have in data science and how to overcome general.
+0:41
+So it's a problem that we are going to go through today is the.
+0:48
+Very popular problem in data science. It's how to find similar items.
+0:54
+So you can have. Huge data set like Netflix.
+1:02
+Viewers and what we want to do.
+1:09
+We want to find out which user, uh, have similar.
+1:12
+You want to check which user a user has a similar taste. Or which movie.
+1:22
+I see Milla says that users are users. Uh, yeah.
+1:28
+Loves him or hate him. So this is a very popular problem, a finding similar, right?
+1:32
+The same, for example, in Amazon, which they want to recommend you to buy something they usually check what is.
+1:37
+People with a very similar behaviour, test location and other characteristics abiding so they can recommend you to buy the same okay,
+1:45
+as you want to find similar item you want to.
+1:56
+We have Facebook and you want to group people who just with their friends or not, because it's going to be just fake connection,
+1:58
+but you want to group them into the groups of people with a similar taste, in similar political view.
+2:06
+So people can advertise with them is called personal advertising.
+2:16
+We want to find out what people like and we want to sell them advertising, that's all.
+2:19
+High school is a huge problem and but usually follow very standard way and that's another.
+2:24
+Uh, example, what Google doing is the following, as you usually have in the morning or whatever on your mobile phone, you have news feed.
+2:31
+So they send you some news article which they can see there that you will be interested.
+2:40
+And if something happened some event, some country.
+2:46
+So usually there is a hundreds of thousands of pages.
+2:50
+Newspaper news agencies reports the same news from the same source.
+2:54
+But of course there were page report. In fact, is different.
+2:59
+So they have their own, uh. For my team.
+3:04
+They have their own barn and they have their own advertising.
+3:08
+So I go, you can't just say that they just completed their favourite page.
+3:12
+But of course, inside there is a very similar and use about the same topic.
+3:16
+So before sending you all this several thousand article on this topic, we just want to see the same.
+3:22
+So it's much more convenient to go for a similar article and maybe to present you 1 or 2.
+3:29
+Another example is so-called plagiarism of scientific article.
+3:36
+So if somebody submits article, we want to find out if somebody wrote very similar.
+3:41
+Or maybe he just somebody used his own article but copy paste like 90% of this one.
+3:47
+So is a similar article similar document. This is a general problem.
+3:52
+Okay, so we'll kind of do what you want to do.
+3:58
+We, uh, we will have the following to let us.
+4:04
+Well, precise problem we're going to solve. We want to suppose we have collection of the document.
+4:08
+Text document do you want you to DM? You can do similar for images users.
+4:15
+But currently the document, by the way, how to modify a little bit to find similar use for Netflix.
+4:22
+We will discuss examples of let you. So suppose I have and document.
+4:29
+And just what would that would be? Somebody. So no, I want to compare if they're similar.
+4:36
+So how to do this? In fact, uh, they can be quite different.
+4:48
+Even when people bless you with your article or or source, they are similar.
+4:53
+There are some difference. For example, if somebody wants to do logarithm.
+4:59
+Just personally think, okay.
+5:05
+I will use some some material from Wikipedia, but of course I will just directly copy paste a big chunk because it's so gorgeous.
+5:08
+So I will just soften a little bit, change a couple of words.
+5:16
+Of course if you change everything so it's not touching it completely.
+5:20
+But of course you keep a lot of from original source, which means that there are some big intersection.
+5:25
+One document with an answer. But the question is intersectional would because words can be changed or they can be changed.
+5:33
+So our strategy will be the simplest possible. It's good to place document your.
+5:41
+Why some set aside which. Is the infection procedure.
+5:48
+You want to develop procedural documentaries, I said.
+5:56
+Why? Said. Of course you have to do some computational on your computer.
+6:01
+And computer does have the same meaning of documented system, but or computer like.
+6:07
+For example, Python is very good with dealing with his its canonical data structure.
+6:13
+What is the data structure in Python numbers?
+6:18
+Real integer complex number set dictionary array.
+6:23
+It's like vector spaces for one two dimensional array n dimensional array.
+6:29
+So we want to transfer document in something manageable by semantic python.
+6:33
+So the simplest possibility they can think it's replace document by set.
+6:38
+Of course you can do subsequent. But this set has to be something that if a strategy will be the following the document symbol.
+6:43
+I can create for any document. Say it was said, which would be some procedure to discuss.
+6:55
+And you want to have the following property. If documents are similar.
+7:04
+A lot similarity in size that these two said. They have big intersection.
+7:09
+You have to document. It's difficult to say what is the intersection.
+7:17
+But if I create set, then I will have criteria that if these two set of two document are they have a huge intersection,
+7:20
+then probably they come from the same sources or one was a copy of big from another.
+7:31
+Okay. But you still have to do mathematics, which means that they don't just say that the section is big.
+7:39
+We have to measure the intersection. We have to create number. So.
+7:45
+The next step will be be using a technique called Simulink.
+7:50
+Which allowed us to transfer our document into that.
+7:58
+So this procedure that we are going to use document into set.
+8:04
+We will use technical school shooting. Okay.
+8:14
+So it has to be some sort of procedure, which is if document has a lot of in common, it set have a lot of in common.
+8:18
+But, uh. Okay, so the next we.
+8:26
+You need to be able to. Calculate similarity to document.
+8:31
+And Mr. knows. Calculating the similarity.
+8:37
+This is a quadratic problem. We have quadratic complexity. So if your documents are big and you have a lot of them.
+8:44
+Like anything that you have like feeling of document the calculating similarity between them.
+8:51
+It's like a billion square. So this procedure, uh, and this is a typical situation in data science.
+8:57
+You could develop fantastic algorithm. It looks really nice.
+9:04
+Semantically solid. You can prove theorems and even give you something.
+9:08
+But when you try to implement this in computer, you found that it's not linear complexity.
+9:12
+Complexity. Number of operation grows quadratic or maybe even exponentially with a size, which means that you immediately yes, you can write program.
+9:17
+Like for this case. Write program to be run for to make sure document it's okay.
+9:29
+But when you try to go to the alive medium document, we suddenly have this quadratic complexity medium to the power to become.
+9:34
+So how are we dealing with this one? And this is a common problem in the big data.
+9:42
+It's not very difficult to write algorithm and know what to calculate, but as always, calculate fast.
+9:48
+Maybe on flight reliably. This is a completely innocent subject.
+9:54
+And I will explain one of the approaches to this one.
+9:59
+Called mutilation. This is a two an idea.
+10:03
+So if you have. Quadratic or more complex calculation.
+10:09
+And we have a lot of data. So you have to pay a price for doing it.
+10:15
+You can do better when you calculate it, but it's still used for you.
+10:20
+Yes. Your problem is I need for example 4 billion document calculate billion square operation which is infeasible.
+10:25
+But if you allow it me to have error, like 1%. You don't want to precise answer, but you allow me under 1%.
+10:33
+Then I can do very fast. So this is a general idea in data science.
+10:40
+We will see if. If calculation become.
+10:45
+They look and you're stuck. You don't have a supercomputer and you have to calculate as fast as them.
+10:51
+And even if you can prove serum positive, you can't calculate faster.
+10:58
+Example. We can prove that. Yes. You don't have better algorithms.
+11:03
+Quadratic complexity or even higher complexity. But in this case, you say, or I will just invite you to precise answer.
+11:07
+It's okay. I will wait for a couple of years, or if I will first answer, then I have to pay a price and the press will be.
+11:16
+I will allow a small error. To calculate and then it will give me.
+11:24
+Very fast algorithm. So this technical education.
+11:31
+So what you will do is a step. We remember any document it was sent.
+11:35
+And after that to calculate similarity between set. Very fast.
+11:44
+Some small arrow probably will use a medical critical mitigation, but this is one example of the very big area in machine learning data science.
+11:50
+It's called probabilistic. Uh, that the same probabilistic calculation.
+12:01
+So if you there are many problems, which is if you want to get a precise answer,
+12:06
+it's very complicated a huge number operations don't have computer problem.
+12:11
+But if you want to have small error then you use this, uh, some algorithm from this probabilistic, uh, computational semantics.
+12:15
+And you will be able it's a very similar to the full.
+12:25
+In fact, it's like yes. Calculate average height of people in Cardiff.
+12:29
+What you have to do is if you want to know precisely, you have to collect all the people in the Cardiff measure,
+12:34
+say height and calculate average, then your precise answer.
+12:40
+But you must have, you know, you, you take sample random like 1000 people.
+12:44
+There is a very big chance that you will be very close and we can even estimate how close it is.
+12:49
+So this is a flavour of this probabilistic algorithm in machine learning.
+12:54
+Then you don't need to really calculate precisely.
+12:59
+For example, if I want to establish a two article similar by 98%, if I get answer 97%, it's still very good.
+13:02
+Okay. So the first question is. So we divided up a strategy of your you for each set which document to divide set and after that to do calculation.
+13:15
+So now we are in classical problem of.
+13:28
+Data science is how to define. If I have said.
+13:34
+One as to who sets. How I.
+13:41
+How can I divide? It defined.
+13:49
+Notion of similarity, and the classical definition of similarity between said is so-called Jaccard similarity.
+13:53
+Probably the most popular choice at the beginning of the cut.
+14:04
+Introduce the similarity just because it looks natural. But it's it's know that this similarity also has probabilistic interpretation.
+14:09
+And this is what will be will allow us to calculate similarity.
+14:17
+If you have meaning of article meaning of text, you can calculate very fast.
+14:22
+So you can similarity. Try to uh find out when to set s1, s2 I similar.
+14:26
+So would you say that this is very similar to ours?
+14:36
+Is it? Uh. So what do you expect?
+14:40
+Expensive intersection of them is pretty big.
+14:43
+But if I ask you, suppose intersection of two set, uh, 100 element as a similar node,
+14:48
+you will tell me, or is depend on original size of these two set.
+14:54
+If I have. To set with like, uh, one, uh, each of them.
+14:59
+Let's do a hundred element and intersection is 100 element.
+15:04
+They pretty close. But if you have to set with a million element and intersection, just say 100 element, you will say no, no, it's not very similar.
+15:08
+So you got to similarity. If you want to compare size of intersection with a size of.
+15:18
+Uh. He's the size of union. And this is a very popular similarity.
+15:26
+And it's used in many applications, not just similarity to document by.
+15:34
+You will see why they want to the similarity of Netflix user and so on.
+15:40
+Then you will use some modification of similarity.
+15:45
+So formal definition. Just what you say.
+15:50
+If I have said as. And I have said.
+15:53
+To calculate your similarity, I have to count. Count how many not being such intersection and divide.
+16:01
+Bisexuals are union. So this is a definition.
+16:13
+And sanitation because I love notation.
+16:22
+It's called similarity. So we can define this for you to set.
+16:26
+And we have this function. Okay.
+16:36
+So what? That's all. What? Uh, is complexity of this function.
+16:41
+Suppose I use to set S.A.T. They ask you.
+16:47
+How difficult to calculate is this number? What is the complexity?
+16:54
+How many operations do I need? So listen carefully. You need to calculate.
+16:59
+Numerator and you get to calculate denominator. Okay.
+17:05
+In fact, you only need to calculate numerator because there is a standard formula.
+17:11
+You said shooting that number 11 in the union.
+17:18
+It's number 11. First. Last number element in the second set.
+17:22
+Minus number of element in intersection.
+17:27
+Very simple formula. You just don't use it.
+17:33
+If I add number of element as a number of element, you element from intersection will be count twice.
+17:36
+So I have to subtract this number.
+17:43
+Then I have number of element in union class, which means that in this expression, if I give you set as a key, I'll let you know how big they are.
+17:45
+Well, when you do programming, can you somehow put yourself inside the computer then just function the landscape give you.
+17:55
+That's what it said. So it means that if you're able to calculate number of element in section,
+18:03
+then you will be after magically using this formula to calculate the number of elements of the union.
+18:10
+So complexity of this calculation is in fact how difficult is to calculate number of element in such an intersection?
+18:16
+Suppose my set S is. One as an 11th.
+18:27
+And safety is. Do you want to give?
+18:35
+And I want to calculate the intersection and after them.
+18:42
+So what does it mean? I have to really check.
+18:47
+I have to take this one. And I want to check if it's.
+18:50
+It's. I said he or not. There is no way as a ways to figure it out if it's one from intersection.
+18:55
+So we have only one way, I think element one and I compare this element with all elements.
+19:03
+One give. If you want equal or not.
+19:10
+So it's we use it to check if S1 is intersection.
+19:14
+I have to do m m comparison. And I have to compare with all of them.
+19:18
+Otherwise, I don't know if the section for element is.
+19:24
+I have to calculate also complete. So for all this and element I have to do the calculation.
+19:28
+The total number of listening will be m times n. Which means that yes, one set contain 100 element, another 100.
+19:35
+Then you will perform in Python.
+19:46
+Yes. You don't see but you when you when you calculate the intersection, it is you could form 10,000 combined which is very fast.
+19:50
+But if you said million, a million even to calculate intersection of how many elements right, you need to have median square operation.
+19:57
+This is a quadratic. Complexity of this.
+20:06
+So if you look very simple, but we have to understand it for a very big set.
+20:09
+If you have to do something, how to calculate this number first. And this will be one of the main properties.
+20:13
+Why people like geographical similarity. Because this number if you allow small error, can be calculate extremely fast.
+20:18
+Even if your centre has a million elements. I can calculate using just maybe 100.
+20:28
+Simple calculation and calculate as intersection very fast.
+20:34
+This example development we will see later. But this is a different definition of Jaccard similarity.
+20:39
+Okay. For example, I have to set S 50.
+20:47
+So what is your country like in this case? Okay. So first it has.
+20:54
+Contain, uh, five elements. You contain?
+21:00
+Six element intersection contain. See element.
+21:06
+So I know that you said union. Five plus six minus three, which is equate.
+21:13
+So Jaccard similarity will be number of one.
+21:22
+Imagine. Intersection. Three. Divide by number of elements.
+21:25
+Eight. I have this one. It, which was pretty beaten up.
+21:31
+Okay, so let's just summarise some property which will be this will be obvious but they will be important.
+21:39
+So what do you know about this similarity. You [INAUDIBLE].
+21:45
+So let's see. What's this? We have this Seth Asante.
+21:52
+And we defined number similarity of empty.
+21:57
+The question is what is the medical property of this? The.
+22:02
+Thomas. Similarity.
+22:09
+Of SD. Always big is equal to zero.
+22:19
+Majority of SD. Equal.
+22:34
+Uh, zero. If and only if.
+22:39
+As his agent. Okay.
+22:45
+So this number is no negative of course,
+22:50
+because you said with the right number of element in intersection divided by number of elements in units, which is not negative number.
+22:52
+So what does this number is remind you is the.
+23:00
+Do I, bestie? So we're just number zero.
+23:07
+And with that, of course, acidity is one of them.
+23:13
+Then they know that you. This means the denominator is not zero, so just not number zero.
+23:17
+If you mean zero. So as in the joint.
+23:24
+So the smallest number zero is for the second property.
+23:30
+Similarity of SD. Always less than equal to one.
+23:38
+And. Similarity.
+23:46
+It's to equal one. If and only if it's equal to you.
+23:51
+Of course, this is obvious because, um. Because number 11, in union it's always biggest element in such intersection.
+24:00
+So union is contain more than just intersection. So with this number one wins.
+24:09
+This number is one. When you said Asante.
+24:16
+You have the same number of element as the union.
+24:23
+This means, his said. She.
+24:28
+Anything that in intersection is the same as active union. All the common element is just what they have in common.
+24:33
+The second. Altogether. So this means that it's one only in SD.
+24:40
+So it's a very good measure. So we can calculate this number. But we always know that this number between 010.
+24:47
+That's why it's called similarity. Zero similarity means a completely different.
+24:53
+Similarity one. It means that. Yes, they just did.
+24:58
+Okay. This is a. Three main property two main property of Jakarta.
+25:04
+I usually see another property, which is obvious that similarity.
+25:12
+As in deep. Equal similarity of two years.
+25:19
+So we say that this, uh, measure of similarity is a symmetric.
+25:27
+As it is the same as the similarity between DNS, which is also obvious from the definition.
+25:34
+Because number of elements in you and you. Does depend on all the number of elements in acid detection.
+25:43
+Is the same as the detectors. And of course union also union of as is just the same as a union DNS.
+25:48
+So this is a city for one and elementary property.
+25:58
+But the fundamental properties will use a lot.
+26:01
+Perfect. So now the question is, do you remember our strategy was to replace document.
+26:07
+You have to endure command or maybe set of use allowances.
+26:15
+But particularly for document we replace each document.
+26:20
+Set aside some procedures over the document.
+26:27
+And to measure similarity between document, we will just measure that Jaccard similarity between the corresponding sets.
+26:32
+Okay. So now the question is how to create for measure how to replace document based set.
+26:41
+There's many possibility. For example.
+26:51
+You can call. They are similar.
+26:57
+From each document I can extract. All characters inside document.
+27:02
+And stage. This will be set of all characters I document.
+27:09
+Of course it's not reliable because if to document big enough, they contain all alphabet and all numbers.
+27:12
+So there will be some kind of similarity to the one. I can create some maybe set of would you say document?
+27:19
+But people can modify it a little bit worse. And this one standard approach is to.
+27:31
+Uh, Lucifer. It was me. See, this is just application.
+27:40
+If the collaborative use of. What you do.
+27:47
+Really? Uh, just so you.
+27:50
+This approach is already said. It's it's a very important approach for, for example, for Amazon for movie rating.
+28:00
+But before we go to the movie rating, I want to introduce some some modification of Jakarta Similarity.
+28:11
+It's cool. Just to have some beach.
+28:21
+So. It was a similarity of set, but.
+28:29
+Let us look into the Netflix prize. Competition.
+28:35
+What we, uh, what we were given. It's table.
+28:42
+This is a user. One. User two. And as we had movie, movie one movie two movie.
+28:49
+And. And of course, the simplest way.
+28:57
+For example, when I want to find similarity between using the same approach work for movie.
+29:04
+So suppose I have two users and I want to find the similarity, of course.
+29:10
+The simplest way is if I look inside one user and they collect all movies that he watched, I think in a user.
+29:17
+And they create a set of uses of movies that are used.
+29:28
+So then I have this I replace user based set of movie.
+29:32
+That he wished. Yes. Possibility of any similarity, but.
+29:41
+It's will not solve our problem to, uh, classify a user with a similar taste.
+29:48
+Because in this case, we don't care when he just collects movies that you watch.
+29:54
+We don't care if we do not take into account. If you liked this movie or not, because this raging number of stuff is important to understand.
+29:59
+We can help the user. There was five movie and other was to say five movie.
+30:08
+One put a raging one started for all movie and then put five.
+30:14
+So they have completely the same set movies they watched Joker similarity for said to be identical one, but of course a completely different thing.
+30:19
+So this is why I assume this is a modification of Joker similarity.
+30:28
+Joker similarity of facts. So what is a different book from Seth?
+30:34
+Seth. Contain element.
+30:40
+Which is such as where's the fallen property? Or the does matter.
+30:47
+And each element AP only once. Okay.
+30:52
+You can't have. Same element in the set.
+30:55
+Definition of set back. But it also does the structure in Python.
+30:59
+It's some extension of set. It's the same over there.
+31:05
+It does matter. But the same element can appear many, many time.
+31:10
+It's like, you know, if you have a bag of apples.
+31:16
+Bananas. That's all. Yes.
+31:22
+As I said, you can take many, many bananas, but as a bag you can have inside back.
+31:26
+Ten bananas, 25 apples, and so on. So it's almost as big as like I said.
+31:33
+But along with the same element at any time. Does this go back?
+31:39
+What is allowed us. We want to know from from uh, we do very similar what you did for Saint.
+31:46
+But you want to introduce a similarity between banks.
+31:54
+Back one and two. We can do better for that fixed price.
+32:01
+Suppose I have user. Which which samurai movie you want and he give raging.
+32:08
+Uh. Move it to his grave.
+32:16
+Ready to restart. Movie city.
+32:21
+You gave Rachel. One star and movie four he gave Radiant Star.
+32:27
+Okay. And they want to take into account not just if you watch 3 or 4 movie, but I also want to take into account what was the rating of this movie.
+32:35
+Then I carry it back of this user. This user.
+32:46
+This will be the falling back. I have, I, I can use this notation, as I said.
+32:51
+But let me put you back in. Think so? You understand this is a little setback.
+32:59
+I will put you on once because you had one star.
+33:04
+I will put movie. Uh, two.
+33:08
+Three times. It's how many how many stars he gave.
+33:12
+Movie three was once. And movie four.
+33:17
+Was. Two times. So if I replace user no just by set of movies of yours.
+33:24
+But now if I take an account. This is back.
+33:31
+It's thought. Then they have. You think they have complete information.
+33:36
+I can recover back. What?
+33:40
+You have died because I just look at his back and they say, oh, he was this particular movie, which is a big and also I know how many studied it.
+33:43
+So this means that this transformation. We don't get any information from you.
+33:51
+You know your last question? What's the similarity between back?
+34:01
+By the way, is the same is the following, you know.
+34:05
+You know, if somebody on Amazon with some item and if people bought the same items but one person with one item, they never came back.
+34:08
+But you know that subscription that you bought 25 times, then, of course I don't.
+34:19
+I want to take into account not only what you bought, but how many times.
+34:26
+Additionally, I will replace as this user, but his corresponding back or the I don't care that you bought.
+34:31
+As you see, I don't care in which order he watched movie, but I know what I think and I know it.
+34:40
+For example, Amazon. How many times you how many seats he bought.
+34:46
+So what you have. No. So if I replace my, uh, Pokemon, who are the object by set, then I can define similarity.
+34:50
+But sometimes replacement by Seth.
+35:01
+It's not good enough because you want to take into account with some additional information like rating number with appearances one.
+35:03
+Then usually create back void. What's the structure? Then you put the same item many many times.
+35:10
+Okay, this is definitional, but I think it's clear. And because of this?
+35:22
+No. V. So this is exactly explained in the next slide.
+35:27
+That movie. Now, of course it's. It's a good start.
+35:33
+It's something like, if you can get off, you can get down. But it was a it was a classical original one.
+35:38
+It was between 1 and 4 star and also on Amazon.
+35:44
+And no other retailer usually have the same between one start at five star or.
+35:49
+Sometimes they ask your opinion. And how do you rate this experience for this particular between 1 and 10?
+35:55
+Okay. So it's like number of your footsteps.
+36:02
+So you always have places customer to analyse by number or how many star or how many a rating he gives to this question.
+36:05
+And you just put this many many time. So in this case we have the question how do you define Jaccard similarity?
+36:14
+Two bucks. Okay. And so let me explain you this definition.
+36:26
+You're looking right. Precise formula. What is idea?
+36:33
+Suppose I have back. The Baxi.
+36:39
+It contains many elements and sometimes elements appear. Many times I put in the images.
+36:48
+This one said it has something inside, something inside.
+36:54
+So how do you calculate your similarity for banks?
+36:59
+Take any X. From.
+37:05
+B and C, so look in all element p at least once in B and C, and for each such element.
+37:10
+We calculate the number. And B of X.
+37:22
+Which is. How many times? Uh, how many time x in?
+37:28
+I call because no, it's not set. Which means it can appear many times.
+37:38
+For example, in X particular movie for user, this number is just precisely what is right.
+37:44
+Also, I can calculate the same number. How many time?
+37:51
+X in C. Which actually turned up the no Jaccard similarity.
+38:02
+I will define laces. This is how people define it.
+38:10
+I think. Sum over all x.
+38:21
+But no minimum of these two numbers. And B of X.
+38:28
+And she works. This is just like intersection.
+38:36
+If acts if here five time in one set in bulk and three time in another.
+38:43
+Then in hormones they have three. Just meaning.
+38:50
+What was this lump? Denominator.
+38:55
+I will do the folding. I will take some. And B of X.
+38:58
+Plus and Z of X. Correct.
+39:08
+So this is how we calculate similarity to both.
+39:12
+Or. Because. If I look.
+39:18
+So this is once again I will right in better form.
+39:22
+Sum over x. Minimum and b of x.
+39:27
+And civics. But some of this in the minute.
+39:35
+I can separately calculate sum over all this and beef and all this AC, but you may count all element in B and how many times it's appear.
+39:42
+This will be nice. It was it size would be. And so we just sort of see.
+39:53
+So it's not precisely you. You don't know. What is it? You. You know that.
+40:01
+So we use this approach. Definition for bikes. So it's a different from Seth.
+40:06
+It goes on for Seth.
+40:12
+Seth is a back which is an element that puts the numerator will be the same but denominator for Bach and for Seth you just different expression.
+40:14
+This is even with dealing with the back. This is you can see related topics.
+40:26
+Okay. This is once again the definition. The similarity of two bags.
+40:33
+Is defined because you. How many elements appear in B and C if you take minimum.
+40:42
+And instead of union, we just go count number of element in B plus number of elements in.
+40:50
+Let's see. Example. So I have one back.
+40:58
+And then I. Let's calculate.
+41:05
+So I have all the elements. So this is set B and is.
+41:09
+In common all elements which appeared this once in its element A, B, and C.
+41:15
+So let's calculate. And. Uh, b of a, so how many times it's a B?
+41:23
+It'll be three times. How many times B appear in G.
+41:31
+So AP, AP is that in fact?
+41:39
+It's equal. Uh. Appeared two times.
+41:46
+So minimum equal to. Know and be of.
+41:52
+Element B is equal. One.
+42:02
+It is a pure one. But. And she'll be equal to.
+42:06
+So minimum equal one. And be of.
+42:11
+Uh, she equal zero? We don't know if she is aged and and she.
+42:18
+Of see equal one. So minimum equal one.
+42:27
+So here to us is minimum one plus one plus two.
+42:32
+Divide by. How many elements.
+42:40
+Yeah. Want to get here for. Just moment I did something.
+42:51
+It's not. Be able between 0 and 1 to zero.
+43:06
+Okay. So what you have?
+43:19
+One plus three. So that's equal to three divided by nine or equal to one over C.
+43:26
+Okay. So no excuses, Mr. Buck.
+43:33
+Similarly, if you want to see. Okay, so let's us.
+43:39
+Remember before that we established several property. So now suppose b and c.
+43:50
+I want you to have similar properties as we have for that property one.
+44:04
+Uh, similarity is it begs you.
+44:11
+Because it equals zero. Which is.
+44:17
+Pretty good. Of course, because the same determination and numerator in both expression just one.
+44:24
+Uh, no negative numbers. Positive effect. Second.
+44:38
+This number is zero. If and only if.
+44:47
+The desert. So they have nothing in common.
+45:03
+Why? Because you can't. Is this, you know, when it reaches you, you relate to was, you know, because it's all non-negative numbers.
+45:11
+It's when each element is zero, which means it. A minimum of appeal to any element in both of them.
+45:21
+In zero means it's kind of B in both, and it was a bug.
+45:30
+It's viewed as a completely disjoint. Very similar. Second property and said, let me see, said property.
+45:34
+Of course, a similarity of B and C is a symmetric similarity of CMB.
+45:45
+This is by definition, if you just count how many elements and sizes.
+45:55
+But for set similarity, Jaccard similarity was always less than equal one, and equal one was identical, but for Jaccard similarity of books.
+46:01
+Similarity B and C. Four bucks.
+46:15
+It's less than equal half. If equal, and half if and only if.
+46:22
+C. So this is just main difference for you.
+46:33
+Kind of similarity of set you know between 0 and 1 zero.
+46:41
+Just show it. One identical Jaccard similarity of big is between zero and half.
+46:45
+And, you know, to show it off is means that, uh, they're just identical.
+46:52
+So let's prove this. But before starting to prove, let's have some break.
+47:01
+Okay, so see you in ten minutes. Okay.
+47:06
+What I want to do now, I want to prove this property. Let's.
+1:00:05
+This. And once again.
+1:00:13
+Yeah. And she, uh, backs.
+1:00:20
+And I won't lose it. Similarity between two books.
+1:00:27
+Less than equal. Half. And. Equal half if and only if B equals c.
+1:00:34
+This is our state. Let's start.
+1:00:43
+I remind you that. Before we start, let's use the full effect for any two numbers A and B.
+1:00:47
+To real number. Minimum A and B, it's always less than equal a plus B over.
+1:00:59
+You have to number like a B. Or maybe it also would be an A so average in the middle.
+1:01:15
+So minimum is always listen equally number between them.
+1:01:27
+And second, I have equality only if equality.
+1:01:34
+Again, very simple fact for two numbers that the minimum is always less than equal to average.
+1:01:43
+And of course. If minimum equal average, it means that there is no.
+1:01:50
+This gap is equally quite trivial for Wipro.
+1:01:56
+So we are going to use this. To prove the similarity between any banks is less than equal.
+1:02:01
+So how how are we going to proceed? So take any element x from.
+1:02:14
+He or she had an exit.
+1:02:23
+If he. If it was him. Z what they can write Z minimum.
+1:02:27
+And b of x and z of x less than equal.
+1:02:37
+Use this fact that it's less than equal and b of x plus and c of x over two.
+1:02:45
+Can't we just use this simple fact for number of times xp and B and C?
+1:02:59
+And if you have identity, always only this to number and be of x equal and Seahawks.
+1:03:11
+Though of course I have these for any x I can write it some of x.
+1:03:24
+Minimum of ten. P of X.
+1:03:32
+And she works. Less than equal.
+1:03:38
+One over two. Some. And give X.
+1:03:46
+Us and Felix. Okay.
+1:03:53
+Just uses. And of course I have identity all all.
+1:03:57
+Only if I have identity. Any cis for any x.
+1:04:01
+So I have identity only. Only if. And b x equal x x x.
+1:04:08
+Okay. Oh, I can do this.
+1:04:17
+Um, what is this? Some. Then it means that the sum of x.
+1:04:23
+And beer works. And he works.
+1:04:34
+Do you worry by some of x? And Buicks.
+1:04:43
+Uh, plus. And he works.
+1:04:51
+And this was an equal health. And you have identity all.
+1:04:56
+Only if all this number and BCS and NC are equal for all x.
+1:05:02
+But this is if you left precisely Jaccard similarity of big.
+1:05:07
+What do you establish the similarity back between B and C?
+1:05:13
+Well that's an equal. Half plus is equal to half.
+1:05:18
+If if equal to you. So they not only have the same element, but even number of elements that are the same.
+1:05:24
+So what we established so far. That if I replace my.
+1:05:37
+Item user document. By said, I can calculate your current similarity and very similarly,
+1:05:43
+if I want to take into account something more additional for my information or just what they contain.
+1:05:50
+I am able to create back end. For this. I can calculate and define similarity back as well.
+1:05:55
+Though for Netflix, creation back was simple problem.
+1:06:05
+Because we just take user. And we put in his big.
+1:06:11
+All movies that you watched. And. How many times each movie presented Rodney King the views and gave Rodney King to this movie for document.
+1:06:17
+It's a little bit another story.
+1:06:29
+So traditionally we create a set for document, but collecting inside document some subset of Zelinsky key consecutive uh uh letters.
+1:06:31
+Including maybe spaces where we put them together.
+1:06:47
+Of course, sometimes people try to copy paste from some document, but I didn't commit any space.
+1:06:53
+So you have one word, another word, and you are here.
+1:07:01
+Maybe five spaces or six spaces. So what do you do before creating sets from document?
+1:07:04
+We will do the following. Whatever you have. More than one space.
+1:07:15
+Together. I will just replace by one space. I don't want to manipulation, but not those spaces.
+1:07:21
+So after that, what I will do. I will have this huge document which is a set A1A 2 a.m. just letters from alphabet.
+1:07:28
+Brazil has a similar idea. Welcome, but only if you have. For example, and I see sequential data.
+1:07:42
+I have this data. And what is the definition of shingles?
+1:07:50
+Cases because it's if you have sequence of.
+1:07:57
+That's sequence of some element from some set from alphabet.
+1:08:01
+So key elements that go one after another. It's called signal gation.
+1:08:07
+So now if I have this document, after removing these unnecessary spaces I look at this as a sequence of letters and I look into all possible.
+1:08:14
+Casey goes inside a sacred united and I create settles them.
+1:08:27
+If some. If for example here if k equal to and I have here ab and here have ab.
+1:08:35
+Then very comes since only once I put in this set.
+1:08:42
+Though, because number stops think Zelenskyy less than just links with the document.
+1:08:48
+Then, as he said to me, know we can estimate that it's a lot bigger than just document itself.
+1:08:54
+Example. Suppose my document is this one.
+1:09:03
+Sequence of seven letters and you get equal to.
+1:09:09
+So what will be? Two singles of T, of course, a b a b a twice.
+1:09:15
+Yeah. And here you. But you count only once.
+1:09:23
+Okay, so the Sith Jedi place document.
+1:09:28
+This will be, uh. This set of two singles.
+1:09:33
+Now the question is, of course, and I don't want to go details, but, uh, and this is a really common problem in, in many algorithms, data science.
+1:09:41
+Yes. I can take document here and they can replace.
+1:09:53
+But you said of case shingles inside document you.
+1:09:57
+So far, so good. But the main question is.
+1:10:02
+There is no any theory which tells you four different problems.
+1:10:11
+What case should be? Of course.
+1:10:15
+We know what you want. Me? So this parameter of model, which we don't learn during the variation,
+1:10:20
+but it's like we're able to do different designs before we develop algorithm in data science and machine learning it gets called hyper parameters.
+1:10:30
+Somehow we have to figure out which gate to use the most standard way.
+1:10:37
+Why do you have such a parameter which you have to fix at the beginning? Then it's called cross validation.
+1:10:44
+What? It's mean. I have some problem. And I want to catch, for example, to the similar user or plagiarism system.
+1:10:51
+So I develop for k equal one, for k equal to for k equals three and so on.
+1:11:00
+And after that I check this approach for my test data which is available once.
+1:11:06
+And I select k which give me smaller set. I don't know, but.
+1:11:11
+If I try different algorithm keep. I can't figure out which one is the best.
+1:11:17
+And there's a possibility you could use some sort of justification, like for document.
+1:11:24
+Of course, if we take equal one, it means that all subs think of the length one, it just alphabet, just letter.
+1:11:29
+And of course you can't just look at what let the document use to say if it's close to or not.
+1:11:36
+If I take a very big like maybe 40, that is, there's almost no chance that two documents will have identical.
+1:11:44
+Substring of the length for you, because people over there were trying to modify a little bit.
+1:11:54
+So it has to be something in the middle that looks too small, that is contained almost everything and not too big.
+1:11:59
+The intersection is zero. So for document, these two approaches work perfectly well and what you use get you combine.
+1:12:06
+There is no any sort of guarantee that this is the best decision.
+1:12:19
+He just lay there and we have this kid, you know. You can get equal five.
+1:12:22
+Uh, this was just some explanation. The k equals nine is a good.
+1:12:36
+Yes. Because it's too small.
+1:12:41
+It's either too big to be too big intersection and they almost will be the same, even if document completely different.
+1:12:47
+If it's too big, like 20, then it's in the 24th year.
+1:12:53
+There's no always intersection. So by trial and error you can figure out any particular problem.
+1:13:00
+But the UK equally for different language is a different.
+1:13:05
+Now let's see what we have. What you did so far.
+1:13:12
+We had many documents. And he explained how to replace his document by said.
+1:13:25
+I calculate k shingles on this document. For example, for Netflix.
+1:13:38
+Which user? Of which I can calculate just back.
+1:13:46
+I don't need to fix any cases. It's do so, but it means I replace the dough in this particular case.
+1:13:52
+Let's get the date on this particular page for Netflix. This will be. It'll be similar.
+1:13:59
+Uh, each document makes it. Now, have you already figured out that the kid you call late, for example.
+1:14:04
+And suppose we have like. Million document.
+1:14:16
+And you want to find out which one of them is a similar. So what we have to do.
+1:14:21
+We have to do two calculation. First of all. For each p I g I have to calculate similarity.
+1:14:25
+It is key of this document that I and several singles of document G.
+1:14:37
+Okay. This was first. So I will have to calculation.
+1:14:47
+First of all calculate similarity. And second calculate when you pass.
+1:14:51
+What does it mean? That is if we each document on average size L.
+1:14:58
+Then I know that. Calculate similarity. I will need a square operation.
+1:15:06
+Just prove it. Plus if I have and document number of pairs I j it's m n minus one over two.
+1:15:10
+So the total number of operations that they have to perform will be this one.
+1:15:21
+It's called complexity of this algorithm. So what this means that if n like million document.
+1:15:25
+For example, I want to have some article published in. In mathematics.
+1:15:34
+And there is a hundreds of thousands and millions. And I want to compare if there is a simple algorithm or it becomes very similar.
+1:15:39
+So I have to consider this for any pairs. So this is a huge number of calculation.
+1:15:46
+Plus each document can be very long like maybe thousands of character.
+1:15:51
+Maybe 10,000 character walk you in more.
+1:15:57
+So I will have this quadratic, which means that this number of calculations, especially if you know precisely what to calculate.
+1:16:01
+And it's looks simple. It just became. Uh, in practice for big data set.
+1:16:07
+Just impossible to calculate very fast. So here we have two different problem.
+1:16:14
+First, how to calculate Jaccard similarity first.
+1:16:19
+And second, how to calculate. Similarity between any two first sent us this number of calculation.
+1:16:25
+For calculating simile and fast calculation between similarity and for similarity communication.
+1:16:35
+For any two pairs. Rashid Khan idea is the same, but a little bit more advanced.
+1:16:43
+So I don't want to go to details because you just don't understand what's going on.
+1:16:52
+So no, I won't to the bullet problem if I have to set X and y.
+1:16:56
+And they want to calculate similarity. Jaccard between set X and Y.
+1:17:04
+And straight forward precise calculation I know that I need to do number of
+1:17:09
+elements inside x multiplied by the number of elements to say y calculations.
+1:17:14
+My task is to make it faster. What they have to pay price.
+1:17:19
+I will allow some error. If I allow some error.
+1:17:25
+Then I can have very fast ugly. This is a typical situation in computer science.
+1:17:29
+There is a many famous problem like. Uh, there was one problem.
+1:17:35
+When you have to visit several cities and you have to visit all of us at once, and you have total flight.
+1:17:40
+And of course, if it's just. Two three, two.
+1:17:50
+You just tickled possibility. But it's like 20ft.
+1:17:54
+Then you have to visit 22. The lumber passes between the damage will be 19 factorial.
+1:17:59
+It's a huge number. And you can't do better.
+1:18:04
+But if not even more, it becomes much more difficult.
+1:18:08
+So there are many, many problems of this type in computer science.
+1:18:12
+One precise answer is for practical. Probabilistic algorithm.
+1:18:16
+Do you allow small error. And we still you'll be able to calculate very fast.
+1:18:22
+In this particular case similarity. If you look some example and it's called mitigation.
+1:18:27
+So let's do this. This is precisely what they said that.
+1:18:33
+If Seth are very lunch. This is not going to take.
+1:18:41
+Take him. A lot of pairs to put in the memory.
+1:18:47
+Also it should be give a little calculation this one.
+1:18:53
+So what was the strategy you'll be supporting if all the strategy is the same?
+1:18:58
+I want to calculate something, but I want I want to allow to enter.
+1:19:02
+So I will replace what I want to calculate by something smaller.
+1:19:06
+So if you replace each set by so-called signature. Which would be much, much simpler.
+1:19:11
+And you just think that you will calculate approximately Jaccard similarity very fast.
+1:19:18
+My strategy is. What is it again? I want to calculate your similarity.
+1:19:28
+And it's like calculating the average height of people in the country.
+1:19:34
+The precise number I have to measure everybody.
+1:19:39
+But to conclude approximately with a very small error, I just pick up a thousand, maybe 2000 people randomly.
+1:19:43
+Kind. You take the empirical average, and maybe they have an idea and you hear the same.
+1:19:51
+Always the probabilistic, always the same. I have to write what I want to find.
+1:19:57
+AC as that the value. I can do sampling and calculate its value very close or to give probabilistic interpretation.
+1:20:03
+Sin. If I can't say that, what I want you to calculate is the probability.
+1:20:15
+Then of course. Even if I don't know formal probability, I can say, okay, I will do several experiments later.
+1:20:20
+Well, I did experiment and I will calculate frequency as well as the main property of probabilities.
+1:20:27
+That if you perform enough. Experiment that the frequency of your outcome.
+1:20:35
+It will be very good approximation to frequency. For example, if I want to know probability,
+1:20:42
+if I pick random car in Cardiff and I want to know probably what is the probability of this car to be Honda.
+1:20:50
+Well precise number but I have to look at all car.
+1:21:00
+Calculate how many they divide. Oh, I can do the falling on some random intersection.
+1:21:05
+I will stay for one hour. I'm. I look in old cars and go through this intersection like.
+1:21:11
+500 car from Sam. It was like City Honda then.
+1:21:18
+I know that probability of holding car review is like 30 divided by 500 approximately.
+1:21:22
+Not precise, but very good approximation and the law of large number.
+1:21:27
+You are guaranteed that this is true approach. Plus also using championship inequality, you can even estimate how close estimation is.
+1:21:32
+So this is a general idea of probabilistic algorithms in data science.
+1:21:42
+When that is so big, it only seems that you can calculate its approximation, but you want have a good approximation.
+1:21:48
+So in your similarity. Similarity so fantastic property.
+1:21:57
+You got a similarity of two set. And here it's always between 0 and 1.
+1:22:02
+So it's give you a hint if something between 0 and 1%, probably there is some process, but this number is a probability.
+1:22:14
+So our task is to construct. Experiment.
+1:22:25
+Which probability of success you'll give me is this number.
+1:22:30
+Send my stuff as usual. I repeat the same experiments many times and I will calculate frequency and I will have to stop.
+1:22:36
+The next. I don't know if they're going to show what experiment.
+1:22:46
+Give us similarity of two sets as in key.
+1:22:53
+As a probability. What you start this stuff from?
+1:22:57
+Absolutely impractical. Theoretical discussion of what we are using.
+1:23:11
+We are not going to put this inside computerisation because it's too big.
+1:23:16
+But this will allow us to prove a theorem and establish probabilistic interpretation of, uh.
+1:23:20
+Similarity. So what do you. Let's just first of all, suppose I have several set s1 s2.
+1:23:30
+Lets you fly by. Uh, w it just say union.
+1:23:43
+All elements appear in all of them. No, I suppose you have this insight w you have and elements.
+1:23:50
+So now I want to create some characteristic metrics. Very simple.
+1:24:04
+Very similar metric as the adjacency matrix.
+1:24:09
+So what is your B matrix? Here I have I said one has to ascend.
+1:24:13
+And here I will have elements from the union A, B, C may be like this.
+1:24:21
+And. Matrix element.
+1:24:28
+For s and sit for since instead will be. One.
+1:24:34
+If she cites it as 2 or 0, if it's not true, we create metrics which call her touristic metrics.
+1:24:39
+It's A01 matrix. Each element or 0 or 1.
+1:24:48
+And it's tell us if some particular element or is inside.
+1:24:52
+City. Let's see.
+1:24:59
+Example. Suppose we have universal set.
+1:25:02
+Universal set its music all elements which appear at least one of them, or just elements from you for you, you.
+1:25:06
+So suppose this is all elements that we have. So now suppose they have to set.
+1:25:13
+In level four, set S1, S2, S3 in full.
+1:25:25
+And that the fixed order of this element set.
+1:25:30
+I put them in order. Generally set, but I would put them in order a, b, C, d.
+1:25:34
+So now I can create life by full matrix.
+1:25:43
+This is my favourite two dimensionality, which precisely tell you if element belong to the Saturn node because set one.
+1:25:49
+Contain only element a and I put here one.
+1:25:59
+Is your test set to contain only one element?
+1:26:04
+See? C3. S3 contains beef.
+1:26:08
+He added. And set as well contain a.
+1:26:14
+See. Andy. She is just.
+1:26:20
+More convenient form of writing. Which element to this one?
+1:26:25
+Okay. And he's taking information because from this characteristic matrix we know precisely what is this that this one is to see is for.
+1:26:31
+And we can put this matrix if you have smaller, smaller number of centred, smaller number of elements inside a computer.
+1:26:42
+But of course if number of set is huge and number of element is huge,
+1:26:48
+then it's it's not efficient to put this in a computer two dimensional array or big size.
+1:26:52
+But but so that you can have you can always say that you have this characteristic matrix.
+1:26:59
+Okay. So that's to define what is a signature of a medication.
+1:27:04
+So what will be our. Random.
+1:27:13
+Experiment. Remember I want to. For similarity of to set.
+1:27:18
+As a teacher, I want to create some sort of experiment.
+1:27:25
+Which outcome of the positive outcome will give me stability?
+1:27:29
+So this is a probability. What does it mean?
+1:27:33
+Cash? It's the following. There exist metrics.
+1:27:38
+Artistic metrics, and let us define a random permutation of Z.
+1:27:47
+Row of this matrix somehow at a shuffle all this row.
+1:27:54
+Or I put element ABCd in a different order.
+1:27:58
+Well, that's, you know, this. Reordering of columns.
+1:28:03
+Sorting of rows. Okay, so now after the drink, I will have another matrix, which each column.
+1:28:09
+It's still zero. One potential, one element. So no, what I do take any element as.
+1:28:23
+Can they calculate so called value of this set this after permutation by this column.
+1:28:32
+Is it zero one? So at the beginning it could be several zeros.
+1:28:39
+But let us look at the first one. Off the shopping.
+1:28:48
+You know, maybe this first one on the pier. Maybe it is the beginning or the first one.
+1:28:52
+When I go from the top down the pier in some position and this corresponds some little, like, deep, maybe.
+1:28:58
+So this will be case value of this set. Communicates value is appalling.
+1:29:06
+I do the shuffle. Permutation and low for each column.
+1:29:12
+For each set as I look, what is the first non-zero element in this column?
+1:29:18
+As you see, I will. I will call you the cash value. This is the precise definition of the permutation.
+1:29:26
+You look at the first row, but this contain one. Let's have example previous metrics.
+1:29:35
+I reshuffle. I put my rook.
+1:29:44
+Originally I had a b c d d.
+1:29:47
+But now I have to shuffle, so I will have. And I said.
+1:29:54
+And I said, oh, so no, what will be up to such permutation?
+1:29:59
+Would you be a. You said this one. Hey, because it's a festival zero element.
+1:30:04
+For S2 is unique because it's the first element.
+1:30:12
+For S3 it will be B, because immediately here and for S4 it will be a special zero element.
+1:30:17
+So this can be calculated really. Once you have all the set s1, s2 then know that you.
+1:30:26
+So there is at least one over here number one that you put in each column.
+1:30:35
+Because otherwise if it's empty we just remove this. From our.
+1:30:40
+So now this is an experiment. Renewed rule of our method.
+1:30:48
+This was a random experiment. So low.
+1:30:54
+What event we are looking. I have to set. And I want to calculate that you got similarities to node.
+1:30:59
+That Jaccard similarity is precisely probability.
+1:31:10
+The two random IP addresses are equal.
+1:31:15
+No, I have experiment. I have two permutation.
+1:31:20
+And positive event if. What to look for, said if the beauty has value is equal and negative, expecting negative results if they're different.
+1:31:25
+The probability of having a positive outcome, this event was equal.
+1:31:36
+It's precisely Jaccard similarity. So now we have approach to calculate similarity using probability.
+1:31:42
+I perform 100 times maybe 200 times random permutation.
+1:31:50
+And they count how many times from this 100.
+1:31:56
+It has made little sense. This one was equally to say this too, and I could do for us.
+1:32:00
+And frequency of them to be equal. It's precisely if you get.
+1:32:06
+Uh, it's very close to Jaccard similarity, he said.
+1:32:13
+Well, we have this here. Let's let's execute him.
+1:32:18
+She let him tell you. You might take two. Set.
+1:32:23
+As into you from my collection of set. Then I can calculate for each probability every permutation.
+1:32:28
+It has value, and I can calculate as often as I said.
+1:32:36
+So I'm looking to this event. So there you go. It's to know the probability.
+1:32:42
+Of this event. It's precisely Jaccard similarity between S&P.
+1:32:48
+Okay. So this is I was hearing the probability that me, the case function for random permutation zero would use the same value for two set.
+1:32:57
+Equals the similarity of this set. Okay, so this I always here.
+1:33:07
+So what do we do now? Let's try to prove this. So because it's true for any two sets.
+1:33:14
+You know what the Group two is supposed to do first to.
+1:33:22
+Set s1, S2. Is it does matter.
+1:33:31
+Where are you? Two sets like s1, s2. Let's prove this.
+1:33:35
+You. Suppose you did permutation by.
+1:33:38
+So of course they all have the same number of raw.
+1:33:51
+So let's look into. After permutation.
+1:33:56
+How many? The first time Pro X.
+1:34:02
+It's a rule when they have both the same element one.
+1:34:07
+This rule, let me draw a picture with. We did.
+1:34:12
+Permutation. Just looking to see.
+1:34:17
+But S1 and S2. This is just one of these.
+1:34:21
+So there as a major or as many as element. So I, I say I love street type of rule.
+1:34:30
+Type A, type X. If they both contain one.
+1:34:38
+Just be okay type way. If.
+1:34:42
+What is zero and one is one. So it's like zero one.
+1:34:48
+This is type X or one zero. This is a dire point if that one because this type x.
+1:34:53
+If one of them zero and I say one because it's type y.
+1:35:02
+And if it's zero, zero equals this type set.
+1:35:07
+Okay. So. Let's use it fully.
+1:35:13
+So what? I want the proof. I don't want to put the next probability equal.
+1:35:18
+I want to separately prove that.
+1:35:24
+And by the way, if I do permutation of raw that raw, it was a type X move to the type x, y to move to Dave, y z to move type.
+1:35:30
+So first of all, let us look in this one. This is definitely true.
+1:35:40
+Is true? The Jaccard similarity equal number of elements inside X.
+1:35:46
+Divide by number of elements inside the x plus number element like.
+1:35:53
+Well it's true. Well, you have element one one here.
+1:35:58
+It's precisely these elements, these elements of intersection, because this element belongs to first and second.
+1:36:02
+So number of element x. It's precisely, uh, how many element I have in intersection.
+1:36:09
+So low inside. You know what I have. All elements from intersection plus all elements only in one of them.
+1:36:18
+But this is precisely why all element in X is belongs to both of them, but all elements of Y.
+1:36:28
+She belongs to exactly one of them. So numerator will be dissection.
+1:36:37
+This will be. This will be, um, going to be.
+1:36:44
+There will be. How many elementary have you do this what we prove now I want to prove separately.
+1:36:50
+The second identity is true. Okay, so let me open.
+1:36:57
+And only after that you will see that this probability are equal.
+1:37:06
+So we simply wants to prove that. So what it simply did was to prove this second line.
+1:37:10
+Let's page. So once again what they want to prove.
+1:37:17
+The probability is it. H.
+1:37:23
+The. One. Equal probability h y of S2.
+1:37:27
+It's precisely this one. And I want to prove this whole separately without enough to to.
+1:37:37
+I bet you you'll be. Okay, so how can I estimate this probability?
+1:37:48
+To prove this, I will use the fully. In fact, from probability theory, which I will remind you is called formula of all probability.
+1:37:57
+What is the formula? Tell us. Suppose I have event A.
+1:38:05
+And I have several events. You one.
+1:38:11
+B l b n. Such that they create full partition of outcome.
+1:38:17
+What? This means it. P p g.
+1:38:25
+Intersection. I am empty when I not equal J.
+1:38:30
+And union of them. Equal all possible outcome of experiment.
+1:38:36
+Which means that all possible outcome of experiment partition b1, b2, b and their disjoint and they call everything.
+1:38:43
+The formula for probability tells us just probability of any event a.
+1:38:57
+This is a. Is equal some.
+1:39:06
+Hi everyone. And. Probability event of a under conditions that outcome was by.
+1:39:11
+Multiplied by. Probability by. If you don't remember this formula or you have to refresh,
+1:39:22
+just please look at this book that I recommended to you about mathematics for machine learning.
+1:39:33
+This formula is called Formula of all Probability. And we are going to use this formula to calculate.
+1:39:40
+These expressions that you want. So.
+1:39:49
+Okay. So. You know, said.
+1:40:12
+Being the case may be the case value. It's it.
+1:40:17
+Row when first element appear. But the problem is you don't know happening to you.
+1:40:22
+So let's see this. After doing permutation by.
+1:40:31
+I look? Where? First element nonzero appear at least in one in in S1 or S2.
+1:40:40
+So what's happened? There are several zeros at the beginning, but in some position.
+1:40:52
+Key. First time I see. Non-zero element, maybe zero, or maybe one or similarly zero.
+1:40:58
+But this is a key first time. What has happened?
+1:41:08
+Of course, first of all, zero element can happen is the first there is a first position second.
+1:41:11
+So let us denote. Okay.
+1:41:17
+It is precisely the event that the first.
+1:41:21
+Zero. Element.
+1:41:27
+Pierre. Uh.
+1:41:33
+Through. Okay.
+1:41:39
+So what we can say that this.
+1:41:43
+Of course. How many k I could have taken the first position?
+1:41:49
+Second position, or maybe as the last position.
+1:41:55
+The total number of such element is precisely how many rule I have total in this characteristic matrix.
+1:41:58
+Of course. Because. We assume that our sets are empty.
+1:42:07
+The first non-zero element at least once you unlock them.
+1:42:14
+So union of all this k is equal to all possible outcome.
+1:42:18
+Second, there should be k1 intersection b k2 is equal empty set.
+1:42:25
+When k1 is not equal K2. Why you can't have, uh, first time appearance into different position.
+1:42:34
+You can't have that first time zero element in position one and five.
+1:42:44
+It was a par position. Why? It was the first. Just because we already have.
+1:42:49
+You can't have first time in a position of life. So this is a full system.
+1:42:54
+Which means that. No. What I want to write.
+1:42:59
+What is a probability? I have no clue. Write the probability that h y of s1 equal h y of s2.
+1:43:06
+So this is my. Event.
+1:43:20
+Hey. Vacancy probability.
+1:43:23
+It's equal sum over key. Probability.
+1:43:27
+H pi over s1. S2.
+1:43:36
+And the condition that has happened. If the evil guy multiply by probability.
+1:43:43
+Okay, so I can read this formula. Full probability. So far, so good.
+1:44:04
+So what's the problem? The problem is that to calculate this, I need to calculate.
+1:44:16
+This expression and this expression. So let's first of all.
+1:44:24
+Calculate what is the probability of. HP of x1 equal hp of x2 under condition BC.
+1:44:30
+So what is mean? I know that. The first non-zero element inside s1 or s2, and p is this row key.
+1:44:47
+So before it was just all zeros. So when it can happen.
+1:45:04
+So no. If this is a key, what has happened?
+1:45:10
+To. So it's value for.
+1:45:17
+Suppose this happened here? Like zero one.
+1:45:21
+Okay, I know this one happened here first. Then I know that this is a precisely mean kiss for you.
+1:45:28
+So for our two minute cash value vehicle, it means that here I have two extra one.
+1:45:35
+So two minute cash value equal. When first you know elements for one was that be position key?
+1:45:43
+It means that they both have the same position key.
+1:45:52
+So what is can happen when I have elements from intersection?
+1:45:57
+So it's happened when I have. An intersection.
+1:46:03
+To the outcome. If it's the equal or one of them scores, you'll be x.
+1:46:11
+Must. Why? So when I know that the first non-zero.
+1:46:18
+A, p, a0, a, k, z.
+1:46:25
+For his menu to be equal, it means that I have to have to just element from x.
+1:46:28
+Oh. Why? I need to precisely eliminate from x.
+1:46:37
+But one possibility X and Y, because one of them loads zero.
+1:46:41
+It means precisely as I'm dealing with x or y event. But my a positive event only index so I have this one.
+1:46:46
+So now I have the following. The probability.
+1:46:57
+The H by this one. Equal age for you as two.
+1:47:02
+It will be some of the key. But beauty is it all this numbers the same.
+1:47:10
+Well, thanks. Do I buy model X plus model Y?
+1:47:17
+Multiply by probability peak. Oh.
+1:47:23
+Because this is the same number, I can take it outside. And this is a great because.
+1:47:27
+In fact, honestly, to calculate the probability of each bike separately, it's a very complicated combinatorial problem.
+1:47:44
+I don't know if it's easy to write the exact formula for this one, but you don't need because looking here.
+1:47:53
+We just have some of the probability of all this BC because BC is a partition.
+1:48:03
+So everything happened in one was it was that. And this number is equal to one.
+1:48:12
+Probability that one and only one happens. Some probabilities equal one, and as a result, I have just equal more dex.
+1:48:21
+The way way number one. Plus number two invented way.
+1:48:29
+So this is how we prove always theorem. First of all.
+1:48:34
+We established this fact, which was very easy. Second, it was not easy, but.
+1:48:43
+It's still very simple probabilistic argument. We establish this one.
+1:48:51
+And now from here you see this. These two numbers are equal.
+1:48:57
+So we proved our CRM and now is a good moment to have some break.
+1:49:03
+Let me just break. Okay.
+1:49:09
+Welcome back after the break. So this is our final 15 minutes.
+2:01:28
+So let's see what we've got. We prove that Jaccard similarity of two sets X and Y.
+2:01:34
+They have remarkable. Property that this is a probability of event that Munich has value or.
+2:01:44
+One set equal to a hash value for another set. So this allows us to have probabilistic interpretation of Jakarta similarity.
+2:01:54
+And now. Yeah. Very simple strategy.
+2:02:03
+How to calculate. How to calculate.
+2:02:08
+Probability or that to me. Guess value equal or similarity.
+2:02:16
+No. So what do you do? If you do, for example, 100 random permutation.
+2:02:23
+Do I have permutation one? Permutation two. Permutation 100.
+2:02:31
+It's. Row in our matrix.
+2:02:38
+I'm going to need to actually need to do this permutation because it's mostly computer.
+2:02:43
+Uh, so I just have to do it to say to put element from union into different order.
+2:02:48
+How to do permutation of an equation. There are huge areas in statistics in probability how to do a random permutation.
+2:02:57
+And this is a so well developed idea, especially because this is a one of the main tool in any security algorithm on the internet.
+2:03:08
+It's you always need to have some a random permutation. So it's not our problem.
+2:03:17
+That is a standard fantastic algorithm in many, uh,
+2:03:23
+its original Python or in many packages like scikit edition, which allow you if you have some stream some.
+2:03:28
+And hey, I can put all element of this row in array to do that.
+2:03:35
+The permutation. So you do 100 permutation, which means that we will be able to calculate 100, meaning this function.
+2:03:39
+And so literally 100 mucus was written.
+2:03:54
+So this means that for each set S. I can represent.
+2:03:57
+But what does it first? This value. Who said this?
+2:04:04
+What does a second mean? Israeli said. And so on.
+2:04:08
+S h. H 100.
+2:04:14
+Others. I can replace it.
+2:04:21
+Yes. Signature. But array of of dimension 100.
+2:04:25
+And what you know. You may have said as 60.
+2:04:32
+And the present by its corresponding. It's like performing.
+2:04:38
+100 experiment randomly reshuffle. This is a total experiment.
+2:04:59
+Lo! I look into the in and they count know how many position.
+2:05:05
+For example, his positions here are equal. Then Jaccard similarity between S and T you'll be approximated by LGA by 100.
+2:05:13
+So each unit has value function. It just separate experiment.
+2:05:24
+It's just a random permutation. Now we check how many experiment these two value equal and we'll have our Jaccard similarity.
+2:05:29
+So you don't need to check each element. Which element. Just this one have you calculation for each set.
+2:05:39
+And after that you just count how many positions are equal.
+2:05:45
+And because frequency it's a very good approximation probability.
+2:05:49
+Of course if instead of 100 they will take 1000. I will have even better.
+2:05:53
+Which means that in this particular case, we have to decide how many to take.
+2:05:58
+But for documents, 100 music, it's really. It's pretty okay.
+2:06:02
+So this is just somebody so Rich said you'll be represented by vector.
+2:06:09
+And this works because you can chip. And now what we have to do compare how many elements are equal and we have.
+2:06:15
+I would look at similarity. So this is how you very fast calculate your kind of similarity of concepts.
+2:06:23
+Question is how to do a calculation for each pair of cells.
+2:06:33
+It's another question. The idea is called hashing.
+2:06:37
+It's also a probabilistic algorithm, but it's a little bit out of our.
+2:06:41
+It's more technical.
+2:06:47
+So we're going to do summary, because this is a very good example of the more or less standard workflow of problem of data science.
+2:06:49
+You are given with some data. In our case, it was a document.
+2:06:59
+If you replace this document by some sort of object. It can be, you know, with kids, it was it just okay.
+2:07:06
+Singles. Or in the Netflix case, it can be.
+2:07:16
+Back of movies taking into account raising for Amazon, customers can be back with what they bought and how many time.
+2:07:24
+Or some feature. So in general, let's go feature extraction.
+2:07:35
+So what do you replace the original object which is a two beacons, this one by Simpsons that you see in the studio for your problem.
+2:07:39
+This cool lesson is in feature extraction. So you represent the subject by something more reasonable to do calculation after that.
+2:07:46
+You using this feature extraction set bug?
+2:07:57
+Maybe factors, maybe a representation in another form.
+2:08:00
+You do some calculation with it, and usually because there are too many of this object.
+2:08:03
+And that's when this feature set is also very big.
+2:08:10
+To do precise calculation. It's it's become really time consuming that sometimes it's impossible to do that you have access to.
+2:08:15
+Then the next step is how to calculate this fast, but still more or less precise.
+2:08:26
+And here we play with the area of mathematics.
+2:08:32
+It's called probabilistic algorithm, which has the following idea.
+2:08:36
+If you able to represent what you want to calculate as a mean value.
+2:08:40
+Oh, some random variable, or as the probability of this is some event.
+2:08:47
+Then we are in business of using probabilistic. Algorithm, which means that if you represent what you want to calculate as the mean value.
+2:08:53
+Like I remember most of our machine learning algorithm.
+2:09:06
+It was a total loss. It was average of unknown probability distribution.
+2:09:10
+And you can't calculate because you didn't know probability distribution, but because it's the mean value.
+2:09:16
+You know, you you perform several samples, several experiment, and you just calculate the average and this empirical average very close to.
+2:09:22
+So that's kind of the same as the probability if you represent the probability of some event what you have to do,
+2:09:29
+you have to repeat some experiments many times and thousands of what is the frequency of that this event happened.
+2:09:38
+And this will be. Precisely. Very good approximation to probability.
+2:09:44
+Roughly speaking, probabilistic algorithm is based on this idea.
+2:09:50
+Represent something or the mean value of some random variable or probability of some event.
+2:09:54
+No reform calculation and you have system one.
+2:10:01
+Historically it was the following example.
+2:10:06
+When somebody wants to calculate what is that of the pi.
+2:10:10
+So you represent. Why? And the area.
+2:10:15
+Of the, uh, circle of the radius one for you.
+2:10:21
+You go to concrete party. You take sickle.
+2:10:25
+They use. One of the radios one and you.
+2:10:32
+But as you said, you. But there was a lot of things, if you will square around.
+2:10:38
+Which will be. Through the square two by two sets of radius one, and you do a random experiment.
+2:10:45
+You throw number. X and y randomly x between.
+2:10:55
+Minus one and one and y between -1 and 1.
+2:11:02
+You generate thousands of such numbers. Then you count how many of them you are in this disk.
+2:11:06
+Which means the distance between your point and origin is less than equal to one.
+2:11:15
+So in this case you count this number. And this number will be approximation to this area of.
+2:11:20
+Disc. Do you like baseball? We will perform this experiment even if you don't know for right.
+2:11:27
+You can have very good approximation to the number plate. This is a most primitive way.
+2:11:34
+Primitive. Basic algorithm of probabilistic algorithm.
+2:11:40
+You want to calculate pi? You don't know how.
+2:11:44
+Then you create statistical experiment probabilities to which the probability of this outcome, you know, is a powerful.
+2:11:47
+Oh, you perform this one times and then you can even run on your Python generator.
+2:11:57
+Once 100,000 pairs x y. Random number between -1 and 1 and count how many of them distance less than one toward you.
+2:12:02
+The distance squared, we have to regenerate p x y and you checking if x squared plus y square less than equal to one.
+2:12:13
+And if you see this one you say you have this event. You count frequency of this event and you have fantastic approximation to pi over.
+2:12:22
+Of course, this was a very simple example. In data science we use more complicated, but the rule is the same.
+2:12:30
+If you want to calculate something as a probability value and use experiment to calculate.
+2:12:37
+So let us start next lecture. Lecture full.
+2:12:58
+Selection for it will be. High school.
+2:13:06
+Some part will be in the beginning. We start with some silly. What is it?
+2:13:12
+What do you want to start with?
+2:13:17
+Remember I said it's one of the main assumptions of machine learning in data science is that similar elements, similar data point or closer point.
+2:13:29
+They have to have similar behaviour or similar characteristics. Supposed to make us more precise.
+2:13:40
+We need to somehow measure what is a distance between your data point.
+2:13:47
+And in fact be the algorithm. When you look in take Land and I say tools.
+2:13:53
+They always involve some sort of distance between object.
+2:13:59
+So the so you output depends how you measure distance. So where do you start.
+2:14:04
+You start with a semantical definition of what is distances.
+2:14:09
+Because this satisfy some property such that you get over to prove some property of argument.
+2:14:15
+So in this lecture I want to start with. Standard Mr. Mythical definition of distance, which, by the way, appear not only that, the scientist is just.
+2:14:21
+Starting over any mathematical course in university in calculus, linear algebra, whatever.
+2:14:33
+We always start with a distance to measure how close are to point.
+2:14:38
+So that is a formal definition. Suppose I given some space omega.
+2:14:44
+This is Somerset. So what I want to do for you two point x and Y.
+2:14:51
+I want to come clean. I want to define what does it mean to have distance between x and y?
+2:15:00
+Just absolute mathematical definition of what is distance. This is a function of two variable x and y.
+2:15:07
+When x and y from the from x and y from omega.
+2:15:13
+I can write the following. The distance is a function from omega cross omega into real number for any two point x and y.
+2:15:18
+It's. Number. And this really happened to because that's what we call distance.
+2:15:30
+It has to satisfy you for important action.
+2:15:38
+Axiom number one, this number has to be always negative.
+2:15:43
+Okay. We don't want to have distance minus two. So distance is always the negative.
+2:15:51
+Second property. Distance equals zero between x and y.
+2:15:58
+If and only if x equal to y. So this was from x which tells you distance.
+2:16:03
+And if distance equals zero it means that x equals y. The keep distance has to be symmetric distance between.
+2:16:09
+So it is this symmetric distance between x and y has to be distance between way and.
+2:16:19
+So usually these three properties it's very easy to see.
+2:16:25
+If you if you want to define something and call this distance, you need to check all this for action.
+2:16:34
+Usually taking a first three is easy. What is the most difficult?
+2:16:40
+It's the actual form and it's called triangle inequality.
+2:16:45
+It means that if I have three point x. Why is it?
+2:16:49
+Distance between x and Y. Plus distance between.
+2:16:55
+Why is it? Is it because an equal sum?
+2:17:01
+The distance between x and Z. And this is very important.
+2:17:07
+What does this tell you? If you want to go from Z, you have to go straight forward route through some other point.
+2:17:11
+Because if you go through all the point Y, you only increase this.
+2:17:22
+Okay. This is a minute, but you need to me for something to be called distance.
+2:17:27
+You need all this property. And triangle inequality is a probably most important property and most difficult to prove.
+2:17:32
+But it is crucial for any application of distance in mathematics and data science.
+2:17:39
+Okay. It's a formal definition. So let's see examples.
+2:17:45
+Of course. There's a sense you don't have just, you know, you have some examples which will be people use in data science.
+2:17:51
+The first is if you said omega. Is just on hand.
+2:17:59
+So we just vector contain vectors. X1XN coordinate.
+2:18:05
+This is X. And why it just worked was a coordinated way.
+2:18:12
+One way and then Euclidean distance.
+2:18:16
+Oh, we call this L2 norm in data science or Euclidean distance cos it's a standard distance.
+2:18:20
+What you know from, from any course of mathematics, you take the difference square.
+2:18:27
+Some square root is called Euclidean distance.
+2:18:33
+It's like on the plane. If you have point X, why you view the distance between them as a square root x minus u square plus y minus v square.
+2:18:36
+This is a normal day and this is what it paid.
+2:18:52
+But in dimension in general, this whole Euclidean distance or L2 norm.
+2:18:55
+Probably one of the more standard distance that you can see everywhere.
+2:19:02
+And it the science and it is much better, but not in any video message matrix.
+2:19:06
+But in fact L2 norm is not just something special. There's a whole family of distances and they whole.
+2:19:14
+And. Where index are its any real number.
+2:19:21
+But it's very important that this number begins in equal one. As its number defined a very similar way.
+2:19:28
+What we did before when we replaced two. Why are.
+2:19:36
+So where to appear in this formula? And square root.
+2:19:42
+This is another episode of barbecue. So we were two places to buy now, but ah, so I think different excitement is what I was about.
+2:19:50
+I saw them, I saw them, and I think we went over our. This school and answer.
+2:20:01
+So this event defines this for any other. Positive or negative doesn't matter.
+2:20:09
+There's not close to the axial. It's the -0 only if x y equals y I and it's symmetric.
+2:20:15
+But to have triangle inequality. This is why we are equal to one.
+2:20:27
+And in function analysis, the fact that l r is a norm or distance is called inequality, which is basically nothing but very non-trivial.
+2:20:33
+Proof. You have generalisation of q norm or Euclidean norm by distance, which call it in our norm when I equal one.
+2:20:44
+Also some popular choice in different problem dependent. They have two critical situation.
+2:20:57
+So no. You can take on starting from one two.
+2:21:03
+It's a famous you you the norm. Everybody loves it.
+2:21:07
+And there is a limit in case infinity when R goes to infinity.
+2:21:12
+When I equal one. It's called Manhattan distance.
+2:21:17
+Why? It's called Manhattan Distance. Because.
+2:21:22
+If you look at this, calculate one. If we have points which coordinate the x y.
+2:21:28
+And another point was that the yv z1 are equal one this distance.
+2:21:36
+Equal just u minus x plus.
+2:21:45
+Uh. V minus way. So this links.
+2:21:51
+Muslins. Or you can do like this one.
+2:22:01
+And it's still your business tablets when it's called Manhattan distance. Behold, this is how.
+2:22:07
+Structure of Manhattan. Remember people in New York saying how far you are 2 or 3 blocks.
+2:22:14
+So they measure distance with Euclidean distance.
+2:22:21
+Example if I ask you what is the distance from here to here?
+2:22:26
+Then you will look, tell me this Euclidean distance.
+2:22:34
+Because nobody go. You will tell me. So I have to go one block here.
+2:22:37
+Two blocks here and here. One blocks here, two blocks here and city blocks here.
+2:22:43
+What is the same? You can go like this one. Or. So on this call, this distance is my distance.
+2:22:53
+But all the equal in fee goes to infinity. We can take limit of this expression.
+2:23:07
+The distance between. And why you'll be just maximum.
+2:23:14
+Of y I minus x I. The box over I.
+2:23:23
+So in case, for example, if you have point x, y.
+2:23:32
+You read that an infinity distance will be the following.
+2:23:37
+L1 distance. It is distance plus this distance. But in the distance is the maximum.
+2:23:43
+Who is this or this? Who is this? Trump? That is who I need to distance.
+2:23:50
+Okay. Very important distance.
+2:23:56
+Why? Because. And for example, in you regression model, if you have a local outlier Euclidean norm, this has become very unstable.
+2:24:00
+But this distance is very stable to outlier and another property order distance.
+2:24:12
+But if your data is already vector, this is the norm that we usually use.
+2:24:18
+Low. In fact. We can define distance.
+2:24:28
+Let's concentrate on Jaccard distance. And we finish this lecture.
+2:24:35
+Suppose I have said Asante. Remember what we defined.
+2:24:43
+We've just got a similarity between Asante.
+2:24:49
+I remind you that this was the number of element in intersection divided by number of element as union.
+2:24:54
+Okay, so what do you know about this function?
+2:25:03
+This function is because n equals zero. Second equals zero even only if it's not equal and ready, but as equal to.
+2:25:09
+So it's always less than equal one and equal one.
+2:25:24
+Equal one if and only if as guilty.
+2:25:29
+So it's definitely no distance. Why is no distance?
+2:25:34
+Of course it's symmetric. Similarity of.
+2:25:37
+SD equal similarity. Over the years.
+2:25:43
+We have no negativity. We have symmetry, but we don't have the properties.
+2:25:48
+A distance equals zero only if it's, uh.
+2:25:53
+If they're equal. Here we go. Actually, opposite zero was a completely different.
+2:25:58
+And one is equal. So this is why people thought.
+2:26:06
+Okay. Let us introduce. You're quite a distance.
+2:26:11
+Between two set as India. It's one minus similarity.
+2:26:27
+Of Asante. Okay.
+2:26:34
+So the question is, is it just a 20% distance?
+2:26:40
+First property of distance. You have to check that the similarity of distance is always bigger than equal zero.
+2:26:45
+Which is obviously true because we know the similarity. Less than equal one and bigger than equal zero.
+2:26:56
+Which means that yes, it's no negative. Second. Then you have to choose a distance between.
+2:27:08
+If I want to call this, distance equals zero if and only if S equal to.
+2:27:17
+Is it true? Yes. If as equal key similarity equal one, then one minus one.
+2:27:25
+Give me zero. And if this number is zero, which means that similarity equals one.
+2:27:33
+And we know for call similarity that is equal to one only as equal to.
+2:27:41
+Perfect. You see. Is it true that you cut a similarity to distance?
+2:27:45
+This one would be different. Is a symmetric. Yes.
+2:27:54
+Because similarity is a symmetric similarity must equal similarity of.
+2:28:00
+Yes. So all this axiom is true.
+2:28:05
+So now the question is be question. Question for.
+2:28:10
+Which is trivial. Is it true that you cut a similarity between s and T?
+2:28:16
+Last year. Quite a similarity between here and I don't know why it.
+2:28:24
+Because it equal this distance between x and y.
+2:28:34
+You have to check. It is true for any set S, T and Y.
+2:28:45
+Which means if I have said yes, I have said you, and I have said, why.
+2:28:51
+When I go college. Equal distance between. That's it. You must check out this beauty here.
+2:28:58
+Why? This will get this distance. So to call this what we defined Jakarta some distance.
+2:29:03
+We have to prove this last inequality.
+2:29:13
+Which is, by the way, very non-trivial, and you will see why. Well, let's try to the last inequality.
+2:29:17
+Of course. The first silk. What was the first thing that you can ask the following.
+2:29:27
+Okay. Come on. Hawk. How's this? Can be difficult.
+2:29:31
+I have precise definition of this expression. And I'm just using the definition of this one.
+2:29:37
+So let's see what this mean. In fact, what we want to prove is a full and then one minus.
+2:29:43
+Number of element SD. Minus of element in union.
+2:29:50
+Less than equal with plus. One minus.
+2:29:57
+This is the distance between. If I were Kenway.
+2:30:03
+Number of element in key. Do I bathe you?
+2:30:08
+Why? You want to prove that this number is bigger than equal one minus?
+2:30:12
+Yes. Why? Do you worry, buddy?
+2:30:19
+S and Y. Okay.
+2:30:24
+So this is precisely, you know, a clean, clean quality. Of course, you can always like a little one.
+2:30:29
+You know. How did you go to Bruges? Honestly.
+2:30:40
+I don't know, elementary proof. I don't know any proof.
+2:30:46
+Just like, simple like you and your joy.
+2:30:49
+But how to prove this inequality? Okay. When you go.
+2:30:53
+I try to find a limit to the proof of this inequality, which look like, okay, what can be what can be difficult to prove this inequality.
+2:30:59
+But I was able to find very complicated inequality using some very advanced technique from combinatorics.
+2:31:07
+But elementary proof I wasn't able to prove, but because we know.
+2:31:14
+Are we suing him? Did your similarities a probability send you to be able to you?
+2:31:20
+Yeah, yeah. You get very, very simple proof.
+2:31:25
+So let's see what they you. What is the probabilistic meaning of distance?
+2:31:30
+Once again, you cut a similarity distance between set as.
+2:31:39
+Indeed, you define least one minus similarity between as.
+2:31:43
+This was our definition, but what does it mean of this definition?
+2:31:51
+I wasn't, I was here. The similarity between DC.
+2:31:57
+Is equal. Probability that music is value for random permutation are equal.
+2:32:05
+Okay. So. Suppose I have probability of birthday.
+2:32:19
+Q, this number is a probability sin.
+2:32:29
+What is a probabilistic meaning of? This number.
+2:32:33
+So this is my event a. Similarity is the probability of it.
+2:32:40
+So what is written here? It's one minus probability.
+2:32:48
+And anyway the probabilities unit. This one minus probability.
+2:32:53
+It's nothing more. Nothing. It's just equal probability of not a.
+2:32:57
+Compliment to the event, so it means it.
+2:33:03
+Jakar distance between Seth S and T.
+2:33:11
+It's a probability. He is the probability that Murray has value equal.
+2:33:16
+So what is the compliment to the event? They are different. I have probabilistic interpretation of my Jaccard distance.
+2:33:22
+This is a probability that communicates well. You are different. And.
+2:33:33
+From this. I will be able to give simple proof of my thinking inequality.
+2:33:42
+But honestly, I think that today you to let you have a lot of material and I don't want to, Overlord says.
+2:33:50
+You just completely block what you are doing.
+2:33:56
+I would put in one minute finish and on Monday we will just I remind you all this construction was a probability and we prove that you cannot,
+2:33:59
+uh, distance in effect distance. So I prefer to finish for today.
+2:34:09
+I honestly don't want to overload you with all this material.
+2:34:15
+Okay, so what I want to say is that it's all for today.
+2:34:26
+And. The next will be Monday.
+2:34:31
+So see you on Monday. And please have a nice day.
+2:34:37
+Especially next weekend. Okay. Okay.
+2:34:42
+Thanks, professor. Have a good weekend as well. Yes. Bye bye.

@@ -1,0 +1,1050 @@
+Details:
+
+Lecture - 30/06/2026 (Git for Individual Work Part 2)
+Carl Jones
+--------------------------------------------------------------------------------------
+
+Contents:
+
+
+Reca p
+6:53
+Git flow transitions
+7:17
+Branches
+7:41
+Why would we need branches?
+8:32
+Commits in Git
+13:53
+Branches in Git
+15:02
+--------------------------------------------------------------------------------------
+Captions:
+
+Auto-generated captions may contain errors.
+Okay, so we'll pick up from where we left off this morning.
+0:06
+Um, so what we had done is we had set up two independent repositories.
+0:12
+Uh, we linked them together, and then we'd done some pushing and pulling to synchronise the content in the two repositories.
+0:18
+Um, everyone okay with us so far?
+0:26
+Yep. So what we're going to do quickly is we're going to look at another way of getting into that position.
+0:30
+And what we're going to basically say is, well, what if we started with GitLab first,
+0:39
+run through the local version and then set up GitLab and pointed at GitLab.
+0:44
+What happens if we could start with GitLab?
+0:49
+Because when you think about what you've got to do as a team, the first thing you're going to do is set up your team repository,
+0:51
+and then you've got to set up all your individual ones from the team one.
+0:57
+Yeah. So how do we do that. So we're going to do that.
+1:01
+And I've said there are two ways you could do this.
+1:07
+You could either create a completely empty folder in parallel to the one that you've been working in,
+1:09
+or you can just delete all the folders in the folder you've been working in.
+1:15
+Yeah. And we should be able to get everything back because it's all on GitLab.
+1:20
+Okay. So I'm going to take the second approach. Yeah.
+1:25
+So I'm going to go to Windows Explorer right.
+1:30
+And there's my files including the dot git folder in git for CMT 501.
+1:35
+I am going to select all the files and I'm going to delete them.
+1:43
+Gone. My local repository is no more.
+1:49
+Yeah. I like living dangerously.
+1:54
+Okay. It's gone. So let's go back to GitLab again and go to the top of my project.
+1:58
+And I'm going to grab that code URL again and copy the URL.
+2:09
+Now I'm going to go to git bash. And notice I've gone back one.
+2:16
+Um one folder. Yeah.
+2:32
+What I'm about to do now is what's called cloning. I'm going to clone the repository from git lab to my local machine.
+2:38
+Yeah. When did when git clone does that, it will create a folder that has the same name as the project has on GitLab.
+2:46
+So I've also now got to get rid of my git for CMT.
+2:57
+501 otherwise there'll be a clash. Okay, so go back to Windows Explorer, go up to demos and I'm going to make sure I get the right folder.
+3:00
+Yes. Delete. It says it can't do that.
+3:14
+Why can't it do that. It's because it's open in git bash.
+3:18
+Yep. So I'm going to cancel that. And I'm going to do it the brutal way RM minus r r I can just do RMD git for.
+3:22
+Well, I just know like that it's because it's opening Windows Explorer, right?
+3:37
+So. Back over here.
+3:41
+I'm going to close git Bash so that there's no possible clashes. Then I'm going to delete it here.
+3:50
+What else is holding? What else is holding it open. Visual studio code.
+3:58
+Yeah. Visual Studio Code is looking at files in that folder, isn't it, from this morning.
+4:04
+So I'm going to have to close that as well. Let's try again now.
+4:10
+Yeah. Gone. Okay. So remember applications processes get their hooks into your files.
+4:18
+And once they've got their hooks into those files you can't delete them. Right.
+4:27
+You've got to get rid of everything else. So. Let's go into.
+4:30
+Let's go in here. Show more options. Get back here.
+4:43
+So. Where am I?
+4:57
+I am in my demos folder. I am now going to do a git clone.
+5:04
+Yep. And there's the URL that was on GitLab.
+5:09
+Yeah. So it clones it into a folder that follows the name of the project.
+5:17
+So if I do an LZ now you can see there is a git for CMT.
+5:26
+So if I change to that folder and do an LZ minus A.
+5:32
+Everything that was on GitLab is back. Yep.
+5:37
+I do a git log. All the commits are there. Okay, so I haven't lost anything.
+5:44
+Right, right. The fact that we pushed everything up means I can now clone.
+5:51
+Yeah. Yeah.
+5:59
+The advantage of this is that the remote has now been set up automatically.
+6:03
+Because I cloned it. The local knows that it should point to GitLab and to that repository.
+6:10
+So all that stuff about that remote, all the stuff about unknown remotes and unknown histories.
+6:16
+That should be no more because you started it from another repository earlier to independent ones.
+6:22
+Know nothing about each other. Git clone the local one was derived from the remote one.
+6:28
+Happy days, but easier to set it up. So when you do your team stuff, what are you going to use?
+6:34
+Get clone. You've got to set it up on GitLab first, then you've got to clone it down.
+6:40
+Yep. So that's got us back to where we were just before lunch.
+6:45
+So. This is what we can do now.
+6:53
+We can create local files. We can track them, commit them, synchronise the remote repository.
+6:58
+We know how to check the status. We know how to check the history okay. And you know all the commands to do that.
+7:03
+Git add git commit git push git pull git status git log.
+7:10
+Yep. You've also got a sense now that this is what happens in your work.
+7:15
+Yeah, you create some files or you edit some files and it goes into your working directory.
+7:23
+You add them and it goes into what git calls a staging area.
+7:29
+You commit them and it's in your local repository, and you push them to get it into a remote repository.
+7:33
+Then you pull it back to get the changes back into your local.
+7:39
+So so far we've only used main or master. Um, and for some ways of working that will be plenty.
+7:46
+Yeah. In fact, a lot of people in the industry say that's good enough.
+7:57
+They call it trunk based development. If you want to look it up about how trunk based development works and what the advantages of it are.
+8:01
+Please do. Yeah. It needs a lot of other engineering around it to make it really work.
+8:09
+What we're going to do is we're going to use branches, but we're going to emphasise the importance of them being short lived.
+8:14
+Okay. So I'm going to explain branches and we'll go through how to use them in git.
+8:21
+Creating a branch is really easy. It's really cheap. Okay.
+8:27
+Because it's just a bunch of pointers. Why would we need them?
+8:30
+Well, they're actually more useful when we get to teams. But what if you wanted to do any of these three things?
+8:37
+Yep. What if you wanted to explore more than one option for implementing a problem?
+8:44
+Yeah. So you're working on a project, and everything so far is pretty easy.
+8:52
+So you're adding, committing, adding, committing,
+8:59
+pushing all doing this on the main branch and you get to a bit of a problem and you go, I'm not sure how to do this.
+9:01
+Yeah. Are there two competing libraries in the data science space.
+9:07
+So there are two libraries that do basically the same thing. Can you think of that?
+9:12
+Have an instance like that? Some people are nodding. Yeah.
+9:16
+Okay. So you've got a problem and you go, oh hang on.
+9:21
+I'm not quite sure which one is best for this. Wouldn't it be nice if I could implement both?
+9:26
+Yeah. And then at the end, once I've implemented both, pick the one that I think is best with some evidence having done it.
+9:33
+Yeah. Now, you could do that without using git, couldn't you?
+9:41
+You could say, okay, I'll copy the folder and I'll call this one library.
+9:45
+One this one library. Two. Da da da da da da da da da da.
+9:49
+Yep. But why not create a repository and say, right, I'm going to create a branch.
+9:52
+I'll call it Trying library one. And I'll do onto this branch and I'll make a set of changes.
+9:58
+Yeah. Commit commit commit and so on. All this branch. Right then.
+10:06
+Wouldn't it be nice if I could go back to the point in time before I created that branch and say,
+10:10
+let's create another branch now from main, and let's try the other one.
+10:16
+And now I've done both options, and I've got a much better sense of which ones the better option?
+10:21
+Yeah. What do I need to do now? I need to merge one of those back to main.
+10:28
+The other one to throw away. Yeah, but remember I said about history, all the commits you made, all the ideas you had,
+10:35
+all the things you learned about why the other 1st May not have been the optimum solution at the time.
+10:42
+You can leave that in git. Yeah. Three years down the line when somebody goes, oh, why did they use that one?
+10:48
+It causes no end of trouble. Now they should have used that one.
+10:55
+They can see that there was good reasoning for that decision three years ago.
+10:59
+Yeah. Software projects last right.
+11:05
+I used to work for BT okay. I joined in 1992 and I left in 2015.
+11:09
+There were projects from the early 70s still running when I left.
+11:15
+Okay. It takes a long time sometimes to build a project and then even longer to get rid of it.
+11:20
+Okay, so think of software in yours.
+11:27
+Yeah. Google actually say software engineering is programming integrated over time?
+11:31
+Yeah. If you just think about that, how many changes it will go through,
+11:37
+how many pairs of hands it will go through, how many teams might bring new demands on it?
+11:41
+Yeah. Software engineering is all that on top of writing an assignment for yourself?
+11:46
+Yeah. So. The second one, what is very common now in industry is every time you make a change, there's a robot.
+11:52
+A process will run. As soon as you commit it into GitLab.
+12:08
+GitLab goes, oh ping, I need to do stuff and it will run a bunch of tests and checks and verifications.
+12:12
+And if all of those pass, it will say I'm putting that on the cloud for users to use.
+12:18
+It's called continuous integration and continuous deployment. Yeah.
+12:24
+And some organisations have got that working so well that literally every commit goes through that process and goes live.
+12:28
+Yeah. Others are not quite there yet. So what they need to do is they need for you to make your changes in a batch.
+12:36
+Yeah. And then say, now we'll commit. And when we commit that process runs.
+12:44
+Yeah. They need to batch their work up. Okay.
+12:51
+So that's where branches can come in useful. And the other thing is AI A has everywhere.
+12:54
+Now a lot of people are using AI to code, but we also want a human in the loop who can verify that the stuff works and is well written.
+12:59
+So get your AI agent to put stuff on a branch and then ask a human to do the merge.
+13:11
+Yeah, so it's still the human who is accountable for the code. So lots of scenarios where even individually branches might be useful.
+13:19
+So let's have a quick whizz through about how branches work in git.
+13:29
+All of this is in the git book. So I'm going to go pretty quick.
+13:33
+But if you go to chapter three of that git book I showed you earlier,
+13:37
+there's a whole chapter on branches, and I've nicked most of the diagrams straight out of that book.
+13:40
+Okay. So let's make this a bit bigger because it's all pictures now.
+13:45
+Yeah. There we are. So. In git the files are called blobs.
+13:54
+Okay. So over here you've got three files. Um, you've got a testing library.
+14:06
+We've got a unit case. Unit test case. We've then got the project directory.
+14:12
+And the project directory knows about the files. And then we have an object representing the commit.
+14:18
+And you can see that's got the metadata on it. Okay.
+14:28
+So it knows who did it. It knows which tree it points to.
+14:31
+And this thing knows which blobs are part of the working directory.
+14:36
+All that happens when git makes a commit is it moves some pointers around okay.
+14:42
+It doesn't start copying files, it just moves pointers around.
+14:47
+And every commit knows about the previous commit that happened on that branch.
+14:52
+Okay. So we started here with snapshot A, the initial commit of my project.
+14:59
+And then when we did a second commit it knows about what the previous one was and so on.
+15:05
+So we always have a history which means we can go backwards and forwards in our history.
+15:13
+That's really helpful. Each time you make a commit.
+15:19
+Git stores a snapshot of your files, so it says the files at this point were in this state forward to the next commit.
+15:25
+The files were in this state at this point in time and so forth.
+15:35
+If there were no changes in a file, it records that and just records that there were no changes.
+15:39
+So it saves some space. It's clever okay. Branches are just a pointer to one of these commits.
+15:45
+And let's go through a scenario. So we have got three commits.
+15:54
+And our master branch is pointing at the last one that we have done.
+16:00
+It's just a pointer to say master branch is on that commit.
+16:06
+So if I was to say this is what's on master, it would say what was the snapshot for that commit.
+16:11
+That's where we are noticing master.
+16:16
+Because this is old. Yeah. There's also another pointer called the head pointer.
+16:20
+And that is a pointer that tells us what is our current working branch.
+16:25
+Where are we currently. So this is saying we are currently pointing to the master branch which is pointing to this commit.
+16:30
+That's what you've been doing all morning. Okay. We haven't done any.
+16:40
+I've not explained anything that's different for what you've already done. Yeah. Let's say we want to create a new branch now just for testing.
+16:44
+Yeah. To do that, we issue the command git branch testing.
+16:53
+And all that does is create a new pointer which will point to the same commit as you're currently on.
+17:01
+Yeah. But head has not changed.
+17:10
+Head is still pointing to master. Yeah. If I want to change my head to testing.
+17:15
+Yep, that's where we are.
+17:23
+Now I have to say check out. And now the head has moved from being up here to being down here.
+17:27
+And it's pointing at testing. We are now on the testing branch, and any commits we make will be extra commits on the testing branch.
+17:36
+So if I now make a commit 87 AB two, it knows the previous one.
+17:47
+Master is there, testing is here and head is pointing a testing.
+17:56
+So we're now one commit ahead on the testing branch. If I now check out master, the head goes back to master and it goes back to that commit.
+18:06
+And what does the commit point to? The directory. And the directory points to the blobs.
+18:24
+And the blobs have snapshots. So any changes you made on the testing branch will disappear.
+18:30
+You will go back to where you were when that commit was made to Master or Main.
+18:39
+Yeah. If you then did another commit that goes on the master branch.
+18:47
+Yeah. Testing knows nothing about that. So we now have a divergence in our history.
+18:55
+It was common up to this point 530 a b but at this point we have got divergence.
+19:05
+Yeah. Now this is actually quite a common scenario.
+19:15
+What might happen is you'll write some software on the main branch and you'll get to a point.
+19:21
+I think we're ready now. I think we're ready to roll this out to our customers, but we need to do some more testing.
+19:26
+Cut the testing branch. Start doing testing on this branch.
+19:34
+We might find some bugs. Yep. Oh, by the way, half the team you can carry on working on master for the next version.
+19:40
+Yeah. For the version we want to roll out, we'll do some testing.
+19:52
+We'll find some bugs. We'll fix the bugs on the testing branch when all the bugs we think are gone.
+19:57
+What do we do? Well, all the fixes from testing now need to be merged into main because we don't leave the bugs there.
+20:04
+They were still there, right? We've just been building on top of them, so we merged them in version two will have all those fixes in it,
+20:11
+and the testing branch can be released to customers. Okay, this is a very common way of working in industry, so this is not a made up scenario.
+20:17
+This is true. This is how things can work.
+20:26
+So yes, if branches make things isolated, how do we bring them back together again?
+20:33
+We have to merge them. And the command for that is git merge.
+20:38
+And then the name of the branch. So if when you do git status it says you are on branch main.
+20:43
+So that scenario I just did. I'm working on version two and I'm on Branch Main.
+20:50
+And I've made some changes ready for version two. If I want to merge the changes that have been made to fix the bugs on testing.
+20:54
+I would say git merge testing. Yeah.
+21:02
+Now the likelihood is that some of those things are going to clash, right?
+21:08
+The test. The bug fixes will clash with the changes you've made for version two, and we have to be able to reconcile those.
+21:14
+So if the same file has been changed in two different branches, git may not be able to do that automatic merge.
+21:21
+If it can, it will. But if it can't it will say you need to help me here.
+21:31
+You need to tell me which fix you want. And in your code you'll see something that looks like that.
+21:38
+Chevrons. Changes from branch A equal signs.
+21:46
+Changes from branch B. Yep. And basically you have to get rid of these.
+21:53
+This sign. And in between in that block you have to put the code you actually want.
+22:01
+Then you merge again sorry. Then you commit again with a message to say I've resolved the commit.
+22:06
+I decided this was the better way of doing it. When you read about merging.
+22:11
+You'll read a lot of debates about merge versus another command versus rebase.
+22:22
+Um, my advice if you haven't used git in anger before, merge every time.
+22:28
+Right. Rebase can be dangerous. Yeah.
+22:36
+Um, it rewrites history, essentially. So that list of commits rebase will rewrite it.
+22:40
+Merge is just another commit on the end of your history. Yep.
+22:48
+That's why people don't like it. Because it pollutes the history by adding another commit.
+22:52
+But to me, it gives you a cleaner audit trail. So I always use merge, right?
+22:57
+I've got into trouble with rebase too many times.
+23:02
+And there are rules that you never use it on a public branch, which means someone else could be working on it.
+23:05
+If it's a private thing. Yes. Go ahead, try rebase. My view is I always use merge and get my head around merge.
+23:11
+I struggled to get my head around rebase. Okay, but it's there just in case you read tutorials and you see people saying, oh, do a rebase.
+23:20
+Okay. Danger will Robinson danger, right. This can be risky.
+23:31
+All right. Find a way of doing merging. So a common workflow and you would use this individually as well as in teams.
+23:35
+You plan a task, you will create a branch for that task.
+23:46
+Okay. So git branch task one git checkout task one.
+23:54
+You do some work on that branch, you merge it back to me.
+24:00
+Yeah. Why is a branch useful for that?
+24:04
+Working working working working. Oh, I'm all right. Number two, I've made so many errors.
+24:08
+I want to go back. I haven't touched the main. The main was all good.
+24:13
+My last known good is always on main. I can make mistakes on a branch and no one need know about it.
+24:18
+Yeah, I can just go back to where I was on main. Create another branch.
+24:24
+Start again. Yeah. Good practice is to keep the branch short lived.
+24:28
+Right now, why do you think that's good practice?
+24:36
+From what you've just seen about divergence and merging.
+24:43
+Why do you think it's good practice to keep your branches short lived?
+24:48
+Because what if you keep going and you keep going and you diverge too much, then you can't really go back.
+24:52
+You are so close that two volunteers, two volunteers front a class.
+24:56
+Come on. Role play time. Come on. Right. I would look the same.
+25:03
+Okay. So we. Yes, we'll start there.
+25:22
+You can work towards me. Okay. So they're both on the main branch at the moment.
+25:26
+They've just cloned their repositories. Yeah, and they've planned their work.
+25:30
+Yeah. And they both create a branch to work on for their tasks.
+25:34
+Yeah. I've slowly walked towards me.
+25:41
+Yeah. As they walk it towards me. Stop. Right.
+25:45
+Very good. They were making changes.
+25:49
+Yeah. Two files in the project. Now, that was a short distance travelled.
+25:53
+Yeah. They could only have made so much change in that distance.
+25:57
+Yeah. They now need to merge their changes. The risk is relatively low, isn't it?
+26:02
+Because they could only have made so much change? Yeah. Now let's imagine it was long lived there.
+26:08
+Changing there, changing there, changing there, changing there. Changing. They got to merge.
+26:15
+What's the risk? They've now made so many more changes.
+26:21
+Yeah, right. That's what happens, right?
+26:25
+They have a fight now because. Yeah.
+26:29
+You're so good, right? Sit down please. Right.
+26:34
+The risk of there being a clash is higher because they have gone on for longer.
+26:41
+Yeah. Now, we do this with our year ones, and we do weekly.
+26:48
+Um, we do weekly, uh, show and tells. Yeah.
+26:53
+And what always happens with the year ones because we, we basically don't tell them any different is they see their client on the Monday.
+26:57
+They divvy up the work and they create their branches and off they go, all in parallel like that.
+27:06
+And they get to the Friday and they go. We better merge, don't we?
+27:13
+And all [INAUDIBLE] breaks loose, right? Because they've all been writing in the same file.
+27:16
+Because Python, they're all updating apt pi. Yeah.
+27:21
+And they basically have fun fights. Right? Right.
+27:27
+Like YouTube. Right. And then we can go to them and say, oh, hang on.
+27:30
+Wouldn't it be better if you'd said, let's work for a day now, merge.
+27:36
+We can have a nice, peaceful, civilised conversation about how to merge our work together.
+27:43
+Bring it together, move on. Diversify again. Bring it together.
+27:49
+Diversify. What's the lovely thing about that as well? Every day you have a working version.
+27:53
+It may not have everything, but you've got a working version. At team level?
+27:59
+Yeah. So this is why we try to keep our tasks as small as possible.
+28:03
+Now, what we do is we don't tell the students in the first round how to keep their task small.
+28:10
+We just say, go and plan your work. Yep. And then I come along in the second semester and I go, you hate each other, don't you?
+28:14
+Well, I'm going to make you love each other now. And I tell them how to break their tasks down.
+28:20
+Yeah. So this is just a quick move on to some ideas for how to break your requirements up.
+28:24
+Have you ever heard of user stories? Yes.
+28:34
+Yep. Are you the only one? Are those people heard of user stories?
+28:38
+Yep. So it's a common agile requirements management technique.
+28:42
+Is that a user story is a unit of work, and it is a unit of work that brings value to a particular user.
+28:48
+Yeah. So as a trader or as a lecturer, I want to set up an assessment so that I can automate things for my students.
+28:57
+But the value is I want to automate things. There's something I, as an actor, want to achieve.
+29:07
+And quite often the story is something that I do anyway, and automation can make it a bit better.
+29:16
+So the key is what am I making better by adding some software to it so you don't think of
+29:24
+it as I want this feature you're thinking about how can I make a story for a user better?
+29:29
+Okay, so for example, we work with the Welsh Blood Service on how to improve the speed of donations.
+29:36
+Yeah. How can I get a donor from filling in their form to on the bed, giving blood as fast as possible?
+29:46
+Right at the moment there's a big analysis they have to do in the middle to say, where have you travelled?
+29:54
+And then they check the diseases across the world Assess whether or not you can give blood or not.
+30:01
+So we built a system for them to say we can make that quicker, right?
+30:06
+So the real value is more blood donors, better populated blood bank save lives.
+30:10
+Yeah. It's not. I want a feature where I could enter all the maps of the world and the countries and the diseases.
+30:17
+That is the feature that enables a story to get better.
+30:22
+Yeah. So that's the common format.
+30:26
+You've all seen that. Those of you who've done user stories as a role, I want intense.
+30:32
+So that benefit is achieved. You can sometimes have very big stories and they're known as epics.
+30:37
+And the problem is if you have epics and you were to create a branch for an epic,
+30:45
+it's got to be one of those ones that starts here and ends up over there, right?
+30:51
+What we want are nice small stories that start here and end there.
+30:55
+So there are tactics for splitting stories. The common one is something known as spider spider.
+31:02
+And each of those stands for something spike path, interface data or rule.
+31:11
+A spike is essentially an experiment. So if you want a smaller story, think of the smallest thing you can do in order to try something out.
+31:18
+So our example of libraries, what's the smallest thing I can do to work out what is the best library to go ahead with?
+31:28
+Yeah, yeah. So I'm going to build a simple graph or a simple map or whatever.
+31:35
+What's the simplest thing I can do to raise the knowledge in the team?
+31:40
+I'm not going to build the whole thing. I really just want to learn which library is the best to go forward with.
+31:45
+So that the team makes an informed decision. Then we think about things like paths.
+31:51
+What are the different paths through an application. Yeah, I can make it smaller by just picking one.
+31:58
+Yeah. Now, a common way of doing that would be less ignore any validation.
+32:08
+Yeah. Let's build the system. Assuming that the user always types their stuff incorrectly.
+32:14
+Yeah. If I don't write all the validation logic day one, I can go faster.
+32:22
+Yeah, I can do a demo to the customer. I can say, am I on the right page? Yeah.
+32:28
+In reality, I'm gonna have to go back and do that other story as well. Yeah.
+32:33
+But I can reduce the amount of work I do by following a certain path interface.
+32:38
+But do you want a web interface? Do you want a responsive web interface? Do you want a mobile app?
+32:45
+Do you want an Android? Do you want an Apple? Just build what you need.
+32:49
+Yeah. Data.
+32:54
+Can I work with a subset of data? Rather than everything I might need to process?
+32:59
+Can I start with a smaller data set? So I need this to work across the world.
+33:06
+Well, let's build it for Cardiff then. Let's build it for Wales.
+33:11
+Then let's build it for the UK. Yeah. And rules.
+33:14
+Are there certain business rules that I could ignore? So, for example, I used to work on a charity donation site where there's gift aid.
+33:19
+Yeah. A benefit, a taxable benefit if you tick the box.
+33:27
+Let's forget gift aid. Forget that rule. Let's just get donations in.
+33:32
+Yeah.
+33:38
+The other option is something called a user story map, where you would think about the flow and the steps, and you can think of these two together.
+33:40
+So let's think of something like a pizza restaurant. Yeah. What would be the flow through a pizza restaurant?
+33:47
+Well, I, I'm showing the menu. Yeah.
+33:53
+And then I would pick my items and then I might do some customisation.
+33:57
+Yeah. And then I would confirm and I'd enter my name and address and I'd make my
+34:04
+payment details and or to confirmed something like that or something like that.
+34:10
+Yeah. And then if you start applying spider, you end up there when you get to this bit where you try to configure your pizza or build your menu.
+34:15
+It's like, well, what sizes do you do? Do you do readymade combinations?
+34:25
+Can you add extra toppings? Can you take things off? Do you have different crusts?
+34:31
+Yeah. Can you fold them over and make a calzone? But you can just keep going and going on all these variations that you might have to deal with.
+34:36
+Yeah. So if you were building that project, which is the best order to follow, I'll get here, do my menu,
+34:43
+and then I will just go round and round and round and round building all the configurations here?
+34:52
+Yeah. Before I move on or write, the menu is a seven inch margarita, which you stick in your basket.
+34:58
+I get your delivery address. I take the payment and I got an order.
+35:06
+Which of those two options do you think would be the better one to follow?
+35:10
+As a first pass. The first one or the second one?
+35:16
+Why? I feel like you get brilliant, right?
+35:21
+Because you've got a minimum viable product. Yeah, I'm actually taking money now.
+35:28
+I'm making the best seven inch margaritas there are. I could actually start selling those.
+35:34
+Yeah. Now, I can elaborate on my menu. I could elaborate down here on payment.
+35:38
+At the moment I just use stripe, but I take credit and debit cards. Or let's do Google Pay.
+35:44
+Apple pay? PayPal? Yeah. Let's add on deliveries.
+35:48
+All right. I can change wherever I want, but I've got a working end to end solution.
+35:55
+So these tactics allow you to make smaller steps, smaller tasks.
+36:00
+Smaller tasks should mean shorter lived branches should mean you merge more often.
+36:10
+If I said your story is order pizza, right, that's going to take you a while.
+36:16
+If I said your story is show the menu for margaritas seven inch you're done in a day.
+36:22
+Yeah. No, it doesn't mean you're going to have to make more change.
+36:29
+By the way, you should be thinking about future change when you're writing your code anyway,
+36:34
+so you can't really get away from smaller branches if you don't think about smaller tasks to start with.
+36:38
+Okay, so my recommendation would be look up spider.
+36:46
+There's a guy called Mike cone. That's the shotgun.
+36:53
+Okay, here's a bit of an expert on user stories. Yeah, if you look him up, um, and type in spider.
+37:06
+Um, there is a poster you can download all about that for user story mapping.
+37:16
+The guy you need to look up is a guy called Jeff. Patton.
+37:31
+Okay. And his book is on safari, so you have free access to that.
+37:38
+And he also have videos online explaining what he means by user story mapping.
+37:44
+So. How to practice this?
+37:53
+There was an election in Wales recently to the Senate. Yep.
+38:00
+And we adopted a new way of electing our politicians.
+38:04
+And it's called the D'Hondt method.
+38:11
+And if you've got access to the RingCentral, there's that link takes you to the Wikipedia page that explains the method essentially.
+38:14
+Wales were split into 16 constituencies. And each constituency elects six members.
+38:21
+Okay. There are lots of variations of this.
+38:28
+It's all on the Wikipedia page. But essentially what happens is they count up the votes and they divide the vote by the number of seats.
+38:34
+Each party has one plus one. Okay so Labour, conservative.
+38:49
+Reform, Liberal. Democrat, green. Others all have zero votes.
+38:55
+Seats at the start. Yep. Votes come in.
+39:01
+Yep. And they look at all the votes and they go okay play.
+39:05
+Country's got 12,000 votes. Yeah. They're top.
+39:09
+They get the first seat. Yep. Let's look at the next biggest party.
+39:13
+Reform would have been second 9000 okay. Reform divided by one is nine applied divided by one plus one is two is six.
+39:23
+Reform gets the next seat. Yep. Okay.
+39:32
+Let's say Labour had five. Yep. Applied divided by two has got six.
+39:36
+Reform divided by two is 4.5. Labours five are right.
+39:44
+Plie. Get the next seat. We'll now divide them by three.
+39:48
+Who's next? Labour. Who's next? Reform. And you fill up the six seats that way.
+39:53
+Okay. So it preferentially, um, treats the bigger parties less, more favourably than the smaller parties,
+39:59
+which is a criticism of it, but it's slightly proportional.
+40:06
+So that's how the Daunt method works in. Basic.
+40:10
+That's the algorithm I just walked through. Now some of you are already thinking, oh, what if everyone gets the same number of votes?
+40:18
+Right. If you had seven parties and they all got the same number of votes and there's only six seats, how would you work it out?
+40:27
+They flip a coin, basically. Right. Um, and then they work out who misses out.
+40:34
+So what I want you to do individually. Right.
+40:42
+And what I'm going to say is it's getting really hot in here. Yep.
+40:46
+Start it today. But the exercise is about trying to think about small steps and getting used to using git on your own.
+40:51
+Okay. So I want you to go through this add commit push add commit push.
+41:02
+Try branches. Add. Commit. Checkout. Merge.
+41:06
+Yep. So that if you're used to it individually when we do teams on Thursday, it will feel like I know all this stuff already.
+41:10
+Yep. So build in small steps eight A calculator.
+41:18
+Yeah. Start with one constituency. Right.
+41:25
+Let's not take an election for the whole of Wales. Just do it for Cardiff and Tazewell.
+41:30
+Um, start with a fixed number of seats. Okay. I'll do it for six.
+41:37
+Right. The hunt works across the world with various numbers of seats per constituency.
+41:42
+Yeah. And some of them do variable. Based on population across their countries.
+41:47
+But Wales is six in everything output.
+41:52
+The parties only just say applied to reform.
+41:57
+One Labour one green one Lib dem one. I don't need to know the name of the candidates, right.
+42:01
+Just worry about parties. Forget about ties, right?
+42:06
+Don't worry. What happens if there's a draw and then.
+42:11
+Well, what happens if we have variable sized constituencies where there are different numbers of seats per constituency?
+42:14
+What happens if there's candidate lists? Okay, let's actually tick them off.
+42:21
+Because what they do is they say Pride's number one is Dave. Play number two is Leanne played.
+42:25
+Number three is this. And they'll go right Dave gets a seat Leanne gets a seat. So it doesn't.
+42:30
+If we just say played two to start with. Again you don't have to worry about those names.
+42:34
+Introduce thresholds. If you look at the wiki page there's a threshold clause that some countries use.
+42:40
+It says if you don't get 5% of the vote, you don't get a seat.
+42:48
+Yeah. ET cetera. Etc. etc.. Right.
+42:54
+I could say to you, your task, should you choose to accept it, is build a different calculator.
+42:58
+Yeah. One story, one story, one branch that's going to take you a while.
+43:03
+Yeah. What I'm saying is.
+43:11
+No. Break your thing into tasks. Think about spider.
+43:14
+What? Can you safely ignore that? You know you'll have to come back to.
+43:19
+But which allows you to make progress and learn and merge stuff.
+43:24
+Yeah. If you can get used to doing smaller steps, you'll have shorter lived branches.
+43:30
+You'll use git more often. You'll get better at it. Happy days.
+43:35
+All right. Is that okay as an exercise.
+43:39
+Because what we're going to do in teams then is I am going to say we're going to create a full e-voting system based on De Hunt,
+43:42
+but you're going to do it in a team. Yeah. So what would you have to do then?
+43:49
+Well, you'll have to do ways of getting in the candidate lists. Yeah.
+43:53
+And break up a bigger task. So you're building today is an engine just to do the calculations.
+43:58
+And then your team exercise on Thursday is going to be. Let's put all the surround around it to actually get the data in.
+44:05
+Yeah. There is madness in my method. Right? Um, is that all right?
+44:11
+Um, I don't think. Yeah. So do we step on a branch, implement it, test it?
+44:18
+I've said there. Write automated tests if you have. Have you done how to do automated tests at all?
+44:24
+Things like pi unit, pi test, pan selenium.
+44:32
+Okay, so that's for testing web pages. Yeah.
+44:36
+You've done that. Brilliant. Okay, so you could do selenium. Um, there's a Python version called pi linear.
+44:40
+So if you prefer Python, there's a version of selenium called pi millennium.
+44:48
+Um, there's also a really nice tool called playwright which does the same as selenium.
+44:54
+Yeah, that's from Microsoft. And I think you can write that in Python as well.
+44:58
+Um, the issue with um, slightly off topic, but I'll explain it anyway.
+45:03
+If you think about automated tests, there's something we call the test pyramid.
+45:15
+And what you've talked about there. Selenium tests sit at the top because they're known as end to end tests.
+45:26
+Yeah. Because what you do with selenium is you have the whole of your system possibly talking to a database,
+45:36
+and then you have a browser out here that talks to your back end,
+45:44
+and selenium is running tests against the browser like it's mimicking a user going really, really fast.
+45:48
+Right? Checking stuff is good on the browser. Yeah. What you really want to be able to do though is.
+45:56
+Just test directly in there. Take the browser out of the equation because browsers it's slow.
+46:07
+Yeah. So in here you're going to have lots of little functions.
+46:15
+And it'd be nice if you could test those in isolation. Yeah V sit down the bottom and are called unit tests.
+46:20
+Yeah. And you can write those in something I think there's one called Pi unit.
+46:30
+Or you can write it in something called Pi test. Yeah.
+46:36
+And what we normally want are lots and lots of these and not so many of these, because you can run thousands of these in a couple of seconds.
+46:43
+You can run probably hundreds of those in a couple of seconds.
+46:54
+Yeah. There's a big order of magnitude between the two. But it also means you have to write your code to allow it to be tested in isolation.
+46:58
+So you might want a different calculator function that you pass parameters in.
+47:06
+And you see if it gives you the right answers out you should be able to test that.
+47:13
+It's just a bit of Python. Yeah, you don't need to put a whole website around it and say, let's do this through a browser.
+47:16
+Yeah, my selenium test should be checking.
+47:24
+I can call it from a browser and it does the right stuff, but I want to know that it works before I call it.
+47:27
+Yeah. So what we ideally want are lots and lots of these.
+47:33
+Yeah. So. If you want me to do over the summer after we get 501 out the way,
+47:38
+you're going to go back into the autumn and do some more data science and analytics stuff.
+47:48
+But if you want to add a bit of engineering around what you're doing,
+47:53
+look at Pi unit and Pi test and unit testing and the this thing called the testing pyramid.
+47:56
+Yeah, it is pretty much the norm in industry now.
+48:02
+Everything you do needs to be able to test itself. Okay.
+48:06
+So you can test it. You can write automate it or not. Then you merge it, then you push it.
+48:16
+This is the goal. Okay. Be comfortable with git on your own so that when you get into a team, you know exactly how to use it.
+48:23
+And we can look at the team practices then on Thursday. Yeah. So it's 2:00 now.
+48:33
+I think we're supposed to go until four. I'm not going to hold you here till four. Yeah, it's too hot, right?
+48:39
+If you're warm, try standing next to that thing. Right. It's a furnace.
+48:45
+Um, any questions about what you need to do if you want to hang around and start thinking about the tasks,
+48:49
+having a first go, a couple of iterations, please do. I'll ask.
+48:56
+Answer your questions. But if you want to take that away and do that at home, you can leave now.
+48:59
+Right. So however long you stay is up to you now. Okay.
+49:06
+I'll stay until the last person, until the last leaf falls. All right.
+49:10
+Is that okay? Any questions about what we've done? All right.
+49:15
+Thank you. And I'll see you Thursday, 10:00.
+49:21
+Okay. Um, there's going to be a short talk on Thursday from Student Futures as well.
+49:26
+They wanted to talk to you. Um, and we'll also talk about the teams and the projects on Thursday, aeons back.
+49:32
+If you want to start thinking about a project of your own, a problem that you want to do as a team,
+49:41
+bring that on Thursday as an example of what we did last year.
+49:51
+Um, they built I'd seen this at a conference. Um, I'd seen, uh, an AI agent role play as a customer.
+49:58
+Right. And you could feed it different scenarios as a customer. And then the idea was that I would create lots and lots of sessions for each student,
+50:12
+and essentially they would have to interview the customer to find out what the requirements were.
+50:22
+And I would get an audit trail of all the questions and answers. And then I could look at what the first questions that were asked were.
+50:26
+And like I say to AI, give me a summary of all the first questions, and then let's discuss whether it was a good question or not.
+50:33
+Could I teach requirements capture? Yeah. So it was.
+50:40
+I am Dave, who owns a bunch of theatres in San Francisco, and I want a ticketing system.
+50:45
+Yeah. And the students had to interview Dave about their requirements.
+50:52
+Oh, do you do accessible performances? Do you allow guide dogs in?
+50:57
+Do you have to reconfigure the theatre for different performances, blah blah blah blah blah?
+51:01
+Right. And it was really good. I saw this.
+51:05
+It was done by the University of Seville. I saw it, I thought, I want one of those for Cardiff.
+51:09
+So I said, how hard is it to build off you pop?
+51:13
+So last year, students had four weeks to build a simple clone of that.
+51:17
+Yeah. Um, one of the other projects this came from the students themselves.
+51:23
+Was, um, a educational Tool to teach kids to recognise hate speech.
+51:30
+And so the idea was you typed in, uh, some statements, a paragraph, and it then sent that to lots of different AI engines.
+51:42
+So ChatGPT, Claude, Gemini, whoever. Um, and it asked those AI agents to evaluate what was said as whether it was hate speech or not.
+51:56
+And it gave the answers back. And quite often it would say ChatGPT would say, yes, it is.
+52:08
+And Claude would go, no, it's not. And then you say, well, justify it.
+52:14
+Justify your reasoning, Claude. Justify your reasoning. ChatGPT.
+52:18
+And it starts a conversation with students to sort of say, well, why have they said this?
+52:21
+Or why have they said that, you know, and the students could vote on it themselves and then see whether or not they disagreed with AI?
+52:25
+Um, and I did I did it and it was like, oh, hang on. One word could change the interpretation, right?
+52:31
+So these are the types of things they did. They'd like to learn a lot about AI.
+52:39
+Warning if you want to go down the route of AI and AI agents, it's on you to actually find the AI agent accounts that allow you to do that.
+52:43
+And these days, that's getting expensive, right? Co-Pilot has just gone up to £20 a month.
+52:53
+Usage based. I ran out of Claude this morning very, very quickly doing something.
+52:58
+So be aware. And if you use alarm or something like that locally, you ask a question.
+53:05
+You can go and make a cup of tea before it answers. Right. Unless you've got a super duper laptop, right?
+53:10
+If you've got a top end MacBook, it's probably just about manageable.
+53:15
+Anything else? It's slow. All right, so I've got an example, an idea for a project that you could do as a team.
+53:19
+Yeah, but I'm not going to tell you that that's my holding something in reserve.
+53:29
+In case you can't think of something that you want to do. Yeah.
+53:34
+If you have people you want to work with either twos and threes or full teams up to five.
+53:37
+Yeah. We can try to accommodate that as well. Okay.
+53:43
+So you tell us who you want to work with. What we normally try to do is make sure you work with at least one person you want to work with.
+53:47
+When we form the teams. Okay. Um, quite often it just falls to say, look, we're a group of five already.
+53:53
+We're five mates. We want to work together. Okay? It doesn't have to be five.
+53:59
+We might be able to flexible with 4 or 5. Okay. All right.
+54:03
+--------------------------------------------------------------------------------------
+Notes:
+
+
+--------------------------------------------------------------------------------------
+Bookmarks:
+
+
+--------------------------------------------------------------------------------------

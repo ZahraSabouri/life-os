@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { Router } from 'express'
 import db from '../db.js'
 import { archetypeOf, typeExists, validateDetails } from '../../../shared/entryTypes.js'
+import { buildEntriesQuery } from '../query.js'
 
 const router = Router()
 
@@ -15,31 +16,17 @@ const insertEntry = db.prepare(`
     start_at,
     end_at,
     all_day,
+    favorite,
     details,
     created_at,
     updated_at
   )
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`)
-
-const selectRecentEntries = db.prepare(`
-  SELECT * FROM entries
-  ORDER BY created_at DESC
-  LIMIT ?
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `)
 
 const selectEntryById = db.prepare(`
   SELECT * FROM entries
   WHERE id = ?
-`)
-
-const selectEntriesInRange = db.prepare(`
-  SELECT * FROM entries
-  WHERE start_at IS NOT NULL
-    AND (? IS NULL OR date(start_at) >= date(?))
-    AND (? IS NULL OR date(start_at) <= date(?))
-  ORDER BY date(start_at) ASC, created_at DESC
-  LIMIT ?
 `)
 
 const updateEntry = db.prepare(`
@@ -49,6 +36,7 @@ const updateEntry = db.prepare(`
          start_at = ?,
          end_at = ?,
          all_day = ?,
+      favorite = ?,
          details = ?,
          updated_at = ?
    WHERE id = ?
@@ -68,6 +56,11 @@ function cleanOptionalString(value) {
   return typeof value === 'string' && value.trim() ? value.trim() : null
 }
 
+function cleanOptionalBoolean(value) {
+  if (value === undefined || value === null || value === '') return null
+  return Boolean(value)
+}
+
 function cleanOptionalDate(value, fieldName) {
   if (value === undefined || value === null || value === '') return null
   if (typeof value !== 'string' || Number.isNaN(Date.parse(value))) {
@@ -81,6 +74,7 @@ function serializeEntry(row) {
   return {
     ...row,
     all_day: Boolean(row.all_day),
+    favorite: Boolean(row.favorite),
     details: parseDetails(row.details)
   }
 }
@@ -108,6 +102,7 @@ router.post('/', (req, res) => {
       start_at = null,
       end_at = null,
       all_day = false,
+      favorite = false,
       details = {}
     } = req.body ?? {}
 
@@ -125,6 +120,7 @@ router.post('/', (req, res) => {
     const cleanStartAt = cleanOptionalDate(start_at, 'start_at')
     const cleanEndAt = cleanOptionalDate(end_at, 'end_at')
     const cleanAllDay = all_day ? 1 : 0
+    const cleanFavorite = cleanOptionalBoolean(favorite) ? 1 : 0
     const cleanDetails = cleanDetailsForType(cleanType, details)
 
     insertEntry.run(
@@ -136,6 +132,7 @@ router.post('/', (req, res) => {
       cleanStartAt,
       cleanEndAt,
       cleanAllDay,
+      cleanFavorite,
       JSON.stringify(cleanDetails),
       now,
       now
@@ -150,6 +147,7 @@ router.post('/', (req, res) => {
       start_at: cleanStartAt,
       end_at: cleanEndAt,
       all_day: Boolean(cleanAllDay),
+      favorite: Boolean(cleanFavorite),
       details: cleanDetails,
       created_at: now,
       updated_at: now
@@ -161,19 +159,29 @@ router.post('/', (req, res) => {
 
 router.get('/', (req, res) => {
   try {
-    const from = cleanOptionalDate(req.query.from, 'from')
-    const end = cleanOptionalDate(req.query.end, 'end')
     const requestedLimit = Number(req.query.limit)
     const limit = Number.isFinite(requestedLimit)
       ? Math.max(1, Math.min(Math.trunc(requestedLimit), 100))
       : 10
+    const inlineFilter = req.query.filter ? JSON.parse(String(req.query.filter)) : {}
+    const filter = typeof req.query.room === 'string' || typeof req.query.space === 'string'
+      ? {
+          ...(inlineFilter && typeof inlineFilter === 'object' && !Array.isArray(inlineFilter) ? inlineFilter : {}),
+          rooms: [String(req.query.room || req.query.space).trim()].filter(Boolean)
+        }
+      : inlineFilter
 
-    if (from || end) {
-      const rows = selectEntriesInRange.all(from, from, end, end, 500)
+    if (req.query.from || req.query.end || Object.keys(filter || {}).length) {
+      const query = buildEntriesQuery(filter, {
+        from: cleanOptionalDate(req.query.from, 'from'),
+        end: cleanOptionalDate(req.query.end, 'end'),
+        limit: Math.max(limit, 100)
+      })
+      const rows = db.prepare(query.sql).all(...query.params)
       return res.json(rows.map(serializeEntry))
     }
 
-    const rows = selectRecentEntries.all(limit)
+    const rows = db.prepare('SELECT * FROM entries ORDER BY created_at DESC LIMIT ?').all(limit)
 
     res.json(rows.map(serializeEntry))
   } catch (error) {
@@ -205,12 +213,15 @@ router.patch('/:id', (req, res) => {
     const allDay = 'all_day' in body
       ? (body.all_day ? 1 : 0)
       : existing.all_day
+    const favorite = 'favorite' in body
+      ? (cleanOptionalBoolean(body.favorite) ? 1 : 0)
+      : existing.favorite
     const details = 'details' in body
       ? JSON.stringify(cleanDetailsForType(existing.type, body.details))
       : existing.details
     const now = new Date().toISOString()
 
-    updateEntry.run(title, status, startAt, endAt, allDay, details, now, req.params.id)
+    updateEntry.run(title, status, startAt, endAt, allDay, favorite, details, now, req.params.id)
 
     res.json(serializeEntry(selectEntryById.get(req.params.id)))
   } catch (error) {

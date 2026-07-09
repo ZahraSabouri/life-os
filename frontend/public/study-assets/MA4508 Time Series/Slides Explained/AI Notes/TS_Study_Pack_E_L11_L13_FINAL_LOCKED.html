@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><title>TS Study Pack E - L11-L13 - FINAL LOCKED</title><style>
+
+*{box-sizing:border-box;min-width:0}@page{size:A4;margin:0}html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{margin:0;padding:22px 10px;background:#d0d0d0;color:#111;font-family:"Segoe UI",Arial,sans-serif;font-size:14px;line-height:1.42}
+.page{width:210mm;min-height:297mm;margin:0 auto 24px auto;padding:28px 34px 30px 78px;background-color:#fff;background-image:linear-gradient(#ef8b83 0,#ef8b83 1px,transparent 1px),repeating-linear-gradient(transparent,transparent 27px,#acd1ec 27px,#acd1ec 28px);background-size:70px 100%,100% 28px;background-position:0 0,0 0;box-shadow:2px 3px 12px rgba(0,0,0,.22);page-break-after:always;position:relative;overflow:visible}.header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;gap:12px}.date{font-weight:700;font-size:12px}.subject{font-style:italic;font-size:12.5px;color:#333;text-align:right}h1{font-family:Georgia,"Times New Roman",serif;font-size:27px;line-height:1.15;margin:7px 0 8px}h2{font-size:18px;font-weight:800;display:inline-block;border-bottom:2px solid #111;margin:14px 0 8px;line-height:1.2;padding-right:6px}h3{font-size:15.5px;margin:11px 0 6px;text-decoration:underline}.subtitle{font-size:13.2px;color:#333;font-style:italic;margin-bottom:8px}.toc span{display:block;line-height:25px}.toc span:before{content:"□  "}.exam{background:#fff3cc;border:2px solid #111;border-radius:7px;padding:8px 12px;margin:8px 0;line-height:1.55}.blue{border-left:4px solid #3a86c8;background:#f5f8fd;padding:7px 10px;margin:7px 0;line-height:1.45}.green{border-left:4px solid #2d9d52;background:#f5fff7;padding:7px 10px;margin:7px 0;line-height:1.45}.trap,.warning{border:1.5px dashed #b00000;border-radius:6px;background:#fffafa;padding:7px 10px;margin:8px 0;line-height:1.45}.trap b,.warning b{color:#b00000}.examline{background:#fffdf1;border-left:4px solid #d18b00;padding:6px 10px;margin:7px 0;line-height:1.45}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;margin:8px 0}.grid.one{grid-template-columns:1fr}.card{border:2px solid #111;border-radius:8px;background:rgba(255,255,255,.85);padding:8px 12px;break-inside:avoid;overflow:hidden;line-height:1.35}.label{font-weight:800;font-size:12.2px;color:#333;margin-bottom:4px;line-height:1.25}.mini-table{border-collapse:collapse;width:100%;margin:8px 0;font-size:12px;background:rgba(255,255,255,.78)}.mini-table th,.mini-table td{border:1px solid #999;padding:5px 7px;vertical-align:top}.mini-table th{background:#dde8f5}.mini-table.compact th,.mini-table.compact td{font-size:11.2px;padding:4px 5px}.formula-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;margin:7px 0 9px;align-items:stretch}.formula{background:rgba(255,255,255,.88);border:2px solid #111;border-radius:8px;padding:8px 11px;break-inside:avoid;overflow:hidden}.formula-label{font-weight:800;font-size:12.2px;color:#333;margin-bottom:4px;line-height:1.25}.math{font-family:"Cambria Math","Times New Roman",serif;font-size:15px;background:#fff;border:1px solid #bbb;border-radius:5px;padding:6px 8px;margin:5px 0;line-height:1.35;white-space:pre-wrap}.formula-note{font-size:12px;color:#444;line-height:1.33;margin-top:4px}.q{border-left:4px solid #111;padding:6px 10px;margin:7px 0;background:rgba(255,255,255,.74);line-height:1.42;break-inside:avoid}.sol{border-left:3px solid #3a86c8;background:#f5f8fd;padding:6px 9px;margin:6px 0;line-height:1.35;break-inside:avoid}.calc{border-left:3px solid #2d9d52;background:#f5fff7;padding:6px 9px;margin:6px 0;line-height:1.35;break-inside:avoid}.source{font-size:11px;color:#444;line-height:1.35;margin-top:10px;border-top:1px dotted #aaa;padding-top:4px}pre{margin:7px 0;padding:8px 10px;background:#f7f7f7;border:1.5px solid #111;border-radius:8px;white-space:pre-wrap;font-size:11.5px;line-height:1.35;overflow-wrap:anywhere}code{font-family:Consolas,"Courier New",monospace}.check li,.mistakes li{margin:4px 0}@media print{body{background:white;padding:0}.page{margin:0;box-shadow:none}}
+
+</style></head><body>
+<div class="page"><div class="header"><span class="date">12.05.2026</span><span class="subject">MA3508 / MA4508 / MAT508 Time Series</span></div>
+<h1>TS Study Pack E: L11-L13<br/>ARMA Fitting, Forecasting, ARIMA and Seasonal Models<br/><span style="font-size:18px">FINAL LOCKED</span></h1>
+
+<div class="subtitle">Exam-focused HTML notes. Content source: uploaded Time Series files only. Pack B used only as visual/style/structure reference.</div>
+<div class="exam"><b>Scope:</b> Lecture 11 fitting AR/MA parameters; Lecture 12 ARMA forecasting and prediction bounds; Lecture 13 worked forecasting, ARIMA, differencing, and SARIMA notation.</div>
+<div class="green"><b>How to use this pack:</b> first memorise the formula cards, then redo the worked examples without looking, then use the past-paper radar to practise the repeated templates: AR(2) estimation, MA(1) estimation, AR(1)/AR(2) forecasts, prediction intervals, and ARIMA definitions.</div>
+<div class="exam"><b>Last-night memory list for L11-L13</b><br/>
+Estimator vs true parameter; sample mean X̄<sub>n</sub>; sample covariance R̂(k); sample correlation ρ̂(k); Yule-Walker matrix â=Ĉ<sup>−1</sup>v̂; AR(1) estimator â<sub>1</sub>=ρ̂(1); AR(2) estimator formulas; noise variance σ̂²=R̂(0)(1−Σâ<sub>j</sub>ρ̂(j)); MA(1) equation b̂/(1+b̂²)=ρ̂(1) with |b̂|&lt;1; AR(1) forecast μ+a<sup>h</sup>(x<sub>n</sub>−μ); ARMA forecast via MA coefficients; MSE=σ²Σc<sub>i</sub>²; prediction bounds; ARIMA a(B)(1−B)<sup>d</sup>x<sub>t</sub>=b(B)ε<sub>t</sub>; ARIMA(0,1,0)=random walk; SARIMA notation and seasonal differencing.
+</div>
+<div class="warning"><b>High-yield exam box:</b> This pack is about what to do with ARMA models once they have been defined: fit parameters, estimate covariance/correlation, forecast future values, compute prediction bounds, handle ARIMA/differencing/seasonality, and interpret course-supported R loops. Past/mock papers repeatedly test Yule-Walker estimation, AR/MA parameter estimates, h-step forecast recursion, confidence/prediction bounds, and ARIMA definitions.</div>
+<div class="exam"><b>Estimation vs forecasting:</b> Estimation uses observed data to estimate μ, R(k), ρ(k), a_j, b_j and σ². Forecasting uses a fitted or known model to predict future x<sub>n+h</sub>. Do not use forecast formulas when the question asks to estimate parameters. Do not use hatted estimates when the question gives true model parameters, unless it explicitly asks you to estimate.</div>
+<div class="toc"><span>Lecture 11 map, fitting formulas and worked examples</span><span>Lecture 12 map, forecasting formulas and worked examples</span><span>Lecture 13 ARIMA/SARIMA and worked exam examples</span><span>Course-supported R-code templates</span><span>Mapped exercises and past-paper/mock radar</span><span>Common mistakes and mini self-test</span><span>Source coverage audit and missing/unclear areas</span></div>
+<div class="source"><strong>Source:</strong> ma3508_lecture11.pdf, p.2-p.13; ma3508_lecture12.pdf, p.2-p.13; ma3508_lecture13.pdf, p.2-p.17</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">Lecture 11</span><span class="subject">Fitting ARMA parameters</span></div>
+<h1>Lecture 11 - Fitting ARMA: Lecture Map</h1>
+
+<table class="mini-table"><tr><th>Page range</th><th>Topic</th><th>Exam duty</th><th>Flag</th></tr>
+<tr><td>p.2</td><td>ARMA process with mean μ</td><td>Compute the mean by taking expectations of the model equation.</td><td>formula / calculation</td></tr>
+<tr><td>p.3</td><td>Estimating AR(p) parameters</td><td>Estimate μ, R(k), ρ(k), then solve Yule-Walker equations for a<sub>1</sub>,...,a<sub>p</sub>.</td><td>formula / calculation</td></tr>
+<tr><td>p.4</td><td>Matrix notation</td><td>Construct Ĉ and v̂, then compute â=Ĉ<sup>−1</sup>v̂.</td><td>matrix</td></tr>
+<tr><td>p.5</td><td>Noise variance estimator</td><td>Use σ̂²=R̂(0)(1−â<sub>1</sub>ρ̂(1)−...−â<sub>p</sub>ρ̂(p)).</td><td>formula / theorem</td></tr>
+<tr><td>p.6</td><td>R code for AR(p) estimation</td><td>Explain or adapt the estimation loop for a chosen p.</td><td>R</td></tr>
+<tr><td>p.7</td><td>AR(1) estimation</td><td>Know â<sub>1</sub>=ρ̂(1) and the corresponding σ̂² formula.</td><td>formula</td></tr>
+<tr><td>p.8</td><td>AR(2) estimation</td><td>Use closed-form â<sub>1</sub>, â<sub>2</sub> formulas from ρ̂(1),ρ̂(2).</td><td>formula</td></tr>
+<tr><td>p.9-p.10</td><td>AR(1)/AR(2) worked examples</td><td>Repeat the hand calculation table: mean, centred data, R̂, ρ̂, parameters, σ̂².</td><td>worked example</td></tr>
+<tr><td>p.11-p.12</td><td>MA(1) estimation</td><td>Solve b̂/(1+b̂²)=ρ̂(1), choose |b̂|&lt;1, compute σ̂².</td><td>formula / calculation</td></tr>
+<tr><td>p.13</td><td>Homework prompts</td><td>Use AI only for checking explanations/debugging; exam method is the formula workflow above.</td><td>practice</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture11.pdf, p.2-p.13</div>
+<h2>Plain-English explanation</h2>
+<div class="grid">
+<div class="card"><div class="label">Why estimate?</div>The ARMA equations contain unknown numbers such as μ, AR coefficients, MA coefficients and the white-noise variance. In an exam, data are usually given, so the job is to replace the unknown theoretical quantities by estimates computed from the sample.</div>
+<div class="card"><div class="label">Theoretical vs estimated</div>R(k), ρ(k), a<sub>j</sub> and σ² belong to the model. R̂(k), ρ̂(k), â<sub>j</sub> and σ̂² are computed from the observed data.</div>
+<div class="card"><div class="label">Yule-Walker role</div>For AR(p), the sample correlations are plugged into the Yule-Walker system. Solving that system gives the estimated AR coefficients.</div>
+<div class="card"><div class="label">Noise variance role</div>After estimating AR coefficients, σ̂² measures the remaining white-noise variation after the AR dependence has been accounted for.</div>
+</div>
+<div class="trap"><b>Exam trap:</b> Do not use the true ρ(k) or true coefficients when the question says “estimate”. Use the hatted sample quantities.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture11.pdf, p.3-p.5</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">Lecture 11</span><span class="subject">Formula cards</span></div>
+<h1>Lecture 11 - Definitions and Formula Cards</h1>
+
+<h2>Definitions and exam wording</h2>
+<div class="grid one">
+<div class="card"><div class="label">Estimator</div>A formula computed from the observed time series and used as an estimate of an unknown theoretical quantity. Lecture 11 uses X̄<sub>n</sub>, R̂(k), ρ̂(k), â and σ̂².</div>
+<div class="card"><div class="label">Yule-Walker estimation</div>For an AR(p) process, estimate the correlation function from the data, then solve the Yule-Walker system to estimate AR coefficients.</div>
+<div class="card"><div class="label">AR parameter estimate</div>The vector of estimated AR coefficients â=(â<sub>1</sub>,...,â<sub>p</sub>)<sup>T</sup> is obtained from â=Ĉ<sup>−1</sup>v̂.</div>
+<div class="card"><div class="label">MA(1) estimation</div>For x<sub>t</sub>−μ=ε<sub>t</sub>+b<sub>1</sub>ε<sub>t−1</sub>, estimate b<sub>1</sub> by solving b̂<sub>1</sub>/(1+b̂<sub>1</sub>²)=ρ̂(1) and choosing the solution with |b̂<sub>1</sub>|&lt;1.</div>
+</div>
+<div class="formula-grid">
+<div class="formula"><div class="formula-label">Mean of ARMA with intercept</div><div class="math">x_t=c+a_1x_{t-1}+...+a_px_{t-p}+ε_t+...
+μ = c + a_1μ+...+a_pμ, so μ = c/(1-a_1-...-a_p)</div><div class="formula-note"><b>Symbols:</b> c is the constant/intercept; μ=E(x_t); E(ε_t)=0.</div><div class="formula-note"><b>Use when:</b> The model has a non-zero constant and you are asked to compute its mean.</div><div class="formula-note"><b>Common trap:</b> Do not include MA/noise terms in the mean because E(ε_t)=0.</div></div>
+<div class="formula"><div class="formula-label">Sample mean</div><div class="math">X̄_n = (1/n) Σ_{j=1}^n x_j</div><div class="formula-note"><b>Symbols:</b> n is sample length; x_j are observations.</div><div class="formula-note"><b>Use when:</b> First step in fitting AR(p) with mean μ.</div><div class="formula-note"><b>Common trap:</b> Do not forget to centre the data before R̂(k).</div></div>
+<div class="formula"><div class="formula-label">Sample covariance and correlation</div><div class="math">R̂(k)= (1/n) Σ_{j=1}^{n-k}(x_j-X̄_n)(x_{j+k}-X̄_n)
+ρ̂(k)=R̂(k)/R̂(0)</div><div class="formula-note"><b>Symbols:</b> k is lag; denominator n is used as in Lecture 11.</div><div class="formula-note"><b>Use when:</b> Estimate autocorrelation for Yule-Walker fitting.</div><div class="formula-note"><b>Common trap:</b> Do not divide by n-k; the lecture formula uses 1/n.</div></div>
+<div class="formula"><div class="formula-label">Yule-Walker matrix estimator</div><div class="math">â=Ĉ^{-1}v̂,
+ v̂=(ρ̂(1),...,ρ̂(p))^T,
+ Ĉ=(ρ̂(i-j))_{i,j=1}^p</div><div class="formula-note"><b>Symbols:</b> Ĉ is the sample correlation matrix; v̂ is the lag-correlation vector.</div><div class="formula-note"><b>Use when:</b> Estimate AR(p) coefficients.</div><div class="formula-note"><b>Common trap:</b> Ĉ is symmetric; use ρ̂(|i-j|) in code because autocorrelation is even.</div></div>
+<div class="formula"><div class="formula-label">Noise variance estimator for AR(p)</div><div class="math">σ̂² = R̂(0)(1-â_1ρ̂(1)-...-â_pρ̂(p))</div><div class="formula-note"><b>Symbols:</b> R̂(0) estimates Var(x_t); ρ̂(k) are sample correlations.</div><div class="formula-note"><b>Use when:</b> After estimating AR coefficients.</div><div class="formula-note"><b>Common trap:</b> Do not use R̂(k) in the bracket; the lecture formula uses correlations ρ̂(k).</div></div>
+<div class="formula"><div class="formula-label">AR(1) estimators</div><div class="math">â_1=ρ̂(1),
+ σ̂²=R̂(0)(1-â_1ρ̂(1))</div><div class="formula-note"><b>Symbols:</b> Special case p=1.</div><div class="formula-note"><b>Use when:</b> Fast AR(1) hand calculation.</div><div class="formula-note"><b>Common trap:</b> â<sub>1</sub> is the sample correlation at lag 1, not R̂(1).</div></div>
+<div class="formula"><div class="formula-label">AR(2) estimators</div><div class="math">â_1 = ρ̂(1)(1-ρ̂(2))/(1-ρ̂²(1))
+â_2 = (ρ̂(2)-ρ̂²(1))/(1-ρ̂²(1))
+σ̂²=R̂(0)(1-â_1ρ̂(1)-â_2ρ̂(2))</div><div class="formula-note"><b>Symbols:</b> Use ρ̂(1), ρ̂(2), R̂(0).</div><div class="formula-note"><b>Use when:</b> Repeated AR(2) parameter-estimation exam questions.</div><div class="formula-note"><b>Common trap:</b> Watch signs and denominator 1−ρ̂²(1).</div></div>
+<div class="formula"><div class="formula-label">MA(1) estimators</div><div class="math">b̂_1/(1+b̂_1²)=ρ̂(1), choose |b̂_1|<1
+σ̂²=R̂(0)/(1+b̂_1²)</div><div class="formula-note"><b>Symbols:</b> b̂<sub>1</sub> is the MA coefficient; |b̂|<1 gives invertible solution.</div><div class="formula-note"><b>Use when:</b> Estimate an invertible MA(1) from R̂(0), R̂(1) or ρ̂(1).</div><div class="formula-note"><b>Common trap:</b> The quadratic gives two roots; choose the one with absolute value smaller than 1.</div></div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture11.pdf, p.2-p.12</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">Lecture 11</span><span class="subject">Worked examples</span></div>
+<h1>Lecture 11 - Worked Estimation Examples</h1>
+
+<h2>Example 1: ARMA mean</h2>
+<div class="q"><b>Question type:</b> Compute mean of x<sub>t</sub>=0.2+0.4x<sub>t−1</sub>+0.5x<sub>t−2</sub>+ε<sub>t</sub>+0.7ε<sub>t−1</sub>.</div>
+<div class="calc"><b>Steps:</b><br/>Take expectations: μ=0.2+0.4μ+0.5μ because Eε=0.<br/>So μ(1−0.4−0.5)=0.2.<br/>Therefore μ=0.2/0.1=2.</div>
+<div class="exam"><b>How to check:</b> if AR coefficients sum close to 1, the denominator is small and the mean can be large. Here the denominator is 0.1, so μ=2 is plausible.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture11.pdf, p.2</div>
+<h2>Example 2: AR(1) hand estimation</h2>
+<div class="q"><b>Question:</b> Data 2,6,3,7,2 from an AR(1). Estimate μ, a<sub>1</sub>, σ².</div>
+<div class="calc"><b>Step-by-step:</b><br/>μ̂=(2+6+3+7+2)/5=4.<br/>Centred values: −2, 2, −1, 3, −2.<br/>R̂(0)=[(−2)²+2²+(−1)²+3²+(−2)²]/5=22/5.<br/>R̂(1)=[(−2)(2)+2(−1)+(−1)(3)+3(−2)]/5=−15/5.<br/>ρ̂(1)=R̂(1)/R̂(0)=−15/22.<br/>â<sub>1</sub>=ρ̂(1)=−15/22.<br/>σ̂²=R̂(0)(1−â<sub>1</sub>ρ̂(1))=(22/5)(1−(15/22)²)=2.35.</div>
+<div class="trap"><b>Trap:</b> the lag-1 product stops at j=4, not j=5, because x<sub>j+1</sub> must exist.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture11.pdf, p.9</div>
+<h2>Example 3: AR(2) hand estimation</h2>
+<div class="q"><b>Question:</b> Data 2,4,1,6,2 from an AR(2). Estimate μ, a<sub>1</sub>, a<sub>2</sub>, σ².</div>
+<div class="calc"><b>Core calculation:</b><br/>μ̂=3; centred values are −1,1,−2,3,−1.<br/>R̂(0)=16/5, R̂(1)=−12/5, so ρ̂(1)=−12/16.<br/>R̂(2)=7/5, so ρ̂(2)=7/16.<br/>Then use the AR(2) formulas:<br/>â<sub>1</sub>=ρ̂(1)(1−ρ̂(2))/(1−ρ̂²(1))≈−0.96.<br/>â<sub>2</sub>=(ρ̂(2)−ρ̂²(1))/(1−ρ̂²(1))≈−0.29.<br/>σ̂²=R̂(0)(1−â<sub>1</sub>ρ̂(1)−â<sub>2</sub>ρ̂(2))≈1.29.</div>
+<div class="exam"><b>How to check:</b> both coefficients can be negative; the sign comes from the sample correlations and should not be “corrected” by intuition.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture11.pdf, p.10</div>
+<h2>Example 4: MA(1) estimation</h2>
+<div class="q"><b>Question type:</b> Given X̄<sub>n</sub>=2.3, R̂(0)=1.2, ρ̂(1)=1/4 for an MA(1), estimate μ,b<sub>1</sub>,σ².</div>
+<div class="calc"><b>Steps:</b><br/>μ̂=2.3.<br/>Solve b̂/(1+b̂²)=1/4 ⇒ b̂²−4b̂+1=0.<br/>Roots are 2+√3≈3.73 and 2−√3≈0.27.<br/>Choose b̂=2−√3 because |b̂|&lt;1.<br/>σ̂²=1.2/(1+(2−√3)²)=1.12.</div>
+<div class="trap"><b>Trap:</b> choosing the larger root violates invertibility.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture11.pdf, p.11-p.12</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">Lecture 12</span><span class="subject">Forecasting ARMA</span></div>
+<h1>Lecture 12 - ARMA Forecasting: Map and Core Ideas</h1>
+
+<table class="mini-table"><tr><th>Page range</th><th>Topic</th><th>Exam duty</th><th>Flag</th></tr>
+<tr><td>p.2</td><td>General forecasting algorithm for stationary/ARMA process</td><td>Build Γ, b<sub>h</sub>, solve γ<sub>h</sub>, compute x̂ and σ̂².</td><td>algorithm / matrix</td></tr>
+<tr><td>p.3-p.4</td><td>Forecasting AR(1)</td><td>Derive/use x̂<sub>n+h</sub>=a<sup>h</sup>x<sub>n</sub> and MSE formula.</td><td>formula / theorem</td></tr>
+<tr><td>p.5</td><td>AR(1) worked example</td><td>Forecast several future values and write prediction bounds.</td><td>worked example</td></tr>
+<tr><td>p.6-p.8</td><td>Causal ARMA via MA representation</td><td>Use c<sub>i</sub> coefficients to form h-step predictor and MSE.</td><td>formula / proof idea</td></tr>
+<tr><td>p.9-p.10</td><td>Forecasting AR(p)</td><td>Use recursive forecast formula with observed and previously predicted values.</td><td>recursion</td></tr>
+<tr><td>p.11</td><td>AR(2) forecasting example</td><td>Forecast x̂<sub>5</sub>,...,x̂<sub>8</sub> by recursive substitution.</td><td>worked example</td></tr>
+<tr><td>p.12</td><td>R code for AR(2) forecasting</td><td>Explain the loop that appends forecasts and plots observed vs forecast values.</td><td>R</td></tr>
+<tr><td>p.13</td><td>Learning prompts</td><td>Practise explaining h-step forecast intuition and loop indexing.</td><td>practice</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture12.pdf, p.2-p.13</div>
+<h2>Core ideas in plain English</h2>
+<div class="grid">
+<div class="card"><div class="label">Forecast = predicted future value</div>A forecast is a predictor for a future x<sub>n+h</sub>. The integer h is the forecast horizon: h=1 means next observation; h=2 means two steps ahead.</div>
+<div class="card"><div class="label">Recursive forecasting</div>For AR models, once you move beyond known data, you plug earlier forecasts back into the equation.</div>
+<div class="card"><div class="label">MSE matters</div>Two forecasts may have similar values but different uncertainty. Prediction bounds use the forecast MSE and the Gaussian-white-noise assumption when stated.</div>
+<div class="card"><div class="label">Covariance matrix logic</div>The general algorithm uses covariance information R(k) to choose the best linear combination of observed centred values.</div>
+</div>
+<div class="examline"><b>Mean version of AR(1):</b> the lecture first proves the zero-mean formula x̂<sub>n+h</sub>=a<sup>h</sup>x<sub>n</sub>. In examples with mean μ, use x̂<sub>n+h</sub>=μ+a<sup>h</sup>(x<sub>n</sub>−μ).</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture12.pdf, p.2-p.5</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">Lecture 12</span><span class="subject">Formula cards</span></div>
+<h1>Lecture 12 - Forecasting Formula Cards</h1>
+
+<div class="formula-grid">
+<div class="formula"><div class="formula-label">General stationary forecast algorithm</div><div class="math">μ̂=(x_1+...+x_n)/n,  y_i=x_i-μ̂
+Γ=(R(i-j))_{i,j=1}^n
+b_h=(R(h+n-1),...,R(h+1),R(h))^T
+γ_h=Γ^{-1}b_h
+ŷ_{n+h}=γ_h^T Y
+x̂_{n+h}=μ̂+ŷ_{n+h}
+σ̂²_{n+h;x}=R(0)-b_h^TΓ^{-1}b_h</div><div class="formula-note"><b>Symbols:</b> R(k) is the given covariance; Y=(y_1,...,y_n)^T.</div><div class="formula-note"><b>Use when:</b> Forecast a stationary/ARMA process when R(k) is given.</div><div class="formula-note"><b>Common trap:</b> Keep the order of b<sub>h</sub> consistent: it runs from R(h+n−1) down to R(h).</div></div>
+<div class="formula"><div class="formula-label">AR(1) h-step forecast, zero mean</div><div class="math">x̂_{n+h}=a^h x_n</div><div class="formula-note"><b>Symbols:</b> a is AR(1) coefficient; h is horizon.</div><div class="formula-note"><b>Use when:</b> Fast AR(1) forecasting when mean is zero.</div><div class="formula-note"><b>Common trap:</b> For non-zero mean, forecast deviations from μ, not raw values.</div></div>
+<div class="formula"><div class="formula-label">AR(1) h-step forecast with mean</div><div class="math">x̂_{n+h}=μ+a^h(x_n-μ)</div><div class="formula-note"><b>Symbols:</b> μ is known/estimated mean.</div><div class="formula-note"><b>Use when:</b> Repeated shop/company sales forecast questions.</div><div class="formula-note"><b>Common trap:</b> Do not use x<sub>n−1</sub> for AR(1); only the latest value is needed.</div></div>
+<div class="formula"><div class="formula-label">AR(1) MSE and prediction bounds</div><div class="math">MSE(x̂_{n+h})=σ²(1-a^{2h})/(1-a²)
+Bound: x̂_{n+h} ± z_{1-α/2} σ sqrt((1-a^{2h})/(1-a²))</div><div class="formula-note"><b>Symbols:</b> σ² is white-noise variance; Gaussian assumption is needed for the bound.</div><div class="formula-note"><b>Use when:</b> When the question asks for confidence/prediction interval expression.</div><div class="formula-note"><b>Common trap:</b> Use σ, not σ², inside the interval width.</div></div>
+<div class="formula"><div class="formula-label">Causal ARMA via MA representation</div><div class="math">x_j=Σ_{i=0}^∞ c_i ε_{j-i}, c_0=1
+x̂_{n+h}=Σ_{i=0}^∞ c_{i+h} ε_{n-i}</div><div class="formula-note"><b>Symbols:</b> c<sub>i</sub> are MA-representation coefficients.</div><div class="formula-note"><b>Use when:</b> Theoretical ARMA forecasting questions.</div><div class="formula-note"><b>Common trap:</b> This formula assumes causal ARMA and the MA representation exists.</div></div>
+<div class="formula"><div class="formula-label">ARMA forecast MSE via MA coefficients</div><div class="math">MSE(x̂_{n+h})=σ² Σ_{i=0}^{h-1} c_i²
+Bound: x̂_{n+h} ± z_{1-α/2} σ sqrt(Σ_{i=0}^{h-1} c_i²)</div><div class="formula-note"><b>Symbols:</b> Only c<sub>0</sub>,...,c<sub>h−1</sub> enter the h-step MSE.</div><div class="formula-note"><b>Use when:</b> Prediction bounds for AR/ARMA using MA representation.</div><div class="formula-note"><b>Common trap:</b> For h=1, the sum is just c<sub>0</sub>²=1.</div></div>
+<div class="formula"><div class="formula-label">AR(p) recursive forecast</div><div class="math">For h=1,...,p, use observed values where available and forecasts for future lags.
+For h>p, x̂_{n+h}=Σ_{j=1}^p a_j x̂_{n+h-j}</div><div class="formula-note"><b>Symbols:</b> a<sub>j</sub> are AR coefficients.</div><div class="formula-note"><b>Use when:</b> Practical AR(2), AR(3), AR(4) forecasting.</div><div class="formula-note"><b>Common trap:</b> Do not use unknown future observations; replace them by forecasts.</div></div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture12.pdf, p.2-p.10</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">Lecture 12</span><span class="subject">Worked examples</span></div>
+<h1>Lecture 12 - Worked Forecasting Examples</h1>
+
+<h2>Example 1: AR(1) forecast with mean and bounds</h2>
+<div class="q"><b>Question:</b> AR(1) x<sub>t</sub>−9=0.6(x<sub>t−1</sub>−9)+ε<sub>t</sub>, σ²=0.12, x<sub>100</sub>=8.9. Compute x̂<sub>101</sub>,x̂<sub>102</sub>,x̂<sub>103</sub> and bounds.</div>
+<div class="calc"><b>Forecasts:</b><br/>x̂<sub>101</sub>=9+0.6(8.9−9)=8.94.<br/>x̂<sub>102</sub>=9+0.6²(8.9−9)=8.964.<br/>x̂<sub>103</sub>=9+0.6³(8.9−9)=8.9784.</div>
+<div class="sol"><b>Bounds:</b> Use x̂ ± z<sub>1−α/2</sub>σ√((1−a<sup>2h</sup>)/(1−a²)). Since σ²=0.12, σ=√0.12. Lecture notation writes the square-root terms explicitly for h=1,2,3.</div>
+<div class="exam"><b>Sanity check:</b> because |0.6|&lt;1, forecasts move back towards μ=9.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture12.pdf, p.5</div>
+<h2>Example 2: AR(2) recursive forecasting</h2>
+<div class="q"><b>Question:</b> Data 46,45,48,46 from x<sub>t</sub>−47=1.3(x<sub>t−1</sub>−47)−0.7(x<sub>t−2</sub>−47)+ε<sub>t</sub>. Forecast x̂<sub>5</sub>,...,x̂<sub>8</sub>.</div>
+<div class="calc"><b>Work with deviations y=x−47:</b> y<sub>1</sub>=−1, y<sub>2</sub>=−2, y<sub>3</sub>=1, y<sub>4</sub>=−1.<br/>ŷ<sub>5</sub>=1.3y<sub>4</sub>−0.7y<sub>3</sub>=1.3(−1)−0.7(1)=−2.<br/>ŷ<sub>6</sub>=1.3ŷ<sub>5</sub>−0.7y<sub>4</sub>=−1.9.<br/>ŷ<sub>7</sub>=1.3ŷ<sub>6</sub>−0.7ŷ<sub>5</sub>=−1.07.<br/>ŷ<sub>8</sub>=1.3ŷ<sub>7</sub>−0.7ŷ<sub>6</sub>=−0.06.<br/>Add μ=47: x̂<sub>5</sub>=45, x̂<sub>6</sub>=45.1, x̂<sub>7</sub>=45.93, x̂<sub>8</sub>=46.94.</div>
+<div class="trap"><b>Trap:</b> after x̂<sub>5</sub>, later forecasts depend partly or entirely on earlier forecasts.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture12.pdf, p.11</div>
+<h2>Example 3: General covariance algorithm from mock</h2>
+<div class="q"><b>Question type:</b> Given data and covariance R(k), compute a best linear predictor and prediction bound.</div>
+<div class="sol"><b>Method:</b> compute μ̂ and centred vector Y; construct Γ using R(i−j); construct b<sub>h</sub>; solve a=Γ<sup>−1</sup>b<sub>h</sub>; compute ŷ=a<sup>T</sup>Y, x̂=μ̂+ŷ; compute MSE=R(0)−b<sub>h</sub><sup>T</sup>a; bounds use x̂±z√MSE.</div>
+<div class="exam"><b>Marks-style expectation:</b> show Γ and b<sub>h</sub> setup, not just final number.</div>
+<div class="source"><strong>Source:</strong> ma3508_mock_exam_solution.pdf, p.2, p.5</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">Lecture 13</span><span class="subject">ARIMA and seasonal models</span></div>
+<h1>Lecture 13 - More Forecasting, ARIMA and SARIMA</h1>
+
+<table class="mini-table"><tr><th>Page range</th><th>Topic</th><th>Exam duty</th><th>Flag</th></tr>
+<tr><td>p.2</td><td>Forecasting AR(3)</td><td>Use recursive AR forecast for x̂<sub>11</sub>,x̂<sub>12</sub>,x̂<sub>13</sub>.</td><td>worked example</td></tr>
+<tr><td>p.3</td><td>MSE and bounds for AR(1)</td><td>Forecast two years ahead and write prediction bounds.</td><td>formula / worked</td></tr>
+<tr><td>p.4-p.5</td><td>Forecasting AR(2) and confidence intervals</td><td>Compute forecasts, then use MA coefficients c<sub>0</sub>,c<sub>1</sub>,c<sub>2</sub> for MSE.</td><td>worked / bounds</td></tr>
+<tr><td>p.6</td><td>ARIMA(p,d,q)</td><td>State definition a(B)(1−B)<sup>d</sup>x<sub>t</sub>=b(B)ε<sub>t</sub> and explain differences.</td><td>definition</td></tr>
+<tr><td>p.7</td><td>ARIMA(0,1,0)</td><td>Recognise random walk as ARIMA(0,1,0).</td><td>definition / interpretation</td></tr>
+<tr><td>p.8-p.9</td><td>ARIMA(1,1,0)</td><td>Rewrite equation and forecast recursively.</td><td>calculation</td></tr>
+<tr><td>p.10-p.12</td><td>Estimation examples</td><td>Estimate AR(2) and MA(1) parameters from given R̂/ρ̂ or data.</td><td>worked estimation</td></tr>
+<tr><td>p.13</td><td>Causality check example</td><td>Factor a(z) and identify a root at 1, hence not causal.</td><td>root check</td></tr>
+<tr><td>p.14-p.15</td><td>Seasonal ARIMA / SARIMA</td><td>State seasonal differencing and SARIMA equation; recognise monthly period s=12.</td><td>definition</td></tr>
+<tr><td>p.16-p.17</td><td>Learning prompts and homework</td><td>Practise ARIMA forecasting and solve 2020 past exam.</td><td>practice</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture13.pdf, p.2-p.17</div>
+<h2>Core ideas</h2>
+<div class="grid">
+<div class="card"><div class="label">ARIMA vs ARMA</div>ARIMA says the differenced series is ARMA. The original series may not itself be ARMA until differencing is applied.</div>
+<div class="card"><div class="label">Differencing</div>The lecture defines x̃<sub>t</sub>=(1−B)x<sub>t</sub>, so x̃<sub>2</sub>=x<sub>2</sub>−x<sub>1</sub>, x̃<sub>3</sub>=x<sub>3</sub>−x<sub>2</sub>, and so on.</div>
+<div class="card"><div class="label">Forecast recursion still rules</div>ARIMA(1,1,0) can be rewritten as x<sub>t</sub>=(1+a)x<sub>t−1</sub>−a x<sub>t−2</sub>+ε<sub>t</sub>, then forecast by recursion.</div>
+<div class="card"><div class="label">SARIMA adds seasonal structure</div>Seasonal ARIMA uses ordinary differencing and seasonal differencing, then a seasonal ARMA equation with polynomials in B and B<sup>s</sup>.</div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture13.pdf, p.6-p.15</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">Lecture 13</span><span class="subject">Definitions and formulas</span></div>
+<h1>Lecture 13 - ARIMA/SARIMA Formula Cards</h1>
+
+<div class="formula-grid">
+<div class="formula"><div class="formula-label">ARIMA(p,d,q) definition</div><div class="math">a(B)(1-B)^d x_t = b(B)ε_t</div><div class="formula-note"><b>Symbols:</b> p,d,q∈{0,1,2,...}; d is the order of differencing.</div><div class="formula-note"><b>Use when:</b> Definition questions or when recognising ARIMA equations.</div><div class="formula-note"><b>Common trap:</b> Do not call x<sub>t</sub> ARMA until the required differencing has been applied.</div></div>
+<div class="formula"><div class="formula-label">First difference</div><div class="math">x̃_t=(1-B)x_t
+x̃_2=x_2-x_1, x̃_3=x_3-x_2, ...</div><div class="formula-note"><b>Symbols:</b> B is the backward shift operator.</div><div class="formula-note"><b>Use when:</b> Explain the “integrated” part of ARIMA.</div><div class="formula-note"><b>Common trap:</b> Do not subtract in the wrong order.</div></div>
+<div class="formula"><div class="formula-label">ARIMA(0,1,0)</div><div class="math">(1-B)x_t=ε_t
+x_t=x_{t-1}+ε_t</div><div class="formula-note"><b>Symbols:</b> This is the random walk case.</div><div class="formula-note"><b>Use when:</b> Recognise the special case.</div><div class="formula-note"><b>Common trap:</b> It is not the same as stationary AR(1) with |a|<1.</div></div>
+<div class="formula"><div class="formula-label">ARIMA(1,1,0)</div><div class="math">(1-aB)(1-B)x_t=ε_t
+x_t=(1+a)x_{t-1}-a x_{t-2}+ε_t</div><div class="formula-note"><b>Symbols:</b> a∈(−1,1) in the lecture statement.</div><div class="formula-note"><b>Use when:</b> Forecast ARIMA(1,1,0) recursively.</div><div class="formula-note"><b>Common trap:</b> Use the rewritten difference equation before forecasting.</div></div>
+<div class="formula"><div class="formula-label">ARIMA(1,1,0) forecast recursion</div><div class="math">x̂_{n+1}=(1+a)x_n-a x_{n-1}
+x̂_{n+2}=(1+a)x̂_{n+1}-a x_n
+x̂_{n+3}=(1+a)x̂_{n+2}-a x̂_{n+1}</div><div class="formula-note"><b>Symbols:</b> Future unknown values are replaced by forecasts.</div><div class="formula-note"><b>Use when:</b> Gold-price style exam calculation.</div><div class="formula-note"><b>Common trap:</b> Do not reuse old observations once the recursion requires a future value.</div></div>
+<div class="formula"><div class="formula-label">SARIMA definition</div><div class="math">y_t=(1-B)^d(1-B^s)^D x_t
+a(B)ã(B^s)y_t=b(B)b̃(B^s)ε_t</div><div class="formula-note"><b>Symbols:</b> s is the seasonal period; d,D are nonnegative integers.</div><div class="formula-note"><b>Use when:</b> Definition/explain notation questions.</div><div class="formula-note"><b>Common trap:</b> Do not expand OU/outside models; only use lecture SARIMA notation.</div></div>
+<div class="formula"><div class="formula-label">Example SARIMA equation</div><div class="math">(1-a_1B)(1-ã_1B^{12})x_t=(1-b_1B)ε_t
+x_t-a_1x_{t-1}-ã_1x_{t-12}+a_1ã_1x_{t-13}=ε_t-b_1ε_{t-1}</div><div class="formula-note"><b>Symbols:</b> Monthly case with period s=12.</div><div class="formula-note"><b>Use when:</b> Recognise how seasonal terms create lag 12 and 13 terms.</div><div class="formula-note"><b>Common trap:</b> It looks like ARIMA(13,0,1) but has fewer parameters, as stated in the lecture.</div></div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture13.pdf, p.6-p.15</div>
+<h2>Worked example: gold-price ARIMA(1,1,0)</h2>
+<div class="q"><b>Question:</b> x<sub>t</sub>−1.9x<sub>t−1</sub>+0.9x<sub>t−2</sub>=ε<sub>t</sub>, observations 560,580,640,770,800. Forecast next 3 days.</div>
+<div class="calc"><b>Identify:</b> (1−0.9B)(1−B)x<sub>t</sub>=ε<sub>t</sub>, so a=0.9 and x<sub>t</sub>=1.9x<sub>t−1</sub>−0.9x<sub>t−2</sub>+ε<sub>t</sub>.<br/>x̂<sub>6</sub>=1.9(800)−0.9(770)=827.<br/>x̂<sub>7</sub>=1.9(827)−0.9(800)=851.3.<br/>x̂<sub>8</sub>=1.9(851.3)−0.9(827)=873.17.</div>
+<div class="exam"><b>How to check:</b> forecasts continue the recent upward movement but use the ARIMA recursion, not a simple average.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture13.pdf, p.9</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">Lecture 13</span><span class="subject">Worked examples</span></div>
+<h1>Lecture 13 - Worked Exam-Style Examples</h1>
+
+<h2>Example 1: AR(3) recursive forecasting</h2>
+<div class="q"><b>Model:</b> x<sub>t</sub>=0.2x<sub>t−1</sub>−0.2x<sub>t−2</sub>+0.6x<sub>t−3</sub>+ε<sub>t</sub>; data end with x<sub>8</sub>=3.0, x<sub>9</sub>=−3.5, x<sub>10</sub>=−0.74.</div>
+<div class="calc">x̂<sub>11</sub>=0.2x<sub>10</sub>−0.2x<sub>9</sub>+0.6x<sub>8</sub>=2.35.<br/>x̂<sub>12</sub>=0.2x̂<sub>11</sub>−0.2x<sub>10</sub>+0.6x<sub>9</sub>=−1.482.<br/>x̂<sub>13</sub>=0.2x̂<sub>12</sub>−0.2x̂<sub>11</sub>+0.6x<sub>10</sub>=−1.21.</div>
+<div class="trap"><b>Trap:</b> x̂<sub>13</sub> uses two previous forecasts, not only original data.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture13.pdf, p.2</div>
+<h2>Example 2: AR(2) forecasts and prediction bounds</h2>
+<div class="q"><b>Model:</b> x<sub>t</sub>=30+1.45(x<sub>t−1</sub>−30)−0.58(x<sub>t−2</sub>−30)+ε<sub>t</sub>, σ²=0.2; observations 26,34,25,36.</div>
+<div class="calc"><b>Forecasts:</b><br/>x̂<sub>5</sub>=30+1.45(36−30)−0.58(25−30)=41.6.<br/>x̂<sub>6</sub>=30+1.45(41.6−30)−0.58(36−30)=43.34.<br/>x̂<sub>7</sub>=30+1.45(43.34−30)−0.58(41.6−30)=42.615.</div>
+<div class="sol"><b>Bounds method:</b> compute c<sub>0</sub>=1, c<sub>1</sub>=1.45, c<sub>2</sub>=−0.58+1.45²=1.52. Then use σ²Σc<sub>i</sub>² up to the horizon: h=1 uses c<sub>0</sub>; h=2 uses c<sub>0</sub>,c<sub>1</sub>; h=3 uses c<sub>0</sub>,c<sub>1</sub>,c<sub>2</sub>.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture13.pdf, p.4-p.5</div>
+<h2>Example 3: AR(2) estimation from summary correlations</h2>
+<div class="q"><b>Question:</b> sample mean 30.1, sample variance 1.5, ρ̂(1)=0.9, ρ̂(2)=0.7. Estimate AR(2).</div>
+<div class="calc">μ̂=30.1.<br/>â<sub>1</sub>=ρ̂(1)(1−ρ̂(2))/(1−ρ̂²(1))=1.42.<br/>â<sub>2</sub>=(ρ̂(2)−ρ̂²(1))/(1−ρ̂²(1))=−0.58.<br/>σ̂²=1.5(1−1.42·0.9+0.58·0.7)=0.192.</div>
+<div class="exam"><b>How to check:</b> use the same AR(2) formulas from Lecture 11; this is not a new method.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture13.pdf, p.12</div>
+<h2>Example 4: Causality check inside Lecture 13</h2>
+<div class="q"><b>Question:</b> Show x<sub>t</sub>=x<sub>t−1</sub>+5cx<sub>t−2</sub>−5cx<sub>t−3</sub>+ε<sub>t</sub> is not causal for all c.</div>
+<div class="calc">a(z)=1−z−5cz²+5cz³=(1−z)(1−5cz²).<br/>One root is z=1.<br/>Since this root is not outside the unit circle, the process is not causal.</div>
+<div class="trap"><b>Trap:</b> “root on the unit circle” is not allowed for causality.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture13.pdf, p.13</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">R templates</span><span class="subject">Course-supported code only</span></div>
+<h1>R-code Templates Supported by L11-L13 / Mock</h1>
+
+<h2>1) Lecture 11 AR(p) parameter estimation code</h2>
+<pre><code>x=c(1,4,2,7,3,1,5,2,6); p=3;
+n=length(x); mu=sum(x)/n; y=x-mu;
+covg=rep(0,n); corrg=rep(0,n);
+for(i in (1:n))
+{
+  covg[i]=sum(y[1:(n+1-i)]*y[i:n])/n;
+  corrg[i]=covg[i]/covg[1];
+}
+C=matrix(0,p,p); v=rep(0,p);
+for(i in (1:p)) v[i]=corrg[i+1];
+for(i in (1:p)) { for(j in (1:p)) C[i,j]=corrg[abs(i-j)+1];}
+a=solve(C) %*% v; print(a);
+sigmasq=covg[1]*(1-v %*% a);</code></pre>
+<div class="blue"><b>Line-by-line:</b> x is the observed series; p sets AR order; mu is X̄<sub>n</sub>; y is centred data; covg stores R̂(k) with index shift; corrg stores ρ̂(k); C and v build the Yule-Walker system; solve(C)%*%v gives â; sigmasq applies the Lecture 11 σ̂² formula.</div>
+<div class="trap"><b>Coding trap:</b> corrg[i+1] corresponds to lag i because R indexing starts at R̂(0) in covg[1].</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture11.pdf, p.6</div>
+<h2>2) Lecture 12 AR(2) forecasting loop</h2>
+<pre><code>x=c(46,45,48,46); n=length(x);
+a=c(1.3,-0.7); p=length(a);
+mu=47; h=40-n;
+x=c(x,rep(0,h));
+for(i in (1:h))
+  x[n+i]=mu+sum(a*(x[seq(n+i-1,n+i-p,by=-1)]-mu));
+plot((1:(n+h)),x,pch=19,main="time series (blue) and forecast")
+points((1:n),x[1:n],pch=19,col="blue")</code></pre>
+<div class="blue"><b>Line-by-line:</b> x starts with observed values; a stores AR coefficients; h is how many future values to append; zeros reserve space for forecasts; the loop computes each future x using the latest available observed/forecast values; the blue points mark the original observations.</div>
+<div class="exam"><b>Exam adaptation:</b> change a, μ, x and h; keep the recursive indexing idea.</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture12.pdf, p.12</div>
+<h2>3) Mock solution: covariance-based forecast code</h2>
+<pre><code>x=c(3.2,1.3,4.5,2.7); xpred=rep(0,4); xsig=rep(0,4);
+givenCov=function(k) { return(1.6*exp(-0.7*abs(k))); }
+n=length(x); mu=mean(x); y=x-mu;
+Gamma=matrix(0,n,n);
+for(i in (1:n)) for(j in (1:n)) Gamma[i,j]=givenCov(i-j);
+h=4
+bh=rep(0,n); for(i in (1:n)) bh[i]=givenCov(n+h-i);
+a=solve(Gamma) %*% bh;
+ynh=y%*%a; xpred[h]=mu+ynh;
+xsig[h]=sqrt(givenCov(0)-bh %*% solve(Gamma) %*% bh);
+confInterval=xpred[h]+xsig[h]*qnorm(1-0.05/2)*c(-1,1)</code></pre>
+<div class="blue"><b>Output meaning:</b> xpred[h] is the forecast for the h-step horizon; xsig[h] is the forecast standard error; confInterval gives the 95% interval in this code.</div>
+<div class="warning"><b>Not present in L11-L13 notes:</b> no separate arima(), forecast(), acf(), pacf() fitting workflow is printed in the complete L11-L13 lecture notes. This pack does not invent one.</div>
+<div class="source"><strong>Source:</strong> ma3508_mock_exam_solution.pdf, p.2</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">Practice map</span><span class="subject">Exercises and examples</span></div>
+<h1>Mapped Exercises and Lecture Example Bank</h1>
+
+<h2>Uploaded exercise files</h2>
+<div class="warning"><b>No dedicated L11, L12 or L13 exam-like exercise PDF was found among the uploaded files.</b> The uploaded exam-like exercise sequence available in the Time Series folder reaches L9, and solutions are available up to L9 plus L6-L7. Therefore, this pack maps L11-L13 practice through lecture worked examples, mock exam, and past-paper rows rather than inventing exercise questions.</div>
+<h2>Lecture worked-example bank</h2>
+<table class="mini-table compact"><tr><th>Source</th><th>Question type</th><th>Topic tested</th><th>Solution summary</th><th>Common trap</th></tr>
+<tr><td>L11 p.2</td><td>Compute ARMA mean</td><td>Take expectations</td><td>Set E(x<sub>t</sub>)=μ and Eε=0; solve linear equation for μ.</td><td>Including MA noise terms in the mean.</td></tr>
+<tr><td>L11 p.9</td><td>Estimate AR(1)</td><td>X̄, R̂(0), R̂(1), ρ̂(1), σ̂²</td><td>â<sub>1</sub>=ρ̂(1); use σ̂²=R̂(0)(1−â<sub>1</sub>ρ̂(1)).</td><td>Using R̂(1) instead of ρ̂(1).</td></tr>
+<tr><td>L11 p.10</td><td>Estimate AR(2)</td><td>Closed-form AR(2) formulas</td><td>Compute ρ̂(1),ρ̂(2), then â<sub>1</sub>,â<sub>2</sub>,σ̂².</td><td>Sign errors in â<sub>2</sub>.</td></tr>
+<tr><td>L11 p.12</td><td>Estimate MA(1)</td><td>Quadratic in b̂</td><td>Solve b̂/(1+b̂²)=ρ̂(1), choose |b̂|&lt;1, compute σ̂².</td><td>Choosing the non-invertible root.</td></tr>
+<tr><td>L12 p.5</td><td>Forecast AR(1)</td><td>h-step forecast and bounds</td><td>x̂=μ+a<sup>h</sup>(x<sub>n</sub>−μ); use AR(1) MSE.</td><td>Forgetting forecast moves toward μ.</td></tr>
+<tr><td>L12 p.11</td><td>Forecast AR(2)</td><td>Recursive forecast</td><td>Forecast deviations from μ, then add μ back.</td><td>Using raw x values inside a centred model.</td></tr>
+<tr><td>L13 p.9</td><td>Forecast ARIMA(1,1,0)</td><td>Rewrite and recurse</td><td>Identify (1−0.9B)(1−B), then forecast with x<sub>t</sub>=1.9x<sub>t−1</sub>−0.9x<sub>t−2</sub>+ε<sub>t</sub>.</td><td>Not recognising the ARIMA form.</td></tr>
+<tr><td>L13 p.14-p.15</td><td>Define SARIMA</td><td>Seasonal differencing and notation</td><td>State y<sub>t</sub>=(1−B)<sup>d</sup>(1−B<sup>s</sup>)<sup>D</sup>x<sub>t</sub> and seasonal ARMA equation.</td><td>Confusing seasonal lag B<sup>s</sup> with ordinary lag B.</td></tr></table>
+<div class="source"><strong>Source:</strong> ma3508_lecture11.pdf, p.2-p.13; ma3508_lecture12.pdf, p.2-p.13; ma3508_lecture13.pdf, p.2-p.17</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">Exam radar</span><span class="subject">Past papers and mock</span></div>
+<h1>Mapped Past-paper / Mock Radar for L11-L13</h1>
+
+<div class="exam"><b>Honesty note:</b> official solutions for 2015-2020 past papers are not uploaded. Rows below give source-based solution strategies, not official worked solutions. Mock rows can use the uploaded mock solution.</div>
+<table class="mini-table compact"><tr><th>Paper/year/question</th><th>Topic</th><th>Source lecture</th><th>Short solution strategy</th></tr>
+<tr><td>2015 Q1(ii)</td><td>Yule-Walker correlation for AR(p)</td><td>L11 / L9</td><td>State use of Yule-Walker equations to compute ρ(k) recursively from known AR coefficients.</td></tr>
+<tr><td>2015 Q1(vi)</td><td>AR(2) forecasts, MSE and confidence intervals</td><td>L12-L13</td><td>Centre by μ, recursively forecast two months, compute MSE using MA coefficients c<sub>0</sub>,c<sub>1</sub>, then bounds.</td></tr>
+<tr><td>2015 Q2(vi)</td><td>Estimate AR(2) parameters/noise variance</td><td>L11</td><td>Compute R̂ and ρ̂; use AR(2) formulas; compute σ̂².</td></tr>
+<tr><td>2015 Q3(vi)</td><td>Estimate invertible MA(1)</td><td>L11 / L13</td><td>Use ρ̂(1)=R̂(1)/R̂(0), solve b̂/(1+b̂²)=ρ̂(1), choose |b̂|&lt;1, compute σ̂².</td></tr>
+<tr><td>2015 Q3(vii)</td><td>AR(2) variance and correlation via Yule-Walker</td><td>L11 / L9</td><td>Write first two Yule-Walker equations, solve ρ(1),ρ(2), then variance equation.</td></tr>
+<tr><td>2016 Q1(vi)</td><td>AR(1) forecasts and intervals</td><td>L12</td><td>Use μ+a<sup>h</sup>(x<sub>n</sub>−μ) and AR(1) MSE/bounds.</td></tr>
+<tr><td>2016 Q2(ii)</td><td>Derive AR(1) h-step forecast and confidence interval</td><td>L12</td><td>Show γ solution or recursive result x̂<sub>n+h</sub>=a<sup>h</sup>x<sub>n</sub>, then MSE formula.</td></tr>
+<tr><td>2016 Q2(iii)</td><td>R code for 2-step forecast with 95% interval</td><td>L12 / mock style</td><td>Use covariance/forecast algorithm and qnorm(0.975) interval.</td></tr>
+<tr><td>2016 Q2(vi)</td><td>AR(2) forecasts, MSE and intervals</td><td>L12-L13</td><td>Recursive AR(2) forecasts and MA-coefficient MSE.</td></tr>
+<tr><td>2016 Q3(vi)</td><td>MA(1) estimation</td><td>L11</td><td>Same invertible MA(1) template.</td></tr>
+<tr><td>2016 Q4(vi)</td><td>AR(2) estimation</td><td>L11</td><td>Estimate μ, a<sub>1</sub>,a<sub>2</sub>, σ² from sample covariance/correlation.</td></tr>
+<tr><td>2017 Q1(i)</td><td>ARIMA(p,d,q) definition</td><td>L13</td><td>State: (1−B)<sup>d</sup>x<sub>t</sub> is ARMA(p,q), equivalently a(B)(1−B)<sup>d</sup>x<sub>t</sub>=b(B)ε<sub>t</sub>.</td></tr>
+<tr><td>2017 Q1(v)</td><td>AR(1) forecasts and prediction bounds</td><td>L12</td><td>Use AR(1) h-step formula and prediction-bound expression.</td></tr>
+<tr><td>2017 Q2(ii)</td><td>Derive Yule-Walker for AR(p)</td><td>L11</td><td>Multiply AR equation by lagged centred values, take expectations/correlations, form system.</td></tr>
+<tr><td>2017 Q2(vi)</td><td>AR(2) parameter estimation</td><td>L11</td><td>Use R̂/ρ̂ and AR(2) formulas.</td></tr>
+<tr><td>2017 Q3(iii)</td><td>R code for h-step AR(4) forecast</td><td>L12</td><td>Generalise lecture AR(2) loop: coefficient vector length p=4 and recursive indexing.</td></tr>
+<tr><td>2017 Q3(vi)</td><td>MA(1) estimation</td><td>L11</td><td>Invertible root and σ̂² formula.</td></tr>
+<tr><td>2017 Q4(vi)</td><td>AR(2) forecasts and intervals</td><td>L12-L13</td><td>Recursive centred forecasts and MA-coefficient MSE.</td></tr>
+<tr><td>2018 Q1(vi)</td><td>AR(2) parameter estimation</td><td>L11</td><td>Yule-Walker estimates and noise variance.</td></tr>
+<tr><td>2018 Q2(vi)</td><td>MA(1) estimation</td><td>L11</td><td>Solve quadratic and choose invertible root.</td></tr>
+<tr><td>2018 Q3(vi)</td><td>AR(1) forecasts and confidence intervals</td><td>L12</td><td>Forecast weeks using μ+a<sup>h</sup>(x<sub>n</sub>−μ); bounds from AR(1) MSE.</td></tr>
+<tr><td>2018 Q4(vi)</td><td>AR(2) forecasts, MSE and intervals</td><td>L12-L13</td><td>Recursive AR(2) method and MSE via c coefficients.</td></tr>
+<tr><td>2019 Q2(iii)</td><td>R code for estimating AR(3) parameters</td><td>L11</td><td>Adapt Lecture 11 AR(p) estimation code with p=3.</td></tr>
+<tr><td>2019 Q2(vi)</td><td>AR(1) forecasts and intervals</td><td>L12</td><td>Use AR(1) formula and confidence interval expression.</td></tr>
+<tr><td>2019 Q3(vi)</td><td>AR(2) parameter estimation from data</td><td>L11</td><td>Compute sample mean, R̂(0),R̂(1),R̂(2), then AR(2) estimates.</td></tr>
+<tr><td>2019 Q4(vi)</td><td>MA(1) estimation</td><td>L11</td><td>Use MA(1) estimation template.</td></tr>
+<tr><td>2019 Q4(vii)</td><td>AR(2) variance/correlation by Yule-Walker</td><td>L11 / L9</td><td>Solve first Yule-Walker equations and recurrence.</td></tr>
+<tr><td>2020 Q1(iii)</td><td>R code for h-step AR(4) forecast</td><td>L12</td><td>Adapt recursive forecasting loop to p=4 and h horizon.</td></tr>
+<tr><td>2020 Q1(vi)</td><td>AR(2) parameter estimation</td><td>L11</td><td>Estimate from the six-point series using R̂/ρ̂ and AR(2) formulas.</td></tr>
+<tr><td>2020 Q2(ii)</td><td>Derive h-step forecast of causal ARMA</td><td>L12</td><td>Use MA representation theorem: predictor Σc<sub>i+h</sub>ε<sub>n−i</sub> and MSE σ²Σc<sub>i</sub>².</td></tr>
+<tr><td>2020 Q2(vi)</td><td>MA(1) estimation including mean</td><td>L11 / L13</td><td>Compute μ̂, R̂(0), R̂(1), solve invertible b̂, compute σ̂².</td></tr>
+<tr><td>2020 Q3(vi)</td><td>AR(1) forecasts and intervals</td><td>L12</td><td>Use AR(1) forecast and interval formula.</td></tr>
+<tr><td>2020 Q4(vi)</td><td>AR(2) forecasts, MSE and intervals</td><td>L12-L13</td><td>Recursive forecasts and MA-coefficient MSE.</td></tr>
+<tr><td>2020 Q4(vii)</td><td>AR(2) variance/correlation by Yule-Walker</td><td>L11 / L9</td><td>First equations give ρ(1),ρ(2), then recurrence for later lags and variance.</td></tr>
+<tr><td>Mock Q1(iii)</td><td>R code covariance-based forecast</td><td>L12 / L6</td><td>Use Γ, b<sub>h</sub>, solve, forecast, standard error and qnorm interval.</td></tr>
+<tr><td>Mock Q1(vi)</td><td>AR(2) forecasts and intervals</td><td>L12-L13</td><td>Official solution gives recursive forecasts and MSE via MA coefficients.</td></tr>
+<tr><td>Mock Q2(vi)</td><td>MA(1) estimation</td><td>L11</td><td>Official solution: ρ̂=1/4, roots 0.27 and 3.73, choose 0.27, compute σ̂².</td></tr>
+<tr><td>Mock Q2(vii)</td><td>AR(2) Yule-Walker variance/correlation</td><td>L11 / L9</td><td>Official solution starts with ρ(1)=0.8−0.4ρ(1), then recurrence.</td></tr>
+</table>
+<div class="source"><strong>Source:</strong> ma0367_2015_exam-.pdf, p.2-p.5; ma0367_2016_exam_.pdf, p.2-p.5; ma0367_2017_exam_.pdf, p.2-p.5; ma0367_2018_exam_.pdf, p.2-p.5; ma0367_2019_exam_.pdf, p.2-p.5; ma0367_2020_exam_.pdf, p.2-p.5; ma3508_mock_exam.pdf, p.2-p.4; ma3508_mock_exam_solution.pdf, p.2-p.10</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">Final review</span><span class="subject">L11-L13</span></div>
+<h1>Common Mistakes and Mini Self-test</h1>
+
+<h2>Common mistakes</h2>
+<div class="grid">
+<div class="warning"><b>Fitting mistake:</b> using true parameters when the question asks for estimates. If the question gives data or R̂ values, use hatted quantities.</div>
+<div class="warning"><b>Yule-Walker mistake:</b> building Ĉ with raw covariances when the lecture formula uses correlations for â=Ĉ<sup>−1</sup>v̂.</div>
+<div class="warning"><b>Noise variance mistake:</b> forgetting the σ̂² formula after estimating â, or using σ instead of σ².</div>
+<div class="warning"><b>MA(1) mistake:</b> solving the quadratic but choosing the non-invertible root.</div>
+<div class="warning"><b>Forecasting mistake:</b> mixing one-step and h-step forecasts; h-step AR(1) uses a<sup>h</sup>, not h·a.</div>
+<div class="warning"><b>Recursive forecast mistake:</b> using unknown future observations instead of previous forecasts.</div>
+<div class="warning"><b>ARIMA mistake:</b> forgetting differencing. ARIMA means the differenced series is ARMA.</div>
+<div class="warning"><b>Prediction-bound mistake:</b> using MSE directly as interval width; bounds need the square root of MSE.</div>
+<div class="warning"><b>R-code mistake:</b> misunderstanding index shifts: covg[1] is lag 0, corrg[i+1] is lag i.</div>
+</div>
+<div class="source"><strong>Source:</strong> ma3508_lecture11.pdf, p.3-p.12; ma3508_lecture12.pdf, p.2-p.12; ma3508_lecture13.pdf, p.6-p.15</div>
+<h2>Mini self-test</h2>
+<ol class="check">
+<li>What is the difference between R(k) and R̂(k)?</li>
+<li>Write the Lecture 11 formula for R̂(k).</li>
+<li>For AR(1), what is â<sub>1</sub>?</li>
+<li>Write the AR(2) formulas for â<sub>1</sub> and â<sub>2</sub>.</li>
+<li>How do you estimate σ² after estimating an AR(p)?</li>
+<li>For MA(1), why do we choose the root with |b̂|&lt;1?</li>
+<li>Write the AR(1) h-step forecast with mean μ.</li>
+<li>Write the AR(1) MSE formula.</li>
+<li>In AR(p) recursive forecasting, what do you do when a required future lag is not observed?</li>
+<li>What is the ARIMA(p,d,q) definition?</li>
+<li>Why is ARIMA(0,1,0) a random walk?</li>
+<li>Rewrite ARIMA(1,1,0) as a recursion for x<sub>t</sub>.</li>
+<li>What is y<sub>t</sub> in the SARIMA definition?</li>
+<li>What R object does solve(C)%*%v compute in the Lecture 11 code?</li>
+<li>What does qnorm(1−0.05/2) do in the mock forecast code?</li>
+</ol>
+<div class="exam"><b>Short answers:</b> 1) true vs sample estimate. 2) R̂(k)=n<sup>−1</sup>Σ(x<sub>j</sub>−X̄)(x<sub>j+k</sub>−X̄). 3) ρ̂(1). 4) see AR(2) card. 5) R̂(0)(1−Σâ<sub>j</sub>ρ̂(j)). 6) invertibility. 7) μ+a<sup>h</sup>(x<sub>n</sub>−μ). 8) σ²(1−a<sup>2h</sup>)/(1−a²). 9) replace it with an earlier forecast. 10) a(B)(1−B)<sup>d</sup>x<sub>t</sub>=b(B)ε<sub>t</sub>. 11) x<sub>t</sub>=x<sub>t−1</sub>+ε<sub>t</sub>. 12) x<sub>t</sub>=(1+a)x<sub>t−1</sub>−a x<sub>t−2</sub>+ε<sub>t</sub>. 13) y<sub>t</sub>=(1−B)<sup>d</sup>(1−B<sup>s</sup>)<sup>D</sup>x<sub>t</sub>. 14) estimated AR coefficient vector. 15) the 97.5% standard-normal quantile for a 95% interval.</div>
+
+</div>
+<div class="page"><div class="header"><span class="date">Audit</span><span class="subject">Source coverage</span></div>
+<h1>Source Coverage Audit - FINAL LOCKED</h1>
+<div class="green"><b>FINAL LOCKED audit note:</b> This version uses the candidate file as the base, preserves the locked Pack B style, changes candidate labels to FINAL LOCKED, adds only the compact estimation-vs-forecasting reminder, and keeps all existing honesty/scope notes.</div>
+
+<table class="mini-table compact"><tr><th>Uploaded source file used</th><th>Page ranges used</th><th>Content extracted</th></tr>
+<tr><td>Complete lecture notes/ma3508_lecture11.pdf</td><td>p.2-p.13</td><td>ARMA mean example; AR(p) estimation; sample mean/covariance/correlation; Yule-Walker matrix estimator; noise variance theorem; R estimation code; AR(1), AR(2), MA(1) estimators; worked examples.</td></tr>
+<tr><td>Complete lecture notes/ma3508_lecture12.pdf</td><td>p.2-p.13</td><td>General stationary/ARMA forecasting algorithm; AR(1) h-step forecast/MSE/bounds; causal ARMA via MA representation; AR(p) recursive forecasting; AR(2) worked example; R forecasting code.</td></tr>
+<tr><td>Complete lecture notes/ma3508_lecture13.pdf</td><td>p.2-p.17</td><td>AR(3), AR(1), AR(2) forecasting examples; ARIMA definition and differencing; ARIMA(0,1,0), ARIMA(1,1,0); gold-price forecast; AR(2)/MA(1) estimation examples; causality check; SARIMA definition and example.</td></tr>
+<tr><td>Some solutions/ma3508_mock_exam.pdf</td><td>p.2-p.4</td><td>Mock question mapping for R forecast code, AR(2) forecasting, ARMA definitions, best linear predictor, AR(1) forecasts, MA(1) estimation, AR(2) Yule-Walker.</td></tr>
+<tr><td>Some solutions/ma3508_mock_exam_solution.pdf</td><td>p.2-p.10</td><td>Official solution patterns for covariance-based forecast R code, AR(2) forecasts/MSE/intervals, AR(1) forecast intervals, MA(1) estimation, and AR(2) Yule-Walker recurrence.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2015_exam-.pdf</td><td>p.2-p.5</td><td>Yule-Walker, AR(2) forecasts/intervals, AR(2) estimation, MA(1) estimation, AR(2) variance/correlation radar rows.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2016_exam_.pdf</td><td>p.2-p.5</td><td>AR(1)/AR(2) forecasting, R forecast code, MA(1) estimation, AR(2) estimation, Yule-Walker radar rows.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2017_exam_.pdf</td><td>p.2-p.5</td><td>ARIMA definition, AR(1)/AR(2) forecasting, Yule-Walker derivation, AR(2)/MA(1) estimation, R AR(4) forecast code radar rows.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2018_exam_.pdf</td><td>p.2-p.5</td><td>AR(2) estimation, MA(1) estimation, AR(1)/AR(2) forecasting, Yule-Walker radar rows.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2019_exam_.pdf</td><td>p.2-p.5</td><td>R code estimating AR(3), AR(1) forecasts, AR(2) estimation, MA(1) estimation, AR(2) Yule-Walker radar rows.</td></tr>
+<tr><td>Past Exams Papers/ma0367_2020_exam_.pdf</td><td>p.2-p.5</td><td>R h-step AR(4) forecasting, ARMA h-step forecast derivation, AR(2) estimation, MA(1) estimation, AR(1)/AR(2) forecasting, Yule-Walker radar rows.</td></tr>
+<tr><td>TS_Study_Pack_B_L3_L4_FINAL_LOCKED.html</td><td>style only</td><td>A4 lined-paper style, card/table/source-audit structure. No L3-L4 mathematical content copied.</td></tr>
+</table>
+<h2>Uploaded relevant files not used for content</h2>
+<div class="blue">L1-L10 and L14-L15 lecture/exercise files were not used as mathematical content because this pack is scoped to L11-L13. L8-L10 concepts are mentioned only when needed as prerequisites, such as causality/MA representation/Yule-Walker continuity, and only in the context used by L11-L13. R_Comprehensive_Cheat_Sheet.pdf was not used for content because the complete L11-L13 lecture notes and mock solution already contain the course-supported code patterns needed here.</div>
+<h2>Missing / unclear areas</h2>
+<div class="warning"><b>No L11-L13 exercise PDF:</b> no uploaded exam-like-exercises-L11, L12 or L13 file was found in the Time Series folder. This pack therefore uses lecture worked examples plus mock/past-paper radar for practice mapping.</div>
+<div class="warning"><b>Past-paper official solutions:</b> official solutions for 2015-2020 past papers were not uploaded. Past-paper rows give strategy only; full official solutions are included only for mock where the mock solution file is uploaded.</div>
+<div class="warning"><b>R fitting packages:</b> the complete L11-L13 lecture notes do not print an arima()/forecast()/acf()/pacf() workflow, so this pack does not invent one.</div>
+<div class="warning"><b>No hallucination statement:</b> all mathematical definitions, formulas, code patterns and worked examples in this pack are taken from or directly derived from the uploaded Time Series lecture notes, mock solution, or past-paper question statements listed in this audit. No external ARIMA/forecasting theory was imported.</div>
+<div class="green"><b>Style note:</b> Pack B was used only as the visual/style/structure reference: A4 lined paper, Segoe UI body, Georgia headings, colour boxes, formula cards, R-code templates, radar tables, self-test and audit style.</div>
+<div class="source"><strong>Source:</strong> All files listed in this audit</div>
+
+</div>
+</body></html>

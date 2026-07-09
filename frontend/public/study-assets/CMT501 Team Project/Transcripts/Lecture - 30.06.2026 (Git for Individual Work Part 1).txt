@@ -1,0 +1,1174 @@
+Details:
+
+Lecture - 30/06/2026 (Git for Individual Work Part 1)
+Carl Jones
+--------------------------------------------------------------------------------------
+
+Contents:
+
+Managing yourself to play well in a team
+3:40
+Interactive learning
+6:22
+What's wrong with my local files?
+6:43
+What's wrong with OneDrive*?
+7:46
+Version Control Systems
+9:16
+• Released in 2005
+9:43
+Git - a distributed version control system
+10:04
+Distributed Version Control
+11:19
+In our domain
+12:40
+W Home • GitLab
+13:22
+Projects
+13:43
+Git is a free and open source distributed version control…
+15:49
+designed to handle everything from small to very large…
+16:01
+Install Git (if not already installed)
+16:40
+CARDIFF
+18:04
+Open Git Bash in directory
+19:11
+Create Git repository
+19:41
+What has happened?
+22:44
+It is the metadata for your repository.
+27:29
+Let's create some content
+27:50
+7 Filter
+28:41
+CD Preview
+28:47
+VSCodium Announcements
+29:53
+a Search
+30:05
+VSCodium
+30:14
+> This PC > Windows (C:) > Users
+34:57
+What's this "untracked" thing?
+36:16
+Untracked
+36:25
+main+ co
+40:15
+What's this branch thing?
+42:13
+• Let's assume that we're happy with our work.
+43:13
+Git commit with message
+46:12
+Repeat the process
+49:20
+Your Gitlab repository
+54:58
+Two repositories
+55:04
+Create new project
+55:19
+cp Environments
+55:34
+X Snippets
+55:55
+Gr Home
+56:13
+in Plan
+57:15
+Synchronise the repositories
+1:00:52
+What was the order of change?
+1:03:46
+Files
+1:05:32
+• The remote was created after our local and therefore the…
+--------------------------------------------------------------------------------------
+Captions:
+
+Auto-generated captions may contain errors.
+Okay, we'll make a start. It has been recorded for those who aren't here.
+0:02
+Um, hello. My name is Carl Jones. Um.
+0:08
+Oh. Hang on. So, yes.
+0:12
+My name is Carl Jones. Um, I look after the software engineering programs here at the university.
+1:01
+Um, and I work with Ian, who's the module leader for CMT 501.
+1:09
+He's off on holiday, so I'm covering today and Thursday morning.
+1:13
+Come in, come in, come in. Can you write your name on the whiteboard before you sit down, please?
+1:20
+And I'll sort out the register then. Okay. Chalks in the in the gutter at the bottom of the board.
+1:26
+Go right, go right. Right a bit, right a bit. Thank you very much.
+1:38
+Okay, so we've got a couple of introductory sessions for the project so that we get you all on the same page in terms of how to work in a team.
+1:58
+Yeah. I'm gonna have to start again.
+2:07
+Good morning. Could you write your name on the white on the blackboard, please.
+2:13
+And then I'll sort the register out afterwards. Okay. In the gutter at the bottom of the board.
+2:17
+Thank you. So we've got to start with today's session, which is an introduction to a system called git,
+2:36
+which is the world world's favourite version control system.
+2:44
+Um, and we're going to focus today on how you do that individually. And on Thursday then we're going to look at how you would do it in teams.
+2:51
+So on Thursday you're actually going to get together and you're going to start working on the same thing.
+2:57
+And you're going to start clashing with each other okay.
+3:02
+But it's important that you understand the basics of the commands before you start working in a team.
+3:05
+Okay. So today is all about getting things individual. Um, I'm hoping it won't take the full four hours.
+3:09
+Okay. There will be do along with me. It's not going to just me.
+3:19
+Me talking at the front. I'll be doing stuff, and I want you to do it with me as we go.
+3:23
+Um, that might mean installing stuff. So if you've got laptops, please be ready.
+3:29
+Um, okay. So.
+3:35
+Why do we think we need something like version control or get.
+3:41
+These are some random thoughts I put up there.
+3:48
+It's all about putting control onto your work as you make progress.
+3:51
+Sometimes you'll want to go backwards, sometimes you'll make mistakes and you'll want to explore options.
+3:57
+You want to do two different paths. If you did that without some level of control, you'd be constantly having to remember what you did.
+4:01
+You'd have different folders with different names.
+4:10
+Wouldn't it be nice if there was a system that let you explore this and move backwards in time and forwards in time?
+4:15
+The other thing is this second point about recording your thoughts. So in any project, you're going to be making small steps as you go,
+4:21
+and you'll want to be able to tell others in your team what you've done, but also why you did it, okay.
+4:31
+And you will have made choices. You'll have made design choices.
+4:39
+How to write that bit of Python. You could have used two different libraries.
+4:43
+Why did you pick that one over that one? What were the intended benefits and what were the possible consequences?
+4:47
+Okay. There's nothing more valuable than looking back in history and going.
+4:53
+Now I understand why that person did it that way. Okay. Because you'll look at the code as it stands and go.
+4:59
+Why did they do it that way? Idiot. Yep. And then you go back.
+5:04
+And at the time, they made a perfectly reasonable decision. You also need to have a backup.
+5:09
+Okay, that's just good practice. Yeah. Machines die.
+5:14
+This disks die. Yeah. You need to have a backup. Um, and ideally, you want feedback loops,
+5:19
+and that means you want to have a nice process based on a tool that allows you to get feedback from other people in the team.
+5:26
+Yeah. Because that way, gross shared understanding. On Thursday, what we'll do is we'll talk about processes for working in a team.
+5:35
+Um, and what you typically don't do is you don't slice up the problem at the start and then never walk into other people's areas.
+5:44
+Yeah, you always work on what is the highest priority, and that might mean that you have to go and work on top of someone else's code.
+5:51
+Well, if you've never talked to them before, you don't understand how they did it and why they did it.
+5:58
+Yeah, it's going to be difficult for you to actually deliver the things in the right order.
+6:03
+Come in, come in. So we're holding out the introduction.
+6:09
+Don't worry. Okay. You can catch up on this bit. So there's going to be a bit of talk.
+6:18
+You'll be watching me do stuff on git and git lab. Um, and I want you to be doing stuff as well.
+6:24
+And there is an exercise today for you to build something which is data sort of data science related,
+6:30
+uh, but will be an individual thing and then on Thursday will expand it into a team thing.
+6:36
+Okay. So what are our other options for doing all this?
+6:41
+Well, we could just use our local file system. Write your C drive on.
+6:48
+Your laptop's right. So that's got positives very fast access.
+6:53
+You're not going across a network straight across your machine. Fast access.
+6:57
+You don't need a server. Wherever your laptop is it works. You're not having to connect to anything.
+7:02
+Yeah. And all the tools that we're going to use work really well with it.
+7:07
+They're optimised to work with the local disk. Yep. What's negative?
+7:10
+Well, if your disk dies, you've lost it. You've got no backup.
+7:14
+You've got no history. You've got no linkage of the changes that you've made.
+7:19
+And it's very difficult to merge things together. If you wanted to manage different versions, you would have to manage your own file structure.
+7:25
+My option one. My option two. My option three. Copy files between them yourselves.
+7:33
+You'd lose track of what you were doing if you were trying things out. So local files really quick, but lots of negatives.
+7:38
+What's wrong with OneDrive? Okay, so again OneDrive.
+7:46
+It's fast because it's synchronises automatically between your local disk and the network.
+7:52
+You don't need the network until you have to sync. It gives you some history and it gives you a backup.
+7:58
+But all this thing about linkage and merging and multiple options doesn't come as default.
+8:04
+And what you also find is that some of the tools don't work really well with OneDrive. I assume you've done Python programming, all of you?
+8:12
+Yeah. Have you used a tool called PyCharm to do Python programming?
+8:20
+Yep. So PyCharm is from a company called JetBrains and we use that.
+8:25
+We use the Java version, IntelliJ for lots of stuff. IntelliJ and OneDrive do not get on.
+8:30
+It will work nine times out of ten. And then the 10th time it'll go, File.
+8:38
+Does not file. Not right. And the reason for that is when OneDrive is sinking with the server, it puts a little flag on the file.
+8:43
+And if as it's sinking PyCharm looks at that file, it goes, it's not a proper file because it's in this funny state where it starts trying to sync.
+8:54
+And I get loads of questions. Why is my stuff not working? It's not. It's it's failed.
+9:03
+And it's like because you're on a OneDrive. So my recommendation to all my students is do not put your code on OneDrive because of that.
+9:07
+So we have these simple version control systems and there's loads of them out there.
+9:17
+Um, I grew up on a system called subversion when I was working in industry.
+9:22
+Git is currently the dominant one. It's got a huge market share.
+9:27
+Um, people like Google, they roll their own.
+9:31
+They actually use their own version control system with a very different model to what most people would do.
+9:34
+but we're going to use gate because of its market share. Um, he created it as Linus, who also created Linux.
+9:40
+Yeah, it's been around now for 21 years.
+9:49
+It's open source. Um, and it is used by 95% of developers out there.
+9:53
+According to a survey in 2022. So it's a very this is industry standard stuff we're telling you today.
+9:58
+Okay. Git is what's known as a distributed version control system.
+10:04
+I'll explain what that means on a next slide. It is you will hear the term repository.
+10:14
+That's what we talk about. You are going to set up today a git repository.
+10:20
+All it is is a folder with a subfolder in it.
+10:25
+And that subfolder is called git. Yeah. But all the magic sits in that dot git folder.
+10:29
+Okay. We will have a local repository on your laptops,
+10:37
+and you are going to connect it to a remote repository that is running on a server on a hosted GitLab instance.
+10:43
+And I'll explain what GitLab is a little bit later on. And it supports local work with full tracking.
+10:52
+So you get all the benefits of working locally.
+10:59
+Yeah, you can work disconnected, but then when you want to, you can connect to a server and you can synchronise.
+11:03
+And we'll do that today. We will synchronise your work between your local and a GitLab repository.
+11:12
+So by distributed what do we mean. Well your machine will be this one here computer A and it will have a repository on it with versions of code.
+11:20
+And there will be another git repository running on GitLab.
+11:35
+So there are two repositories. Yeah, that's why it's distributed.
+11:41
+And there are commands to say send it from GitLab.
+11:47
+Get it from GitLab okay. And it will keep the two in sync.
+11:51
+The fun starts on Thursday when you have a central GitLab repository for your team.
+11:56
+And person A has a repository on their machine, and person B has a repository on their machine,
+12:07
+and you start working autonomously and your code may change the same file.
+12:14
+Your changes will have an impact on the same pie file. And then you've got to merge it together.
+12:22
+And you do that in a civilised manner without killing each other. All right.
+12:29
+And git helps you manage that process. Okay.
+12:33
+So you're going to be running on git Cardiff, UK.
+12:38
+So if you've never seen GitLab open up a browser and go to that web address okay.
+12:44
+Git Cardiff, UK. You can log in with your normal student account and have a look at what GitLab looks like.
+12:51
+What we're going to do shortly then, is we're going to install GitLab locally if you haven't already got it.
+13:02
+Okay. So if you want to just go and have a look at git Cardiff, UK.
+13:07
+What you should see. Is something that looks like that.
+13:17
+Which way? Will GitLab cause projects?
+13:42
+Each project is essentially a repository with a load of other stuff around it as well.
+13:51
+Okay, so all of these are repositories that I have far too many.
+13:56
+Okay. Yes.
+14:05
+Are you getting an invalid credentials? So what credentials are you using?
+14:12
+Uni email and then password. You should be able to get in with that.
+14:20
+How many people are getting in? How many people have logged in? Yes.
+14:28
+Your student ID was a matter of concern. I did not.
+14:33
+Always see my number. Oh, yes.
+14:40
+Did all of you use your student number, or do some of you use your normal. Name?
+14:46
+Yeah. Use your student number. Okay. I thought they'd fixed that issue, to be honest, but yes.
+14:54
+So. Yes. C2 blah blah blah blah blah blah at cards or UK works.
+15:04
+Okay. Okay so everyone got GitLab chance to look at it.
+15:09
+So. The other website you need to know about and bookmark I would suggest is this one.
+15:21
+Okay so https git dash. So that's one here.
+15:33
+The nice thing about this website is you get a load of learning resources on it, including a full free ebook.
+15:58
+Okay, so if anything I say today doesn't make sense the first 2 or 3 chapters of the book, if you go to place okay.
+16:11
+It's also where you can install git locally from.
+16:23
+Okay. You can find the installer on this page. Okay.
+16:29
+And what we're going to do next. Is I want you to install it.
+16:38
+Okay. If you're using Cloud Desktop, it's installed already. Yeah.
+16:44
+If you want to install it locally, you pick the installer for your platform or well known platforms that are supported.
+16:48
+Windows, Linux, Mac. Um, the standard options will work well.
+16:56
+You don't have to go and change many of the configuration options on windows.
+17:01
+It is useful if you choose git bash um as your command prompt.
+17:07
+It's an easier window to use with git, but you could also install the windows command prompt.
+17:12
+So how many of you have already got git installed on your machines? Yeah.
+17:18
+How many? Ah, there's quite a few who haven't. Okay, so at this point I'll say let's get it installed.
+17:23
+Okay. Okay. Everybody needs to get git installed so you can use it on your projects.
+17:29
+All right. So everybody on Windows or Mac.
+17:34
+Yep. Okay. So I'll give you some time.
+17:39
+Now for those of you who came in a little bit late, get git installed.
+17:42
+Yeah. Once you've got it installed, come and write your name on the whiteboard.
+17:47
+The blackboard at the front. Yeah, I'll use that to take the register at the end.
+17:53
+Okay. To make sure you all get your tick today. All right.
+17:58
+So get git installed from that website.
+18:02
+Yep. And I'll give you five, ten minutes to do that when you're all done.
+18:08
+Get your names on the blackboard and then we'll move on. Okay. Any questions, any issues let me know and I'll come around to you.
+18:16
+Okay, everyone good with that? Can I move on?
+18:45
+Yep. So we're already in git bash.
+19:03
+If you've done this via Windows Explorer. If you right click on the folder, you can actually just say open git bash here.
+19:18
+Okay. You have to go through show more options to get there.
+19:28
+But as you can see under the arrow there there is an option to open git bash.
+19:32
+Okay. So if you had done it all with the explorer you could have gone that way as well.
+19:39
+So what we're going to do now is going to create a git repository. So before you do that in your git bash window I want you to type LZ minus A.
+19:45
+Now minus a means show me everything including hidden files.
+19:56
+Okay. And you should see that it's completely empty. Yeah, that's dot slash and dot dot slash is Unix for dot slash is the current directory.
+20:01
+And dot dot slash is the directory above you. Yeah. So if you want to go to the directory above you you do CD space dot dot.
+20:15
+And you can go up. All right. So you can see now it is completely empty.
+20:24
+There's no files in this folder that I've just created at all.
+20:32
+Yeah. So now we're going to turn that folder into a git repository.
+20:37
+And the command to do that is git in it. Okay.
+20:42
+So we're initialising a repository. So I want you to do that.
+20:47
+And then I want you to do LS minus a again. Okay.
+20:52
+Okay. You should see that there's a difference. Yeah. All good with that?
+21:08
+Sorry. I'm in the way of the football. So the only difference between an empty folder and a git repository is this subfolder.
+21:30
+This git directory. Yeah. Um, if you want to, you can explore what is in there.
+21:42
+But essentially it is all of the metadata about your git repository.
+21:49
+Okay. And we'll see what metadata it gathers later on.
+21:57
+But it's basically all the revisions.
+22:01
+All your commit messages, all the linkages between your changes, everything that makes a git repository useful is in that docket folder.
+22:03
+Okay. Just to say I'm not strict about questions, if you want to ask a question at any time, just shout out.
+22:13
+All right. I'm not precious about I'm talking.
+22:31
+You're listening. Just shout when you're something troubles you. All right?
+22:35
+Okay. Everyone good? Got a git repository? Got your folder. Yep.
+22:41
+Let's move on. So, what has happened? Run git status.
+22:45
+In your directory in your command line window,
+22:58
+run git status and you should get a sort of message like that on branch main you might have master rather than main.
+23:01
+Yeah, no commits yet and there's nothing to commit.
+23:14
+If you've got master and you want to change it to main.
+23:20
+Run those commands that I've got on the slide there.
+23:28
+Uh, the one is slightly more woke than the other. Yeah, right.
+23:35
+Okay, so if you read the book, if you read the book, they still use master and all the examples are master.
+23:40
+Okay. And then if you remember the, um,
+23:48
+Colston statue demonstrations in Bristol when the statue was pushed off the dock and there were all the woke protests about that same time they went.
+23:52
+Master is linked to slave. Yeah, yeah.
+24:02
+So, um. Yeah, that is why they changed the default to main.
+24:08
+Okay. Other people have gone trunk. Um, but that's obviously offensive to elephants.
+24:14
+Um, so, like, um. Yeah.
+24:19
+So. Yeah, if you want to change it from master to main, you have to run this command here to tell git that you want the default branch to be main.
+24:24
+You then have to get rid of that dock git directory, i.e. get rid of the repo and re initialise and you'll have a main branch.
+24:34
+Okay. We'll go into what the different what branches are later on.
+24:42
+Um but that's the default branch if you can think of that as the A main runway on your project.
+24:48
+It's your main timeline. In git, you can have many timelines.
+24:56
+And they're called branch. Okay. Does anyone have to change from master to main?
+25:00
+Does anyone going through that change? You're doing that.
+25:07
+You've got three commands here that you have to run if you want to change the default branch to main.
+25:13
+So if you've got here on branch Master and you want it to be main, you need to run these commands.
+25:18
+How to delete rm space or for directory dir remove directory and what you probably have to do.
+25:27
+Let me show you how to do it. So LSB. LS see, the space is important.
+25:44
+LS minus a. If I want to delete dot git.
+25:49
+Does that do it. No. Is it capital smaller. Git.
+25:55
+Uh. MDI.
+26:02
+Ah. Oh. Hang on. Ah m minus. Ah. That's good.
+26:06
+That's it. Mm. Minus r. Yeah.
+26:14
+We'll get rid of every. We'll get rid of your git folder so you can see it's now gone.
+26:17
+Minus r. What do you think. It's the R stands for. Come on.
+26:22
+Your computer scientists. Recursion.
+26:26
+Okay. It will recurse its way through the entire folder structure to get to the end.
+26:35
+Okay, so now I've got to do a git init again to get it back. Yeah.
+26:40
+There we go. Okay.
+26:47
+If you feel more comfortable doing this in Windows Explorer normal file handling stuff, feel free to go and just delete it in Windows Explorer.
+26:53
+Okay. Just because you created it in git bash doesn't mean you have to delete it in git bash.
+27:02
+They're just files. All right. So if you if you feel more comfortable point click drag drop things like that.
+27:06
+Do it in Windows Explorer. Okay.
+27:14
+Can we move on? Yeah. All good.
+27:21
+Just check it. Yep. All right. So. So this dot git folder is all of the metadata.
+27:28
+It records all of your audit trail of every change you make.
+27:34
+And it's essentially the configuration of your repository.
+27:39
+So that git config stuff we did earlier would be recorded somewhere in a file under dot git.
+27:41
+Yeah. So let's create some content.
+27:49
+Yeah. So what I'm going to do is create a very simple index.html file and populate it with some Hello World content.
+27:54
+Yeah. Now you could do this any way you like. Okay.
+28:04
+So Windows Explorer vs code, whatever you want to use.
+28:12
+Yeah. Do it. But I want to see an index.html file in that folder.
+28:17
+Yeah. So. The way we can do this is we can go down to.
+28:24
+Ha ha ha ha ha! C users sm cj one.
+28:45
+Code demos. There's the folder.
+28:54
+Yep. So as I said, they're just files. Yep. What I'm going to do is I am going to right click and I'm going to open this.
+29:00
+Um I'll slowly open it with. Oh that's interesting.
+29:10
+Let's go up one. Can I do it there. Show my options.
+29:16
+Right. I used to have VSCode as an option there to allow me to open it up.
+29:33
+Um, I had to reinstall it last week, so they've taken away that option.
+29:39
+So I'm going to do is I'm going to open VS code here, which is VS code.
+29:42
+So Visual Studio Code. Okay.
+29:48
+And then I will open a folder. And I'm going to go to.
+29:58
+My folder. Where is it. There it is over there. Yes I trust myself okay.
+30:05
+Do you use Visual Studio Code or something like that between VS code and VS code?
+30:23
+Yeah, this is the open source version. Okay, so VS code is Microsoft's private version with all sorts of bells and whistles and tracking inside it.
+30:28
+VS code is the open source version. Um, it's used to make lots of other ideas as well.
+30:39
+So there's a really interesting one from Google for AI driven development that's just come out.
+30:46
+But if you look at it, it looks just like VSCode. Mhm. Okay. So it's it's the core.
+30:51
+How many of you use Chrome as your browser. Yeah. There's an open source version of Chrome called chromium.
+30:56
+Yeah. And then there's lots of other browsers based on Chrome based on chromium.
+31:02
+And Chrome is one of those. It's got all the Google tracking in it. Yeah.
+31:07
+So if you want Chrome without the tracking, get chromium.
+31:11
+Yeah, right. So, um, let's put a folder in there.
+31:16
+A file in there. Um. If you're not Proficient with HTML.
+31:21
+Don't worry, you can just copy what I've done there. I'm not going to put any judgement on your HTML skills.
+31:43
+Okay, that's eight weeks down the line when you've done the project. But today I don't really care.
+31:52
+All right. So I've created a file called index.html.
+31:56
+Um, and then that's just some mark-up.
+32:04
+The head is what appears on the bar at the top, and the body is what appears in the page.
+32:10
+Yep. Save the file with control S.
+32:16
+Hello? Yes. So there's my editor over there.
+32:56
+It's got some content in it. I've saved the file, which is control S, if you want a shortcut.
+34:28
+And you can see that the file now exists in the folder. Yeah.
+34:34
+You can see the files there by doing command. So remember it's just files two different views.
+34:39
+Command line went to explorer. Do a git status. Just to see what Jeter's think has happened.
+34:43
+And you can see that at the bottom Git has picked up that index.html is what it calls an untracked file.
+34:55
+Yeah. You put the file in there, but you haven't told git.
+35:07
+It's important. Git doesn't care about it. It just says, oh, it's over there. Is it right?
+35:10
+I'm not going to do anything with it until you tell me. It's important that I need to do something with it.
+35:13
+Yeah. So what I'm going to do there, we've been going for about an hour.
+35:19
+Once you've got to the point where you've got a HTML file and you've saved it,
+35:30
+and it's in the folder and you've docked its status and it's untracked, we'll take a ten minute break.
+35:33
+Okay. So come back at 11:10. Yep.
+35:39
+If you've got any questions, any issues with what you're doing, ask me now and then at 11:00 we'll tell git about the files.
+35:42
+All right. Okay. So see your ten past. Okay.
+35:51
+So. We're at this point now where we have a file that we've created.
+35:57
+Um, we've checked the status of our repository. And at the moment it's just a file and git knows nothing about it.
+36:08
+So what is this untracked thingy?
+36:15
+Okay. It basically means we have a file, but git doesn't care about it yet.
+36:20
+Okay, it's just there. We need to tell git to start tracking it and move it to our git calls it staging area.
+36:29
+So essentially what we do is we create a load of files in your projects, and until you tell git to care about it, it doesn't know.
+36:38
+Then you put it into a staging area and you'll build a collection of files and changes in the staging area.
+36:45
+And then when you're ready, you'll do the next step, which is to commit those changes as a transaction.
+36:51
+So in order to tell git to start caring, we need to add the file to the staging area okay.
+36:58
+And the way we do that is we tell via git add.
+37:06
+So git add and you need to tell it which files you want it to care about.
+37:11
+If you want it to care about all the files, just put a dot. Yeah.
+37:18
+And that basically means all files. So I'm going to do a git add dot.
+37:22
+And then I'm going to do a git status again. And you can see that the status has changed.
+37:27
+Yeah, there's no commits. But git now is saying are there are changes to be committed.
+37:37
+I have things in my staging area. That I will commit when you tell me.
+37:46
+Yep. And the index.html is marked as a new file that git cares about.
+37:54
+Okay. So you can see that that bit has changed because we did the git add.
+38:00
+Okay. All okay with that.
+38:06
+So now we're tracked. So.
+38:15
+You're doing that. What I want you to do now is create another file. Any file you like stylesheet.
+38:24
+Another HTML file. Yeah. Repeat that process without me telling you what to do.
+38:29
+Step by step. Okay. Create a file and add it to see it untracked.
+38:35
+And then see it tracked. Okay. Always run git status to make sure that you can see what git is doing after each step that you do.
+38:41
+Okay. You can be as fancy or as simple as you like.
+38:50
+You can link the two HTML files together. You can add stylesheet, do whatever you want.
+38:53
+Um, put a Readme in there if you want me.
+38:58
+I don't really care. Okay, just add some more files and play with what git add and git status does.
+39:02
+If you want to try changing an existing file, see if that makes a difference to the status.
+39:12
+Okay. Okay.
+39:16
+How's that going? All right. I've got a second file in there. Rift with git add and git status a little bit.
+39:19
+I did a little bit of playing around here.
+39:30
+I changed index.html, so the file we'd already added after the ad, I changed it and then I added another file in the same folder I added in about us.
+39:32
+The other thing that always goes to the bottom of a web page, um.
+39:43
+You can see I did a git status before I did a git add. You could see that it's still wanted to commit index.html.
+39:49
+Changes not staged to commit I had modified index.html and I had added about us, but git did not know about those changes.
+40:00
+Yep, when I do a git add basically says We now have got two files ready to commit, and that would include the modification to index.html.
+40:12
+Yep. So essentially git add is a way of telling git which files you want to be managed.
+40:25
+Yeah, there are times when some of the files you create, or files that are created by tools that you're using, you do not want to put into git.
+40:33
+Okay, so most of you done Python. Yeah. That's an interpreted language.
+40:45
+Yeah. So it doesn't have a compiled version.
+40:51
+If you were doing something like C. When you compile C you get a binary version of the file out.
+40:56
+You don't want to put the binary versions into git.
+41:03
+You only want to put the source code into git because you can regenerate the binaries anytime you want.
+41:06
+Yep, these are about versioning the source files, not about the binaries.
+41:13
+Yep. Git provides you with a way of telling the repository which files to always ignore.
+41:18
+It's called a. Gitignore file. Okay. We'll get into that later on.
+41:27
+Yeah. Probably Thursday. Yeah. Most Ides so PyCharm and things like that.
+41:32
+When you create a project they will create a. Gitignore file for you.
+41:38
+They'll say ah I can see you're doing a normal Python file. These are the files you would ignore.
+41:42
+All right. Um, if you want to do it by hand, just do a search for dot.
+41:48
+Gitignore files for Python projects and it would give you a docket ignore file that would ignore the useful things you don't want anybody to get.
+41:55
+Okay. And then you just drop that file into the top level alongside your git folder.
+42:03
+Okay. So we're tracking let's talk about this branch thingy just to get that out of the way.
+42:11
+So we had the discussion earlier about Main and Master. You've always now been working on the main branch.
+42:20
+Each branch is essentially a train of thought or a timeline. Um, you can create branches really quickly and easily in git.
+42:28
+It's what if it's selling features that it's an easy thing to do?
+42:39
+Um, when we get into team development, we will encourage you to use lots of branches.
+42:44
+Yep. But we will also encourage you to throw away branches very quickly.
+42:52
+Okay. One of the most dangerous things in git is to have what's called a long lived branch.
+42:57
+Yep. And we'll explain why that's dangerous later on.
+43:03
+But for now, everything is being done on the main, um, branch.
+43:07
+So let's assume we're happy and we want to do what's called a commit.
+43:15
+We're happy. We've got to commit this. If you're working in a team.
+43:21
+Yep. I think this is my contribution now to the team's code base.
+43:25
+Yeah. My unit of work is done. In order to commit our work.
+43:31
+We use the git commit command. With every commit, you have to provide a message.
+43:36
+And git commit messages are really important. Yeah. And as I said earlier, it's not just about saying what you did.
+43:45
+It's about saying why you did it. What did you think about when you were doing this.
+43:53
+So. Git commit.
+44:01
+If I were to hit return there I'm not going to.
+44:08
+But if I were to hit it, a text editor would pop up. And in there, it would expect you to provide the message.
+44:11
+Yeah. But I want to provide the message on this command line.
+44:19
+So I type minus M. Yeah.
+44:25
+And then in quotes. Initial commit. No styling.
+44:29
+By choice. Okay.
+44:44
+So if anyone looked at me in the future when you've just had a really plain couple of files there.
+44:49
+Carl. Look, it was my choice. I decided not to do any CSS at this point to make it look pretty.
+44:54
+Right? Um. You will obviously write in your real projects something a bit more useful,
+45:01
+a bit more informative, but it's not a lot to say about two HTML files, is there?
+45:10
+So let's commit. Two files changed 18 insertions.
+45:15
+The insertions are essentially the lines. If you counted up the lines across the two files, it would be the number of lines.
+45:24
+And you can see that it's committed. Those two files. It committed the files that were staged.
+45:29
+If I hadn't staged the file it wouldn't have committed it. Yeah.
+45:36
+So let's that's to get status. We're on the branch main and we have nothing to commit, right?
+45:40
+All of our changes have just been committed. Right. If I started making changes again.
+45:49
+Yeah, it would say there were things to change again. All right.
+45:55
+Let's see what's on next slide. Yep. So git commit with message.
+46:10
+That's what I said. You leave out the M and editor will open.
+46:16
+Um I don't know how many of you were being observant, but if you look at Visual Studio Code,
+46:20
+did you see that that little icon there was changing as I was adding files?
+46:28
+Git is basically built in to a lot of Ides. Yeah.
+46:33
+Okay. If you click on that, it would have shown you all the files that were changing. You can put the message in here.
+46:41
+You could hit the tick there to commit. It's quite helpful that it'll go.
+46:47
+Did you forget to add your files? Would you like me to add them for you before we commit it?
+46:52
+And it will just actually guide you through stuff. Yeah. Most Ides will have some form of git integration built in.
+46:57
+PyCharm definitely has. Visual studio definitely has. Okay.
+47:08
+The next git command that is useful is git log.
+47:18
+Okay so I'll do a clear now here.
+47:26
+And then I'll type git log. So remember right back on the first slide I talked about history.
+47:32
+Yeah. It will tell you all of the commits that were made and which files you can get which files were changed by each commit.
+47:44
+The standard doesn't tell you that, but it can tell you who made it when they made it and what the commit message was.
+47:57
+Now in terms of going back in history, if I made a series of commits now and then I go, oh, I've really messed up.
+48:05
+I want to go back to the one right back here.
+48:15
+This commit ID here, the one the hex big hex number.
+48:21
+You can go back to that point in history.
+48:25
+Okay. That's one of the beauties of git. Okay.
+48:30
+We'll explain all the forwards and backwards in history later on.
+48:34
+But this idea is important. You can actually use a shortened version of the ID and you can go back in history.
+48:38
+Yep. And the files will revert to how they were at that point in history.
+48:47
+So if you've added files they will just disappear if you change files or those changes will disappear.
+48:53
+Yeah. This is the beauty of version control, right? You can run experiments.
+49:00
+Yeah, you can try stuff. And if it's a complete failure, just go back and try again.
+49:06
+Okay. Everyone okay so far?
+49:13
+Yeah. So do you want to have a play?
+49:18
+Yep. So do what it says there for ten minutes.
+49:28
+Add files, add them, commit them. Check the log.
+49:33
+Yeah. Get used to just running that cycle. Add, you know, add files add to git commit to get go back add files add add.
+49:37
+These are your friends now right. Do your git status. Do you get logs.
+49:47
+See what's going on. Any questions. Shout out but I'll give you till 22 just to have a play.
+49:50
+Okay. The next thing we do is we get it off just your local laptop, and we've got to talk to GitLab.
+49:58
+Okay, so let's get really good at doing the local stuff.
+50:07
+Ten minutes. So hopefully you've had a play with that.
+50:11
+You've got used to the basic commands to do things locally. Um.
+50:15
+But everything is still local, even though all the history is there.
+50:19
+It's just files if you lost your laptop. If you lost your disk.
+50:23
+Right. You've lost everything. So we want to back up what we've done.
+50:27
+Now, at this point, if you just wanted to drag that folder to a OneDrive folder for backup, that would be acceptable.
+50:31
+However, do not do git on OneDrive. Yeah, but why not?
+50:39
+We're doing everything we get. Let's use git properly and we'll synchronise the changes to another repository.
+50:44
+So there are loads of players in the hosted repository marketplace.
+50:51
+The most the biggest most famous one is GitHub. How many of you have got GitHub accounts already?
+51:01
+Excellent, good. Um, GitHub. Owned by Microsoft.
+51:07
+How many of you got GitHub student accounts on GitHub?
+51:12
+The education pack worth getting. If you've got a GitHub account, get it convert it to the education pack.
+51:16
+You get loads of stuff with it, including a bit of GitHub co-pilot chat, which is the AI coding agent.
+51:24
+Not as generous as it was a month ago. They put their prices up recently, right?
+51:34
+But you get something. Yeah. Um, so GitHub is the one I would suggest.
+51:39
+You know, whatever you do in university, you don't do it on GitHub.
+51:46
+You do it on GitLab because that's where we need for marking. Lift it shifted.
+51:50
+Drop it on GitHub. Talk about it in interviews. Right. That's your portfolio going forward.
+51:55
+So if you haven't got a GitHub account get one okay.
+52:00
+It's your presence in the world. It shows you do stuff. GitLab is probably second in the market.
+52:03
+Um, slightly less focussed on the education space.
+52:11
+Um, very much focussed on industry and the entire life cycle of industry.
+52:15
+And then Bitbucket is another one that comes from Atlassian, um, who make a very popular project management tool called Jira.
+52:22
+And therefore people who have gone with Jira tend to use Bitbucket as their repository.
+52:31
+Okay, so the one we use in the university is GitLab.
+52:37
+As I just said about GitHub, um.
+52:42
+We self-hosted there is GitLab in the cloud, but we self-hosted our account and you can get to it, as I showed you earlier by going to GitHub Cardiff.
+52:48
+So if you go there you'll see a page that looks something like that, except it'll have your face on it, not mine.
+53:02
+Um, they've recently changed the UI to have that dashboard feel in the middle.
+53:08
+Let's actually just do this by going to GitLab. Much easier than trying to go through the slides.
+53:17
+the projects that's your way in to all of your repositories groups that allows you to organise your projects.
+53:29
+So basically they're like folders or directories in GitLab speak um, work items.
+53:37
+You can do planning in GitLab. So you can have an issues board.
+53:45
+We'll look at that on Thursday when we get into team use of GitLab.
+53:50
+Um merge requests. Again, that is a way in which you make sure someone else looks at your work before you commit it to GitLab.
+53:56
+Um, and then there are loads of other things, such as environments,
+54:06
+because this manager is not just your source code, but the whole process of getting your system deployed somewhere.
+54:08
+Yep. We're not going to go into that. Yeah.
+54:16
+Um, we're going to focus on the work items part and the use of version control.
+54:21
+So what we're going to do is we're going to create a project in GitLab.
+54:28
+Yep. And then we're going to link the two together. We're going to link the one on your laptop to the one that you create on GitLab.
+54:34
+Okay. And then we'll synchronise the two. Okay.
+54:42
+So I'll just go through the slides to say what we're going to do. And then I'll do it live. And you can do it with me as we go along.
+54:45
+Okay. So we can see here we will click New Project.
+54:50
+And then we'll choose a blank project and select the defaults. That will give you a repository in GitLab with a file in it.
+54:55
+and then you'll have two repositories. Okay. So let's do that together.
+55:04
+So here I am in my GitLab over on the right hand side.
+55:12
+Yep. There's a button new project. Click that.
+55:21
+Yep. And we are then just going to create a blank project.
+55:27
+So I click that. Now what did I call it I called it git for CMT 501.
+55:32
+It could have the same name. There's no issue with it because it's basically on two different machines.
+55:41
+Right. They don't know about it. They don't know anything about each other yet. So I'm going to call it git for CMT 501.
+55:48
+I have to pick a group or namespace because I've got so many Namespaces.
+55:57
+I have to tell it which one you may not have, that it might just default to your username.
+56:02
+So I'm going to go to change one. So pick your user so C2 for whatever it is.
+56:09
+Yep. The project slug or the project name is going to be the same.
+56:18
+You can leave it as private for now.
+56:26
+Obviously when you do your project and you're in a team, if it's private, you will have to invite other members to it.
+56:29
+Okay, if you make it internal, anyone can see it.
+56:37
+There's a default here to initialise the repository with a Readme.
+56:40
+Normally I would say do that. Yeah, but today to make things slightly easier I'm going to say don't write.
+56:47
+Turn that off and uncheck that box. Um.
+56:54
+I'll explain why as we go through the the next steps.
+57:01
+Okay. I'm going to turn that off. So everything is everything is turned off now.
+57:04
+Now I'm going to create the project. Yeah.
+57:12
+And it tells me the repository for this project is empty.
+57:17
+Yeah. So basically I am where I would be if I don't get in it.
+57:21
+Yeah. If you think behind GitLab, there is now a file, a folder and a dot git folder.
+57:32
+And this is just a web interface to what you did locally.
+57:41
+Yeah. Everyone okay with that so far everyone got your GitLab repo created.
+57:46
+Yep. So what we don't need to do is try to link the two together.
+57:54
+Yeah. So go over to the right hand side over here and there's a code button.
+58:01
+And hit the down arrow. And what you can see are two URLs.
+58:07
+One says clone with ssh and one says clone with https. You have two network options for connecting the two together.
+58:16
+Yep. We're going to go down the Https route. If you went down the SSH route you would have to create SSH keys and tokens.
+58:26
+Yeah. There is a link somewhere on GitLab that tells you how to do that.
+58:35
+The preferred way these days is Https. Okay. So if you now click on the little icon next to Https to copy the URL and click on that.
+58:42
+Yep, that URL has been copied to your local clipboard.
+58:59
+We now need to go to our local and tell it to connect to that remote.
+59:05
+Yeah. So here we are back in git bash.
+59:11
+Yep. And I want to tell my local where the remote is git remote add because I'm adding a new remote origin.
+59:21
+That is the default name but it's basically a pseudonym for the URL.
+59:40
+Yeah. And then you need to paste the URL to do that shift insert on windows.
+59:47
+Oh sorry, I don't know what it is on a mac. Um.
+59:55
+Shift insert and it will put the URL in. Okay. So git.
+1:00:01
+This is my new remote. I want to refer to it as origin. And it's actually at this network address.
+1:00:10
+Yeah. And that should work.
+1:00:16
+But if you don't use origin, you have to type it in in the commands that we're about to use.
+1:00:28
+Okay. You can shortcut things if you use the default.
+1:00:33
+Everyone okay. So far everyone got GitLab set. Set up empty repository and connect.
+1:00:38
+We've done a connection. Okay. So.
+1:00:46
+Let's just check the slides. There's our git remote add origin URL.
+1:00:52
+So now we need to do some synchronisation. Now in the slides what I did is I did not turn off that initializer.
+1:01:00
+Read me. Yeah. And that made things slightly harder.
+1:01:10
+Yeah. Which means the slides are a little bit more complicated. Yeah.
+1:01:17
+And let's sort of talk about where we would have been if I had hit README.md and created it.
+1:01:22
+Yeah. So locally earlier this morning you created a repository.
+1:01:29
+And at a particular point in time you added some files. So let's say that was about 10 a.m. local files added.
+1:01:35
+Bang. Timestamped. Yeah. Sometime later, over in GitLab land, I created a repository and it would have created a README.md file.
+1:01:42
+Bang bang timestamp. Let's say around 11 a.m.. Yeah.
+1:01:53
+So this change happened after this change? Yep.
+1:01:59
+My natural inclination now is I want to get these changes that I made over here into GitLab land.
+1:02:05
+The command for getting it from local to remote is push.
+1:02:14
+Yeah, but that would fail.
+1:02:20
+And it would fail because git would go. Hang on. Things have happened since you made your changes over here.
+1:02:25
+You are not allowed to push until you have taken into account things that have happened since.
+1:02:32
+Right. Let's pull to get things from GitLab down here.
+1:02:40
+Yeah. But a recent change to git basically said these two repositories didn't actually ever know about each other.
+1:02:47
+They were set up independently. And it won't let me do the pull either, because it goes you've got unrelated histories,
+1:02:55
+and therefore I've given you the command for relating the histories together once you've done the related the histories, then the pull works.
+1:03:01
+So the the readme comes down here, and then you could do the push to get your files back up to GitLab.
+1:03:10
+Yep. So what we're going to do is we've taken the Readme issue out of the equation.
+1:03:19
+Yeah, I'm hoping it just means I can push right.
+1:03:24
+Otherwise I have to go through everything that's in the slides. But that's my idea. That was in the slides.
+1:03:30
+It explains that I got myself into a pickle and how I got myself out of it.
+1:03:34
+I'm hoping I won't have to get myself into a pickle here, so let's just make sure everything is committed.
+1:03:39
+Yes, I want to get my changes now to my remote.
+1:03:51
+Git push origin main push my changes to origin.
+1:03:58
+Right. And to the main branch.
+1:04:07
+What's main here goes to main there. Let's see if it works.
+1:04:13
+Yes. Works absolutely fine. That was because my changes over there in GitLab.
+1:04:22
+Um, there were no changes. Okay, so if you do that, once you've done it, go to your repository on GitLab and refresh the web page.
+1:04:30
+Yeah. Okay.
+1:04:41
+So. As long as you made your repository empty, you should have no problems.
+1:04:42
+You'll get push of your files should work, and it should mean that you can go to GitLab.
+1:04:50
+And if you refresh the page. In GitLab, you should see the files that you created with the commit that you did or any commits that you've done.
+1:05:00
+Yep. Happy days. Everyone got their commits up onto GitLab.
+1:05:18
+If you want to explore, go to code on the left hand side and then to repository.
+1:05:27
+And you should be able to see all of the commits that you made so that git log that you could do locally.
+1:05:36
+You can see them all now on git lab.
+1:05:43
+Yeah. So it means it didn't just push the files.
+1:05:48
+All the stuff that was going on under the covers in that dot git folder, all that metadata, all the commits that all went across as well.
+1:05:52
+So all the stuff that you did locally is replicated now remotely.
+1:06:02
+Any questions about what we've done? Excuse me.
+1:06:14
+Something that looks like that on the screen? Yeah. Yeah. You had a read?
+1:06:24
+Me?
+1:06:27
+--------------------------------------------------------------------------------------
+Notes:
+
+
+--------------------------------------------------------------------------------------
+Bookmarks:
+
+
+--------------------------------------------------------------------------------------

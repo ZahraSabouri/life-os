@@ -1,0 +1,1652 @@
+Details:
+
+Lecture - 02/07/2026 (Student Futures and Teamwork with Gitlab)
+#student-futures
+#team-git
+
+Carl Jones
+--------------------------------------------------------------------------------------
+
+Contents:
+
+Who, what & where we are
+0:32
+What is group guidance?
+2:29
+How group guidance differs from career sessions
+5:32
+....more career facilitator than presenter
+6:38
+Possible focus - `Exploring career goals and navigating the…
+7:11
+Potential benefits of group career guidance
+7:26
+Next steps
+8:08
+Your Student Futures account
+12:20
+Previously: Managing yourself to play well in a team
+16:50
+What's needed in a team?
+17:14
+Set a goal, bring it closer
+23:26
+Work from a list
+25:38
+Coordinate often
+27:11
+Maintain a team version
+30:44
+How can we do all this in Gitlab?
+33:26
+Whenever you're ready
+35:23
+Projects
+36:34
+ca Build
+36:40
+Qg Build
+38:13
+Add "Know our team"
+40:40
+W Development
+41:10
+Iteration 1
+45:52
+Files
+59:25
+Search g
+1:05:37
+--------------------------------------------------------------------------------------
+Captions:
+
+Auto-generated captions may contain errors.
+Okay, I'll make a start. Morning, everybody. Has anybody met me before?
+0:13
+Does anybody recognise me? Yes. Brilliant.
+0:18
+From induction. Yeah. Fantastic. Good memories. Brilliant.
+0:22
+So I've just asked if I can come and speak to you for five minutes this morning, so I'm not going to take up much of your time.
+0:25
+Um, I am from Student Futures, and it's brilliant that most of you, um, do know me or recognise me at least.
+0:31
+So my name is Kath Alma and I'm the careers advisor for computer Science and Maths and the School of Earth as well.
+0:38
+Morning. I'm just going to speak to you guys for five minutes.
+0:45
+You are in the right place. You are? This is your normal lecture, and I just wanted to quickly remind you of student futures and what we do.
+0:48
+So we offer career appointments which are with myself.
+0:57
+We offer drop in appointments which we call Ask an Advisor, which we have every afternoon from one till four, and you can book those on the day.
+1:01
+We have CV checks, which you can do at the desk on first floor of CSL.
+1:09
+Um, as well as that, I just wanted to remind you, you have a student futures account, and that's how you book those appointments.
+1:15
+And we offer lots of career workshops in term time So they don't run at this time of the year, but they will start again October.
+1:22
+And those are on all the normal things that you would expect.
+1:30
+CVS, interviews, LinkedIn, etc. we have our online platform, Student Futures Plus, and you can go there to see CV templates,
+1:33
+to see interview tips, to see examples of psychometric tests, and lots and lots of resources available to you constantly on student futures.
+1:43
+Plus, obviously we have lots of large career fairs which we'll have in CSL and we have lots of employer engagement.
+1:52
+Abacus and your particular school do a huge amount.
+1:59
+And all of these things you're eligible for now and for up to three years after you graduate as well.
+2:03
+So I just wanted to do a very quick reminder in case you didn't know about Student Futures.
+2:09
+And we live in CSL. Appointments can be online though, if that's more convenient for you, so you don't have to come into the building.
+2:15
+Good morning. Um, so.
+2:23
+Yeah, so just a little reminder, but the reason that I've come in to speak to you today is to try and round up a bit of business for myself.
+2:25
+Okay? So, um, I'm actually piloting something we've never done in.
+2:35
+Lots of people are coming now, which is brilliant. Morning.
+2:43
+We're piloting something which we've not done in student futures at Cardiff University before.
+2:47
+Lots of other universities have started offering this type of appointment.
+2:53
+Now on your student futures account.
+2:58
+When you go to book a careers appointment, you will see a cruise appointment with your school careers advisor, i.e. me, and that will be 30 minutes.
+3:01
+You'll see the drop in appointments which are called Ask an Advisor and it'll be any of the careers advisors from the whole of the team.
+3:09
+There's about nine of us. You won't at the minute see something called group guidance appointments.
+3:16
+Then maybe if this works well, you will in the next few months.
+3:23
+We'll see. So I'm doing a pilot. I'm trying something that hasn't been tried here before and it's called group guidance.
+3:28
+Now I just want to quickly explain a couple of things about group guidance.
+3:36
+It works really well if the people who make the appointment who come to the appointment have some commonality.
+3:41
+Um, which is one of the reasons I asked if I could speak to you guys, because I knew there was a lot of international students.
+3:49
+And from my ten years of being the careers advisor in this school,
+3:55
+I know that a lot of the international students might have some of the same concerns, want to discuss some of the same issues.
+4:00
+So. But it doesn't have to be. If you are a home student, you would also be really welcome to them.
+4:08
+But it's often if you think we want to discuss some of the similar types of issues.
+4:13
+Um, optimal optimal number is 4 to 5 students.
+4:19
+So it's not a big group and it is meant to be guidance.
+4:24
+So you are going to be opening up. You are going to be sharing.
+4:29
+You are going to be discussing how you feel.
+4:33
+You are going to be leaving the session feeling like I've moved forward with my career plans and I've been supported.
+4:37
+It's not a session where I would be delivering and standing up and trying to teach you something.
+4:44
+Um, so the sessions are going to be 50 minutes and people who come will be sharing their goals.
+4:51
+They'll be exploring their dilemmas, they'll be discussing barriers.
+4:57
+They'll be talking about action points, things that they're going to take away and do after those that appointment.
+5:01
+You may well then want to come and book individual appointments, and you'll be more than welcome to do that.
+5:08
+You might be listening to me now thinking, that's not for me, but I would like an individual appointment.
+5:13
+Great book. One of those. Good morning. Suddenly we've got a lovely room full.
+5:18
+Um. So. Yeah. So my role is facilitator more than presenter.
+5:24
+And mutual respect is obviously very important.
+5:30
+So just to reiterate, really a careers workshop, if you came to CSL or if you have one of my workshops that I,
+5:33
+that I run in, in abacus, you'll be very familiar with a focus on content, a focus maybe on looking at skills.
+5:42
+You should develop your listening. You're going to have lots of information given to you, um, outcomes of the same for everybody.
+5:50
+Um, there's not any sort of expectation that you're disclosing information about yourself, but group guidance is student led.
+5:58
+It's a focus on your individual career thinking and decision making.
+6:08
+There will be lots of reflection, lots of discussion.
+6:12
+Um, Outcomes will vary according to what you want to get from it, and confidentiality and psychological safety is important.
+6:16
+So you will want to feel that I'm with people who are respecting me,
+6:26
+that I can open up to, that we're going to keep what we share in this room between us.
+6:29
+So it's important that I make you feel safe in that environment. So it's not a workshop and it's not a traditional appointment.
+6:35
+It's a space to reflect, learn from each other and leave with clear and next steps.
+6:44
+So questions that I might be asking is who relates to that experience?
+6:50
+What assumptions are maybe are we making when we think that?
+6:55
+And what's within your control? What's the next step maybe to take rather than here's how to get a job in data analysis.
+6:59
+So it's not a group session, it's not a delivery in that way.
+7:07
+So I would hope that you would leave with greater clarity about your career direction.
+7:13
+Hopefully feeling less isolated in some of the challenges maybe you're facing and at least a couple of action points to take forward.
+7:19
+So some of the benefits are that we hopefully reduce a sense of feeling isolated, which I know lots of students can feel.
+7:29
+They can feel very frustrated at the jobs market. They can feel a lot of pressures from maybe external forces sometimes internally.
+7:40
+We put a lot of pressure on ourselves,
+7:50
+so hopefully there's a bit of a sense of catharsis or relief from being able to share your story and have it validated, have it recognised by others.
+7:52
+Have somebody who's helping you to think about ways forward.
+8:02
+Um, yeah. So next steps.
+8:06
+Um, if you think I wouldn't mind helping Kath.
+8:11
+That would be literally, you know, something I would be really, really grateful for.
+8:15
+If someone thought, I know caf or caf seems okay, I could trust CAF to maybe have a go at this with her.
+8:19
+I'd really appreciate that, but I want it to be useful for you.
+8:27
+So if you think actually, I would like to sit down and discuss my career steps,
+8:31
+um, in a very supportive atmosphere, then I would love to hear from you.
+8:36
+I've said this will take place at a time, and d that suits you.
+8:41
+Now, could that be any more vague? I'm hoping to hear from you.
+8:45
+Um, and maybe I might ask Carl later. Um, you know what days do suit you?
+8:51
+Um, because obviously we haven't got a huge amount of students on campus at this time of the year,
+8:57
+but this is the time of year I want to do it, so I'm happy to do it.
+9:01
+You know, next week, the week after. But a day when maybe you are on campus that feels like that's convenient for me.
+9:06
+That's a good time for me. So if anybody wants to sort of tell me now days and times that feel good.
+9:14
+Yeah. After 13th of July, after the 13th of July.
+9:21
+Yes. You've got a deadline coming up.
+9:25
+Is that I have some plans that if you might ask me to come on sixth, then I'm not available on the sixth.
+9:28
+Yeah. That's right. Yeah. 13th.
+9:35
+I'm available anyway, so some of you might have very individual reasons why, you know, there's going to be better times.
+9:37
+And I'm hoping to run it several times. You know, I would love to do it, you know, as many times as I could during the summer.
+9:43
+Um, but yeah, absolutely. Fine. Definitely do it after that date.
+9:49
+Um, any particular days or times that suit this particular room of students?
+9:53
+I have one reeler here, and that's today. Yeah.
+10:04
+We have a one hour break for lunch, so today would be overwhelming, but then we'd have to come on a different day.
+10:07
+I don't know where everyone's coming from. That's a very good point. Yeah, I think most people in Cardiff mostly.
+10:14
+Yeah. Yeah. And so if you were to have to come onto campus a different day, would it be like after lunch would be better.
+10:20
+Would it be even like 5 p.m. would be better? Is there any thoughts on times of the day?
+10:29
+Is this routine hectic right now because we have back to back classes?
+10:35
+Right. I think in 1 or 2 weeks it would be just one class in the morning.
+10:39
+So you've got back to back classes. But you said, but you've just got it all on one day though.
+10:44
+Is that where you are? I mean, on one day everyone has. On one day you've got a mad day.
+10:50
+Yeah. Yeah. So presumably we're not going to offer it on the Tuesday then on what days are today?
+10:55
+Thursday. So not on a Thursday maybe, but maybe an afternoon on another day and Friday afternoon time Wednesday afternoon.
+11:00
+Yeah. Yeah. Okay. All right. That's great.
+11:10
+That's helpful. So what I'm going to ask is that if you think I'm really happy to, to sign up now and to put my interest,
+11:14
+then I'm going to hand a piece of paper around and I'll leave it here and I'll come and maybe I'll, I'll ask you to keep it safe card.
+11:23
+And I'll come and get it from you, maybe later or tomorrow.
+11:30
+Um, so I'm going to leave a piece of paper for people if they physically think I could just sign my name up,
+11:33
+and then I will be in contact and we will arrange. How many people do you want to be with?
+11:38
+If you think there's somebody I'd like to be in the group with me.
+11:43
+Or I'd like it to be all female or a mixed group, or you can, you know, you can give me some sort of tips of what would work.
+11:46
+Um, but also my email is there.
+11:52
+So if you think I want to have a think about it or, you know, you just think that's easier for me just to directly email you, then please do so.
+11:54
+Alma C at Cardiff. Um, great. And I'm going to stop now, but are there any questions before I leave the room?
+12:02
+No. Well, thank you ever so much. I really appreciate it.
+12:12
+I'm going to leave a piece of paper here, but please feel free to email me.
+12:15
+Um, and on the slides, there's just a reminder of your student futures account and that takes you to your account.
+12:19
+So if you think, ah, I would like to book an individual appointment or I would like to know more about student futures,
+12:26
+then obviously that's there for you. Okay. Thanks ever so much everyone.
+12:32
+Have a good day. Um, great.
+12:38
+I might leave that with you. Does anybody want this piece of paper now?
+12:42
+Does anybody think? Yeah. I'll sign up. Yay! Thank you.
+12:48
+Okay. If you could just pass that round. Um, I'll leave that pen, and then I will come and get that piece of paper from Carl.
+12:52
+Yeah. Your name? Um, if you think your name is Jack Jones, and Cardiff University probably has lots of those.
+13:00
+Then yes, your student number. If you think I don't think there's many with my name, then just your name will be fine.
+13:08
+But make it super clear so that I can actually find you.
+13:14
+But yeah. Thank you so much, everyone. Thanks, Carl.
+13:17
+Sorry if I took a little bit longer than I said. Oh, yeah. I really don't, do I?
+13:24
+Thank you. I just. Okay.
+13:32
+So this is going to be the continuation.
+14:41
+Put your name on the whiteboard on the chalk. Put your sign in your name on the blackboard please.
+14:47
+Okay. Otherwise you don't get your register. I'll sort out the register over the weekend.
+14:52
+Um, so today, um, having done git for individuals on Tuesday,
+14:56
+and I hope you've all had a chance now to use the haunt idea as a way of practising the hope.
+15:05
+I'm not going to evaluate whether you've done brilliantly or not.
+15:11
+It was a chance to practice JIT, and also a chance to practice breaking the thing down into small chunks.
+15:14
+So do the simplest version of the haunt that you could do and then make it more complicated.
+15:20
+So hopefully you now could pass a test on the basic commands of git add, commit, push pull, log status, all those types of things.
+15:25
+What we're going to look at today is how do you use git effectively in teams.
+15:34
+And we're going to do a lot of that together by working through GitLab.
+15:38
+Okay. And we're going to look beyond just git.
+15:42
+But we're going to look at the lifecycle management and project management facilities that are in GitLab,
+15:45
+because you'll probably use those for your project.
+15:49
+In fact, you almost certainly will because otherwise we can't assess you.
+15:54
+All right. So you are going to have to use GitLab effectively.
+15:58
+So we'll look at some of the features that GitLab have. Um, and we'll get you doing some practice.
+16:02
+Um, and then next week, my colleague James is going to run a session a little bit more about agile project management.
+16:08
+And I'll just get you thinking about, um, the team dynamics and the idea of, um, working out what the first version of a product should be today.
+16:15
+You do the mechanics of how to record those issues. Next week it'll be.
+16:25
+Hang on, what are the issues? Yeah, that should set you then up for the project that you're going to do in teams.
+16:29
+Okay. So that's the the plan this afternoon. Ian's going to join us.
+16:36
+Um, and we will actually look at projects and teams and things like that.
+16:41
+So you start thinking about, um, the dynamics and what you want to do.
+16:44
+So. Previously, this is the thing that we looked at on Tuesday.
+16:50
+If you can manage yourself in git, you can play well in a team.
+16:59
+So you need to have these foundations.
+17:02
+You have this ability to control your work, to move forwards and backwards in time, to create yourself options and to always have a backup.
+17:04
+Um. But what's needed in a team is you can't just have autonomy on your own.
+17:14
+You can't all just do your own thing, okay? You have to be aligned.
+17:23
+You have to all be aiming for the same goal, right?
+17:30
+So everything you do should be moving the team towards a goal.
+17:34
+Yeah. Um, so alignment is very important.
+17:39
+And I've had many projects with students and it's very easy to get distracted by.
+17:45
+Ooh, shiny right area of area that interests you.
+17:52
+New bit of technology, something like that. And it's like, it's so beautiful.
+17:57
+I can't help it. Okay. But the goal is over here.
+18:03
+The thing you need to be doing is actually somewhere else.
+18:09
+An alignment requires you not to be distracted by the things that you may be personally interested in.
+18:13
+In Google, they have things called Google Fridays. Yeah, four days a week.
+18:20
+You work on the teams product. Friday, you do your own thing.
+18:25
+Yeah, but the other four days you stay perfectly aligned.
+18:29
+Okay. Anyone know where that picture came from?
+18:35
+Oh, it gives away at the bottom, huh? Uh, this is actually about ten years old now, but there's a really good, um,
+18:42
+video by a guy called Henrik Nyberg who talked about Spotify's engineering culture.
+18:51
+If you just type that into Google, You get that video? Yeah.
+18:57
+And what he's basically saying is you have two axes autonomy and alignment.
+19:01
+Yeah. And you can either have the boss telling everybody what to do.
+19:10
+Yep. So we have high alignment but low autonomy.
+19:16
+Or you can have high autonomy and no alignment where everyone goes off and do their own things, but they're not aiming towards a shared goal.
+19:21
+You really don't want to be in this place down here where you got neither. Yeah. Where you want to be.
+19:28
+Is up here? Yep. There's a figurehead, possibly a customer, telling you, telling us what the goal is,
+19:33
+but leaving the team to work out the various steps that they need to take in order to achieve that goal.
+19:44
+Yeah. And that's what you're going to do with a team? Yeah.
+19:50
+And we had a great conversation on Tuesday that that goal might be a long term goal.
+19:54
+That could be your ultimate product. But there's going to be intermittent goals, intermediate goals that you'll want to set your target on.
+20:01
+Yeah. So working out what's the first thing we can try to achieve as a team.
+20:09
+What's the second thing. What will move us closer to the ultimate goal?
+20:14
+Yeah. Now in order to do that, you need shared understanding.
+20:18
+And one of the key parts of shared understanding is going to be a shared vocabulary.
+20:25
+Okay. You're all data scientists and analytics and analysis experts.
+20:30
+Or you will be soon. Yeah. But you can apply those skills in any domain.
+20:37
+Yeah. So you could go out into health. And due to data science on patients and hospitals, you could go out into finance, into retail.
+20:43
+Yeah. And all of those domains are going to have Vocabularies, and you're going to have to talk to doctors and nurses or buyers.
+20:52
+Yeah. And understand their lingo. Yeah. It's one of the best bits of being in it is you get to work in loads of different domains.
+21:01
+Yeah, but you've got to do it right. I worked on the NHS for a while, and it took me a long time to learn all the lingo of the NHS.
+21:09
+Okay. An episode is a is a specific word in health.
+21:21
+Yeah. Episode is a birth a death an admission.
+21:26
+Right. There's 24 of them. I think about like 20 years now.
+21:30
+Right. Um, but yeah, there's 24 of them, and you have to learn them all.
+21:34
+Yeah. Because when you talk to a doctor, you say, well, how do you manage your episodes?
+21:40
+What happens if, uh, what happens if a death comes before a birth?
+21:43
+Oh. Hang on. Right. Right. Is that possible? Right. Believe me, in the NHS, that type of data.
+21:47
+Data quality is an issue, right? Um. so you have to learn the lingo.
+21:52
+Yeah. So you need this shared understanding. You also need shared values.
+21:58
+And one thing we'll recommend when you get into your team is that you write what's called a working agreement.
+22:03
+Yeah. Um, in GitLab there is a wiki.
+22:08
+So you can actually put the wiki onto the GitLab, which means it can be updated over time.
+22:12
+And there's a Virgin version history. Um, so it could be same as Kath was asking earlier about availability.
+22:16
+Some of you might have other commitments. Part time work, caring responsibilities.
+22:24
+When are you going to be available to work on the project? When are you available to meet about the project?
+22:29
+Yep. Because meeting and coordination is key to maintaining alignment.
+22:35
+Yeah. The process we normally teach to students is something called scrum.
+22:41
+They have a daily coordination meeting. So it's short. It's only 15 minutes.
+22:45
+But everybody says what did you do yesterday that moved us as a team towards our goal?
+22:50
+What are you going to do today that moves us towards our goal?
+22:57
+Yeah. And that towards the goal bit is important. Yeah.
+23:01
+Not just what are you going to do today? I've thought I've had to do this. No. What did you do towards the goal.
+23:05
+And then because you have a work in agreement, you might find that some things work and some things don't work.
+23:11
+The schedule's become difficult. The way of meeting becomes unproductive.
+23:18
+So you have to adapt. Okay. So what we're going to ask you to be doing or certainly this is an idea.
+23:22
+You may throw this away right at the start of your project.
+23:31
+You are going to be at your most ignorant. Yeah, true.
+23:34
+On every project, right? I went on to the NHS. I did not know anything about health.
+23:39
+Right. Day one. You are at your most ignorant. So what do you want to do?
+23:45
+Can you optimise what you do? Can you choose work that would accelerate your learning about the domain?
+23:49
+Yeah. Not necessarily. Pick off the low hanging fruit, the easy features.
+23:56
+What are the things that actually help you learn about the domain?
+24:03
+Yep. That way you accelerate and you become more accurate.
+24:08
+You become more useful. You can have better conversations with your clients. Now there's always going to be a balance.
+24:12
+Okay. Especially if you're in a world where your customer needs to see something go live.
+24:20
+Some return there. You might have to do some of the easy, low hanging fruit features just to generate revenue.
+24:25
+But you need to balance learning with earning.
+24:33
+Okay. And something that we talk about a lot is building what we call minimum viable products,
+24:38
+i.e. can I build the simplest thing possible that I can get feedback from.
+24:47
+Because if I get feedback, I could learn. And if I learn that I'm wrong, I have to be prepared to pivot, go in a different direction.
+24:51
+Okay, so this is all basically agile thinking and git allows you to do this.
+24:59
+It allows you to be wrong. It allows you to go back in history.
+25:06
+You saw that on Tuesday. Yeah.
+25:09
+You've got a trail of commits. Yep.
+25:13
+And you did check out for branches. Yep. Well you can do the same.
+25:18
+And you can basically go back to any commit. You can go back in time.
+25:23
+So if you've gone down the wrong path, you can go back and you can pivot and try a different path.
+25:29
+Okay. Once you've got a goal, the idea is to produce a list of work items that will move you towards that goal.
+25:35
+And obviously in a team, what you're going to do, you're going to distribute those work items amongst yourselves.
+25:46
+Yeah. These could be those user stories that we briefly talked about on Tuesday.
+25:51
+Um, and I've put, um, a couple of references on learning central relating to things like spider.
+25:58
+Um, but if you also look at Mike cone, um, who I linked to, he's got a brilliant book on user stories, if you want to know more about that.
+26:06
+You allocate the work in priority order, and that priority will be based on learning or earning.
+26:16
+What are the things we should do first? Yep. And what's the other thing we talked about on Tuesday?
+26:23
+Trying to keep those tasks small. Yep. So all of you in a team will do stuff.
+26:28
+You'll hopefully finish it quickly. Yeah. When somebody finishes work, what do they do?
+26:35
+You just pick up the next most priority order, highest priority item from the list, because you've agreed that's what moves you towards the goal.
+26:41
+Okay. You don't say, well, I was doing the calculation bit and therefore I will just do the next day hand calculation bit.
+26:48
+If actually getting the candidate lists in is the next most important thing.
+26:57
+Yeah. You have to agree a priority order and ideally stick to it.
+27:03
+And therefore we want to make our work items small. You need to know what everyone else is doing.
+27:08
+So you'll need to agree a way of coordinating and letting people know what progress you've made.
+27:15
+Have you finished what you were doing yesterday? If the items are small, hopefully a task just takes you a day.
+27:22
+If it doesn't finish, then you have a conversation about, well, hang on, it's really important that that piece of work is finished.
+27:29
+If you're stuck, put your hand up and say, look, I'm stuck. I need help because that could be an impediment to the rest of the team making progress.
+27:39
+So be prepared to pair with someone else. Yep.
+27:48
+Get that piece of work done. It becomes an enabler for the next set of items to happen.
+27:52
+Okay, that is not a weakness to say I can't do this. It's a strength to be able to say I need help.
+27:59
+Because if you get that shared understanding, you get that learning when something comes around in that area.
+28:06
+Next time you will be able to do it. Yeah, you are always in service of the team, and the team is there to achieve a goal.
+28:11
+Okay. If you work that way, you will get contributions, you will contribute to the team and we can assess you on that.
+28:20
+Okay. Don't hog work. Right. Um, keep reviewing and sharing your understanding.
+28:28
+Don't just write down in your git. Commit to what you've done.
+28:35
+Keep thinking about how and why it might mean that you want to change direction or change the way you're working.
+28:38
+Um, and always think about the decisions that you're taking. Okay.
+28:45
+Most decisions are taken with the intention of there being a benefit.
+28:51
+But also most decisions have some consequences. Yeah.
+28:58
+So you may choose, let's say have you done databases?
+29:05
+Have you studied databases at all on data science? Yep. So do you know the difference between a relational database and a NoSQL database?
+29:11
+Yeah. Yeah. So there are benefits. If you choose a relational database, there are benefits.
+29:20
+Yeah. It's got a schema. It's very structured. Yeah.
+29:27
+Consequences are if you need to change a data model. Yeah.
+29:33
+That could have a big impact on your code. Yeah.
+29:38
+Because now you've got to code to the new schema, right? If you're running a no SQL using Mongo, you can just throw any old rubbish.
+29:41
+As long as it's JSON, you can just keep on throwing stuff in the schema less.
+29:49
+Yeah, but now your code's got to deal with the fact that different shapes of data could come out.
+29:53
+Some of it which did have fields and some of which didn't have fields. Yeah.
+29:58
+So you've got two different approaches. Fairly significant architectural decision whether you go relational or NoSQL.
+30:03
+Benefits. Well, it's easier to scale a NoSQL database.
+30:12
+You can just keep on adding more machines horizontally. If you want a scale relational database, you have to scale it vertically.
+30:16
+You just have to get a bigger machine. Yeah, that's a pretty big decision to take.
+30:24
+Yeah. So you say, well we're going Postgres because benefits.
+30:29
+But we accept that there are consequences. Yeah. And ideally you try to make that decision as late as possible.
+30:34
+Okay. Maintaining a team version.
+30:41
+Always have a releasable version of code ready.
+30:48
+So when we talked about Git on Tuesday, I had that picture where I said, look, there's an individual version control repository on your machines.
+30:50
+And then there's the team one. Yeah. And all you've done so far is synchronised between the two.
+30:59
+Yeah. What we're going to do is we'll have a local repository per person in the team.
+31:04
+And the one on GitLab is essentially the team's version. Yeah.
+31:10
+What you want to be in a position is that any time your customer can go, what's on main on GitLab,
+31:15
+release it, put it out there, get it on the cloud, get customers using it.
+31:22
+Ideally, that's where you want to be. Right. You have to be really mature team to reach that level of engineering capability.
+31:28
+But if you can seek to optimise that Approach.
+31:35
+It means that a customer, whenever they see a demo of your product, can go, you know what?
+31:40
+I think we've got enough. We're ready. We're ready for the market.
+31:45
+I thought we needed features A, B, and C that you're currently working on, but we don't.
+31:49
+We're good enough now. Get it out. And what's really embarrassing is when the team goes, oh, [INAUDIBLE].
+31:53
+You know what? We haven't really tested that bit. And it's smoke and mirrors.
+31:59
+And you still want to see what lies beneath here? Right? And the customer goes.
+32:03
+Look, I thought we were ready. Yeah. So I think I had, you know, earlier.
+32:07
+Things I don't starting don't start work. It's also a case of don't start the next piece of work if the bit you're working on isn't completely done.
+32:24
+Yeah. And James might talk next week about what we call a definition of done, i.e. it's tested.
+32:35
+It's reviewed. Yeah, it's ready to go.
+32:42
+Right. It's not it works in the demo, but you don't want to see what's going on behind the scenes.
+32:47
+It is ready. Yep. And what does that take?
+32:53
+Takes courage. Okay. If you're under pressure to do more features.
+32:56
+Yeah. You go. You know, I haven't done testing.
+33:02
+It's all right. No one needs to know. Yeah. No.
+33:06
+You say no, I'm doing this right. I'm not moving on to the next piece of work until this piece of work is done correctly.
+33:10
+Okay. Another principle of agile project management and agile development.
+33:17
+So what we're going to look at is how we can do all of this in GitLab.
+33:26
+Um, and that means we're going to look at work items and milestones, which is all part of GitLab issues,
+33:30
+and GitLab have just changed their issues tracking part of the system.
+33:38
+So it's a bit new to me as well, but there's some cool stuff in there.
+33:43
+And then we're going to look at branches and what we call workflows and the use of what are called merge requests.
+33:46
+Okay. So I think at this point.
+33:53
+I'm going to switch to GitLab. And we are going to do this together.
+34:01
+Okay. So we're going to try out working in a team.
+34:05
+And my my plan is that's going to take us up to about lunchtime.
+34:10
+Yep. And then this afternoon um Ian's got to join us.
+34:14
+We'll talk about projects and, uh, teams.
+34:19
+Um, but you will have an opportunity then to get into a team and actually start working on something and practising this.
+34:23
+And then at some point you can switch over and actually start your project, but you need to practice.
+34:29
+Okay. So any questions about what that as background.
+34:34
+That's okay. Those are the principles we're going to follow. All right.
+34:40
+So it's 11:00. Let's take a ten minute break.
+34:44
+Yeah. If you haven't put your name on the white on the blackboard please do.
+34:48
+And I will take a photo and I'll take the register after the session.
+34:53
+Um, but yeah. Otherwise come back at ten past and we will start using git lab together.
+34:58
+All right. Okay, so on Tuesday, we set up a personal, um, project in GitLab.
+35:02
+What I'm going to ask you to do is basically get into pairs or threes or fours or how many?
+36:07
+How many? Yep. And um, pick one of those projects that you worked on?
+36:12
+Pick one person's project. Yeah. And then that person's got to invite everyone else in the team to that project.
+36:19
+Okay. So you're actually going to start working in a team. All right. Um, but let's just look first through GitLab to see what it can do.
+36:26
+So that's the project I set up on Tuesday.
+36:35
+Git for CMT 501. And we put some files in there.
+36:41
+Over on the left you can see that there is this idea of a plan and a number of items there.
+36:48
+So what. Let's start with the issues board. Okay.
+37:00
+So on the issues board we have at the moment just two lists tasks which are open and task which have been closed.
+37:11
+Yeah, you can add more lists if you want to represent different stages of your process.
+37:18
+Okay, so you might have a waiting in progress in testing closed.
+37:26
+Yep. So we can create a new list. Uh, let's select a label.
+37:35
+We haven't got a label at the moment. Uh. This use must match this scope to appear.
+37:45
+Select a label. Can I create a new label? Uh, let's call it in progress.
+37:53
+I told you they changed the UI. So before you do this, you have to create a new label.
+38:06
+See if there's that on settings. Yes.
+38:12
+So I can create a project label. We'll call it something in progress.
+38:19
+And create that. Yeah.
+38:27
+Okay. So that should be done. So now I should be able to save those changes.
+38:36
+Why is my battery running low? I'm charging. Okay, go back one new list.
+38:42
+See if it has to refresh. Right.
+39:21
+So we got through to in progress.
+39:46
+I think I might have just found a bug in GitLab there, but, uh, so you could have the open issues on the list are just open.
+39:48
+Once you start working on it, you'd move it to in progress. Would you finish with it?
+39:55
+You move it to closed. Yeah. So.
+39:59
+Looking at the issues board we would want to create some issues.
+40:08
+Let's get rid of that. Let's create a new issue. What else might we want on our website?
+40:14
+Um. Lots of websites have something like, you know, our team pages.
+40:24
+So that's a task we need to do. And at pops, a panel that allows us to put things in there.
+40:38
+For now, I'm going to leave it blank. What we're going to do is just brainstorm. What are the things we think our team's going to need.
+40:48
+Okay. So we'll add a few of these. Uh, we will add an accessibility statement.
+40:54
+And you could think about a lot of others here. Let's see. Uh, style, uh, along corporate.
+41:10
+Lines. So we need to do some styling on our website. At the moment, it's a little bit near.
+41:22
+So we have some issues in there.
+41:31
+And what did I say about prioritisation? Yeah. You can move these up and down.
+41:36
+Yep. Now typically the ones at the top are the ones you're going to do first.
+41:45
+Does that also mean tasks. Obviously the word issue means like something's wrong.
+41:50
+Yes. So this essentially comes from a legacy that, uh, they've based this on bug fixing.
+41:56
+Okay. Yep. Uh, for if you think it's an issue that the product doesn't have it.
+42:07
+Okay. Yeah. It's an issue that is missing. Yeah. Guy I worked with once said everything's an issue.
+42:14
+Everything's a bug because your system doesn't have it yet. Yeah.
+42:20
+I'll tell you what. Everything's a bug, right? Because it's not serving customers.
+42:24
+It's not doing what you needed to do. Therefore, actually, it's a bug, isn't it, in your system.
+42:27
+It's a very loose way of defining it. This entire issue was just easier in general.
+42:32
+You can and you can integrate it. Yeah. You can integrate it.
+42:40
+The fact is, I can't see Jira. I think it's the Atlas.
+42:45
+Yeah. But the university pays for Atlassian for staff in it, but not for academic staff.
+42:50
+So if you use that last year, I would not be able to see your work. Yeah.
+42:56
+The reason we say use GitLab is you can link to GitLab.
+43:00
+Yeah.
+43:06
+So if you want to provide a link in your report to say, I did this, I did this issue, I did this merge request, I did this branch, I did this code.
+43:07
+You can just provide that in your report as a link. Yeah. So that's why we say to use GitLab.
+43:15
+So you can move these around and you can prioritise them.
+43:20
+And obviously you would have a far longer list. Now you don't want to try to put everything in there.
+43:27
+Because the idea if you try to put 101 things in there, you're not going to get past 50.
+43:32
+Why? Because by the time you've done the first 20, you'll have learned stuff.
+43:37
+You'll realise that items 50 to 100 you don't need anymore, or you need something different, so you wasted that time.
+43:41
+So you give yourself a big enough list such that you can have a good think about the problem.
+43:47
+Plan your first move. Step forward enough to learn.
+43:54
+Yeah, but don't try to plan everything out. Yeah.
+43:59
+That's always that's always the balancing act that you have to find.
+44:03
+So let's say we have a lot more than the issues that we have in there, and we want to set our first weeks worth of work our first goal.
+44:07
+That idea about alignment. Yeah. In GitLab, the way you set goals up is you use what are called milestones.
+44:18
+Okay. So there's a milestone here. So we'll create a new milestone.
+44:28
+And we'll say it's just going to be called iteration one.
+44:34
+And we're going to start it today. And we're going to give ourselves a week.
+44:40
+So it should be due by next week. Our goal is have public facing content live.
+44:47
+Where do we want to be by next week? The goal could be that we want to learn stuff.
+45:05
+Yeah. And as a team, you would agree what goes in that box.
+45:13
+Where are we all going to be? Where do we want to be? By next week we're not going to be finished just by next week.
+45:19
+Yeah. Remember that first slide autonomy versus alignment.
+45:27
+This is you as a team sitting down and saying okay, there's a point only a week away where how do we all get there?
+45:32
+It could be that your major milestone is just to get some shared understanding. We need to understand this bit of the problem.
+45:40
+Yeah. So we'll create a milestone and it's called iteration one.
+45:47
+So it says assign some issues to this milestone.
+45:55
+So. How do we do that?
+46:01
+Well, let's go back to our issues board. I don't know why it's moved the ball to in progress.
+46:08
+Hmm. Okay. If we click on no our team, we can change its milestone and say no.
+46:17
+Our team that is content. Let's add that to milestone one.
+46:28
+And that's also make the accessibility one part of milestone one.
+46:37
+It's ratio one. So now if I look at my milestones.
+46:46
+I'll go at iteration one. We can see that we have those two items in that first iteration.
+46:54
+The third item. Not a priority yet.
+47:05
+It's not part of that first goal. Yeah.
+47:08
+This divvying up the work and working out over time, what you are going to try to achieve as a team is essentially planning.
+47:12
+Yeah. If you can keep your iterations and your milestones short.
+47:19
+What are the advantages of that? For example, if I am doing a calculator, as you said, so the first week could be uh,
+47:25
+our goals could be creating a calculate function which can be used by the other Python file,
+47:42
+and then just have a normal test on it so that that's perfectly reasonable.
+47:49
+Yeah. So you could build up stuff that's reusable and stuff like that. You can share that every week.
+47:55
+Yep. But let's go back to, um, the idea of alignment and the idea of learning.
+48:00
+Um, at the end of each milestone, you will typically do what's called a show and tell.
+48:07
+And this is what if you look at the the module progress, there's a review meeting every week.
+48:13
+You're going to show us stuff every week. Yeah. Now let's just say it was us who are setting the problems.
+48:18
+Okay. We're going to let you actually most mostly think of the problems yourselves. Yeah. But if it was me.
+48:26
+Yeah. I'm going to tell you whether you're right or wrong. Yeah.
+48:31
+You may have understood my problem completely. You may have understood my problem at all.
+48:36
+Yeah. If you already saw me once every six months.
+48:42
+Yep. You're six months. Wrong. If you see me every week, you're only a week wrong.
+48:46
+Yeah. The amount of waste is reduced. Yeah.
+48:52
+A lot of companies now have the customer on site every day.
+48:56
+You're only a day. Wrong. You're an hour wrong. Yeah, but if you can reduce the amount of time between.
+49:00
+This is what I think I want. This is what we think you need. No, you've got that completely wrong.
+49:08
+Or yes, you've got most of it right. But yeah, you're adjusting your path far more frequently.
+49:14
+Okay. If it's a six month gap, you're only adjusting every six months.
+49:21
+Yeah. That's how we used to do stuff, right.
+49:25
+The difference between please can I have. And here you are. Used to be something like 18 months.
+49:30
+Yeah. It's not like that anymore. You adjust far more rapidly.
+49:35
+So we've got some items now in our milestones.
+49:40
+So we're now in a team and we might say, okay, we need to add the accessibility statement.
+49:45
+Who's going to do that. Yep. So you can assign someone.
+49:53
+So I'm going to assign myself because I'm the only person in the team. Right. So that is my piece of work.
+49:59
+If you were in a team, you would now choose a you're doing this one and you're doing that one.
+50:07
+Yeah. Okay. So now we have items at the moment.
+50:12
+Have we done any coding whatsoever. Have we touched our repository.
+50:18
+Remember this is GitLab. And behind the scenes there is a git repository.
+50:24
+Have we actually touched that at all? No. This is all extra stuff in GitLab.
+50:29
+This is GitLab pretending to be Jira or Trello or whatever other project management tool you want to do.
+50:35
+But the nice thing is these items are integrated.
+50:41
+Yep. So you can see at the top of this item on screen we have this button here create merge request.
+50:46
+And we also have create branch. Okay.
+50:56
+Now branch should feel familiar right. What we did on Tuesday.
+51:01
+So let's do create branch because it's familiar to what we did on Tuesday.
+51:05
+All right. We'll come back to merge requests later on. So I'm going to create a branch from source from main.
+51:10
+Yeah. So I'm branching off main and it automatically gets named.
+51:19
+Five is the issue number internally. Add accessibility statement just takes the title.
+51:28
+Yep. So I'm going to create a branch and it says it's available. So let's create the branch.
+51:36
+So now if I go to the repository. There's my branch.
+51:42
+Okay so behind the scenes, what does get lab done?
+51:50
+It said git branch five add accessibility statement and that's in the repository sat behind GitLab.
+51:55
+Does my local GitLab git know anything about that branch yet?
+52:07
+No. Yep. So we need to synchronise down to our local machine because we're going to do some work now.
+52:12
+Yep. So let's flick to um get bash.
+52:21
+Just do a quick git status. And I can also ask git to tell me all about.
+52:30
+The branches that it knows about. So it knows that we've got a main branch and it knows that there is a main up on.
+52:40
+The remote. Yeah, that accessibility one is nowhere to be seen, is it?
+52:52
+Yep. So how do we get it down? Yeah. Let's do a git fetch.
+52:58
+Okay, so that's a new command. So what this will do is it will bring down any information from the remote.
+53:06
+And you can see there it said new branch five.
+53:19
+Add accessibility statement maps to the origin five add accessibility statements.
+53:23
+So if I now do my git branch all again you can see we've got the remote.
+53:30
+Yep. If I do a git status.
+53:37
+I'm still on branch main. Yeah. How do you bring it to local without the, uh, URL, because we set this up on Tuesday.
+53:43
+I understand for remote that we are doing if we create a new repository.
+53:57
+Yeah, we are doing, uh, get remote add, uh, origin and the URL.
+54:03
+Yeah. So once the origin, once the link between your local and remote is setup at setup forever.
+54:09
+Yeah. So if I wanted to change branch and start working on the other branch, it was git checkout, remember?
+54:14
+Yeah. So git checkout branch five.
+54:25
+And I do a git status again now. And I am working on.
+54:32
+Branch five. Yeah. If I go now to VS code.
+54:45
+If you look down in the bottom left. You can see that VSCode knows you're now working on branch five as well.
+54:53
+Okay. So what do I need to do?
+55:03
+Well, I need to add an accessibility statement type. So let's have a page called accessibility GML.
+55:09
+And I'm going to be really lazy and just say we are fully wcaG 2.0 compliant.
+55:20
+Okay. Have you heard about wcaG. Do you know what that is?
+55:28
+Yep. There's a set of standards for accessibility of websites and it's from the W3C.
+55:34
+It's known as wcaG. And it basically says your website should work for the disabled.
+55:42
+Every image should have a textual description behind it.
+55:49
+Your contrast on your web page should be high enough so people with visual impairments can still use your website.
+55:53
+Um, I think there's a check there for colour blindness. So don't have red text on green background and things like that.
+56:01
+Yep. Um, basically you can run tests against a website to say it is accessible.
+56:09
+Yeah. There's amazing how many websites out there are not accessible.
+56:14
+Yeah. And if you ever work in government. Right. So if you've got an NHS that's a little bit about accessibility, right.
+56:19
+There is no way on earth that an NHS website should fail accessibility tests.
+56:27
+Okay. Right. Okay. So I've got this, um, this new page.
+56:33
+And I'm going to be lazy. I'm going to say that is it all done and dusted? What do I do?
+56:44
+Git add. Git commit minus m accessibility page.
+56:51
+Done. Yeah. So now I've committed two.
+57:00
+Branch five. Yeah.
+57:08
+Let's just. Put the page the file explorer on the left.
+57:16
+Yeah. What's going to happen? When I do that.
+57:26
+I haven't really, but it's committed to the branch. Yeah.
+57:42
+Keep an eye on this bit over here. Keep an eye on their.
+57:46
+Accessibility is gone. Yeah. Remember what we said about snapshots?
+57:55
+The last time I was on main, accessibility did not exist.
+58:03
+Yeah. If I now get checkout five because I committed, it's come back.
+58:07
+Yeah. This is version control. Yeah. If I hadn't committed, I'd be in trouble.
+58:18
+I'd have lost that. Yeah. So I've now got that work on branch five on my local machine.
+58:25
+Yeah. And you're quite right. At some point, I need to merge it back to me.
+58:36
+Yep. But now we're in a team world. So how am I going to do that?
+58:42
+Um. What I could say.
+58:50
+Come on. Come over here. Come and come and review it with me. Right. And I could say you're going to sit it.
+58:53
+Yeah. Because you can't see my code. Yeah. Yep. Wouldn't it be better if I just put it on GitLab?
+58:58
+Yep. Yep. So let's push.
+59:04
+Our changes to GitLab. Yeah. Okay so let's have a look at GitLab now.
+59:13
+If I look at the main branch about us index.html.
+59:27
+If I look at five accessibility that one accessibility is there as well now.
+59:35
+So yeah. Yeah. Okay.
+59:41
+So I think that's ready to be merged.
+59:47
+So I'm going to go to my branch. I'm going to go to five Accessibility Statement.
+59:53
+And I'm now going to create what's called a merge request. Yeah.
+59:57
+In the description you can see closes hash five.
+1:00:07
+If you leave that in there when this merge request is completed it will automatically close the issue that we started it from.
+1:00:12
+So if you remember we created an issue. Yeah. Then we created the branch.
+1:00:24
+Now we've created the merge request. If if the person I'm about to ask to review it says happy days.
+1:00:30
+All good And closes the merge request with a merge, it will automatically close the issue.
+1:00:37
+Job is done. Yeah, if you take that closes out, it won't do it.
+1:00:45
+So there's no one else in the team but me.
+1:00:51
+Yeah, but I am my own worst critic, so I'm going to assign the merge request to me.
+1:00:55
+In your working agreement, you could suggest that you can set up rules in GitLab to say this must be reviewed by someone other than the author,
+1:01:03
+and you can set up rules that says nothing goes back onto main and let it's been reviewed.
+1:01:15
+Yeah, I will let you find that out for yourselves. Yeah, but you can do these types of things.
+1:01:21
+I am going to leave this checkbox here. Ticked.
+1:01:31
+So when I complete the merge, I'm going to get rid of the branch.
+1:01:40
+Yeah. I don't need to know that the branch was created in order to do the work.
+1:01:45
+There will be all the history. There will be a merge commit.
+1:01:52
+Um, in my list of branches, what I want to see is the things that are active at the moment.
+1:01:55
+I don't want to see the things that were active three weeks ago. I don't care.
+1:02:01
+Right. So I'm going to create the merge request.
+1:02:04
+Now, what would normally happen is a bunch of automated tests would be run and other things would happen.
+1:02:16
+But I'm going to say this is absolutely fine. Carl is a brilliant developer, not lazy at all.
+1:02:22
+It's a wonderful HTML page. I will do the merge. Okay.
+1:02:29
+If you think something is wrong with it. You start writing comments at the bottom right and you don't merge it.
+1:02:34
+And now you have a conversation within GitLab about the issues.
+1:02:42
+And at the moment everything is happening on the branch, right?
+1:02:46
+I'm not touching main yet. You get to the point where you think the merge the proposed code is ready to merge.
+1:02:50
+If you think it should be rejected, just hit close merge request and it won't be merged.
+1:02:57
+Okay, so we're going to hit merge.
+1:03:05
+Carl Jones merge just now let's go back to plan.
+1:03:14
+Let's look at the issues board. Oh it's been moved automatically to closed.
+1:03:18
+Yep. If we look at the code and we look at the branches.
+1:03:24
+The accessibility branch is gone. And if we look at main, accessibility is in there.
+1:03:37
+And if we look at the commits you can see that there is a merge commit to say that I just did that.
+1:03:46
+So I haven't lost the history. And you can see what was done on that commit.
+1:03:53
+Okay. Fab. So uh, is that branch gone forever?
+1:04:00
+You can't rule that branch is gone for, uh. I think it's gone forever.
+1:04:08
+Yeah, again. To work on it if you need to work on it.
+1:04:12
+Yeah, but you need to work around it again. It's a new issue, isn't it? Yeah, right.
+1:04:17
+If you did that issue to the definition of done and it's been reviewed, then that issue was done, done, done.
+1:04:23
+Right. If you find out that it wasn't done, done, dun. And there's a new bit of dun dun dun.
+1:04:30
+You write a new issue saying this is what you didn't do. Now make sure you do do do it right.
+1:04:35
+Okay. Um. So, um.
+1:04:39
+What do I need to do now? On. This side.
+1:04:46
+I'm now back on my local repository. What's the next command I need to do?
+1:04:52
+Just as a clue. I'm on branch five locally because I haven't deleted it there.
+1:05:02
+I've only deleted it on GitLab. Remember, there are two completely distributed repositories.
+1:05:12
+Yeah, I've merged it on GitLab. Yeah, but what do I need to merge you to?
+1:05:18
+I need to get checkout main. Yeah.
+1:05:25
+If I do that, accessibility is gone.
+1:05:34
+Because locally. Right. It's not on that one. Now I can do a git merge.
+1:05:39
+No. Git pull. Sorry. Well, um.
+1:05:48
+What will get pull do. It will fetch the changes from GitLab and it will merge them into the current branch.
+1:05:56
+So still git pull and accessibility is there right.
+1:06:04
+And it's on main. Yeah. So now my main branch is up to date with the team version.
+1:06:10
+Yep. So let's just have a chat then about what would happen if when I did that process, but two of you had picked up a task.
+1:06:20
+So what if you had picked up five accessibility and one of you had picked up six?
+1:06:36
+About a team? Yeah. And you both followed exactly the same process.
+1:06:41
+Yep. Let's walk through that.
+1:06:48
+Okay. So you do a git fetch. You've both got five and branches five and six on your local machines.
+1:06:53
+Person A checks out five because that's the one they're working on. Person B checks out six because that's the one they're working on.
+1:07:03
+And they work and they work at different rates. And the two issues might be different lengths.
+1:07:12
+Yeah. Let's say five finishes first.
+1:07:17
+Yeah five. Now does what I just did. Yeah.
+1:07:22
+Five has done the work. Six do you think my work is really good?
+1:07:29
+Yes, it's really good. Yes. Merge it. Does the merge request.
+1:07:33
+Merges five into main. Five pulls it down.
+1:07:37
+Their main is ready. They're ready for the next bit of work. What should six do?
+1:07:42
+Button update their main and. You.
+1:07:49
+One more step. One step. You pull. You do the pull.
+1:07:56
+Right. So your main is now up to date with the team's main.
+1:08:00
+Yeah. But your heart your you're in pun. You're in flight aren't you.
+1:08:04
+You're in flight on six. But you're not finished yet. Right. And they've updated main so have you got push to the not push.
+1:08:13
+You've got a local merge main into six.
+1:08:21
+Yeah, because now you need to take on all of the things that the team has agreed as part of the main branch should now be like the two.
+1:08:27
+Problem five going into yours. So five is finished, isn't it?
+1:08:36
+Right. And the team has said through a merge request, five is now part of us.
+1:08:41
+It's part of the team. Yeah. Six is still called. Mine's a bit harder than five.
+1:08:46
+Right? Right. They've just made a bunch of changes.
+1:08:51
+Right. I need to know about them to make sure I don't remove or reverse anything that they've done.
+1:08:55
+Yeah. So I better accommodate all the changes that the team said is in the team's version into my work in progress.
+1:09:03
+Yeah. If it blows me out of the water, well, fine.
+1:09:11
+I've got to fix that. Because they won. They got to made first.
+1:09:15
+Right. Typically you'll be on different files or different functions, and it won't have a big issue.
+1:09:19
+Right. But if it does, the sooner you know about it, the better.
+1:09:24
+Right. And what did I say about the way your ones work?
+1:09:29
+Right. Five and six and seven and eight.
+1:09:32
+And they carry on. Don't worry about it. Carry on. End of the week, they all do that merge.
+1:09:36
+And they're all working in apple pie in the same file.
+1:09:42
+Yeah. And it's painful. Yeah.
+1:09:46
+They've all trampled over each other's changes. Yeah. So you need this team discipline that says if someone says, look, I've done a merge request.
+1:09:50
+Yeah. And you can set up your git labs or it'll send you an email to say someone in the team has merged domain.
+1:10:00
+Right. The first thing you do is say, write, commit my work on my branch.
+1:10:07
+Get the stuff from main down. Deal with the consequences. Yeah.
+1:10:12
+Then you carry on. On six, you finish. Yeah.
+1:10:17
+And you say to five. I've finished. I've an update of your changes.
+1:10:21
+It's my good stuff. Good. Get that onto me. Right.
+1:10:25
+And now five has got to accept your changes. Yeah. How can you not lose your changes in six when you.
+1:10:28
+Commit to six first. Yeah yeah yeah.
+1:10:38
+You might get those merge conflicts that I showed you on Tuesday. You'll say, look, five did something.
+1:10:43
+You've got to accommodate it. Yeah.
+1:10:51
+If you think I've just done the pages, but I've done all the pages that would normally appear in a footer on your index.html page.
+1:10:53
+So adding accessibility wouldn't just be adding the new page.
+1:11:01
+It would be putting the link at the bottom. Yeah. And guess what six is going to do.
+1:11:06
+They're going to do a new page and they're going to add their link at the bottom right.
+1:11:10
+This could be part of an issue where you've got someone that's really fast but actually not very good.
+1:11:15
+It ends up putting code that minimises that is acceptable as a name,
+1:11:23
+but it eventually matches other people's work because they're much more thorough in the work.
+1:11:28
+You know, it kind of okay. It kind of values the faster one rather than the other.
+1:11:33
+So this is where our review comes in.
+1:11:40
+Yeah. So review but review against standards.
+1:11:45
+Yeah. So your definition of done can be very loose.
+1:11:50
+Yeah. But it could also be very strict. Yeah. So if you were in my course right.
+1:11:56
+I'd be teaching you how to be really strict. Yep. And it would not just be you've written you've written code that works, right.
+1:12:04
+And you had a couple of tests. Yeah, it works fine. Right. You would have thorough automated tests.
+1:12:11
+I would test that your tests are really tests. Yeah, I can do that.
+1:12:17
+I will test that. You test enough of your code. Okay.
+1:12:23
+So you all know what it if then else is. Yeah, but I've got a test and it goes down the if path.
+1:12:27
+Yeah. Have you got a test that takes you down the else path as well. Oh no.
+1:12:34
+No. Never happens. Don't worry about it. No I want to test that. Takes you down the house path.
+1:12:37
+Yeah. Um, have you dealt with the fact where that this is calling a service that's out on the web?
+1:12:42
+Yeah. Have you have you tested for what happens if that service isn't there?
+1:12:48
+Uh, no. No. Do that. Have you tested for security that this is accessible by only certain people at certain times with certain roles?
+1:12:52
+Uh, yeah. Test that. Have you tested for performance? Have you tested for accessibility?
+1:13:02
+Yeah. Um, I can check the complexity of your code.
+1:13:07
+Yeah, I can check naming standards and coding standards.
+1:13:13
+So your functions must be named in a certain way. Your variables must be named at a certain way.
+1:13:19
+I can check. Um, what else can I check that your functions are only of a certain length?
+1:13:24
+Yeah, I would have lost marks when I was in my computer science degree.
+1:13:32
+If my main function. Yeah, was more than four lines.
+1:13:37
+Yeah. When you were in the local data course that we are running.
+1:13:45
+Uh, if I don't do that and I go to the git clone loop, so I create a feature branch in my name, uh, someone else creates a feature branch in there.
+1:13:51
+Yeah. Now I clone it on my computer. They clone it on their computer.
+1:14:02
+They are working on five. I'm working on six. Yeah. Completely separate.
+1:14:07
+They now suppose number five is done with their task.
+1:14:11
+They, uh, push it to GitLab from the local.
+1:14:16
+Yes. So now I see that they have pushed something.
+1:14:20
+I can see the history which files have been changed. Yep. So my work is still on my computer number six.
+1:14:24
+So that is there. Now I see that main has changed or like they just updated their individual line of code or something.
+1:14:31
+Yeah I pull that main now merged with my repository and now six is updated as six is my task.
+1:14:40
+So yeah, if they don't have access in the first place. Yeah. And now the full branch is updated and what I push is only six.
+1:14:50
+Uh, I do get status. I see that number six is there.
+1:14:58
+I just add git add number six, not git add dot.
+1:15:02
+So there are six gets pushed. So there are no conflicts right.
+1:15:06
+That is also a way where I am not worrying about this at all.
+1:15:09
+So if you I think the one step you missed there was merging.
+1:15:14
+You pulled the main which has had five put into it.
+1:15:19
+You're working on sex? Yeah. You can push sex to get lab, but it will only have your changes on it.
+1:15:23
+Yeah. If you haven't incorporated mains changes yet.
+1:15:32
+No, I'm saying male already there on GitHub. It's already there on GitLab.
+1:15:37
+Yeah, but you push six without any without merging main.
+1:15:41
+That's the thing. So main got updated. I re cloned that.
+1:15:46
+So now I have that. Why would you're clone to have that mean.
+1:15:51
+They just need to pull. Don't you just pull it. Yeah yeah yeah.
+1:15:55
+Then my fix goes on to GitLab with the updated.
+1:16:01
+Yeah. So if you do a pull a pull is a fetch plus a merge.
+1:16:05
+Yeah. So the way I would do it is locally.
+1:16:10
+Check out commit my six. Yeah. Check out Maine.
+1:16:15
+Yeah. Merge pull Maine. Yep.
+1:16:20
+So now my Maine is same as the teams Maine. Yeah.
+1:16:24
+Now check out six. Go back to what I was working on.
+1:16:29
+And locally merge Maine into six. Yeah.
+1:16:33
+The reason I do it that way is everybody gets into a certain flow when they're coding.
+1:16:37
+Yeah. And if I get this signal, someone has updated Maine.
+1:16:43
+Yeah. And I'm in the flow on a particular function that I'm doing on six.
+1:16:50
+Do I want to finish my function. Yeah. And then incorporate the changes from Maine.
+1:16:56
+Or do I want to just say, look, I'll take the hit. I'll take Maine and I'll deal with the consequences.
+1:17:03
+That's a personal choice. Yeah.
+1:17:09
+But if you've got the two versions, the two branches on your local machine, you can make that decision when you want to make it.
+1:17:12
+Yeah. The longer you leave it, what's going to happen?
+1:17:18
+Well, task seven, eight and nine are going to get merged to mean as well.
+1:17:24
+Yeah. And you've got more things to pull down and incorporate.
+1:17:29
+Yeah. But one of the beauties of coding is you let people love getting into that zone where they're solving a problem and they're writing,
+1:17:35
+writing the code and they don't want to be disturbed. Yeah. This is this is the way I was going to do it.
+1:17:44
+Right. You've got to find that balance, right. It might be that you look at the merge request and you go, that's going to hurt me.
+1:17:48
+That's going to affect what I'm doing. I'll finish what I'm in doing and then I'll move on.
+1:17:56
+You might go, do you know what? It's nothing to do with me. It's another bit of the code base.
+1:18:02
+I'll do the merge now. It's not going to touch me, but I can get on with what I was doing.
+1:18:07
+That's a personal choice. Yeah. This is why you've got to know and have a workflow.
+1:18:12
+But the reason I say do it the way I've just done it is it goes back to that thing about alignment.
+1:18:19
+Yeah. You are serving the team. Yeah.
+1:18:26
+That version on main is going to be the version that your team will deliver.
+1:18:30
+That's the version your team is going to demonstrate. Yeah. One of the rules we have is that when you do your demo, you don't go,
+1:18:36
+I do this off my laptop and then I do this off my laptop, and then I do this off my laptop.
+1:18:45
+I've only got a wonderful product. No, you've got three different versions of a wonderful product.
+1:18:49
+Yeah. As a team, you do the whole demo from one laptop from main.
+1:18:54
+This is ours. Yeah. There's a clue in the title of the module.
+1:19:02
+Right. Team project? Yep. So when you do your review, you can all talk about what you've done.
+1:19:08
+But the demo is from one machine. Yeah.
+1:19:15
+And it's off main. If you then want to go by the way we've got ideas in progress.
+1:19:19
+We didn't quite finish it for this show and tell.
+1:19:25
+But can we just show you, Mr. Client, the things that we're thinking about and get your feedback at that point?
+1:19:28
+Yes. Get another laptop out and show. Yeah.
+1:19:34
+What would be better is just say I'm going to check out the branch and I'm going to show you it from our one laptop.
+1:19:38
+Yeah. What's even better is any of you can talk about any of the branches, because what does that show?
+1:19:44
+Shared understanding. You all know what each others are doing. Okay.
+1:19:52
+One of the things I do in my review, when I have the three of you in a team say, right, I go, right?
+1:19:56
+You tell me what he did this week. Yeah, you tell me what he did.
+1:20:03
+You tell me what he did, right. And if you don't answer it, you won't a team.
+1:20:08
+Okay. Because the next item that comes round in the list of items.
+1:20:15
+Yeah, might mean that you have to work on the code.
+1:20:19
+He's just merged. So if you don't know what he did and why he did it, you're stuck.
+1:20:23
+Yeah. You can't just say everything about accessibility is mine.
+1:20:28
+Hands off. No one ever touches accessibility apart from me. Yeah, yeah.
+1:20:32
+The next one might be improved accessibility. Yeah.
+1:20:38
+And you're already working on something else. So you've got to pick it up and you've got to work on what he did.
+1:20:42
+Yeah. So this is what it means to work in a team. And this is why GitLab and get is so useful.
+1:20:46
+Because you get an audit trail and it can force you into that shared understanding world.
+1:20:51
+Okay. As Recap the thing again with five updates and six is still working on your methods.
+1:20:57
+Just, uh, the things needed to be done. So five updates merges.
+1:21:06
+You working on mine. So what I would do is write down what your understanding of the steps were, what you think the workflow is.
+1:21:10
+Yeah. Yep. The other thing I've done on learning Central, there's something called GitLab flow, which essentially is what I've just done.
+1:21:17
+Yeah. So GitLab actually document their workflow. Yeah.
+1:21:24
+Write down what you think of the steps are right. And then we'll sit down and we'll go through it.
+1:21:29
+Okay. But what you think the steps are. Right.
+1:21:34
+If you're out by one I'll tell you. Yeah. Okay. So what I want you to do now.
+1:21:39
+Let's check the, uh, just check the timetable for this today.
+1:21:51
+So this goes on till one. Yeah. Get into teams.
+1:22:13
+Yeah. And I don't care how big your team is. Two.
+1:22:27
+Three. Four. Five. I don't care. Right. Take one of your git labs from Tuesday.
+1:22:31
+Yeah. And they're probably private. Yeah. Um, so what you'll need to do is invite other people to that team.
+1:22:40
+Right. This is what you'll have to do when you do it. For real. Yeah. Hopefully one of you has started doing some different stuff from Tuesday.
+1:22:48
+Yep. But what I want you to do is I want you to create an e-voting system.
+1:23:00
+Yeah, anywhere you want. You can do console based Python.
+1:23:07
+You could do web based. I really don't care. Yeah. But if you think about what does that require?
+1:23:11
+Well, it requires you to get some standing data in. Right.
+1:23:18
+What are the seats? Who are the candidates? What are the parties?
+1:23:22
+Yeah, just. We're running an election. Yeah. You then need another piece of work, which will be.
+1:23:26
+I'm going to capture the votes for a seat. Yeah.
+1:23:33
+Then you're going to need a piece of work, which is what you did on Tuesday to calculate who won which seats in that constituency.
+1:23:37
+Um, and then you're going to need a piece of work to visualise the results. Yeah.
+1:23:45
+That sounds like at least four people's worth of work. Okay. Yeah.
+1:23:49
+Get it in. Get the votes in, do some calculations. Get it out.
+1:23:54
+Yeah, I can think of at least four issues that you've got to stick on your issues board.
+1:23:58
+Yeah. Think about what we did on Tuesday.
+1:24:05
+What's the simplest thing you could possibly do? One voting system.
+1:24:09
+All the seats have the same number of candidates. I don't care about the candidates.
+1:24:13
+I just care about the parties. I don't care about the electoral roll.
+1:24:17
+I'll just trust that someone comes in and says I'm voting plied or whatever.
+1:24:21
+Capture the vote, calculate them list as a report.
+1:24:26
+Yeah. What's the next thing? I'll do a map or I'll do a graph or I'll do this.
+1:24:30
+I'll change the course. You're clever people, right?
+1:24:37
+You can work out all the possible variations and niceties, but how would you get to something basic?
+1:24:40
+Yeah. Set up a huge list.
+1:24:45
+Set up a milestone. The milestone is the simplest thing you could possibly do.
+1:24:51
+allocate a simple bit of work to each person. Go through the branch and merge request workflow.
+1:24:55
+When you do your merge requests, get someone else to review it.
+1:25:01
+Yeah. Um, because then it'll appear in their git lab.
+1:25:05
+They'll have to do it, and then you'll see it come back to you as approved. Yeah.
+1:25:11
+It's your chance with just a made up system to just practice.
+1:25:15
+What? What I've just shown you. Yeah. This is the safest place you'll ever do it.
+1:25:19
+Okay. This is not your real project. If you get stuck, shout. Okay.
+1:25:25
+Myself and Ian around this afternoon, and we can both bail you out if you've made a mistake.
+1:25:29
+All right. But this is important if you want to be ready to work on the proper team project.
+1:25:33
+Understanding git and git lab and issues boards is pretty critical.
+1:25:39
+All right. Any questions? Okay.
+1:25:44
+So just find someone to work with or threes or fours.
+1:25:49
+I don't mind. Share a repository and get cracking.
+1:25:52
+All right. Yeah.
+1:26:00
+How do we do that? What's our.
+1:26:12
+--------------------------------------------------------------------------------------
+Notes:
+
+
+--------------------------------------------------------------------------------------
+Bookmarks:
+
+
+--------------------------------------------------------------------------------------

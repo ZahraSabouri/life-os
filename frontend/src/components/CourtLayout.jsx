@@ -8,6 +8,7 @@ export default function CourtLayout() {
   const { ground, cycleGround } = useGround()
   const [now, setNow] = useState(() => new Date())
   const isBoardRoute = location.pathname === '/calendar' || location.pathname === '/today'
+  const isCourtRoute = location.pathname === '/court'
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat(undefined, {
     weekday: 'long',
@@ -26,43 +27,45 @@ export default function CourtLayout() {
   }
 
   return (
-    <main className={`court-screen${isBoardRoute ? ' board-screen' : ''}`}>
-      <header className="court-topbar">
-        <div className="wordmark">Life OS</div>
-        <div className="date-line">{dateLabel}</div>
-        <nav className="court-nav" aria-label="Primary">
-          <button
-            className={location.pathname === '/court' ? 'active' : undefined}
-            type="button"
-            onClick={() => navigate('/court')}
-          >
-            Court
-          </button>
-          <button
-            className={location.pathname === '/today' ? 'active' : undefined}
-            type="button"
-            onClick={() => navigate('/today')}
-          >
-            Today
-          </button>
-          <button
-            className={location.pathname === '/calendar' ? 'active' : undefined}
-            type="button"
-            onClick={() => navigate('/calendar')}
-          >
-            Calendar
-          </button>
-          <button
-            className={location.pathname === '/study' ? 'active' : undefined}
-            type="button"
-            onClick={() => navigate('/study')}
-          >
-            Study hub
-          </button>
-          <button type="button" onClick={cycleGround}>Ground: {ground}</button>
-          <button type="button" onClick={goDivan}>Divan</button>
-        </nav>
-      </header>
+    <main className={`court-screen${isBoardRoute ? ' board-screen' : ''}${isCourtRoute ? ' court-redesign-screen' : ''}`}>
+      {!isCourtRoute ? (
+        <header className="court-topbar">
+          <div className="wordmark">Life OS</div>
+          <div className="date-line">{dateLabel}</div>
+          <nav className="court-nav" aria-label="Primary">
+            <button
+              className={location.pathname === '/court' ? 'active' : undefined}
+              type="button"
+              onClick={() => navigate('/court')}
+            >
+              Court
+            </button>
+            <button
+              className={location.pathname === '/today' ? 'active' : undefined}
+              type="button"
+              onClick={() => navigate('/today')}
+            >
+              Today
+            </button>
+            <button
+              className={location.pathname === '/calendar' ? 'active' : undefined}
+              type="button"
+              onClick={() => navigate('/calendar')}
+            >
+              Calendar
+            </button>
+            <button
+              className={location.pathname === '/study' ? 'active' : undefined}
+              type="button"
+              onClick={() => navigate('/study')}
+            >
+              Study hub
+            </button>
+            <button type="button" onClick={cycleGround}>Ground: {ground}</button>
+            <button type="button" onClick={goDivan}>Divan</button>
+          </nav>
+        </header>
+      ) : null}
 
       <Outlet />
     </main>
