@@ -5,3 +5,6 @@ backend/data/*.db-*
 backend/.env
 frontend/.env
 
+# Fonts (large Farsi font pack kept locally, not committed)
+frontend/public/fonts/
+

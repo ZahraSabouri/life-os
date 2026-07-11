@@ -5,7 +5,6 @@ import { ROOMS } from '@shared/rooms.js'
 import FieldsForm from './FieldsForm.jsx'
 import { apiFetch } from '../lib/api.js'
 import { useEntries } from '../lib/useEntries.js'
-import { poemForDate } from '../lib/poems.js'
 import { useGround } from '../lib/groundContext.jsx'
 
 const ROOM_NAME_OVERRIDES = {
@@ -14,13 +13,66 @@ const ROOM_NAME_OVERRIDES = {
   career: 'Career',
   growth: 'Growth',
   body: 'Body',
-  relationships: 'People',
+  relationships: 'Relationships',
   culture: 'Culture',
   travel: 'Travel',
   memories: 'Memories',
   home: 'Home',
   mind: 'Mind',
-  style: 'Style'
+  style: 'Closet'
+}
+
+const ROOM_PRESENTATION = {
+  study: { motif: 'book', wing: 'desk', latest: 'FIN301 - three revision blocks left this week' },
+  academia: { motif: 'academy', wing: 'desk', latest: 'PhD scholarships - Cardiff shortlist drafted' },
+  career: { motif: 'case', wing: 'desk', latest: 'Admiral / Data Analyst - applied Tuesday' },
+  growth: { motif: 'sprout', wing: 'self', latest: 'SQL course - window functions, lesson 9' },
+  body: { motif: 'workout', wing: 'self', latest: 'Push day - five PRs / Bute Park 5k Sunday' },
+  style: { motif: 'shirt', wing: 'self', latest: 'Eighteen pieces photographed / two outfits' },
+  relationships: { motif: 'heart', wing: 'world', latest: "Sara's birthday - 12 Aug / gift idea saved" },
+  travel: { motif: 'compass', wing: 'world', latest: 'London - 19 Jul / 09:12 train booked' },
+  home: { motif: 'home', wing: 'world', latest: 'Groceries Saturday / fix the desk lamp' },
+  culture: { motif: 'film', wing: 'soul', latest: 'The Blind Owl - chapter four' },
+  memories: { motif: 'photo', wing: 'soul', latest: 'Penarth pier at low tide - fourteen photos' },
+  mind: { motif: 'quill', wing: 'soul', latest: 'Morning pages / idea - poem-a-day widget' }
+}
+
+const ROOM_ACCENTS = {
+  study: { dark: '#6fb3a6', paper: '#2f8f83' },
+  academia: { dark: '#7c9ec2', paper: '#3a5ba0' },
+  career: { dark: '#9a9de0', paper: '#4b4fbf' },
+  growth: { dark: '#96b579', paper: '#4f9d4f' },
+  body: { dark: '#de8f6d', paper: '#c05a38' },
+  style: { dark: '#a3a5c4', paper: '#6b6d92' },
+  relationships: { dark: '#d492ac', paper: '#b05a7c' },
+  travel: { dark: '#7fb3d4', paper: '#35789f' },
+  home: { dark: '#d9a94a', paper: '#a9702a' },
+  culture: { dark: '#b193d8', paper: '#7a4fb3' },
+  memories: { dark: '#adb37e', paper: '#7a8148' },
+  mind: { dark: '#c9917f', paper: '#a05a44' }
+}
+
+const GLYPHS = {
+  academy: '<path d="M12 4.5 L21 9 L12 13.5 L3 9 Z"/><path d="M6.5 11 V15.5 C6.5 17 9 18.5 12 18.5 C15 18.5 17.5 17 17.5 15.5 V11"/><path d="M21 9 V14"/>',
+  book: '<path d="M4 5.2 C7 4.2 9.6 4.4 12 6.2 C14.4 4.4 17 4.2 20 5.2 L20 18.6 C17 17.6 14.4 17.4 12 19.2 C9.6 17.4 7 17.6 4 18.6 Z"/><path d="M12 6.2 V19.2"/>',
+  case: '<rect x="3.8" y="8" width="16.4" height="11.2" rx="1.5"/><path d="M8.8 8 V6.2 A1.2 1.2 0 0 1 10 5 H14 A1.2 1.2 0 0 1 15.2 6.2 V8"/><path d="M3.8 12.5 H20.2"/>',
+  chev: '<path d="M9 5 L16 12 L9 19"/>',
+  compass: '<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5 L13.5 13.5 L8.5 15.5 L10.5 10.5 Z"/>',
+  event: '<rect x="4" y="5.5" width="16" height="14.5" rx="1.6"/><path d="M4 9.5 H20 M8.5 3.5 V7 M15.5 3.5 V7"/>',
+  film: '<rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M7.5 5 V19 M16.5 5 V19 M3.5 9 H7.5 M3.5 15 H7.5 M16.5 9 H20.5 M16.5 15 H20.5"/>',
+  heart: '<path d="M12 20 C7 16 3.5 12.8 3.5 9.2 C3.5 6.8 5.3 5 7.6 5 C9.4 5 10.9 6 12 7.8 C13.1 6 14.6 5 16.4 5 C18.7 5 20.5 6.8 20.5 9.2 C20.5 12.8 17 16 12 20 Z"/>',
+  home: '<path d="M4 11 L12 4 L20 11"/><path d="M6 9.6 V19.5 H18 V9.6"/>',
+  mic: '<rect x="9.4" y="3" width="5.2" height="10.4" rx="2.6"/><path d="M6 11.2 A6 6 0 0 0 18 11.2"/><path d="M12 17.2 V20.4 M9 20.4 H15"/>',
+  note: '<path d="M5.5 6.5 H15 M5.5 11 H18.5 M5.5 15.5 H12.5"/>',
+  photo: '<rect x="3.5" y="5.5" width="17" height="13" rx="1.4"/><circle cx="8.8" cy="10" r="1.7"/><path d="M4.5 17 L9.2 12.2 L13 15 L16.6 11 L19.6 14"/>',
+  place: '<path d="M12 20.5 C7 15 5.8 11.4 5.8 9 A6.2 6.2 0 1 1 18.2 9 C18.2 11.4 17 15 12 20.5 Z"/><circle cx="12" cy="9" r="2.3"/>',
+  quill: '<path d="M5.5 18.5 C10 8.5 15 5.5 19.5 5 C19 9.5 16 14.5 5.5 18.5 Z"/><path d="M5.5 18.5 L10 14"/>',
+  send: '<path d="M20 6 V10.6 A2 2 0 0 1 18 12.6 H5"/><path d="M9.2 8.4 L5 12.6 L9.2 16.8"/>',
+  spark: '<path d="M12 3 C12 8 13.4 10.6 21 12 C13.4 13.4 12 16 12 21 C12 16 10.6 13.4 3 12 C10.6 10.6 12 8 12 3 Z"/>',
+  sprout: '<path d="M12 20.5 V11"/><path d="M12 11 C12 7 9.5 5 5.5 5 C5.5 9 8 11 12 11 Z"/><path d="M12 13.5 C12 10.2 14.2 8.5 17.5 8.5 C17.5 11.8 15.3 13.5 12 13.5 Z"/>',
+  task: '<path d="M4.5 12.5 L9.5 17.5 L19.5 6.5"/>',
+  shirt: '<path d="M8.5 4.5 C8.5 6 10 7 12 7 C14 7 15.5 6 15.5 4.5 L20.5 7.5 L18.8 11 L16.5 10 V19.5 H7.5 V10 L5.2 11 L3.5 7.5 Z"/>',
+  workout: '<path d="M4 9.5 V14.5 M6.8 7 V17 M17.2 7 V17 M20 9.5 V14.5 M6.8 12 H17.2"/>'
 }
 
 const TYPE_ROOM_FALLBACKS = {
@@ -31,12 +83,38 @@ const TYPE_ROOM_FALLBACKS = {
 }
 
 const FEATURED_ROOMS = ['study', 'career', 'body']
+const ROOM_ORDER = [
+  'study', 'academia', 'career', 'growth', 'body', 'style',
+  'relationships', 'travel', 'home', 'culture', 'memories', 'mind'
+]
 
 const WINGS = [
-  { key: 'work', label: 'The Work', rooms: ['study', 'academia', 'career', 'growth'] },
-  { key: 'life', label: 'The Life', rooms: ['body', 'relationships', 'travel', 'home', 'style'] },
+  { key: 'desk', label: 'The Desk', rooms: ['study', 'academia', 'career'] },
+  { key: 'self', label: 'The Self', rooms: ['growth', 'body', 'style'] },
+  { key: 'world', label: 'The World', rooms: ['relationships', 'travel', 'home'] },
   { key: 'soul', label: 'The Soul', rooms: ['culture', 'memories', 'mind'] }
 ]
+
+const COURT_POEMS = {
+  paper: {
+    poet: 'حافظ',
+    lines: ['هرگز نمیرد آن که دلش زنده شد به عشق', 'ثبت است بر جریدهٔ عالم دوامِ ما'],
+    hi: 'ثبت است',
+    en: 'It is inscribed in the ledger of the world - our permanence.'
+  },
+  madder: {
+    poet: 'مولانا',
+    lines: ['از محبت تلخ‌ها شیرین شود', 'از محبت مس‌ها زرّین شود'],
+    hi: 'زرّین',
+    en: 'Through love all bitterness turns sweet; through love copper turns to gold.'
+  },
+  indigo: {
+    poet: 'خیام',
+    lines: ['این یک دو سه روزه نوبتِ عمر گذشت', 'چون آب به جویبار و چون باد به دشت'],
+    hi: 'عمر',
+    en: 'These two or three days, the turn of a life, slip by - like water in the brook, like wind on the plain.'
+  }
+}
 
 function titleFromBody(body) {
   const compact = body.trim().replace(/\s+/g, ' ')
@@ -140,12 +218,12 @@ function greetingFor(date) {
 }
 
 function dateLabelFor(date) {
-  return new Intl.DateTimeFormat(undefined, {
+  return new Intl.DateTimeFormat('en-GB', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
     year: 'numeric'
-  }).format(date)
+  }).format(date).replace(',', ' ·')
 }
 
 function shortDateLabelFor(date) {
@@ -156,27 +234,32 @@ function shortDateLabelFor(date) {
 }
 
 function clockLabelFor(date) {
-  return new Intl.DateTimeFormat(undefined, {
-    hour: 'numeric',
-    minute: '2-digit'
+  return new Intl.DateTimeFormat('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
   }).format(date)
 }
 
-function sortRoomsForPaper(rooms) {
-  const top = Math.ceil(rooms.length / 2)
-  const left = rooms.slice(0, top)
-  const right = rooms.slice(top)
-  const ordered = []
-
-  for (let index = 0; index < top; index += 1) {
-    if (left[index]) ordered.push(left[index])
-    if (right[index]) ordered.push(right[index])
+function jalaliDateLabelFor(date) {
+  try {
+    return new Intl.DateTimeFormat('en-GB-u-ca-persian', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }).format(date).replace(/\s+AP$/i, '')
+  } catch {
+    return ''
   }
-
-  return ordered
 }
 
-function buildRoomModel(entries) {
+function weekdayLabelFor(date) {
+  return new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long'
+  }).format(date)
+}
+
+function buildRoomModel(entries, ground) {
   const counts = new Map(ROOMS.map((room) => [room.slug, 0]))
   const latest = new Map()
 
@@ -196,10 +279,13 @@ function buildRoomModel(entries) {
       ...room,
       displayName: displayRoomName(room),
       count: counts.get(room.slug) || 0,
-      latest: latestEntry ? entryTitle(latestEntry) : room.blurb,
-      style: { '--room-accent': room.accent }
+      latest: latestEntry ? entryTitle(latestEntry) : ROOM_PRESENTATION[room.slug]?.latest || room.blurb,
+      motif: ROOM_PRESENTATION[room.slug]?.motif || 'note',
+      wing: ROOM_PRESENTATION[room.slug]?.wing || 'soul',
+      accent: ROOM_ACCENTS[room.slug]?.[ground === 'paper' ? 'paper' : 'dark'] || room.accent,
+      style: { '--room-accent': ROOM_ACCENTS[room.slug]?.[ground === 'paper' ? 'paper' : 'dark'] || room.accent }
     }
-  })
+  }).sort((left, right) => ROOM_ORDER.indexOf(left.slug) - ROOM_ORDER.indexOf(right.slug))
 }
 
 function roomForEntry(entry, rooms) {
@@ -229,19 +315,34 @@ function Dia() {
   return <span className="redesign-dia" aria-hidden="true" />
 }
 
-function CourtNav({ ground, cycleGround, navigate, quiet = false }) {
-  function goDivan() {
-    navigate('/', { state: { forceIntro: true } })
-  }
+function Glyph({ name, size = 20, stroke = 1.5 }) {
+  return (
+    <svg
+      className="redesign-glyph"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={stroke}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      dangerouslySetInnerHTML={{ __html: GLYPHS[name] || GLYPHS.note }}
+    />
+  )
+}
 
+function CourtNav({ ground, cycleGround, navigate, quiet = false }) {
   return (
     <nav className={quiet ? 'redesign-nav redesign-nav-quiet' : 'redesign-nav'} aria-label="Primary">
-      <button className="is-active" type="button" onClick={() => navigate('/court')}>Court</button>
       <button type="button" onClick={() => navigate('/today')}>Today</button>
       <button type="button" onClick={() => navigate('/calendar')}>Calendar</button>
-      <button type="button" onClick={() => navigate('/study')}>Study</button>
-      <button type="button" onClick={cycleGround}>Ground: {ground}</button>
-      <button type="button" onClick={goDivan}>Divan</button>
+      <button className="redesign-search-button" type="button">Search <kbd>⌘K</kbd></button>
+      <button className="redesign-ground-button" type="button" onClick={cycleGround} aria-label={`Switch ground from ${ground}`}>
+        <span aria-hidden="true" />
+        Ground
+      </button>
     </nav>
   )
 }
@@ -261,6 +362,11 @@ function CaptureFields({
   variant
 }) {
   const typeLabel = ENTRY_TYPES[entryType]?.label || 'Entry'
+  const courtPlaceholder = variant === 'paper'
+    ? 'Tell me about your day - it files itself…'
+    : variant === 'madder'
+      ? 'Tell me about your day…'
+      : 'Tell Life OS anything - it files itself after you confirm.'
 
   return (
     <>
@@ -269,7 +375,7 @@ function CaptureFields({
         onChange={(event) => setBody(event.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={entryType === 'note'
-          ? 'Tell Life OS anything - it files itself after you confirm.'
+          ? courtPlaceholder
           : `Title for this ${typeLabel.toLowerCase()}. Add structure below.`}
         rows={variant === 'paper' ? 1 : 3}
         aria-label="Capture text"
@@ -336,7 +442,7 @@ function EmptyLine({ children }) {
 function RecentLine({ entry }) {
   return (
     <li className="recent-line" style={{ '--room-accent': entry.room.accent }}>
-      <span>{entry.icon}</span>
+      <span><Glyph name={entry.glyph} size={15} /></span>
       <p>{entry.title}</p>
       <time>{entry.ago}</time>
     </li>
@@ -356,16 +462,37 @@ function TodayLine({ entry }) {
   )
 }
 
-function PoemStrip({ dailyPoem, compact = false }) {
+function PoemStrip({ dailyPoem, compact = false, variant = 'paper' }) {
+  function renderLine(line) {
+    if (!dailyPoem.hi || !line.includes(dailyPoem.hi)) return line
+
+    const [before, after] = line.split(dailyPoem.hi)
+    return <>{before}<span className="redesign-poem-highlight">{dailyPoem.hi}</span>{after}</>
+  }
+
+  if (variant === 'indigo') {
+    return (
+      <aside className="redesign-poem redesign-poem-compact redesign-poem-indigo" aria-label="Poem of the day">
+        <p className="redesign-poem-en">{dailyPoem.en}</p>
+        <span className="redesign-poem-spacer" />
+        <p className="redesign-indigo-verse" dir="rtl">
+          {renderLine(dailyPoem.lines[0])}
+          <span>·</span>
+          <em>{dailyPoem.poet}</em>
+        </p>
+      </aside>
+    )
+  }
+
   return (
-    <aside className={compact ? 'redesign-poem redesign-poem-compact' : 'redesign-poem'} aria-label="Poem of the day">
-      {dailyPoem.en ? <p className="redesign-poem-en">{dailyPoem.en}</p> : null}
+    <aside className={compact ? `redesign-poem redesign-poem-compact redesign-poem-${variant}` : `redesign-poem redesign-poem-${variant}`} aria-label="Poem of the day" dir="rtl">
       <div className="redesign-poem-lines" dir="auto">
         {dailyPoem.lines.map((line, index) => (
-          <p key={`${line}-${index}`}>{line}</p>
+          <p key={`${line}-${index}`}>{renderLine(line)}</p>
         ))}
       </div>
-      <p className="redesign-poet" dir="auto">{dailyPoem.poet}</p>
+      <div className="redesign-poet-row"><i /><p className="redesign-poet" dir="auto">{dailyPoem.poet}</p><i /></div>
+      {dailyPoem.en ? <p className="redesign-poem-en" dir="ltr">{dailyPoem.en}</p> : null}
     </aside>
   )
 }
@@ -395,6 +522,7 @@ function PaperCourt(props) {
     dailyPoem,
     ground,
     greeting,
+    jalaliDateLabel,
     navigate,
     onOpenRoom,
     recentEntries,
@@ -404,7 +532,7 @@ function PaperCourt(props) {
     todayItems,
     cycleGround
   } = props
-  const paperRooms = sortRoomsForPaper(rooms)
+  const paperRooms = rooms
   const nextItems = todayItems.slice(0, 3)
 
   return (
@@ -418,22 +546,23 @@ function PaperCourt(props) {
           <span>Life OS</span>
           <i aria-hidden="true" />
           <time>{dateLabel}</time>
-          <strong>{clockLabel}</strong>
+          <strong>{jalaliDateLabel || clockLabel}</strong>
         </header>
 
         <CourtNav ground={ground} cycleGround={cycleGround} navigate={navigate} quiet />
 
         <section className="paper-greeting" aria-label="Court greeting">
-          <h1>{greeting}.</h1>
-          <p>The desk and the body saw work today. The twelve rooms are open.</p>
+          <h1>{greeting}, Xar.</h1>
+          <p>The desk and the body saw work today · Tehran calls at 19:00</p>
         </section>
 
         <form className="paper-capture" onSubmit={captureProps.handleSubmit}>
           <div className="paper-capture-line">
             <Dia />
             <CaptureFields {...captureProps} variant="paper" />
+            <span className="paper-capture-enter" aria-hidden="true">⏎</span>
           </div>
-          <p className="paper-capture-hint">it drafts the filing - you confirm - press Enter anywhere</p>
+          <p className="paper-capture-hint">it drafts the filing - you confirm · press / anywhere</p>
         </form>
 
         <section className="paper-index" aria-labelledby="paper-rooms-heading">
@@ -489,20 +618,33 @@ function PaperCourt(props) {
 
         <div className="paper-poem-wrap">
           <KhatamMark small />
-          <PoemStrip dailyPoem={dailyPoem} />
+          <PoemStrip dailyPoem={dailyPoem} variant="paper" />
         </div>
       </div>
     </section>
   )
 }
 
-function MadderDoor({ room, onOpen }) {
+function MadderDoor({ room, onOpen, streakDays }) {
+  const metaLine = {
+    study: '4 open · exam 14 Jul',
+    career: '6 open · 2 interviews ahead',
+    body: '2 open · 5k Sunday'
+  }
+
   return (
     <button className="madder-door" style={room.style} type="button" onClick={() => onOpen(room)}>
-      <span>{room.icon}</span>
-      <h2>{room.displayName}</h2>
-      <p>{room.latest}</p>
-      <small>{room.count} filed</small>
+      <div className="madder-door-copy">
+        <div className="madder-door-title">
+          <Glyph name={room.motif} size={20} />
+          <h2>{room.displayName}</h2>
+        </div>
+        <p>{room.latest}</p>
+        <small>{metaLine[room.slug]}</small>
+      </div>
+      {room.slug === 'study'
+        ? <StreakRing days={streakDays} of={14} />
+        : <span className="madder-door-chevron"><Glyph name="chev" size={14} stroke={1.6} /></span>}
     </button>
   )
 }
@@ -510,10 +652,46 @@ function MadderDoor({ room, onOpen }) {
 function MadderTile({ room, onOpen }) {
   return (
     <button className="madder-tile" style={room.style} type="button" onClick={() => onOpen(room)}>
-      <span aria-hidden="true" />
+      <span aria-hidden="true"><Glyph name={room.motif} size={16} /></span>
       <strong>{room.displayName}</strong>
       <small>{room.count}</small>
     </button>
+  )
+}
+
+function MadderDayChannel({ clockLabel, todayItems }) {
+  const stops = todayItems.slice(0, 4)
+
+  return (
+    <section className="madder-day-channel" aria-label="Today channel">
+      <SectionRule right={`now · ${clockLabel}`}>Today</SectionRule>
+      <div className="madder-channel-track">
+        <span className="madder-channel-line" aria-hidden="true" />
+        {stops.length ? (
+          stops.map((entry, index) => {
+            const stopX = stops.length === 1 ? 50 : 6 + (index * (88 / (stops.length - 1)))
+
+            return (
+              <article
+                className="madder-stop"
+                key={entry.id}
+                style={{ '--stop-x': `${stopX}%`, '--room-accent': entry.room.accent }}
+              >
+                <time>{entry.time}</time>
+                <Dia />
+                <p>{entry.title}</p>
+              </article>
+            )
+          })
+        ) : (
+          <EmptyLine>No dated entries today.</EmptyLine>
+        )}
+        <div className="madder-now-marker" style={{ '--stop-x': '52%' }}>
+          <Dia />
+          <span>Now</span>
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -525,10 +703,12 @@ function MadderCourt(props) {
     dailyPoem,
     ground,
     greeting,
+    jalaliDateLabel,
     navigate,
     onOpenRoom,
     recentEntries,
     rooms,
+    streakDays,
     todayItems,
     cycleGround
   } = props
@@ -542,58 +722,38 @@ function MadderCourt(props) {
       </div>
 
       <div className="madder-page">
+        <div className="madder-frame" aria-hidden="true" />
+        <div className="madder-khatam"><KhatamMark /></div>
+
         <header className="madder-header">
-          <div>
-            <span>Life OS</span>
-            <time>{dateLabel}</time>
-          </div>
+          <span>Life OS</span>
           <CourtNav ground={ground} cycleGround={cycleGround} navigate={navigate} />
-          <strong>{clockLabel}</strong>
+          <div className="madder-date-stack">
+            <time>{dateLabel}</time>
+            <strong>{jalaliDateLabel}</strong>
+          </div>
         </header>
 
         <section className="madder-greeting" aria-label="Court greeting">
-          <Dia />
-          <h1>{greeting}.</h1>
-          <p>The courtyard is open. File the thought, then choose a door.</p>
+          <h1>{greeting}, Xar.</h1>
+          <p>Eleven days of study kept · two rooms saw work today</p>
         </section>
 
-        <section className="madder-courtyard" aria-label="Court courtyard">
-          <aside className="madder-panel madder-today">
-            <SectionRule>Today</SectionRule>
-            {todayItems.length ? (
-              <ol className="today-lines">
-                {todayItems.slice(0, 5).map((entry) => (
-                  <TodayLine key={entry.id} entry={entry} />
-                ))}
-              </ol>
-            ) : (
-              <EmptyLine>No dated entries today.</EmptyLine>
-            )}
-          </aside>
+        <form className="madder-capture-pool" onSubmit={captureProps.handleSubmit}>
+          <span className="madder-mic" aria-hidden="true"><Glyph name="mic" size={17} /></span>
+          <CaptureFields {...captureProps} variant="madder" />
+          <button className="madder-send" type="submit" disabled={!captureProps.body.trim() || captureProps.status === 'saving'}>
+            <Glyph name="send" size={15} />
+          </button>
+        </form>
 
-          <form className="madder-capture-pool" onSubmit={captureProps.handleSubmit}>
-            <KhatamMark small />
-            <h2>Capture pool</h2>
-            <CaptureFields {...captureProps} variant="madder" />
-          </form>
+        <p className="madder-capture-hint">try - “exam on the 14th at 9, and I finished chapter four of The Blind Owl”</p>
 
-          <aside className="madder-panel">
-            <SectionRule>Filed</SectionRule>
-            {recentEntries.length ? (
-              <ol className="recent-lines">
-                {recentEntries.slice(0, 5).map((entry) => (
-                  <RecentLine key={entry.id} entry={entry} />
-                ))}
-              </ol>
-            ) : (
-              <EmptyLine>No entries filed yet.</EmptyLine>
-            )}
-          </aside>
-        </section>
+        <MadderDayChannel clockLabel={clockLabel} todayItems={todayItems} />
 
         <section className="madder-doors" aria-label="Daily doors">
           {featuredRooms.map((room) => (
-            <MadderDoor key={room.slug} room={room} onOpen={onOpenRoom} />
+            <MadderDoor key={room.slug} room={room} onOpen={onOpenRoom} streakDays={streakDays} />
           ))}
         </section>
 
@@ -603,7 +763,21 @@ function MadderCourt(props) {
           ))}
         </section>
 
-        <PoemStrip dailyPoem={dailyPoem} compact />
+        <section className="madder-footer" aria-label="Filed and poem">
+          <article>
+            <SectionRule>Filed</SectionRule>
+            {recentEntries.length ? (
+              <ol className="recent-lines">
+                {recentEntries.slice(0, 4).map((entry) => (
+                  <RecentLine key={entry.id} entry={entry} />
+                ))}
+              </ol>
+            ) : (
+              <EmptyLine>No entries filed yet.</EmptyLine>
+            )}
+          </article>
+          <PoemStrip dailyPoem={dailyPoem} compact variant="madder" />
+        </section>
       </div>
     </section>
   )
@@ -617,7 +791,7 @@ function IndigoRoomRow({ room, onOpen }) {
         <small>{room.latest}</small>
       </span>
       <em>{room.count}</em>
-      <i aria-hidden="true">&gt;</i>
+      <i aria-hidden="true"><Glyph name="chev" size={12} stroke={1.6} /></i>
     </button>
   )
 }
@@ -625,10 +799,45 @@ function IndigoRoomRow({ room, onOpen }) {
 function IndigoRecentChip({ entry }) {
   return (
     <span className="indigo-recent-chip" style={{ '--room-accent': entry.room.accent }}>
-      <b>{entry.icon}</b>
+      <b><Glyph name={entry.glyph} size={14} /></b>
       <span>{entry.title}</span>
       <time>{entry.ago}</time>
     </span>
+  )
+}
+
+function IndigoDraftRow({ icon, meta, room, roomName, title }) {
+  return (
+    <div className="indigo-draft-row" style={{ '--room-accent': room }}>
+      <span className="indigo-draft-icon"><Glyph name={icon} size={15} /></span>
+      <span className="indigo-draft-copy">
+        <strong>{title}</strong>
+        <small>{meta}</small>
+      </span>
+      <span className="indigo-draft-room">{roomName}</span>
+      <button type="button" aria-label={`Remove ${title}`}>×</button>
+    </div>
+  )
+}
+
+function IndigoCapture({ captureProps }) {
+  return (
+    <form className="indigo-capture" onSubmit={captureProps.handleSubmit}>
+      <div className="indigo-capture-copy">
+        <span>exam on the 14th at 9, and buy Sara’s gift before her birthday<i aria-hidden="true" /></span>
+        <kbd>⌘K</kbd>
+      </div>
+      <div className="indigo-capture-divider" />
+      <p>Understood as</p>
+      <div className="indigo-drafts">
+        <IndigoDraftRow icon="event" title="FIN301 exam" meta="14 Jul · 09:00" room="#6fb3a6" roomName="Study" />
+        <IndigoDraftRow icon="task" title="Buy Sara’s gift" meta="before 12 Aug" room="#d492ac" roomName="Relationships" />
+      </div>
+      <div className="indigo-capture-actions">
+        <button type="submit">File both</button>
+        <button type="button">Discard</button>
+      </div>
+    </form>
   )
 }
 
@@ -640,12 +849,14 @@ function IndigoCourt(props) {
     dateLabel,
     ground,
     greeting,
+    jalaliDateLabel,
     navigate,
     onOpenRoom,
     recentEntries,
     rooms,
     streakDays,
     todayItems,
+    weekdayLabel,
     cycleGround
   } = props
 
@@ -653,33 +864,33 @@ function IndigoCourt(props) {
     <section className="court-redesign court-redesign-indigo" aria-label="The Court - Indigo">
       <div className="indigo-page">
         <header className="indigo-header">
-          <div>
-            <span>Life OS</span>
-            <time>{dateLabel}</time>
-          </div>
+          <span>Life OS</span>
           <CourtNav ground={ground} cycleGround={cycleGround} navigate={navigate} />
-          <strong>{clockLabel}</strong>
+          <i aria-hidden="true" />
+          <time>{dateLabel}<strong>{jalaliDateLabel}</strong></time>
         </header>
 
         <div className="indigo-workspace">
           <aside className="indigo-rail">
             <section className="indigo-rail-greeting">
-              <p>{greeting}.</p>
-              <span>Working rail / capture first</span>
+              <p>{greeting}, Xar.</p>
+              <span>{weekdayLabel} · {clockLabel} · FIN301 in 11 days</span>
             </section>
 
-            <form className="indigo-capture" onSubmit={captureProps.handleSubmit}>
-              <SectionRule right="Enter">Capture</SectionRule>
-              <CaptureFields {...captureProps} variant="indigo" />
-            </form>
+            <IndigoCapture captureProps={captureProps} />
 
             <section className="indigo-today">
-              <SectionRule>Full day</SectionRule>
+              <SectionRule right={weekdayLabel}>Full day</SectionRule>
               {todayItems.length ? (
                 <ol className="today-lines">
-                  {todayItems.slice(0, 6).map((entry) => (
-                    <TodayLine key={entry.id} entry={entry} />
-                  ))}
+                  {todayItems.slice(0, 6).flatMap((entry, index, items) => [
+                    <TodayLine key={entry.id} entry={entry} />,
+                    entry.done && !items[index + 1]?.done ? (
+                      <li className="indigo-now-line" key={`${entry.id}-now`}>
+                        <i /><Dia /><span>now · {clockLabel}</span><i />
+                      </li>
+                    ) : null
+                  ])}
                 </ol>
               ) : (
                 <EmptyLine>No dated entries today.</EmptyLine>
@@ -687,10 +898,10 @@ function IndigoCourt(props) {
             </section>
 
             <section className="indigo-streak">
-              <StreakRing days={streakDays} />
+              <StreakRing days={streakDays} of={14} />
               <div>
-                <strong>{streakDays} / 12</strong>
-                <span>Study streak</span>
+                <strong>{streakDays}-day study streak</strong>
+                <span>FIN301 · 14 Jul · in 11 days</span>
               </div>
             </section>
           </aside>
@@ -731,11 +942,35 @@ function IndigoCourt(props) {
               )}
             </section>
 
-            <PoemStrip dailyPoem={dailyPoem} compact />
+            <PoemStrip dailyPoem={dailyPoem} compact variant="indigo" />
           </section>
         </div>
       </div>
     </section>
+  )
+}
+
+function CourtStage({ children }) {
+  const [scale, setScale] = useState(() => Math.min(
+    window.innerWidth / 1512,
+    window.innerHeight / 982
+  ))
+
+  useEffect(() => {
+    function fitCourt() {
+      setScale(Math.min(window.innerWidth / 1512, window.innerHeight / 982))
+    }
+
+    window.addEventListener('resize', fitCourt)
+    return () => window.removeEventListener('resize', fitCourt)
+  }, [])
+
+  return (
+    <div className="court-design-stage">
+      <div className="court-design-canvas" style={{ transform: `scale(${scale})` }}>
+        {children}
+      </div>
+    </div>
   )
 }
 
@@ -753,8 +988,7 @@ export default function TheCourt() {
 
   const [now, setNow] = useState(() => new Date())
   const entryTypeOptions = useMemo(() => Object.entries(ENTRY_TYPES), [])
-  const dailyPoem = useMemo(() => poemForDate(new Date()), [])
-  const rooms = useMemo(() => buildRoomModel(entries), [entries])
+  const rooms = useMemo(() => buildRoomModel(entries, ground), [entries, ground])
   const studyCount = useMemo(() => {
     return entries.filter((entry) => roomSlugsForType(entry.type).includes('study')).length
   }, [entries])
@@ -766,6 +1000,7 @@ export default function TheCourt() {
       return {
         id: entry.id,
         icon: ENTRY_TYPES[entry.type]?.icon || 'N',
+        glyph: GLYPHS[entry.type] ? entry.type : 'note',
         title: entryTitle(entry),
         excerpt: entryExcerpt(entry),
         type: entryTypeLabel(entry),
@@ -876,26 +1111,28 @@ export default function TheCourt() {
     captureProps,
     clockLabel: clockLabelFor(now),
     cycleGround,
-    dailyPoem,
+    dailyPoem: COURT_POEMS[ground],
     dateLabel: dateLabelFor(now),
     ground,
     greeting: greetingFor(now),
+    jalaliDateLabel: jalaliDateLabelFor(now),
     navigate,
     onOpenRoom,
     recentEntries,
     rooms,
     shortDateLabel: shortDateLabelFor(now),
     streakDays,
-    todayItems
+    todayItems,
+    weekdayLabel: weekdayLabelFor(now)
   }
 
   if (ground === 'paper') {
-    return <PaperCourt {...commonProps} />
+    return <CourtStage><PaperCourt {...commonProps} /></CourtStage>
   }
 
   if (ground === 'indigo') {
-    return <IndigoCourt {...commonProps} />
+    return <CourtStage><IndigoCourt {...commonProps} /></CourtStage>
   }
 
-  return <MadderCourt {...commonProps} />
+  return <CourtStage><MadderCourt {...commonProps} /></CourtStage>
 }
