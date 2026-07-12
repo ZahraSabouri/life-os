@@ -8,3 +8,14 @@ frontend/.env
 # Fonts (large Farsi font pack kept locally, not committed)
 frontend/public/fonts/
 
+# Study Hub assets — large local media (~135MB incl. a 42MB mp4), kept local, not committed
+frontend/public/study-assets/
+frontend/public/study-assets-manifest.json
+
+# Local design-reference screenshots (dev only)
+frontend/design-*.png
+frontend/current-study.png
+
+# Headless-chrome scratch profiles / dev screenshot dirs
+.chrome-*/
+

@@ -5993,7 +5993,7 @@
   z-index: 100;
 }
 
-.study-room.modal-open {
+body.modal-open {
   overflow: hidden;
 }
 

@@ -100,16 +100,18 @@ export function CardDetailDrawer({
     if (!card) return undefined
     if (typeof document === 'undefined') return undefined
 
-    const appRoot = document.getElementById('root')
-    const hadInert = appRoot?.hasAttribute('inert') ?? false
-    const previousAriaHidden = appRoot?.getAttribute('aria-hidden')
+    const portalHost = getStudyPortalHost()
+    const backgroundShell =
+      portalHost?.querySelector(':scope > .study-manuscript-shell, :scope > .srp-shell') ?? null
+    const hadInert = backgroundShell?.hasAttribute('inert') ?? false
+    const previousAriaHidden = backgroundShell?.getAttribute('aria-hidden')
     const previousActiveElement =
       typeof HTMLElement !== 'undefined' && document.activeElement instanceof HTMLElement
         ? document.activeElement
         : null
 
-    appRoot?.setAttribute('inert', '')
-    appRoot?.setAttribute('aria-hidden', 'true')
+    backgroundShell?.setAttribute('inert', '')
+    backgroundShell?.setAttribute('aria-hidden', 'true')
     document.body.classList.add('modal-open')
 
     const focusTimer = window.setTimeout(() => {
@@ -161,10 +163,10 @@ export function CardDetailDrawer({
       window.clearTimeout(focusTimer)
       document.removeEventListener('keydown', handleKeyDown)
       document.body.classList.remove('modal-open')
-      if (appRoot) {
-        if (!hadInert) appRoot.removeAttribute('inert')
-        if (previousAriaHidden === null) appRoot.removeAttribute('aria-hidden')
-        else appRoot.setAttribute('aria-hidden', previousAriaHidden)
+      if (backgroundShell) {
+        if (!hadInert) backgroundShell.removeAttribute('inert')
+        if (previousAriaHidden === null) backgroundShell.removeAttribute('aria-hidden')
+        else backgroundShell.setAttribute('aria-hidden', previousAriaHidden)
       }
       previousActiveElement?.focus()
     }

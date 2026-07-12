@@ -4472,7 +4472,27 @@ progress::-moz-progress-bar {
 }
 
 .court-redesign-paper .redesign-nav-quiet {
+  display: flex;
+  margin-top: 0.6rem;
+}
+.court-redesign-paper .redesign-nav-quiet > button:not(.redesign-ground-button) {
   display: none;
+}
+.court-redesign-paper .redesign-ground-button {
+  color: var(--ink, #3a2f27);
+  opacity: 0.85;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+.court-redesign-paper .redesign-ground-button span {
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  display: inline-block;
+  margin-right: 6px;
 }
 
 .paper-frame-outer {
@@ -5512,7 +5532,16 @@ progress::-moz-progress-bar {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: #111;
+  background: #4f150f;
+}
+.app-shell[data-ground='paper'] .court-design-stage {
+  background: #ddca9f;
+}
+.app-shell[data-ground='madder'] .court-design-stage {
+  background: #4f150f;
+}
+.app-shell[data-ground='indigo'] .court-design-stage {
+  background: #0e1322;
 }
 
 .court-design-canvas {

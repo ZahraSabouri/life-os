@@ -10,12 +10,17 @@ function getInitialGround() {
 }
 
 export function GroundProvider({ children }) {
-  const [ground, setGround] = useState(getInitialGround)
+  const [ground, setCurrentGround] = useState(getInitialGround)
 
   const value = useMemo(() => ({
     ground,
+    setGround(nextGround) {
+      if (!GROUNDS.includes(nextGround)) return
+      window.localStorage.setItem(GROUND_KEY, nextGround)
+      setCurrentGround(nextGround)
+    },
     cycleGround() {
-      setGround((currentGround) => {
+      setCurrentGround((currentGround) => {
         const nextGround = GROUNDS[(GROUNDS.indexOf(currentGround) + 1) % GROUNDS.length]
         window.localStorage.setItem(GROUND_KEY, nextGround)
         return nextGround

@@ -26,6 +26,13 @@ import {
   TableView,
   WeekView,
 } from './components/TrackerViews'
+import { DeskSurface, ChapterSurface } from './manuscript/HomeChapterSurfaces'
+import { LedgerSurface, BoardSurface, ProofsSurface } from './manuscript/RegistrySurfaces'
+import { PhasesSurface, WatchSurface, ChronicleSurface } from './manuscript/CampaignSurfaces'
+import { ManuscriptTimer } from './manuscript/ManuscriptTimer'
+import { ManuscriptHerald } from './manuscript/ManuscriptHerald'
+import { ManuscriptCard } from './manuscript/ManuscriptCard'
+import { ManuscriptAdd } from './manuscript/ManuscriptAdd'
 import { baseCards, campaignMeta } from './data/baseCards'
 import { applyAmlVideoStudyPlan } from './data/amlVideoPlan'
 import { attachCardResourceLinks } from './data/cardResources'
@@ -389,7 +396,7 @@ function backupDoneCount(rawState) {
 export default function App() {
   const tracker = useTrackerState(ENRICHED_BASE_CARDS)
   const navigate = useNavigate()
-  const { ground, cycleGround } = useGround()
+  const { ground, setGround, cycleGround } = useGround()
   const setRoomEl = useCallback((node) => setStudyPortalHost(node), [])
   const [activeView, setActiveView] = useState(() => viewFromHash())
   const [filters, setFilters] = useState(FILTER_DEFAULTS)
@@ -1304,6 +1311,134 @@ export default function App() {
     return null
   }
 
+  const isModuleView = ['aml', 'time-series', 'team-project', 'mat700'].includes(activeView)
+
+  const SECTION_FOR_VIEW = {
+    today: 'desk',
+    hub: 'desk',
+    aml: 'chapters',
+    'time-series': 'chapters',
+    'team-project': 'chapters',
+    mat700: 'chapters',
+    board: 'ledger',
+    table: 'ledger',
+    week: 'ledger',
+    evidence: 'ledger',
+    rescue: 'ledger',
+    dashboard: 'chronicle',
+    progress: 'chronicle',
+    analytics: 'chronicle',
+    project: 'chronicle',
+    admin: 'chronicle',
+    phases: 'chronicle',
+    watch: 'chronicle',
+  }
+
+  function handleManuscriptNavigate(target, options) {
+    if (target === 'court') {
+      navigate('/court')
+      return
+    }
+    if (options && options.phase) {
+      setFilters((current) => ({ ...current, phase: options.phase }))
+    }
+    const map = {
+      desk: 'today',
+      chapters: isModuleView ? activeView : 'aml',
+      ledger: 'board',
+      chronicle: 'progress',
+      watch: 'project',
+    }
+    setActiveView(map[target] ?? target)
+  }
+
+  const manuscriptChrome = {
+    ground,
+    onGroundChange: setGround,
+    onNavigate: handleManuscriptNavigate,
+    onOpenCommand: () => setCommandOpen(true),
+    onOpenCard: setSelectedCardId,
+    onAddCard: () => setAddDialogOpen(true),
+    referenceDate,
+  }
+
+  function renderManuscript() {
+    const section = SECTION_FOR_VIEW[activeView] ?? 'desk'
+
+    if (section === 'chapters') {
+      return (
+        <ChapterSurface
+          {...manuscriptChrome}
+          key={activeView}
+          cards={tracker.cards}
+          stats={allStats}
+          schedule={schedule}
+          modules={studyModules}
+          activeModule={activeView}
+          activeTimerCard={activeTimerCard}
+          moduleExamDates={moduleExamDates}
+          onStartTimer={setActiveTimerCardId}
+          resourceProgress={tracker.state.resourceProgress}
+          onResourceOpen={openResource}
+          onResourceReviewedToggle={tracker.toggleResourceProgress}
+          onResourceUpload={uploadResourceForModule}
+          onReviewOpen={() => setActiveView('evidence')}
+        />
+      )
+    }
+
+    if (section === 'ledger') {
+      const ledgerProps = {
+        ...manuscriptChrome,
+        cards: tracker.cards,
+        moduleOptions,
+        actions,
+      }
+      if (activeView === 'evidence') return <ProofsSurface {...ledgerProps} />
+      if (activeView === 'board') return <BoardSurface {...ledgerProps} />
+      return (
+        <LedgerSurface
+          {...ledgerProps}
+          filters={filters}
+          setFilters={setFilters}
+          phaseOptions={phaseOptions}
+        />
+      )
+    }
+
+    if (section === 'chronicle') {
+      const campaignProps = {
+        ...manuscriptChrome,
+        cards: tracker.cards,
+        snapshots: tracker.snapshots,
+        schedule,
+        actions,
+        moduleExamDates,
+      }
+      if (activeView === 'project' || activeView === 'admin' || activeView === 'watch') {
+        return <WatchSurface {...campaignProps} />
+      }
+      if (activeView === 'phases') {
+        return <PhasesSurface {...campaignProps} customPhases={customPhases} />
+      }
+      return <ChronicleSurface {...campaignProps} />
+    }
+
+    return (
+      <DeskSurface
+        {...manuscriptChrome}
+        cards={tracker.cards}
+        stats={allStats}
+        schedule={schedule}
+        modules={studyModules}
+        activeModule={isModuleView ? activeView : undefined}
+        activeTimerCard={activeTimerCard}
+        moduleExamDates={moduleExamDates}
+        onStartTimer={setActiveTimerCardId}
+      />
+    )
+  }
+
   if (!entered) {
     return (
       <div className="study-room" ref={setRoomEl}>
@@ -1334,184 +1469,46 @@ export default function App() {
 
   return (
     <div className="study-room" ref={setRoomEl}>
-    <div className={`srp-shell${navCollapsed ? ' nav-collapsed' : ''}${navOpen ? ' nav-open' : ''}`}>
-      {navOpen && <button type="button" className="nav-scrim" aria-label="Close menu" onClick={() => setNavOpen(false)} />}
+    <div className="study-manuscript-shell" data-ms-ground={ground}>
+      {renderManuscript()}
 
-      <aside className="app-sidebar" aria-label="Primary navigation">
-        <div className="sidebar-brand">
-          <span className="brand-mark">
-            <Icon name="brand" />
-          </span>
-          <span className="brand-text">
-            <strong>Summer Rescue</strong>
-            <small>Cardiff University · MSc</small>
-          </span>
-        </div>
+      <div className="ms-utility-dock">
+        <ManuscriptTimer
+          ground={ground}
+          onGroundChange={setGround}
+          activeCard={activeTimerCard}
+          onCompleteSession={completeFocusSession}
+          onClearActive={() => setActiveTimerCardId(null)}
+        />
+        <MusicPopover theme={theme} />
+        <ManuscriptHerald
+          ground={ground}
+          notifications={tracker.state.notifications}
+          referenceDate={referenceDate}
+          onGoView={setActiveView}
+          onOpenCard={setSelectedCardId}
+          onSetRead={tracker.setNotificationRead}
+          onMarkAllRead={tracker.markAllNotificationsRead}
+        />
+        <button
+          type="button"
+          className="ms-overlay-trigger"
+          onClick={() => setSettingsOpen(true)}
+          aria-label="Settings and data"
+          title="Settings and data"
+        >
+          <Icon name="settings" />
+        </button>
+      </div>
 
-        <nav className="sidebar-nav" aria-label="Views">
-          {NAV_GROUPS.map((group) => (
-            <div className="nav-group" key={group.label}>
-              <p className="nav-group-label">{group.label}</p>
-              {group.items.map((id) => (
-                <button
-                  type="button"
-                  key={id}
-                  className={`nav-item${activeView === id ? ' active' : ''}`}
-                  onClick={() => setActiveView(id)}
-                  title={LABEL_BY_ID[id]}
-                >
-                  <span className="nav-ico">
-                    <Icon name={id} />
-                  </span>
-                  <span className="nav-label">{LABEL_BY_ID[id]}</span>
-                  {id === 'mat700' && !mat700Active && <span className="nav-flag">paused</span>}
-                </button>
-              ))}
-            </div>
-          ))}
-        </nav>
-
-        <div className="sidebar-foot">
-          <div className="sidebar-crest">
-            <img
-              src="/cardiff-logo.png"
-              alt="Cardiff University"
-              onError={(event) => {
-                event.currentTarget.style.display = 'none'
-              }}
-            />
-            <span>Cardiff University</span>
-          </div>
-          <div className="mini-progress" title={`${doneCount} of ${totalCount} cards done`}>
-            <div className="mini-progress-head">
-              <span>Campaign progress</span>
-              <strong>{donePct}%</strong>
-            </div>
-            <div className="mini-progress-track">
-              <span style={{ width: `${donePct}%` }} />
-            </div>
-            <small>
-              {doneCount} of {totalCount} cards · {tracker.state.addedCards.length} added
-            </small>
-          </div>
-          <button
-            type="button"
-            className="collapse-btn back-to-life-os"
-            onClick={() => navigate('/court')}
-            aria-label="Back to Life OS"
-            title="Back to Life OS"
-          >
-            <Icon name="chevron" />
-            <span>Life OS</span>
-          </button>
-          <button
-            type="button"
-            className="collapse-btn"
-            onClick={() => setNavCollapsed((value) => !value)}
-            aria-label={navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            <Icon name="chevron" />
-            <span>Collapse</span>
+      {message && (
+        <div className="toast" role="status">
+          <span>{message}</span>
+          <button type="button" className="text-button" onClick={() => setMessage('')}>
+            Dismiss
           </button>
         </div>
-      </aside>
-
-      <main className="app-main">
-        <header className="app-topbar">
-          <div className="topbar-left">
-            <button type="button" className="icon-button nav-toggle" aria-label="Open menu" onClick={() => setNavOpen(true)}>
-              <Icon name="menu" />
-            </button>
-            <div className="topbar-title">
-              <p className="eyebrow">{campaignMeta.title}</p>
-              <h1>{viewMeta.title}</h1>
-              {viewMeta.subtitle && <p className="topbar-sub">{viewMeta.subtitle}</p>}
-            </div>
-          </div>
-
-          <div className="topbar-right">
-            {examCountdown != null && (
-              <div className={`countdown-chip${examCountdown <= 21 ? ' urgent' : ''}`} title={`${examTarget.label} date ${examTarget.date}`}>
-                <strong>{examCountdown > 0 ? examCountdown : examCountdown === 0 ? '0' : Math.abs(examCountdown)}</strong>
-                <span>{examCountdown > 0 ? `days to ${examTarget.label}` : examCountdown === 0 ? 'exam day' : 'days after exam'}</span>
-              </div>
-            )}
-            <button
-              type="button"
-              className={`save-button${unsavedSinceBackup ? ' warn' : ''}${autosaveStatus === 'writing' ? ' saving' : ''}`}
-              onClick={saveNow}
-              title={autosaveDetail || backupStatusText}
-            >
-              <strong>{saveButtonLabel}</strong>
-              <span>{saveButtonDetail}</span>
-            </button>
-            <button type="button" className="primary-button" onClick={() => setAddDialogOpen(true)}>
-              <Icon name="plus" />
-              <span>Add card</span>
-            </button>
-            <StudyTimer
-              activeCard={activeTimerCard}
-              onCompleteSession={completeFocusSession}
-              onClearActive={() => setActiveTimerCardId(null)}
-            />
-            <MusicPopover theme={theme} />
-            <NotificationCenter
-              notifications={tracker.state.notifications}
-              referenceDate={referenceDate}
-              onGoView={setActiveView}
-              onOpenCard={setSelectedCardId}
-              onSetRead={tracker.setNotificationRead}
-              onMarkAllRead={tracker.markAllNotificationsRead}
-            />
-            <button
-              type="button"
-              className="icon-button"
-              onClick={cycleGround}
-              aria-label={`Ground: ${ground}. Click to change.`}
-              title={`Ground: ${ground} — click to cycle madder / indigo / paper`}
-            >
-              <Icon name={ground === 'paper' ? 'sun' : 'moon'} />
-            </button>
-            <button type="button" className="icon-button" onClick={() => setSettingsOpen(true)} aria-label="Settings and data" title="Settings and data">
-              <Icon name="settings" />
-            </button>
-          </div>
-        </header>
-
-        {message && (
-          <div className="toast" role="status">
-            <span>{message}</span>
-            <button type="button" className="text-button" onClick={() => setMessage('')}>
-              Dismiss
-            </button>
-          </div>
-        )}
-
-        {!tracker.state.settings.saveHintDismissed && (
-          <div className="save-hint" role="status">
-            <span>Progress autosaves to the local state file when the dev server is running, and also in this browser. Export JSON remains available in Settings.</span>
-            <button type="button" className="text-button" onClick={() => tracker.updateSettings({ saveHintDismissed: true })}>
-              Dismiss
-            </button>
-          </div>
-        )}
-
-        {!isStudyView && (
-          <FilterBar
-            filters={filters}
-            setFilters={setFilters}
-            resultCount={visibleCards.length}
-            moduleOptions={moduleOptions}
-            phaseOptions={phaseOptions}
-          />
-        )}
-
-        <section className="view-shell" aria-label="Active planner view">
-          <div className="view-anim" key={activeView}>
-            {renderView()}
-          </div>
-        </section>
-      </main>
+      )}
 
       {settingsOpen && (
         <div
@@ -1753,11 +1750,15 @@ export default function App() {
         </div>
       )}
 
-      <CardDetailDrawer
+      <ManuscriptCard
         key={selectedCard?.id ?? 'closed-card-drawer'}
         card={selectedCard}
         resources={allResources}
         referenceDate={referenceDate}
+        ground={ground}
+        activeTimerCardId={activeTimerCardId}
+        moduleOptions={moduleOptions}
+        phaseOptions={phaseOptions}
         onClose={() => setSelectedCardId(null)}
         onStatusChange={tracker.setStatus}
         onToggleDone={tracker.toggleDone}
@@ -1783,12 +1784,11 @@ export default function App() {
         onOpenResource={openResource}
         onAddResource={tracker.addCardResource}
         onRemoveResource={tracker.removeCardResource}
-        moduleOptions={moduleOptions}
-        phaseOptions={phaseOptions}
       />
 
-      <AddCardDialog
+      <ManuscriptAdd
         open={addDialogOpen}
+        ground={ground}
         onClose={(newCardId) => {
           setAddDialogOpen(false)
           if (newCardId) setSelectedCardId(newCardId)
