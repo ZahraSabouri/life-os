@@ -1086,6 +1086,15 @@ export default function TheCourt() {
     if (room.slug === 'study') {
       navigate('/study')
     }
+    if (room.slug === 'relationships') {
+      navigate('/cardiff-life')
+    }
+    if (room.slug === 'home') {
+      navigate('/budget')
+    }
+    if (room.slug === 'career') {
+      navigate('/jobmap')
+    }
   }
 
   useEffect(() => {

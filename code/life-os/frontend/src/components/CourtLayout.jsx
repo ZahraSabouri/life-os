@@ -61,6 +61,27 @@ export default function CourtLayout() {
             >
               Study hub
             </button>
+            <button
+              className={location.pathname === '/cardiff-life' ? 'active' : undefined}
+              type="button"
+              onClick={() => navigate('/cardiff-life')}
+            >
+              Cardiff Life
+            </button>
+            <button
+              className={location.pathname === '/budget' ? 'active' : undefined}
+              type="button"
+              onClick={() => navigate('/budget')}
+            >
+              Budget
+            </button>
+            <button
+              className={location.pathname === '/jobmap' ? 'active' : undefined}
+              type="button"
+              onClick={() => navigate('/jobmap')}
+            >
+              JobMap
+            </button>
             <button type="button" onClick={cycleGround}>Ground: {ground}</button>
             <button type="button" onClick={goDivan}>Divan</button>
           </nav>
