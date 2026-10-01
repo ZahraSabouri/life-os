@@ -1443,6 +1443,7 @@ export default function App() {
     return (
       <div className="study-room" ref={setRoomEl}>
       <AppIntro
+        ground={ground}
         countdown={examCountdown}
         examDate={examTarget.date}
         progressPct={donePct}

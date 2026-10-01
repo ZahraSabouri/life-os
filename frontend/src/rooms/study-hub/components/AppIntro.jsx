@@ -1,3 +1,5 @@
+import '../manuscript/intro.css'
+
 const INTRO_MODULES = [
   { id: 'aml', label: 'Applied ML', desc: 'Lab-first — top priority', accent: '--chart-aml', weight: '40%' },
   { id: 'time-series', label: 'Time Series', desc: 'Exam-template drills', accent: '--chart-ts', weight: '35%' },
@@ -12,12 +14,13 @@ export function AppIntro({
   doneCount = 0,
   totalCount = 0,
   skipIntro = false,
+  ground = 'paper',
   onToggleSkip,
   onEnter,
   onJump,
 }) {
   return (
-    <div className="intro-screen">
+    <div className="intro-screen study-intro" data-ms-ground={ground}>
       <div className="intro-aurora" aria-hidden="true" />
 
       <div className="intro-card">

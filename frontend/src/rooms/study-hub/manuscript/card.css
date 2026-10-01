@@ -1,3 +1,8 @@
+/* The resource reader / video player must sit ABOVE the opened card. */
+.study-room .reader-shell {
+  z-index: 260 !important;
+}
+
 .mc-overlay {
   position: fixed;
   inset: 0;
@@ -461,6 +466,43 @@
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-style: italic;
   font-size: 14px;
+}
+
+/* inline click-to-edit */
+.mc-inline-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  border-bottom: 1px solid;
+  background: transparent;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 14.5px;
+  padding: 0 0 2px;
+  outline: none;
+}
+.mc-step-text:hover,
+.mc-editrow-text:hover {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+}
+
+/* reference type badge */
+.mc-shelf-type {
+  flex: none;
+  font-family: 'Spline Sans Mono', ui-monospace, monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 1px 5px;
+  line-height: 1.5;
+}
+.mc-shelf-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* editable rows (proofs / notes) */

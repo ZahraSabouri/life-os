@@ -38,6 +38,43 @@ function hoursLabel(value) {
   return Number.isInteger(amount) ? `${amount}h` : `${amount.toFixed(1)}h`
 }
 
+// Click-to-edit text: shows a span; on click becomes an input that saves on Enter/blur.
+function InlineText({ value, onSave, className = '', style, inputStyle }) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(value)
+  useEffect(() => { setDraft(value) }, [value])
+  if (editing) {
+    return (
+      <input
+        autoFocus
+        className="mc-inline-input"
+        style={inputStyle}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={() => {
+          setEditing(false)
+          const next = draft.trim()
+          if (next && next !== value) onSave(next)
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur() }
+          if (e.key === 'Escape') { setDraft(value); setEditing(false) }
+        }}
+      />
+    )
+  }
+  return (
+    <span
+      className={className}
+      style={{ cursor: 'text', ...style }}
+      title="Click to edit"
+      onClick={() => setEditing(true)}
+    >
+      {value}
+    </span>
+  )
+}
+
 export function ManuscriptCard({
   card,
   resources = [],
@@ -142,7 +179,7 @@ export function ManuscriptCard({
   const sessions = Array.isArray(card.focusSessions) ? card.focusSessions : []
   const proofs = Array.isArray(card.evidenceEntries) ? card.evidenceEntries : []
   const notes = Array.isArray(card.notes) ? card.notes : []
-  const linkedIds = new Set(Array.isArray(card.resources) ? card.resources : [])
+  const linkedIds = new Set(Array.isArray(card.resourceIds) ? card.resourceIds : [])
   const shelf = [...linkedIds].map((id) => resourcesById.get(id)).filter(Boolean)
   const attachable = resources
     .filter((resource) => !linkedIds.has(resource.id))
@@ -184,20 +221,15 @@ export function ManuscriptCard({
     return (
       <div className="mc-editrow" style={{ borderColor: alpha(pal.ink, 0.08) }}>
         <Diamond color={alpha(pal.ink, 0.4)} size={6} />
-        <span className="mc-editrow-text" style={{ color: pal.ink }}>{item.text}</span>
+        <InlineText
+          className="mc-editrow-text"
+          style={{ color: pal.ink }}
+          inputStyle={{ color: pal.ink, borderColor: alpha(pal.ink, 0.4) }}
+          value={item.text}
+          onSave={(next) => onSave?.(card.id, item.id, next)}
+        />
         {item.at && <span className="mc-editrow-at" style={{ color: pal.sub }}>{formatDate(item.at)}</span>}
-        <button
-          type="button"
-          className="mc-mini"
-          style={{ color: pal.sub }}
-          onClick={() => {
-            const next = window.prompt('Edit:', item.text)
-            if (next != null && next.trim() && next !== item.text) onSave(card.id, item.id, next.trim())
-          }}
-        >
-          edit
-        </button>
-        <button type="button" className="mc-mini" style={{ color: RED }} onClick={() => onDelete(card.id, item.id)}>×</button>
+        <button type="button" className="mc-mini" style={{ color: RED }} onClick={() => onDelete?.(card.id, item.id)} aria-label="Delete">×</button>
       </div>
     )
   }
@@ -314,24 +346,14 @@ export function ManuscriptCard({
                           onClick={() => onChecklistToggle?.(card.id, step.id)}
                           style={{ borderColor: step.done ? acc : alpha(pal.ink, 0.4), background: step.done ? acc : 'transparent' }}
                         />
-                        <span
+                        <InlineText
                           className="mc-step-text"
                           style={{ color: pal.ink, textDecoration: step.done ? 'line-through' : 'none', textDecorationColor: alpha(pal.ink, 0.35), opacity: step.done ? 0.55 : 1 }}
-                        >
-                          {step.text}
-                        </span>
-                        <button
-                          type="button"
-                          className="mc-mini"
-                          style={{ color: pal.sub }}
-                          onClick={() => {
-                            const next = window.prompt('Edit step:', step.text)
-                            if (next != null && next.trim() && next !== step.text) onChecklistUpdate?.(card.id, step.id, next.trim())
-                          }}
-                        >
-                          edit
-                        </button>
-                        <button type="button" className="mc-mini" style={{ color: pal.sub }} onClick={() => onChecklistDelete?.(card.id, step.id)}>×</button>
+                          inputStyle={{ color: pal.ink, borderColor: alpha(pal.ink, 0.4) }}
+                          value={step.text}
+                          onSave={(next) => onChecklistUpdate?.(card.id, step.id, next)}
+                        />
+                        <button type="button" className="mc-mini" style={{ color: pal.sub }} onClick={() => onChecklistDelete?.(card.id, step.id)} aria-label="Delete step">×</button>
                       </div>
                     ))}
                     <div className="mc-step mc-step--add">
@@ -350,14 +372,44 @@ export function ManuscriptCard({
               )}
 
               <div className="mc-actions">
-                <button type="button" className="mc-btn mc-btn--primary" onClick={() => onToggleDone?.(card.id)} style={{ color: btnText, background: pal.ink, borderColor: pal.ink }}>
-                  {card.done ? 'Unseal the proof' : 'Seal the proof'}
+                <button
+                  type="button"
+                  className="mc-btn mc-btn--primary"
+                  onClick={() => onToggleDone?.(card.id)}
+                  title={card.done ? 'Unseal the proof — reopen this card' : 'Seal the proof — mark this card done'}
+                  style={{ color: btnText, background: pal.ink, borderColor: pal.ink }}
+                >
+                  {card.done ? 'Mark undone' : 'Mark done'}
                 </button>
-                <button type="button" className="mc-btn" onClick={cycleLane} style={{ color: pal.sub, borderColor: alpha(pal.ink, 0.3) }}>Move lane</button>
-                <button type="button" className="mc-btn" onClick={() => onStartSession?.(card.id)} style={{ color: pal.sub, borderColor: alpha(pal.ink, 0.3) }}>Start the glass</button>
-                <button type="button" className="mc-btn" onClick={() => setEditing((v) => !v)} style={{ color: pal.sub, borderColor: alpha(pal.ink, 0.3) }}>{editing ? 'Close edit' : 'Edit details'}</button>
+                <button
+                  type="button"
+                  className="mc-btn"
+                  onClick={cycleLane}
+                  title={`Move lane — currently "${card.status}". Cycles Today · This Week · Deep Work · Backlog · Rescue · Waiting · Done`}
+                  style={{ color: pal.sub, borderColor: alpha(pal.ink, 0.3) }}
+                >
+                  Change status
+                </button>
+                <button
+                  type="button"
+                  className="mc-btn"
+                  onClick={() => onStartSession?.(card.id)}
+                  title="Start the glass — begin a focus timer block on this card"
+                  style={{ color: pal.sub, borderColor: alpha(pal.ink, 0.3) }}
+                >
+                  Start timer
+                </button>
+                <button
+                  type="button"
+                  className="mc-btn"
+                  onClick={() => setEditing((v) => !v)}
+                  title="Edit the card's title, chapter, phase, dates, and more"
+                  style={{ color: pal.sub, borderColor: alpha(pal.ink, 0.3) }}
+                >
+                  {editing ? 'Close edit' : 'Edit details'}
+                </button>
                 <span className="mc-spacer" />
-                <button type="button" className="mc-back" onClick={onClose} style={{ color: pal.sub }}>back to the board ↩</button>
+                <button type="button" className="mc-back" onClick={onClose} style={{ color: pal.sub }} title="Close and return to the board">back to the board ↩</button>
               </div>
             </div>
 
@@ -394,32 +446,36 @@ export function ManuscriptCard({
                 </div>
               ))}
 
-              {label('Proofs')}
+              {label('Evidence')}
               {proofs.map((proof) => (
                 <EditableRow key={proof.id} item={proof} onSave={onEvidenceUpdate} onDelete={onEvidenceDelete} />
               ))}
-              {proofs.length === 0 && <p className="mc-empty" style={{ color: pal.sub }}>awaiting the first proof</p>}
+              {proofs.length === 0 && <p className="mc-empty" style={{ color: pal.sub }}>no evidence yet</p>}
               <input
                 className="mc-add-line"
                 style={{ color: pal.ink, borderColor: alpha(pal.ink, 0.3) }}
-                placeholder="+ record a proof — ⏎"
+                placeholder="+ add evidence — ⏎"
                 value={proofDraft}
                 onChange={(e) => setProofDraft(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commit(proofDraft, setProofDraft, onEvidenceAdd) } }}
               />
 
-              {label('From the shelf')}
-              {shelf.map((resource) => (
-                <div key={resource.id} className="mc-shelf">
-                  <button type="button" className="mc-shelf-open" style={{ color: pal.ink }} onClick={() => onOpenResource?.(resource.id)}>
-                    <Diamond color={alpha(pal.ink, 0.4)} size={5} />
-                    <span>{resource.title}</span>
-                  </button>
-                  {onRemoveResource && (
-                    <button type="button" className="mc-mini" style={{ color: pal.sub }} aria-label={`Remove ${resource.title}`} onClick={() => onRemoveResource(card.id, resource.id)}>×</button>
-                  )}
-                </div>
-              ))}
+              {label('References')}
+              {shelf.length === 0 && <p className="mc-empty" style={{ color: pal.sub }}>no references linked yet</p>}
+              {shelf.map((resource) => {
+                const isVideo = /video|youtube|watch/i.test(`${resource.type} ${resource.group} ${resource.url}`)
+                return (
+                  <div key={resource.id} className="mc-shelf">
+                    <button type="button" className="mc-shelf-open" style={{ color: pal.ink }} onClick={() => onOpenResource?.(resource.id)} title={`Open ${resource.title}`}>
+                      <span className="mc-shelf-type" style={{ color: isVideo ? RED : pal.sub, borderColor: alpha(pal.ink, 0.25) }}>{isVideo ? '▶ video' : (resource.type || 'file')}</span>
+                      <span className="mc-shelf-title">{resource.title}</span>
+                    </button>
+                    {onRemoveResource && (
+                      <button type="button" className="mc-mini" style={{ color: pal.sub }} aria-label={`Remove ${resource.title}`} onClick={() => onRemoveResource(card.id, resource.id)}>×</button>
+                    )}
+                  </div>
+                )
+              })}
               {attachable.length > 0 && onAddResource && (
                 <select
                   className="mc-attach"
@@ -443,7 +499,7 @@ export function ManuscriptCard({
               <input
                 className="mc-add-line"
                 style={{ color: pal.ink, borderColor: alpha(pal.ink, 0.3) }}
-                placeholder="+ a note in the margin — ⏎"
+                placeholder="+ add a note — ⏎"
                 value={noteDraft}
                 onChange={(e) => setNoteDraft(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commit(noteDraft, setNoteDraft, onAddNote) } }}
