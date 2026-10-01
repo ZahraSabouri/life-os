@@ -1,0 +1,74 @@
+{
+  "checkedAt": "2026-10-01T15:04:02.508Z",
+  "preservedFilesChecked": 1877,
+  "preservedChanges": [],
+  "assetChanges": [],
+  "sourceChanges": [
+    "code/life-os/frontend/src/App.jsx",
+    "summer-rescue-plan-app/src/App.jsx",
+    "summer-rescue-plan-app/src/components/AppIntro.jsx"
+  ],
+  "unexpectedSourceChanges": [],
+  "staticResourcesChecked": 208,
+  "failedResources": [],
+  "savedCardOverrides": 1,
+  "changedStateKeys": [
+    "notifications",
+    "snapshots",
+    "settings",
+    "updatedAt"
+  ],
+  "settingsChanges": [
+    "referenceDate"
+  ],
+  "protectedStateChanges": [],
+  "originalMainCounts": {
+    "entries": 7,
+    "entry_links": 0,
+    "entry_people": 0,
+    "entry_places": 0,
+    "entry_tags": 0,
+    "files": 0,
+    "people": 1,
+    "places": 0,
+    "spaces": 12,
+    "tags": 0
+  },
+  "currentMainCounts": {
+    "entries": 7,
+    "entry_links": 0,
+    "entry_people": 0,
+    "entry_places": 0,
+    "entry_tags": 0,
+    "files": 0,
+    "people": 1,
+    "places": 0,
+    "spaces": 12,
+    "tags": 0
+  },
+  "mainCountChanges": [],
+  "summerDbHealth": {
+    "ok": true,
+    "available": true,
+    "dbPath": "C:\\Users\\ctrlz\\Documents\\Personal\\Projects\\Life_OS\\summer-rescue-plan-app\\local-data\\app.sqlite",
+    "existedBefore": true,
+    "schemaVersion": 1,
+    "counts": {
+      "modules": 4,
+      "phases": 3,
+      "cards": 128,
+      "card_progress": 1,
+      "checklist_items": 460,
+      "card_notes": 0,
+      "card_evidence": 0,
+      "card_resources": 0,
+      "module_notes": 0,
+      "resources": 0,
+      "resource_reviewed": 0,
+      "settings": 12,
+      "notifications": 89
+    },
+    "doneCards": 0,
+    "loggedHours": 0
+  }
+}
