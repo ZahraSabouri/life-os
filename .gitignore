@@ -1,0 +1,51 @@
+# Life OS keeps code in git and personal data on this computer.
+# Anything listed here stays local and must be backed up separately.
+
+# Dependencies and build output (rebuild with "Build Life OS.cmd")
+node_modules/
+dist/
+
+# Runtime state of the local host (pid, control token, server log)
+.runtime/
+
+# Secrets and databases
+.env
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+# Summer Rescue's saved progress, and data backups taken during migration
+local-data/
+migration/backups/
+
+# Headless-browser scratch profiles
+.chrome*/
+
+# Editor-style backup copies left beside source files (git history replaces them)
+*.bak-*
+
+# --- Budget Management -------------------------------------------------------
+# Its built page is the app the server serves, and build.cjs reads the bundled
+# React files from the same folder, so this one dist/ is tracked.
+!/budget-management/app/dist/
+# The live plan, automatic snapshots, exported browser copies and receipt
+# evidence are personal financial records.
+/budget-management/data/
+/budget-management/backups/
+/budget-management/browser-data/
+/budget-management/archive/
+/budget-management/recheck-*/
+/budget-management/September review.md
+/budget-management/Plan and receipt recheck.md
+# Original and approved artwork (about 540 MB of images)
+/budget-management/assets/images/approved/
+/budget-management/assets/images/generated/
+/budget-management/assets/images/inbox/
+/budget-management/assets/images/style-experiments/
+/budget-management/assets/recipes/inbox/
+# Temporary folders left by test runs, and packaged copies of past updates
+/budget-management/app/tests/storage-test-*/
+/budget-management/app/updates/
