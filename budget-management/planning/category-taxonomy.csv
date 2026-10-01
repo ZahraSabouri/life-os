@@ -1,0 +1,49 @@
+﻿id,group,name,examples,budget_pool,suggested_tracking
+fruit-vegetables,Fresh food,Fruit & vegetables,"Fresh fruit, salad, vegetables, herbs",grocery,count or measured
+milk-alternatives,Fresh food,Milk & alternatives,"Milk, oat drink, other milk alternatives",grocery,level or measured
+eggs-dairy,Fresh food,Eggs & dairy,"Eggs, cheese, yoghurt, butter",grocery,count or measured
+bread-bakery,Fresh food,Bread & bakery,"Bread, wraps, croissants, bakery items",grocery,count
+meat-fish-plant-proteins,Fresh food,"Meat, fish & plant proteins","Chicken, mince, fish, tofu",grocery,count or measured
+fresh-convenience-food,Fresh food,Fresh convenience food,"Chilled ready meals, sandwiches, prepared salads",grocery,count
+rice-pasta-wrappers,Pantry & freezer,"Rice, pasta & wrappers","Rice, pasta, noodles, rice paper",grocery,measured or level
+cooking-oils-fats,Pantry & freezer,Cooking oils & fats,"Sunflower oil, olive oil, cooking spray",grocery,level
+sauces-condiments,Pantry & freezer,Sauces & condiments,"Soy sauces, hot sauce, ketchup, dressings",grocery,level
+spices-baking,Pantry & freezer,Spices & baking,"Spices, salt, flour, sugar, baking supplies",grocery,level or measured
+tins-jars-pulses,Pantry & freezer,"Tins, jars & pulses","Tinned tuna, beans, lentils, tinned fruit",grocery,count
+breakfast-spreads,Pantry & freezer,Breakfast & spreads,"Cereal, oats, honey, jam, peanut butter",grocery,level or measured
+frozen-food,Pantry & freezer,Frozen food,"Frozen vegetables, frozen fruit, frozen meals",grocery,count or measured
+snacks-treats,Snacks & drinks at home,Snacks & treats,"Crisps, biscuits, chocolate, sweets, snack bars",grocery,count
+tea-coffee-soft-drinks,Snacks & drinks at home,"Tea, coffee & soft drinks","Tea, coffee, juice, soft drinks, bottled water",grocery,count or level
+paper-toilet-rolls,Household,Paper & toilet rolls,"Toilet paper, kitchen roll, tissues",other,count
+cleaning-products,Household,Cleaning products,"Kitchen spray, bathroom cleaner, floor cleaner",other,level
+laundry,Household,Laundry,"Detergent capsules, laundry liquid, fabric conditioner",other,count or level
+dishwashing,Household,Dishwashing,"Washing-up liquid, dishwasher tablets, rinse aid",other,count or level
+household-consumables,Household,Household consumables,"Sponges, scourers, bin bags, foil, food bags",other,count
+hand-body-oral-care,Personal care & beauty,"Hand, body & oral care","Hand wash, body wash, toothpaste, deodorant",other,level or count
+hair-care,Personal care & beauty,Hair care,"Shampoo, conditioner, styling products",other,level
+skincare-creams,Personal care & beauty,Skincare & creams,"Hand cream, moisturiser, cleanser, sunscreen",other,level
+makeup-fragrance,Personal care & beauty,Makeup & fragrance,"Makeup, perfume, cosmetics",other,level or durable
+personal-hygiene,Personal care & beauty,Personal hygiene,"Period products, razors, cotton pads",other,count
+medicines-first-aid,Health & medicines,Medicines & first aid,"Medicines, plasters, first-aid supplies",other,count or level
+health-services-wellbeing,Health & medicines,Health services & wellbeing,"Appointments, health purchases, optional supplements",other,none or count
+clothing,Clothes & accessories,Clothing,"Tops, trousers, coats, underwear",other,durable
+footwear-accessories,Clothes & accessories,Footwear & accessories,"Shoes, bags, belts, jewellery",other,durable
+restaurant-meals,Eating out & social,Restaurant meals,Lunch or dinner in a restaurant,other,none
+takeaway-delivery,Eating out & social,Takeaway & delivery,"Delivered meals, takeaway food",other,none
+coffee-snacks-out,Eating out & social,Coffee & snacks out,"Cafe drinks, a snack bought to eat out",other,none
+drinks-parties-entertainment,Eating out & social,"Drinks, parties & entertainment","Drinks out, party spending, tickets, alcohol at home",other,none or count
+too-good-to-go-bags,Too Good To Go,Too Good To Go bags,Surprise bags and other Too Good To Go purchases,grocery,bundle
+ai-software,Subscriptions,AI & software,"ChatGPT, other AI tools, software subscriptions",other,none
+media-storage,Subscriptions,Media & storage,"Streaming, music, cloud storage",other,none
+learning-memberships,Subscriptions,Learning & memberships,"Learning platforms, clubs, other memberships",other,none
+travel-fares,Transport & cycling,Travel & fares,"Bus, train, taxi, travel tickets",other,none
+bike-cycling-equipment,Transport & cycling,Bike & cycling equipment,"Bicycle, helmet, lights, lock",other,durable
+repairs-maintenance,Transport & cycling,Repairs & maintenance,"Bike repair, servicing, replacement parts",other,none or durable
+kitchen-equipment,"Home, tech & longer-lasting purchases",Kitchen equipment,"Frying pan, kettle, storage containers",other,durable
+home-furnishings,"Home, tech & longer-lasting purchases",Home & furnishings,"Bedding, lamps, furniture, home accessories",other,durable
+electronics-accessories,"Home, tech & longer-lasting purchases",Electronics & accessories,"Devices, chargers, headphones",other,durable
+study-stationery,"Home, tech & longer-lasting purchases",Study & stationery,"Books, notebooks, pens, course supplies",other,durable or count
+gifts-giving,Other & to review,Gifts & giving,"Presents, donations, celebrations",other,none or durable
+fees-delivery-adjustments,Other & to review,"Fees, delivery & adjustments",Delivery charges and receipt-level charges,other,none
+uncategorised,Other & to review,Uncategorised,New items waiting for your choice,unresolved,none
+opening-spending,Other & to review,Opening spending,The existing £125 before 10 September summary,other,none

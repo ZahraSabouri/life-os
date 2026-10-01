@@ -1,0 +1,389 @@
+{
+  "status": "Proposed; not installed in the app",
+  "categories": [
+    {
+      "id": "fruit-vegetables",
+      "group": "Fresh food",
+      "name": "Fruit & vegetables",
+      "examples": "Fresh fruit, salad, vegetables, herbs",
+      "budget_pool": "grocery",
+      "suggested_tracking": "count or measured"
+    },
+    {
+      "id": "milk-alternatives",
+      "group": "Fresh food",
+      "name": "Milk & alternatives",
+      "examples": "Milk, oat drink, other milk alternatives",
+      "budget_pool": "grocery",
+      "suggested_tracking": "level or measured"
+    },
+    {
+      "id": "eggs-dairy",
+      "group": "Fresh food",
+      "name": "Eggs & dairy",
+      "examples": "Eggs, cheese, yoghurt, butter",
+      "budget_pool": "grocery",
+      "suggested_tracking": "count or measured"
+    },
+    {
+      "id": "bread-bakery",
+      "group": "Fresh food",
+      "name": "Bread & bakery",
+      "examples": "Bread, wraps, croissants, bakery items",
+      "budget_pool": "grocery",
+      "suggested_tracking": "count"
+    },
+    {
+      "id": "meat-fish-plant-proteins",
+      "group": "Fresh food",
+      "name": "Meat, fish & plant proteins",
+      "examples": "Chicken, mince, fish, tofu",
+      "budget_pool": "grocery",
+      "suggested_tracking": "count or measured"
+    },
+    {
+      "id": "fresh-convenience-food",
+      "group": "Fresh food",
+      "name": "Fresh convenience food",
+      "examples": "Chilled ready meals, sandwiches, prepared salads",
+      "budget_pool": "grocery",
+      "suggested_tracking": "count"
+    },
+    {
+      "id": "rice-pasta-wrappers",
+      "group": "Pantry & freezer",
+      "name": "Rice, pasta & wrappers",
+      "examples": "Rice, pasta, noodles, rice paper",
+      "budget_pool": "grocery",
+      "suggested_tracking": "measured or level"
+    },
+    {
+      "id": "cooking-oils-fats",
+      "group": "Pantry & freezer",
+      "name": "Cooking oils & fats",
+      "examples": "Sunflower oil, olive oil, cooking spray",
+      "budget_pool": "grocery",
+      "suggested_tracking": "level"
+    },
+    {
+      "id": "sauces-condiments",
+      "group": "Pantry & freezer",
+      "name": "Sauces & condiments",
+      "examples": "Soy sauces, hot sauce, ketchup, dressings",
+      "budget_pool": "grocery",
+      "suggested_tracking": "level"
+    },
+    {
+      "id": "spices-baking",
+      "group": "Pantry & freezer",
+      "name": "Spices & baking",
+      "examples": "Spices, salt, flour, sugar, baking supplies",
+      "budget_pool": "grocery",
+      "suggested_tracking": "level or measured"
+    },
+    {
+      "id": "tins-jars-pulses",
+      "group": "Pantry & freezer",
+      "name": "Tins, jars & pulses",
+      "examples": "Tinned tuna, beans, lentils, tinned fruit",
+      "budget_pool": "grocery",
+      "suggested_tracking": "count"
+    },
+    {
+      "id": "breakfast-spreads",
+      "group": "Pantry & freezer",
+      "name": "Breakfast & spreads",
+      "examples": "Cereal, oats, honey, jam, peanut butter",
+      "budget_pool": "grocery",
+      "suggested_tracking": "level or measured"
+    },
+    {
+      "id": "frozen-food",
+      "group": "Pantry & freezer",
+      "name": "Frozen food",
+      "examples": "Frozen vegetables, frozen fruit, frozen meals",
+      "budget_pool": "grocery",
+      "suggested_tracking": "count or measured"
+    },
+    {
+      "id": "snacks-treats",
+      "group": "Snacks & drinks at home",
+      "name": "Snacks & treats",
+      "examples": "Crisps, biscuits, chocolate, sweets, snack bars",
+      "budget_pool": "grocery",
+      "suggested_tracking": "count"
+    },
+    {
+      "id": "tea-coffee-soft-drinks",
+      "group": "Snacks & drinks at home",
+      "name": "Tea, coffee & soft drinks",
+      "examples": "Tea, coffee, juice, soft drinks, bottled water",
+      "budget_pool": "grocery",
+      "suggested_tracking": "count or level"
+    },
+    {
+      "id": "paper-toilet-rolls",
+      "group": "Household",
+      "name": "Paper & toilet rolls",
+      "examples": "Toilet paper, kitchen roll, tissues",
+      "budget_pool": "other",
+      "suggested_tracking": "count"
+    },
+    {
+      "id": "cleaning-products",
+      "group": "Household",
+      "name": "Cleaning products",
+      "examples": "Kitchen spray, bathroom cleaner, floor cleaner",
+      "budget_pool": "other",
+      "suggested_tracking": "level"
+    },
+    {
+      "id": "laundry",
+      "group": "Household",
+      "name": "Laundry",
+      "examples": "Detergent capsules, laundry liquid, fabric conditioner",
+      "budget_pool": "other",
+      "suggested_tracking": "count or level"
+    },
+    {
+      "id": "dishwashing",
+      "group": "Household",
+      "name": "Dishwashing",
+      "examples": "Washing-up liquid, dishwasher tablets, rinse aid",
+      "budget_pool": "other",
+      "suggested_tracking": "count or level"
+    },
+    {
+      "id": "household-consumables",
+      "group": "Household",
+      "name": "Household consumables",
+      "examples": "Sponges, scourers, bin bags, foil, food bags",
+      "budget_pool": "other",
+      "suggested_tracking": "count"
+    },
+    {
+      "id": "hand-body-oral-care",
+      "group": "Personal care & beauty",
+      "name": "Hand, body & oral care",
+      "examples": "Hand wash, body wash, toothpaste, deodorant",
+      "budget_pool": "other",
+      "suggested_tracking": "level or count"
+    },
+    {
+      "id": "hair-care",
+      "group": "Personal care & beauty",
+      "name": "Hair care",
+      "examples": "Shampoo, conditioner, styling products",
+      "budget_pool": "other",
+      "suggested_tracking": "level"
+    },
+    {
+      "id": "skincare-creams",
+      "group": "Personal care & beauty",
+      "name": "Skincare & creams",
+      "examples": "Hand cream, moisturiser, cleanser, sunscreen",
+      "budget_pool": "other",
+      "suggested_tracking": "level"
+    },
+    {
+      "id": "makeup-fragrance",
+      "group": "Personal care & beauty",
+      "name": "Makeup & fragrance",
+      "examples": "Makeup, perfume, cosmetics",
+      "budget_pool": "other",
+      "suggested_tracking": "level or durable"
+    },
+    {
+      "id": "personal-hygiene",
+      "group": "Personal care & beauty",
+      "name": "Personal hygiene",
+      "examples": "Period products, razors, cotton pads",
+      "budget_pool": "other",
+      "suggested_tracking": "count"
+    },
+    {
+      "id": "medicines-first-aid",
+      "group": "Health & medicines",
+      "name": "Medicines & first aid",
+      "examples": "Medicines, plasters, first-aid supplies",
+      "budget_pool": "other",
+      "suggested_tracking": "count or level"
+    },
+    {
+      "id": "health-services-wellbeing",
+      "group": "Health & medicines",
+      "name": "Health services & wellbeing",
+      "examples": "Appointments, health purchases, optional supplements",
+      "budget_pool": "other",
+      "suggested_tracking": "none or count"
+    },
+    {
+      "id": "clothing",
+      "group": "Clothes & accessories",
+      "name": "Clothing",
+      "examples": "Tops, trousers, coats, underwear",
+      "budget_pool": "other",
+      "suggested_tracking": "durable"
+    },
+    {
+      "id": "footwear-accessories",
+      "group": "Clothes & accessories",
+      "name": "Footwear & accessories",
+      "examples": "Shoes, bags, belts, jewellery",
+      "budget_pool": "other",
+      "suggested_tracking": "durable"
+    },
+    {
+      "id": "restaurant-meals",
+      "group": "Eating out & social",
+      "name": "Restaurant meals",
+      "examples": "Lunch or dinner in a restaurant",
+      "budget_pool": "other",
+      "suggested_tracking": "none"
+    },
+    {
+      "id": "takeaway-delivery",
+      "group": "Eating out & social",
+      "name": "Takeaway & delivery",
+      "examples": "Delivered meals, takeaway food",
+      "budget_pool": "other",
+      "suggested_tracking": "none"
+    },
+    {
+      "id": "coffee-snacks-out",
+      "group": "Eating out & social",
+      "name": "Coffee & snacks out",
+      "examples": "Cafe drinks, a snack bought to eat out",
+      "budget_pool": "other",
+      "suggested_tracking": "none"
+    },
+    {
+      "id": "drinks-parties-entertainment",
+      "group": "Eating out & social",
+      "name": "Drinks, parties & entertainment",
+      "examples": "Drinks out, party spending, tickets, alcohol at home",
+      "budget_pool": "other",
+      "suggested_tracking": "none or count"
+    },
+    {
+      "id": "too-good-to-go-bags",
+      "group": "Too Good To Go",
+      "name": "Too Good To Go bags",
+      "examples": "Surprise bags and other Too Good To Go purchases",
+      "budget_pool": "grocery",
+      "suggested_tracking": "bundle"
+    },
+    {
+      "id": "ai-software",
+      "group": "Subscriptions",
+      "name": "AI & software",
+      "examples": "ChatGPT, other AI tools, software subscriptions",
+      "budget_pool": "other",
+      "suggested_tracking": "none"
+    },
+    {
+      "id": "media-storage",
+      "group": "Subscriptions",
+      "name": "Media & storage",
+      "examples": "Streaming, music, cloud storage",
+      "budget_pool": "other",
+      "suggested_tracking": "none"
+    },
+    {
+      "id": "learning-memberships",
+      "group": "Subscriptions",
+      "name": "Learning & memberships",
+      "examples": "Learning platforms, clubs, other memberships",
+      "budget_pool": "other",
+      "suggested_tracking": "none"
+    },
+    {
+      "id": "travel-fares",
+      "group": "Transport & cycling",
+      "name": "Travel & fares",
+      "examples": "Bus, train, taxi, travel tickets",
+      "budget_pool": "other",
+      "suggested_tracking": "none"
+    },
+    {
+      "id": "bike-cycling-equipment",
+      "group": "Transport & cycling",
+      "name": "Bike & cycling equipment",
+      "examples": "Bicycle, helmet, lights, lock",
+      "budget_pool": "other",
+      "suggested_tracking": "durable"
+    },
+    {
+      "id": "repairs-maintenance",
+      "group": "Transport & cycling",
+      "name": "Repairs & maintenance",
+      "examples": "Bike repair, servicing, replacement parts",
+      "budget_pool": "other",
+      "suggested_tracking": "none or durable"
+    },
+    {
+      "id": "kitchen-equipment",
+      "group": "Home, tech & longer-lasting purchases",
+      "name": "Kitchen equipment",
+      "examples": "Frying pan, kettle, storage containers",
+      "budget_pool": "other",
+      "suggested_tracking": "durable"
+    },
+    {
+      "id": "home-furnishings",
+      "group": "Home, tech & longer-lasting purchases",
+      "name": "Home & furnishings",
+      "examples": "Bedding, lamps, furniture, home accessories",
+      "budget_pool": "other",
+      "suggested_tracking": "durable"
+    },
+    {
+      "id": "electronics-accessories",
+      "group": "Home, tech & longer-lasting purchases",
+      "name": "Electronics & accessories",
+      "examples": "Devices, chargers, headphones",
+      "budget_pool": "other",
+      "suggested_tracking": "durable"
+    },
+    {
+      "id": "study-stationery",
+      "group": "Home, tech & longer-lasting purchases",
+      "name": "Study & stationery",
+      "examples": "Books, notebooks, pens, course supplies",
+      "budget_pool": "other",
+      "suggested_tracking": "durable or count"
+    },
+    {
+      "id": "gifts-giving",
+      "group": "Other & to review",
+      "name": "Gifts & giving",
+      "examples": "Presents, donations, celebrations",
+      "budget_pool": "other",
+      "suggested_tracking": "none or durable"
+    },
+    {
+      "id": "fees-delivery-adjustments",
+      "group": "Other & to review",
+      "name": "Fees, delivery & adjustments",
+      "examples": "Delivery charges and receipt-level charges",
+      "budget_pool": "other",
+      "suggested_tracking": "none"
+    },
+    {
+      "id": "uncategorised",
+      "group": "Other & to review",
+      "name": "Uncategorised",
+      "examples": "New items waiting for your choice",
+      "budget_pool": "unresolved",
+      "suggested_tracking": "none"
+    },
+    {
+      "id": "opening-spending",
+      "group": "Other & to review",
+      "name": "Opening spending",
+      "examples": "The existing £125 before 10 September summary",
+      "budget_pool": "other",
+      "suggested_tracking": "none"
+    }
+  ]
+}

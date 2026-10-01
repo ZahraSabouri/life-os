@@ -1,0 +1,97 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
+const ctx=vm.createContext({React:{createElement:()=>null}});for(const file of ['core','seed','domain','types'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../src',file+'.js'),'utf8'),ctx);
+const api=vm.runInContext('({migrateV4,defaultState,validateV4,budgetFigures,forecast,checkout,apportion,makeLot,stockAction,stockRows,reservedAmount,planMeal,cookMeal,missingToList,refreshMeal,refundExpense,cancelReceipt,removeReceiptLine,removalImpact,unpackBag,paySubscription,advanceDue,subscriptionDates,convertQty,upsertItem,addListLine})',ctx);
+const fresh=()=>api.migrateV4(api.defaultState());
+const line=(name,p,cat='fruit-vegetables',other={})=>({name,grossPence:p,quantity:1,unit:'item',categoryId:cat,tracking:'count',...other});
+const receipt=(lines,extra={})=>({id:'receipt1',date:'2026-09-17',merchant:'Lidl',lines,paidPence:lines.reduce((n,l)=>n+l.grossPence,0),...extra});
+test('migration preserves every resource and old record exactly and is idempotent',()=>{const old=api.defaultState(),s=api.migrateV4(old);assert.equal(JSON.stringify(s.resources),JSON.stringify(old.resources));assert.equal(JSON.stringify(s.expenses),JSON.stringify(old.expenses));assert.equal(JSON.stringify(s.budgets),JSON.stringify(old.budgets));assert.equal(JSON.stringify(s),JSON.stringify(api.migrateV4(s)));assert.equal(s.items.length,100);assert.equal(s.items.filter(x=>x.usual).length,11);});
+test('user-deleted opening entry stays deleted',()=>{const old=api.defaultState();old.expenses=[];assert.equal(api.migrateV4(old).expenses.length,0);});
+test('mixed receipt counts once, stocks only trackable items, and is idempotent',()=>{const s=fresh(),d=receipt([line('Milk',150),line('Shampoo',200,'hair-care',{tracking:'level'}),line('Dinner',700,'restaurant-meals',{tracking:'none'})]);const n=api.checkout(s,d);assert.equal(api.budgetFigures(n,'2026-09').totalSpent,135.5);assert.equal(api.budgetFigures(n,'2026-09').grocerySpent,1.5);assert.equal(n.lots.length,2);assert.equal(api.checkout(n,d),n);assert.equal(s.lots.length,0);});
+test('penny discount allocation always reconciles',()=>{for(let d=0;d<=11;d++){const a=api.apportion(d,[1,3,7]);assert.equal(a.reduce((n,x)=>n+x,0),d);a.forEach((x,i)=>assert(x<=[1,3,7][i]));}const s=api.checkout(fresh(),receipt([line('A',101),line('B',101),line('C',101)],{discountPence:100,feePence:50,paidPence:253}));assert.equal(s.receipts[0].lines.reduce((n,x)=>n+x.netPence,0),203);assert.equal(api.budgetFigures(s,'2026-09').totalSpent,127.53);});
+test('unreconciled receipt rejected before any change',()=>{const s=fresh();assert.throws(()=>api.checkout(s,receipt([line('A',100)],{paidPence:99})),/match/);assert.equal(s.receipts.length,0);});
+test('overspending carries forward with mixed item ledger',()=>{const s=api.checkout(fresh(),receipt([line('Large shop',12000)]));assert.equal(api.budgetFigures(s,'2026-09').totalRemaining,-20);assert.equal(api.budgetFigures(s,'2026-10').adjustedTotal,205);});
+test('pending categorisation counts total without silently counting groceries',()=>{const s=api.checkout(fresh(),receipt([line('Unknown',400,'uncategorised')]));assert.equal(api.budgetFigures(s,'2026-09').grocerySpent,0);assert.equal(api.budgetFigures(s,'2026-09').totalSpent,129);});
+test('partial checkout keeps remainder and only remainder forecast',()=>{let s=fresh();s.lists=[{id:'list',name:'Test',date:'2026-09-17',lines:[{id:'plan',name:'Egg',status:'planned',quantity:6,unit:'egg',estimatePence:300}]}];s=api.checkout(s,receipt([line('Egg',100,'eggs-dairy',{quantity:2,unit:'egg',planLineId:'plan'})]));assert.equal(s.lists[0].lines[0].quantity,4);assert.equal(api.forecast(s,'2026-09').plannedPence,200);assert.equal(s.lots[0].remaining,2);});
+test('plans with unknown prices remain visibly incomplete',()=>{let s=fresh();s.lists=[{id:'l',name:'Test',date:'2026-09-17',lines:[{id:'a',name:'A',status:'planned',quantity:1,estimatePence:null}]}];assert.equal(api.forecast(s,'2026-09').unknown,1);assert.equal(api.budgetFigures(s,'2026-09').totalSpent,125);});
+test('oil levels retain stock and preserve legacy quantities and dates',()=>{let s=fresh();const oil=s.resources.find(r=>r.name==='Current sunflower oil');const before=JSON.stringify(s.resources);s=api.stockAction(s,oil.id,'open',null,'2026-09-17');s=api.stockAction(s,oil.id,'half',null,'2026-09-17');assert.equal(JSON.stringify(s.resources),before);assert.equal(s.resourceMeta[oil.id].level,'half');assert.equal(api.stockRows(s).find(r=>r.id===oil.id).remaining,1);s=api.stockAction(s,oil.id,'finish',null,'2026-09-17');assert.equal(s.resources.find(r=>r.id===oil.id).used,true);});
+test('partial use and waste reduce counts without extra expense',()=>{let s=fresh();const lot=api.makeLot({name:'Eggs',quantity:6,unit:'egg',tracking:'count'});s.lots.push(lot);s=api.stockAction(s,lot.id,'use',2);s=api.stockAction(s,lot.id,'waste',1);assert.equal(s.lots[0].remaining,3);assert.equal(s.expenses.length,1);assert.throws(()=>api.stockAction(s,lot.id,'use',4),/enough/);assert.throws(()=>api.stockAction(s,lot.id,'use',.5),/whole/);});
+test('durable things cannot be consumed',()=>{let s=fresh();s.lots=[api.makeLot({name:'Bike',quantity:1,unit:'bike',tracking:'durable'})];assert.throws(()=>api.stockAction(s,s.lots[0].id,'use',1),/Durable/);});
+test('refund is linked and bounded; can reverse carry',()=>{let s=api.checkout(fresh(),receipt([line('A',12000)]));s=api.refundExpense(s,s.receipts[0].lines[0].id,2000,'2026-09-20');assert.equal(api.budgetFigures(s,'2026-10').carryIn,0);assert.throws(()=>api.refundExpense(s,s.receipts[0].lines[0].id,11000,'2026-09-21'),/exceed/);api.validateV4(s);});
+test('whole receipt removal warns after stock usage, and goes ahead when confirmed',()=>{let s=api.checkout(fresh(),receipt([line('Egg',100)]));const original=api.cancelReceipt(s,'receipt1');assert.equal(original.lots.length,0);assert.equal(original.expenses.length,1);s=api.stockAction(s,s.lots[0].id,'use',1);assert.throws(()=>api.cancelReceipt(s,'receipt1'),/used since/);const forced=api.cancelReceipt(s,'receipt1',true);api.validateV4(forced);assert.equal(forced.receipts.length,0);assert.equal(forced.lots.length,0);assert.equal(forced.stockEvents.length,0);});
+test('TGTG unpack counts cost once and can only happen once',()=>{let s=api.checkout(fresh(),receipt([line('Surprise bag',399,'too-good-to-go-bags',{tracking:'none'})]));s=api.unpackBag(s,'receipt1',[{name:'Croissant',quantity:2,unit:'item',tracking:'count'}]);assert.equal(api.budgetFigures(s,'2026-09').totalSpent,128.99);assert.equal(s.lots.length,1);assert.throws(()=>api.unpackBag(s,'receipt1',[]),/already/);});
+test('renewals preserve month-end anchor and annual leap dates',()=>{assert.equal(api.advanceDue('2026-01-31','monthly',31),'2026-02-28');assert.equal(api.advanceDue('2026-02-28','monthly',31),'2026-03-31');assert.equal(api.advanceDue('2024-02-29','yearly',29),'2025-02-28');});
+test('subscription payment replaces commitment with actual once',()=>{let s=fresh();s.subscriptions=[{id:'sub',name:'AI',categoryId:'ai-software',costPence:2000,interval:'monthly',nextDue:'2026-09-25'}];const before=api.forecast(s,'2026-09');s=api.paySubscription(s,'sub');const after=api.forecast(s,'2026-09');assert.equal(before.projectedPence,after.projectedPence);assert.equal(after.subscriptionPence,0);assert.equal(s.subscriptions[0].nextDue,'2026-10-25');});
+function mealState(){const s=fresh();s.lots=[api.makeLot({name:'Egg',quantity:3,unit:'egg',tracking:'count'})];s.recipes=[{id:'recipe',name:'Egg meal',servings:1,ingredients:[{name:'Egg',quantity:2,unit:'egg'}]}];return s;}
+test('two meals cannot reserve the same last eggs',()=>{let s=mealState();s=api.planMeal(s,{id:'one',name:'Egg meal',recipeId:'recipe',date:'2026-09-18',servings:1});s=api.planMeal(s,{id:'two',name:'Egg meal',recipeId:'recipe',date:'2026-09-19',servings:1});assert.equal(s.mealEntries[0].missing.length,0);assert.equal(s.mealEntries[1].missing[0].quantity,1);assert.equal(s.lots[0].remaining,3);assert.throws(()=>api.stockAction(s,s.lots[0].id,'use',1),/reserved/);});
+test('cooking consumes once, leftovers do not consume ingredients twice',()=>{let s=mealState();s=api.planMeal(s,{id:'one',name:'Egg meal',recipeId:'recipe',date:'2026-09-18',servings:1});s=api.cookMeal(s,'one',1);assert.equal(s.lots[0].remaining,1);const leftover=s.lots.find(l=>l.mealId==='one');s=api.stockAction(s,leftover.id,'use',1);assert.equal(s.lots[0].remaining,1);assert.throws(()=>api.cookMeal(s,'one'),/already/);api.validateV4(s);});
+test('missing ingredients create one shopping list per meal',()=>{let s=mealState();s.lots=[];s=api.planMeal(s,{id:'one',name:'Egg meal',recipeId:'recipe',date:'2026-09-18',servings:1});s=api.missingToList(s,'one');const twice=api.missingToList(s,'one');assert.equal(twice.lists.length,1);assert.equal(twice.lists[0].lines[0].quantity,2);});
+test('mass and volume conversions never invent portions',()=>{assert.equal(api.convertQty(1,'kg','g'),1000);assert.equal(api.convertQty(500,'ml','L'),.5);assert.equal(api.convertQty(100,'g','portion'),null);});
+test('a recipe can borrow a later month\'s share, and says which month it came from',()=>{let s=fresh();s.recipes=[{id:'r',name:'Pasta',servings:1,ingredients:[{name:'Linguine',quantity:125,unit:'g'}]}];s=api.planMeal(s,{id:'m',name:'Pasta',recipeId:'r',date:'2026-09-18',servings:1});const m=s.mealEntries[0];assert.equal(m.missing.length,0);assert(m.reservations.length>=1);assert(m.reservations.every(r=>r.fromMonth>'2026-09'));api.validateV4(s);});
+test('schema refuses malformed stock, money and future versions',()=>{let s=fresh();s.lots=[{id:'bad',name:'x',quantity:1,remaining:-1,tracking:'count',unit:'item'}];assert.throws(()=>api.validateV4(s),/stock lot/);assert.throws(()=>api.migrateV4({...fresh(),version:99}),/newer/);s=fresh();s.savingIntentions={'2026-09':-20};assert.throws(()=>api.validateV4(s),/intention/);});
+test('packs expand into stock while receipt keeps the purchased pack count',()=>{const egg=fresh().items.find(i=>i.stockPerUnit===6);assert(egg);const s=api.checkout(fresh(),receipt([line(egg.name,300,egg.categoryId,{itemId:egg.id,quantity:2,unit:'pack'})]));assert.equal(s.receipts[0].lines[0].quantity,2);assert.equal(s.lots[0].quantity,12);assert.equal(s.lots[0].unit,'egg');api.validateV4(s);});
+test('two level-tracked bottles have independent opening levels',()=>{let s=api.checkout(fresh(),receipt([line('Test oil',400,'cooking-oils-fats',{quantity:2,unit:'bottle',tracking:'level'})]));assert.equal(s.lots.length,2);s=api.stockAction(s,s.lots[0].id,'half');assert.equal(s.lots[0].level,'half');assert.equal(s.lots[1].level,'unopened');});
+test('toilet rolls and dishwasher tablets remain counted stock',()=>{const rows=api.stockRows(fresh());assert.equal(rows.find(x=>x.name==='Toilet paper').tracking,'count');assert.equal(rows.find(x=>x.name==='Dishwasher tablet allowance').tracking,'count');});
+test('returns reduce only the chosen quantity and do not invent a money refund',()=>{let s=api.checkout(fresh(),receipt([line('Egg',300,'eggs-dairy',{quantity:6})]));s=api.stockAction(s,s.lots[0].id,'return',2);assert.equal(s.lots[0].remaining,4);assert.equal(s.adjustments.length,0);assert.equal(api.budgetFigures(s,'2026-09').totalSpent,128);});
+test('backdated receipt and removing it keep latest price history correct',()=>{let s=api.checkout(fresh(),receipt([line('Test thing',200)],{id:'new',date:'2026-09-17'}));s=api.checkout(s,receipt([line('Test thing',100)],{id:'old',date:'2026-09-16'}));let item=s.items.find(x=>x.name==='Test thing');assert.equal(item.lastPricePence,200);s=api.cancelReceipt(s,'new');item=s.items.find(x=>x.name==='Test thing');assert.equal(item.lastPricePence,100);assert.equal(item.lastBought,'2026-09-16');});
+test('a later month\'s share can be used now and leaves that month\'s plan',()=>{const s=fresh(),r=s.resources.find(x=>x.allocatedMonth==='2026-10'&&!x.used&&x.unit!=='g');assert(r);const n=api.stockAction(s,r.id,'use',Number(r.qty),'2026-09-17');api.validateV4(n);const used=n.resources.find(x=>x.id===r.id);assert.equal(used.used,true);assert.equal(n.stockEvents.at(-1).fromMonth,'2026-10');});
+test('removing receipt stock restores missing ingredients in planned meals',()=>{let s=api.checkout(fresh(),receipt([line('Egg',200,'eggs-dairy',{quantity:2,unit:'egg'})]));s.recipes=[{id:'r',name:'Eggs',servings:1,ingredients:[{name:'Egg',quantity:2,unit:'egg'}]}];s=api.planMeal(s,{id:'m',name:'Eggs',recipeId:'r',date:'2026-09-18',servings:1});s=api.cancelReceipt(s,'receipt1',true);assert.equal(s.mealEntries[0].reservations.length,0);assert.equal(s.mealEntries[0].missing[0].quantity,2);assert.throws(()=>api.cookMeal(s,'m'),/missing|needed|ingredients/i);api.validateV4(s);});
+
+test('removing one receipt line keeps the receipt reconciling',()=>{
+  const s=api.checkout(fresh(),receipt([line('Milk',150),line('Oil',250,'cooking-oils-fats',{tracking:'level'}),line('Bread',100)],{paidPence:500}));
+  const oil=s.receipts[0].lines.find(l=>l.name==='Oil');
+  const n=api.removeReceiptLine(s,oil.id);
+  api.validateV4(n);
+  assert.equal(n.receipts[0].lines.length,2);
+  assert.equal(n.receipts[0].paidPence,250);
+  assert.equal(n.receipts[0].lines.reduce((a,l)=>a+l.netPence,0)+(n.receipts[0].feePence||0),n.receipts[0].paidPence);
+  assert.equal(n.expenses.filter(e=>e.id===oil.id).length,0);
+  assert.equal(n.lots.filter(l=>l.receiptLineId===oil.id).length,0);
+  assert.equal(api.budgetFigures(n,'2026-09').totalSpent,api.budgetFigures(s,'2026-09').totalSpent-2.5);
+  assert.equal(s.receipts[0].lines.length,3);
+});
+test('a discounted line takes its share of the discount with it',()=>{
+  const s=api.checkout(fresh(),receipt([line('A',101),line('B',101),line('C',101)],{discountPence:100,feePence:50,paidPence:253}));
+  const a=s.receipts[0].lines[0],n=api.removeReceiptLine(s,a.id);
+  api.validateV4(n);
+  assert.equal(n.receipts[0].paidPence,253-a.netPence);
+  assert.equal(n.receipts[0].discountPence,100-(a.grossPence-a.netPence));
+});
+test('a used line is refused, then removed when confirmed, taking its notes with it',()=>{
+  let s=api.checkout(fresh(),receipt([line('Milk',150),line('Oil',250,'cooking-oils-fats',{tracking:'level'})],{paidPence:400}));
+  const oil=s.receipts[0].lines.find(l=>l.name==='Oil'),lot=s.lots.find(l=>l.receiptLineId===oil.id);
+  s=api.stockAction(s,lot.id,'half','2026-09-17');
+  assert.equal(api.removalImpact(s,{receiptId:s.receipts[0].id,lineId:oil.id}).events,1);
+  assert.throws(()=>api.removeReceiptLine(s,oil.id),/used since/);
+  const n=api.removeReceiptLine(s,oil.id,true);
+  api.validateV4(n);
+  assert.equal(n.stockEvents.filter(e=>e.sourceId===lot.id).length,0);
+  assert.equal(n.receipts[0].paidPence,150);
+});
+test('removing the only line removes the whole receipt',()=>{
+  const s=api.checkout(fresh(),receipt([line('Milk',150)],{paidPence:150}));
+  const n=api.removeReceiptLine(s,s.receipts[0].lines[0].id);
+  api.validateV4(n);
+  assert.equal(n.receipts.length,0);
+  assert.equal(n.expenses.filter(e=>e.receiptId).length,0);
+});
+test('removing a line puts it back on the shopping list it came from',()=>{
+  let s=fresh();
+  s.lists=[{id:'list',name:'Test',date:'2026-09-17',lines:[{id:'plan',name:'Egg',status:'planned',quantity:6,unit:'egg',estimatePence:300}]}];
+  s=api.checkout(s,receipt([line('Egg',100,'eggs-dairy',{quantity:6,unit:'egg',planLineId:'plan'}),line('Milk',150)],{paidPence:250}));
+  assert.equal(s.lists[0].lines[0].status,'bought');
+  const egg=s.receipts[0].lines.find(l=>l.name==='Egg'),n=api.removeReceiptLine(s,egg.id);
+  api.validateV4(n);
+  assert.equal(n.lists[0].lines[0].status,'planned');
+  assert.equal(n.lists[0].lines[0].quantity,6);
+});
+test('a refunded receipt can still be removed once confirmed, refund and all',()=>{
+  let s=api.checkout(fresh(),receipt([line('Milk',150),line('Bread',100)],{paidPence:250}));
+  const milk=s.receipts[0].lines[0];
+  s=api.refundExpense(s,milk.id,50,'2026-09-17');
+  assert.equal(api.removalImpact(s,{receiptId:s.receipts[0].id}).refunds,1);
+  assert.throws(()=>api.cancelReceipt(s,s.receipts[0].id),/used since/);
+  const n=api.cancelReceipt(s,s.receipts[0].id,true);
+  api.validateV4(n);
+  assert.equal(n.adjustments.length,0);
+  assert.equal(n.receipts.length,0);
+});
