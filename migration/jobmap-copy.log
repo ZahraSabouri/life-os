@@ -1,0 +1,29 @@
+
+-------------------------------------------------------------------------------
+   ROBOCOPY     ::     Robust File Copy for Windows                              
+-------------------------------------------------------------------------------
+
+  Started : 01 October 2026 17:33:27
+   Source : C:\Users\ctrlz\Documents\JobMap\Career Agent\JobMap App\
+     Dest : C:\Users\ctrlz\Documents\Personal\Projects\Life_OS\jobmap\
+
+    Files : *.*
+	    
+  Options : *.* /NDL /NFL /S /E /DCOPY:T /COPY:DAT /NP /R:1 /W:1 
+
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+
+               Total    Copied   Skipped  Mismatch    FAILED    Extras
+    Dirs :      2996      2996         0         0         0         0
+   Files :     27884     27884         0         0         0         0
+   Bytes :  652.55 m  652.55 m         0         0         0         0
+   Times :   0:00:46   0:00:43                       0:00:00   0:00:03
+
+
+   Speed :           15,808,901 Bytes/sec.
+   Speed :              904.593 MegaBytes/min.
+   Ended : 01 October 2026 17:34:13
+
