@@ -1,5 +1,7 @@
 # Life OS — Data Dictionary
 
+> **Note, 5 October 2026.** This describes the July SQLite design of the entries engine. The database is moving to PostgreSQL, and the big areas (Study, Career, Money, Home, Events) get their own tables; see `Life_OS_Architecture.md`. The entities, types and links described here still apply.
+
 **A living reference · written 2026-07-06 · mirrors `data-model/`**
 
 The authoritative, human-readable description of every table, column, entity, and entry type. The machine version lives in `data-model/` (`entryTypes.proposed.js`, `rooms.js`, `schema.reference.sql`); this document explains and indexes it. When they disagree, the code is truth and this doc is stale — fix it.

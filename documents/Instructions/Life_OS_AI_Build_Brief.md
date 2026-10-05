@@ -1,4 +1,7 @@
 # Life OS — Build Brief for an AI Coding Assistant
+
+> **History, not instructions (5 October 2026).** The current plan is `../ROADMAP.md`; the status of every July brief is in `../Life_OS_Plans_Inventory.md` §5.
+
 **Written 2026-07-05, for whichever AI assistant (Claude Code, Codex, or similar) executes this on Xar's own Windows machine.**
 
 This document is self-contained — you shouldn't need any other conversation history to act on it. It covers: what to check/install first, what to build, and how to verify it before handing it back. Read the whole thing before starting.

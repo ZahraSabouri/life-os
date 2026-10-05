@@ -1,5 +1,7 @@
 # Life OS — The Taxonomy (the House of the Mind)
 
+> **Update, 5 October 2026.** Money is now an area (open question 4 below is answered: it's in), and Events & community (Cardiff Life) joins the house. The big areas get their own tables; everything else still follows this taxonomy. The current status of every room and type is in `Life_OS_Plans_Inventory.md`.
+
 **A living document · written 2026-07-06 · for Xar**
 
 This is the thinking behind the data model — how everything in your life is classified so it stays *rich and complete* without becoming a mess. It sits above the `Life_OS_Data_Dictionary.md` (the formal reference) and `data-model/` (the code). Per the project rules, the room list and groupings are current best thinking held loosely — fold in changes freely; nothing here is signed.

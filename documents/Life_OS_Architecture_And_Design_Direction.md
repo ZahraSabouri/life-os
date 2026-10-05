@@ -1,5 +1,7 @@
 # Life OS — Architecture & Design Direction
 
+> **Update, 5 October 2026.** The direction here still holds: one app, rich rooms, a shared spine, nothing walled off. Two refinements: the big areas (Study, Career, Money, Home, Events) get their own tables in the same database instead of being modelled only as entries, and the home screen leads with Today, with the room doors below. The database is now PostgreSQL. See `Life_OS_Architecture.md`, `ROADMAP.md` and `DECISIONS.md`.
+
 **A thinking document · written 2026-07-06 · for Xar**
 
 This is the "how should the whole thing be shaped" report you asked for — the counterpart to the UI Polish Brief. It is a *proposal to react to*, not a plan you've signed. Per the project rules, everything here is current best thinking, held loosely; the domain groupings and the revised sequence are a scratchpad to rewrite freely, not a contract. Where I recommend, I say so; where it's your call, I flag it.

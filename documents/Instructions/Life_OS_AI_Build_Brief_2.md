@@ -1,4 +1,7 @@
 # Life OS — Build Brief 2 (expanded): past the first page
+
+> **History, not instructions (5 October 2026).** The current plan is `../ROADMAP.md`; the status of every July brief is in `../Life_OS_Plans_Inventory.md` §5.
+
 **Rewritten 2026-07-06.** This replaces the earlier version of this file — that one was never actually acted on. What actually got built since Build Brief 1 is a bit different from what either brief expected, so this version is grounded in the real current code, which I read and partly re-ran before writing this.
 
 ---

@@ -1,7 +1,7 @@
 # Life OS
 
 Personal life-management app — private, single-user, built to grow over the next year+.
-Start here: `documents/Life_OS_Vision.md` for the why, `documents/Life_OS_Blueprint.md` for the fullest current proposal, `documents/MIGRATION_HANDOFF.md` for what was done last and what is next.
+Start here: `documents/Life_OS_Vision.md` for the why, `documents/ROADMAP.md` for where things stand and what's next, `documents/Life_OS_Architecture.md` for how it's built, `documents/DECISIONS.md` for what was chosen and why, `documents/Life_OS_Plans_Inventory.md` for everything planned so far, `documents/STATUS.md` for the current state and next step, and `documents/WORKFLOW.md` for how the work runs (with the prompts to use). Coding agents: read `AGENTS.md` first (Claude Code loads it through `CLAUDE.md`).
 
 **Nothing in this folder structure is a fixed contract.** It's organized for clarity today; reshape it whenever it stops fitting.
 
@@ -11,7 +11,7 @@ Double-click **Start Life OS.cmd**. It starts one local server and opens http://
 
 ## What's inside
 
-Life OS is the core app plus four apps that used to run on their own. Each keeps its own interface and its own way of saving; Life OS shows it full-screen with a small "← Life OS" button to come back.
+Life OS is the core app plus four apps that used to run on their own. Each keeps its own interface and its own way of saving; Life OS shows it full-screen with a small "← Life OS" button to come back. They're being rebuilt one by one as native parts of Life OS (see `documents/ROADMAP.md`); until each one is, it runs as it is.
 
 | App | Open it at | Folder | How it runs |
 |---|---|---|---|

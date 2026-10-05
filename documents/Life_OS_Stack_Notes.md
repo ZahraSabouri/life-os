@@ -2,13 +2,21 @@
 
 **Updated 2026-07-05.** Supersedes the 2026-07-02 version below (kept as history, not deleted — see "Superseded thinking"). As always: this is current best thinking, not a contract. Revisit anytime a good argument shows up.
 
+## Update 2026-10-05: PostgreSQL and a modular monolith
+
+**Database: PostgreSQL**, from day one (Xar's decision, 5 October 2026), replacing SQLite via `node:sqlite`. A native Windows service on localhost, one schema per area, `pg_dump` backups, numbered SQL migrations.
+
+**Architecture:** a modular monolith. One Node + Express program with a shared core and a module per big area (Study, Career, Money, Home, Events); background jobs in a PostgreSQL table; outside agents drop files in an inbox folder. No Redis, RabbitMQ or MongoDB until a written trigger happens.
+
+Everything else in the 2026-07-05 section below still holds (React + Vite in plain JavaScript, hand-rolled Express, own-laptop hosting, Tailscale, the AI layer parked, the coding approach), except the SQLite paragraph, which is now history. "WAL mode on" in that paragraph had already been reversed on 6 July after disk I/O errors. Full reasoning: `Life_OS_Architecture.md` and `DECISIONS.md`.
+
 ## Decided (2026-07-05 conversation)
 
 **Frontend:** React 19 + Vite, plain JavaScript. TypeScript deliberately not adopted on day one — add it incrementally once the shape of the data model settles, rather than fighting TS syntax while everything is still moving.
 
 **Backend:** Hand-rolled Node.js + Express, not a packaged backend-as-a-service (PocketBase, Supabase, etc.). Reasoning: this is single-user, so "auth" is a token check, not a real user system — the plumbing PocketBase mainly saves you from writing (auth, admin UI) isn't needed here. Hand-rolling the small amount that's left (routes, queries, file uploads) is genuinely learnable in a weekend, keeps everything in one language across front and back, and means you own every line instead of running a binary you didn't build.
 
-**Database:** SQLite, accessed via Node's **built-in `node:sqlite` module** (stabilized in Node 26 — no native compilation, no Visual Studio Build Tools needed on Windows, a real win over the older `better-sqlite3` route). WAL mode on. Files and photos live on disk as plain files; the database only stores a path and metadata — this is standard practice regardless of database engine, and it's why "SQLite can't hold all my files" isn't actually a concern: file storage capacity is a disk question, not a database-engine question.
+*(Superseded 2026-10-05 by PostgreSQL; kept as history.)* **Database:** SQLite, accessed via Node's **built-in `node:sqlite` module** (stabilized in Node 26 — no native compilation, no Visual Studio Build Tools needed on Windows, a real win over the older `better-sqlite3` route). WAL mode on. Files and photos live on disk as plain files; the database only stores a path and metadata — this is standard practice regardless of database engine, and it's why "SQLite can't hold all my files" isn't actually a concern: file storage capacity is a disk question, not a database-engine question.
 
 *Why SQLite over Postgres, for the record:* SQLite runs in production at hundreds of GB / millions of rows (every iPhone Photos library, every browser history, a large share of 2026 indie SaaS via the "one SQLite file per tenant" pattern). A single person's life-entries table, even after years, is realistically tens of thousands of rows — nowhere near SQLite's ceiling. It gets genuinely weaker than Postgres for two things, neither of which applies yet: many independent processes writing concurrently over a network, and heavy vector/semantic search at scale (pgvector is more mature than SQLite's vector extensions today) — worth revisiting only if "ask questions about my life" search becomes a real priority. The insurance policy against being wrong: the Express API sits between the frontend and the database, so swapping the database later is a backend-internal change, not a rewrite.
 
@@ -27,7 +35,7 @@ User wants to **pair** on this — write some code themselves, not have it fully
 - TypeScript adoption timing (see above — no fixed date, just "when it earns it")
 - Long-term entry taxonomy — the design prototype already explores six archetypes (Moment, Commitment, Workstream, Collection, Practice, Anchor) sitting above domain-specific types; not locked in
 - The app's real name (still "Life OS" as working title)
-- Whether Postgres ever becomes worth it (see SQLite reasoning above — revisit only if triggered by a real need, not preemptively)
+- Whether Postgres ever becomes worth it (see SQLite reasoning above — revisit only if triggered by a real need, not preemptively) *(Resolved 2026-10-05: PostgreSQL from day one.)*
 
 ---
 

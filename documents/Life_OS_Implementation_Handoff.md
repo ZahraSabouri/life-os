@@ -1,5 +1,7 @@
 # Life OS — Implementation Hand-off
 
+> **Superseded as the build plan on 5 October 2026** by `ROADMAP.md`. Sessions 1–3 were built; what's left of sessions 4–7 and Briefs 7–12 is tracked in `Life_OS_Plans_Inventory.md` §5. These specs were written for SQLite; with PostgreSQL the ideas stand but the implementation details change. Kept as history.
+
 **For Xar to hand to the local coder/implementer AI, one session at a time.**
 Written 2026-07-06. Part A explains every document in one line. Part B is the rules the coder always follows. Part C is the work cut into session-sized pieces — give **one piece per session**, verify it runs, then give the next.
 

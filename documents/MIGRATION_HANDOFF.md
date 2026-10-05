@@ -1,5 +1,8 @@
 # Consolidating the local apps into Life OS
 
+> **Frozen on 5 October 2026.** This is the history of the sessions that attached the four apps (1 to 8). The current state is in `STATUS.md`, session notes are in `sessions/`, and the way of working is in `WORKFLOW.md`.
+
+
 Assessment: 1 October 2026. Proposed sequence, not a fixed roadmap.
 
 ## User's current request
@@ -98,6 +101,15 @@ Remaining cutover work before deleting originals: repoint the Codex automations 
 - The old nested repositories are still on disk and were not altered: `code/life-os/.git` (now redundant; git commands run inside `code/life-os` still go to it), `summer-rescue-plan-app/.git` (its own GitHub repository, which has newer commits than this copy) and `budget-management/app/.git`. Remove or keep them as you prefer; the root repository ignores them.
 - The folder is owned by the Codex sandbox account, so git refuses to run in it for the normal Windows user until it is marked safe: `git config --global --add safe.directory C:/Users/ctrlz/Documents/Personal/Projects/Life_OS`.
 
+### Session 8 (Claude in Cowork, 5 Oct): planning the unified app — DONE (documents only)
+
+- No code or data changed. Read every document in `documents/` (here and in the preserved copy), the git history and the relevant code, then talked the direction through with Xar.
+- Agreed: one unified app (the attached apps are rebuilt one by one as native sections); Home leads with Today and keeps the room doors below; the calendar ties every area together; three ways in (by hand, import with AI instructions and connectors, built-in AI later); Study keeps Summer Rescue's behaviour; **PostgreSQL from day one** (Xar's decision); a modular monolith with no Redis/RabbitMQ/MongoDB; counts at each module move; other users in the late stages. Full list: `DECISIONS.md` (5 October).
+- Order: Stage 0 use Budget now → 1 Foundation (PostgreSQL, home, import pipeline) → 2 Calendar and Today across all apps → 3 Study → 4 Career → 5 Money & Home → 6 Cardiff Life → 7 the rest. See `ROADMAP.md`.
+- New: `ROADMAP.md`, `Life_OS_Architecture.md`, `DECISIONS.md`, `Life_OS_Plans_Inventory.md`. Updated: `Life_OS_Vision.md`, `Life_OS_Stack_Notes.md`, the root `AGENTS.md` (rules for agents at the top) and `README.md`. Short dated notes added at the top of the July architecture, Taxonomy, Implementation Handoff, Data Dictionary, `data-model/README.md` and the three build briefs. All uncommitted: commit them from Windows.
+- Facts checked: Budget's last save is revision 91 (26 Sept) in both the old and the Life OS copy, so October isn't recorded anywhere yet and nothing has split; October 2026 is configured in Budget (£250 total). The core SQLite database file is in WAL mode (header bytes 18–19 = 2). Summer Rescue's module pages, exam dates and materials are hard-coded for the four summer modules.
+- Mishap, fixed: a `git status` run from the Cowork VM left an empty `.git/index.lock` that it couldn't remove across the shared-folder link. It was renamed to `.git/stale-index-lock-from-claude-2026-10-05` so git works again; that empty file can be deleted from Windows. `AGENTS.md` now tells Cowork agents not to run git in the shared folder.
+
 ## Next prompt
 
-"Read documents/MIGRATION_HANDOFF.md. All four apps are attached. Help me finish the cutover: list exactly what still points at the old folders, then plan archiving the originals safely." (Or move on to shared search/calendar.)
+Superseded: see the "Next prompt" in `STATUS.md`.

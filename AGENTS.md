@@ -1,4 +1,80 @@
+# Life OS: instructions for coding agents (Codex, Claude Code, Claude in Cowork)
+
+**Updated 5 October 2026.** Read this first, every session. Xar owns every decision; when something is genuinely hers to decide, ask. How Xar runs the work, and the prompts she uses, are in `documents/WORKFLOW.md`.
+
+## Read at the start of every session
+
+1. `documents/STATUS.md`: where things stand, the next step, what's waiting on Xar.
+2. The brief it points to in `documents/briefs/`, and the latest note in `documents/sessions/`.
+3. As needed: `documents/ROADMAP.md` (the order), `documents/Life_OS_Architecture.md` (how it's built), `documents/DECISIONS.md` (why), `documents/Life_OS_Plans_Inventory.md` (everything planned).
+
+Older documents (the Blueprint, the July architecture and Taxonomy, the Implementation Handoff, `documents/Instructions/`, `documents/data-model/`, `documents/MIGRATION_HANDOFF.md`) are history and background. Where they disagree with the files above, the files above win.
+
+## The session routine
+
+**Start**
+1. Read the files above.
+2. Check reality against STATUS.md: `git status`, the current branch, the last few commits. If the work involves the app, start it and confirm the last checkpoint really works. If anything doesn't match (uncommitted changes, a half-done checkpoint, a failing test), sort that out first and say what you found.
+3. Tell Xar in two or three lines what this session will do (normally the next unchecked checkpoint in the brief).
+
+**Work**
+4. One checkpoint at a time, inside the brief's scope. If the brief is unclear or wrong, stop and ask; don't improvise around it.
+5. No approved brief for the current stage means no app code (fixes Xar asks for directly are fine). Don't start the next stage until Xar has accepted the current one.
+6. Back up before touching data or the schema (`documents/Life_OS_Architecture.md` §10).
+
+**Finishing each checkpoint** (all three every time, so an interrupted session can always be resumed)
+7. Verify: build, tests, and the checks in the brief.
+8. Commit as `[<stage>-cp<n>] <summary>` on the stage branch (`stage/<id>-<name>`, created from `main` at the stage's first build session).
+9. Tick the checkpoint in the brief and update STATUS.md.
+
+**End of session** (also when Xar says "wrap up", or when the session is getting long: a clean stop beats a half-done checkpoint)
+10. Write a session note in `documents/sessions/`, named `YYYY-MM-DD-<agent>-<stage>-<topic>.md`, from `documents/sessions/_TEMPLATE.md`. Never edit old notes.
+11. Rewrite STATUS.md, keeping it under a page: where things stand, the exact next step and next prompt, how Xar can see what's new, what's waiting on her, known problems, data state, the last five sessions.
+12. Tell Xar in plain words: what changed, how to try it, what you need from her.
+
+## What to document where
+
+| File | When | How |
+|---|---|---|
+| `documents/STATUS.md` | every checkpoint and every session end | rewrite it; under a page |
+| `documents/sessions/` | every session, reviews included | a new file; never edit old ones |
+| `documents/briefs/stage-<id>-<name>.md` | when planning; tick boxes while building | scope changes need Xar's OK and are noted in the brief |
+| `documents/ROADMAP.md` | a stage is accepted, or the order changes | |
+| `documents/DECISIONS.md` | Xar decides something, or an earlier decision is replaced | newest first; never delete old entries |
+| `documents/Life_OS_Plans_Inventory.md` | a feature's status changes | |
+| `documents/Life_OS_Architecture.md` | the structure changes (with Xar) | |
+| `documents/Life_OS_Vision.md` | only when Xar's idea of the app changes, with her | |
+
+## Data rules (non-negotiable)
+
+- Only the Life OS server writes to the database. Never edit data files by hand, regenerate them or replace them wholesale. Data changes go through the API, the import inbox, or a reviewed migration that backs up first.
+- Never overwrite Xar's edits. Respect revision checks (409). Imports update the source's fields only, never Xar's own fields (status, notes, priority, choices).
+- Moving an attached app's data into its native module: back up both sides, record counts before and after, spot-check records, and leave the source untouched until Xar accepts the new module.
+- Never delete Xar's data or the standalone app folders. Deleting is Xar's step.
+- PostgreSQL: schema changes only through numbered migrations; never touch the PostgreSQL data directory.
+- SQLite files that still exist (`code/life-os/backend/data/life-os.db` until it moves, Summer Rescue's `local-data/app.sqlite`): never force WAL mode; never copy a bare `.db` file (read it through SQLite so the WAL contents come along); never open them across the Cowork shared-folder link while the Windows app is running.
+- Personal data stays out of git (see `.gitignore`).
+
+## Code rules
+
+- No personal content in code: modules, exams, budget months, shops and people belong in data or settings.
+- Modules own their tables; anything cross-area goes through the core (calendar, Today, search, imports, links).
+- Money as whole pence. Times as UTC `timestamptz`, shown in Europe/London.
+- Plain words on buttons and labels; the poetry belongs in the atmosphere.
+- Make targeted edits; don't rewrite large files from memory. When porting an attached app, list its features first and check each one off, so nothing is silently dropped.
+- `node_modules` are Windows builds. Build with `Build Life OS.cmd` on Windows; agents in a Linux VM build in a scratch copy (see the build note in `documents/MIGRATION_HANDOFF.md`, session 2–3).
+
+## Notes for Claude in Cowork (Linux VM, shared-folder link)
+
+- Cowork's role: planning, briefs, reviews and documents. It doesn't build features.
+- Don't run git commands in the shared folder: git can't remove its own lock files across the link and leaves `.git/index.lock` behind, which blocks git for everyone. Git happens on Windows.
+- Services on Windows localhost (the Life OS server, PostgreSQL) aren't reachable from the VM. Runtime checks happen on Windows (Codex, Claude Code) or in Xar's browser.
+
+---
+
 ## Imported Claude Cowork project instructions
+
+*The section below is the July Cowork project instructions, kept for context. Its "Current leanings" are out of date; the current choices are in `documents/DECISIONS.md`.*
 
 # Life OS — Assistant Instructions
 Paste everything below the line into the new Cowork project's custom instructions.

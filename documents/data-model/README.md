@@ -1,5 +1,7 @@
 # Life OS — `data-model/` (the usable data structures)
 
+> **Note, 5 October 2026.** These files describe the July SQLite schema for the entries engine. The database is moving to PostgreSQL (Stage 1a in `../ROADMAP.md`): the type registry and the rooms still apply, the SQL will be rewritten. See `../Life_OS_Architecture.md`.
+
 This folder turns the architecture into **artifacts a code assistant can build the database and the app from**. It is the bridge between the thinking docs (`../Life_OS_Taxonomy.md`, `../Life_OS_Architecture_And_Design_Direction.md`) and the running code in `../../code/life-os/`.
 
 Everything here is a **proposal to merge deliberately**, not a script to run blind. The live database holds real data — permanent rule #5 (never lose data) governs everything below.

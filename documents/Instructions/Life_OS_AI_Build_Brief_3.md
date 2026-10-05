@@ -1,5 +1,7 @@
 # Life OS — Build Briefs 3–12: the data-structure decade
 
+> **History, not instructions (5 October 2026).** The current plan is `../ROADMAP.md`; the status of every July brief is in `../Life_OS_Plans_Inventory.md` §5. The specs here were written for SQLite and an entries-only data model; see `../Life_OS_Architecture.md`.
+
 **Written 2026-07-06.** This file is a *sequence of ten briefs*, meant to be executed one at a time by a local coding agent on Xar's Windows machine, in order. It is the successor to `Life_OS_AI_Build_Brief_2.md`. Read the "Where things actually stand" section below before starting Brief 3 — it's grounded in the real current code, which I read and cross-checked file by file, not in what Brief 2 *assumed* would exist.
 
 The bias of this set, by Xar's explicit request, is **data-structure and backend design**. The reasoning is sound: this is a many-year, many-domain app, and the cost of getting the entry model, the type taxonomy, tags, links, files, and migrations right *now* is a weekend; the cost of getting them wrong is a rewrite every time a new domain arrives. Screens are cheap once the spine is right. So most of these briefs spend their weight on schemas, registries, validation, and the API surface — with just enough UI each time to prove the structure works against real data on a real screen (the project's "every session ends with something runnable" rule still holds).
