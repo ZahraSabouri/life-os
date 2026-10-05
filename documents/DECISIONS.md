@@ -4,6 +4,13 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 5 October 2026 — Calendar first (Xar with Claude Code; resumed by Codex)
+
+- Xar asked Claude Code to start work from the plan, write down what it did and leave a brief and precise pickup point for review afterward. This authorises building the documented calendar scope without another brief-approval question for this continuation. Stage acceptance still belongs to Xar.
+- Xar then clarified that Calendar and Today should be finished first. Claude agreed to move those ahead of PostgreSQL, but its session ended during read-only mapping. Stage 2 now comes before Stage 1a; PostgreSQL remains the intended core database, followed by native Study. This supersedes the initial order in item 6 below for these next steps.
+- Xar said she would install PostgreSQL herself and might need help with the password. No installation, password reset or reuse of the July cluster is authorised by the calendar continuation. Give an interactive installation checklist and verify the chosen server before foundation work.
+- Account connections remain important. Assistant connectors and native Life OS OAuth are separate: connecting a provider to an assistant does not connect the app. Setup guidance lives in `CONNECTIONS_SETUP.md`.
+
 ## 5 October 2026 — the unified app (Xar with Claude, in Cowork)
 
 1. **One app, not a box of apps.** The four attached apps are rebuilt one by one as native sections of Life OS. Each attached version keeps running until its replacement is accepted. *Why:* Xar wants one app whose parts share a calendar and work together, not a large app holding mini apps. The July architecture already argued for one engine.

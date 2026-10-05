@@ -7,6 +7,10 @@ import { createLocalTrackerApi } from '../summer-rescue-plan-app/src/server/loca
 import { BUDGET_PATH, budgetProxy } from './budget.mjs'
 import { budgetBrowserRoutes } from './budget-browser-data.mjs'
 import { JOBMAP_PATH, jobMapProxy } from './jobmap.mjs'
+import db from '../code/life-os/backend/src/db.js'
+import { createCalendarService } from './calendar/service.mjs'
+import { createCalendarLoaders, getLocalJson } from './calendar/loaders.mjs'
+import { createCalendarRouter } from './calendar-route.mjs'
 
 export const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 export const SUMMER_PATH = '/apps/summer-rescue/'
@@ -71,6 +75,20 @@ export function createLifeOsApp(options = {}) {
   })
   app.use('/api/entries', entriesRouter)
   app.use('/api/people', peopleRouter)
+  const calendarLoaders = createCalendarLoaders({
+    projectRoot, summerRoot, cardiffRoot, getBudgetPort, getJobMapPort,
+    // The range filter happens in the provider so it can include spanning
+    // events, type-specific deadlines and annual dates without the old cap.
+    loadEntries: () => db.prepare('SELECT * FROM entries').all(),
+    loadPeople: () => db.prepare('SELECT * FROM people').all(),
+    loadStudy: async () => {
+      const saved = await getLocalJson(Number(process.env.LIFE_OS_PORT || 47850), '/api/state')
+      if (!saved?.state) throw new Error('Study state is unavailable')
+      return saved.state
+    },
+    ...options.calendarLoaders,
+  })
+  app.use('/api/calendar', createCalendarRouter(createCalendarService(calendarLoaders)))
   app.use('/api', (_req, res) => res.status(404).json({ error: 'not found' }))
 
   app.use(express.static(mainDist))

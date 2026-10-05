@@ -29,7 +29,7 @@ Companion documents:
 | Money & Home | Budget Management ("Everyday") | `/budget` | `budget-management/data/state.json`, backups, artwork; its own server on port 47851 |
 | Events | Cardiff Life | `/cardiff-life` | `cardiff-life/` research files; Xar's choices in browser storage |
 
-So there are five separate data stores, and nothing flows between them: the calendar can't see an exam, a job deadline or a bill.
+The five stores remain separate during the transition. Stage 2 adds read-only calendar providers over them; their native replacements still follow the foundation work.
 
 **Known issues and loose ends**
 - The core SQLite database file is still in WAL mode (the setting is stored inside the file). Copy it only through SQLite, never by copying `life-os.db` alone, or recent saves can be missed. It retires in Stage 1a when the core moves to PostgreSQL.
@@ -50,6 +50,8 @@ So there are five separate data stores, and nothing flows between them: the cale
 - **Other users come in the late stages.** The only rule that anticipates them now is "no personal content in code", which Xar needs anyway: next semester's modules shouldn't need a code change.
 
 ## 3. The order
+
+**5 October update from the later Claude Code conversation:** Xar asked to finish Calendar and Today first, and authorised starting the work with a documented brief and review afterward. The active brief is `briefs/stage-2-calendar-today.md`, branch `stage/2-calendar-today`. PostgreSQL is postponed until after this calendar checkpoint; Xar intends to install it herself. Next: accept Calendar/Today, finish the Stage 1a foundation, then build native Study (Stage 3). Stage numbers remain stable. The PostgreSQL design decision still holds; there is no database migration in Stage 2.
 
 Each stage is cut into sessions small enough to finish and verify. Every stage gets a brief in `briefs/` before building starts. Every session: run first, back up first, end with something runnable, write a session note and update `STATUS.md` (see `AGENTS.md` and `WORKFLOW.md`).
 
