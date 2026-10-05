@@ -38,7 +38,7 @@ So there are five separate data stores, and nothing flows between them: the cale
 - Summer Rescue's module pages, exam dates and materials are written into its code for the four summer modules; a new module can only be added as a label on cards.
 - Summer Rescue's own GitHub repository has newer commits than the copy inside Life OS (noted in session 7). Check them before Stage 3.
 - Codex automations still write to old folders: the Cardiff Life searches and the "UK Tech Job Shortlist" for JobMap.
-- `v2-subapps` isn't merged into `main`; the old nested `.git` folders are still on disk.
+- `v2-subapps` was merged into `main` on 5 October (tag `pre-development-2026-10`). The old nested `.git` folders are still on disk.
 
 ## 2. Direction
 
@@ -143,10 +143,10 @@ The rooms and engine pieces from the July plans, in an order chosen when we get 
 
 ## 4. Alongside (housekeeping, whenever convenient)
 - Repoint the Codex automations to the Life OS folders (Cardiff Life searches; UK Tech Job Shortlist).
-- Merge `v2-subapps` into `main` when happy; decide what to do with the old nested `.git` folders.
+- Decide what to do with the old nested `.git` folders. `code/life-os/.git` is redundant (all its commits are in the main repository) and waits to be moved to `Life_OS_backups`: Xar's step, see `STATUS.md`.
 - Archive each original standalone folder with a verified copy once its native replacement is accepted. Deleting anything is Xar's step.
 - `Documents\JobMap` also holds the Excel workbooks, `Career Agent\AGENTS.md`, the scheduled-search playbook and notes used by the scheduled task; give them a home before archiving.
-- Run `node --test hosting/app.test.mjs` on Windows.
+- Run `node --test hosting/app.test.mjs` on Windows, once tests have their own database (Stage 1a): today it opens the real one and re-seeds its spaces.
 
 ## 5. Late stages (not now)
 - Other users: per-person copies or a hosted version, accounts, onboarding, user tests, packaging.

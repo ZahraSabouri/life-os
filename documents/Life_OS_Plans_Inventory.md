@@ -170,12 +170,12 @@ On This Day · streaks and milestones · trip threads that gather events, places
 | Claude scheduled task "Cardiff job search to JobMap" pointed at the Life OS inbox | Done (1 October) |
 | Codex "UK Tech Job Shortlist — JobMap" (Tue/Thu/Sat/Sun 3 pm) still uses the old JobMap App folder | To do |
 | Codex Cardiff Life searches (SU, Thursday 09:00; Eventbrite wider Cardiff, Friday 09:00; a paused Outlook search) still write to `Documents\Cardiff Life` | To do |
-| Merge `v2-subapps` into `main` | To do |
-| Old nested `.git` folders (`code/life-os`, `summer-rescue-plan-app`, `budget-management/app`) | Open: keep or remove |
+| Merge `v2-subapps` into `main` | Done (5 October, tag `pre-development-2026-10`) |
+| Old nested `.git` folders (`code/life-os`, `summer-rescue-plan-app`, `budget-management/app`) | Open: keep or remove. `code/life-os/.git` is redundant and waits to be moved to `Life_OS_backups` (Xar's step, see `STATUS.md`) |
 | Summer Rescue's own GitHub repository has newer commits than the Life OS copy | Check before Stage 3 |
 | Archive the original folders (`Documents\Cardiff Life`, `Documents\BudgetManagement` and the older `Budget Management`, `Documents\JobMap\Career Agent\JobMap App`) once their replacements are accepted | Later; deleting is Xar's step |
 | A home for the rest of `Documents\JobMap` (Excel workbooks, `Career Agent\AGENTS.md`, the scheduled-search playbook, notes) | Open |
-| Run `node --test hosting/app.test.mjs` on Windows | To do |
+| Run `node --test hosting/app.test.mjs` on Windows | To do, once tests have their own database (Stage 1a): today it opens the real one |
 
 ## 11. Open questions
 

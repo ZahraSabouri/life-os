@@ -54,5 +54,6 @@ Needs Node.js 22.13 or newer.
 
 ## Branches
 
-- **`v2-subapps`** — this version: the whole project folder, with the four apps attached.
+- **`main`** — accepted work. Each stage is built on its own branch (`stage/<id>-<name>`) and merged here when Xar accepts it (see `documents/WORKFLOW.md`).
+- **`v2-subapps`** — the whole project folder, with the four apps attached (1 October 2026). Merged into `main` on 5 October 2026 (tag `pre-development-2026-10`).
 - **`v1-pre-subapps`** — Life OS as it was just before the apps were attached (only `code/life-os`, at the repository root).
