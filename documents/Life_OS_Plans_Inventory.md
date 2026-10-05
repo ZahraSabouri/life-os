@@ -66,12 +66,14 @@ When Study, Career, Money, Home and Events become modules with their own tables,
 
 ## 3. Views across everything (the spine and the lenses)
 
+**Stage 2 update, 5 October 2026:** Calendar and Today across the attached apps are implemented on `stage/2-calendar-today`, awaiting Xar's visual review/acceptance. Month/day/agenda, area filters, kind styling, the Court Today strips and a preserved `/ledger` are built. Sources are read-only; subscription renewals expand their stored rules. Native timetable recurrence, imports and external-account sync remain later work. The rows below retain the original core baseline; the current checkpoint detail is in `briefs/stage-2-calendar-today.md` and STATUS.
+
 | View | Status | Notes |
 |---|---|---|
 | **Home** (the Court) | Built: 12 doors in four wings, three grounds, greeting, poem | Stage 1b: Today first, doors below, real data or honest empty states, wording review, Money and Events doors |
-| **Today** | Built: dated entries and task completion | Stage 2: every area, plus "needs attention" |
+| **Today** | Built: shared day/week/attention across attached apps, core task completion; visual acceptance pending | Stage 2: review; native providers grow as modules move |
 | **Day planning** | Idea | From the Vision: marking what a day is for (study day, free day) |
-| **Calendar** | Built: month grid with Persian and English dates, birthdays | Stage 2: every area, kinds, colour layers. Stage 3: recurrence. Later: week and agenda views, an `.ics` feed out |
+| **Calendar** | Built: month/day/agenda, Persian/English dates, birthdays, attached providers, kinds and area switches; visual acceptance pending | Stage 3: native timetable recurrence. Later: week grid and an `.ics` feed out |
 | **Capture** | Partly: a form driven by the type registry | The type picker isn't grouped by room yet. AI capture is Parked |
 | **Search / Ask** | Later | PostgreSQL full-text search, English and Persian, a ⌘K palette; asking questions about your life after that |
 | **Favorites** | Partly: the `favorite` column and index exist | No star in the interface and no Favorites view yet |

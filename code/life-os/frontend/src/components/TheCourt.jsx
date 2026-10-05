@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ENTRY_TYPES, validateDetails } from '@shared/entryTypes.js'
 import { ROOMS } from '@shared/rooms.js'
 import FieldsForm from './FieldsForm.jsx'
 import { apiFetch } from '../lib/api.js'
 import { useEntries } from '../lib/useEntries.js'
 import { useGround } from '../lib/groundContext.jsx'
+import { calendarArea, calendarKind, filterCalendarItems, itemTime, todayGroups } from '../lib/calendar.js'
+import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
 
 const ROOM_NAME_OVERRIDES = {
   study: 'Study',
@@ -455,11 +457,20 @@ function TodayLine({ entry }) {
       <time>{entry.time}</time>
       <span aria-hidden="true" />
       <div>
-        <p>{entry.title}</p>
+        <p><Link to={entry.href}>{entry.title}</Link></p>
         <small>{entry.room.displayName} / {entry.type}</small>
       </div>
     </li>
   )
+}
+
+function CourtCalendarNote({ calendar }) {
+  const failed = calendar.sources.filter(source => source.status === 'unavailable')
+  if (calendar.loading) return <p className="court-calendar-note" role="status">Loading your day…</p>
+  if (calendar.error) return <p className="court-calendar-note">Dates could not be loaded. <Link to="/today">Open Today to retry</Link>.</p>
+  if (failed.length) return <p className="court-calendar-note">Some areas could not be loaded. <Link to="/today">See details</Link>.</p>
+  if (calendar.choicesError) return <p className="court-calendar-note">Cardiff choices could not be read. <Link to="/today">See details</Link>.</p>
+  return null
 }
 
 function PoemStrip({ dailyPoem, compact = false, variant = 'paper' }) {
@@ -517,6 +528,7 @@ function PaperIndexRow({ room, onOpen }) {
 function PaperCourt(props) {
   const {
     captureProps,
+    calendarState,
     clockLabel,
     dateLabel,
     dailyPoem,
@@ -577,17 +589,18 @@ function PaperCourt(props) {
         <section className="paper-matter" aria-label="Court matter">
           <article>
             <SectionRule>Next</SectionRule>
+            <CourtCalendarNote calendar={calendarState} />
             {nextItems.length ? (
               <ol className="paper-simple-list">
                 {nextItems.map((entry) => (
                   <li key={entry.id}>
                     <time>{entry.time}</time>
-                    <p>{entry.title}</p>
+                    <p><Link to={entry.href}>{entry.title}</Link></p>
                   </li>
                 ))}
               </ol>
             ) : (
-              <EmptyLine>No dated entries today.</EmptyLine>
+              !calendarState.loading && !calendarState.error ? <EmptyLine>No dated items today. <Link to="/today">Open Today</Link></EmptyLine> : null
             )}
           </article>
 
@@ -659,12 +672,13 @@ function MadderTile({ room, onOpen }) {
   )
 }
 
-function MadderDayChannel({ clockLabel, todayItems }) {
+function MadderDayChannel({ clockLabel, todayItems, calendarState }) {
   const stops = todayItems.slice(0, 4)
 
   return (
     <section className="madder-day-channel" aria-label="Today channel">
       <SectionRule right={`now · ${clockLabel}`}>Today</SectionRule>
+      <CourtCalendarNote calendar={calendarState} />
       <div className="madder-channel-track">
         <span className="madder-channel-line" aria-hidden="true" />
         {stops.length ? (
@@ -679,12 +693,12 @@ function MadderDayChannel({ clockLabel, todayItems }) {
               >
                 <time>{entry.time}</time>
                 <Dia />
-                <p>{entry.title}</p>
+                <p><Link to={entry.href}>{entry.title}</Link></p>
               </article>
             )
           })
         ) : (
-          <EmptyLine>No dated entries today.</EmptyLine>
+          !calendarState.loading && !calendarState.error ? <EmptyLine>No dated items today. <Link to="/today">Open Today</Link></EmptyLine> : null
         )}
         <div className="madder-now-marker" style={{ '--stop-x': '52%' }}>
           <Dia />
@@ -698,6 +712,7 @@ function MadderDayChannel({ clockLabel, todayItems }) {
 function MadderCourt(props) {
   const {
     captureProps,
+    calendarState,
     clockLabel,
     dateLabel,
     dailyPoem,
@@ -749,7 +764,7 @@ function MadderCourt(props) {
 
         <p className="madder-capture-hint">try - “exam on the 14th at 9, and I finished chapter four of The Blind Owl”</p>
 
-        <MadderDayChannel clockLabel={clockLabel} todayItems={todayItems} />
+        <MadderDayChannel clockLabel={clockLabel} todayItems={todayItems} calendarState={calendarState} />
 
         <section className="madder-doors" aria-label="Daily doors">
           {featuredRooms.map((room) => (
@@ -844,6 +859,7 @@ function IndigoCapture({ captureProps }) {
 function IndigoCourt(props) {
   const {
     captureProps,
+    calendarState,
     clockLabel,
     dailyPoem,
     dateLabel,
@@ -881,6 +897,7 @@ function IndigoCourt(props) {
 
             <section className="indigo-today">
               <SectionRule right={weekdayLabel}>Full day</SectionRule>
+              <CourtCalendarNote calendar={calendarState} />
               {todayItems.length ? (
                 <ol className="today-lines">
                   {todayItems.slice(0, 6).flatMap((entry, index, items) => [
@@ -893,7 +910,7 @@ function IndigoCourt(props) {
                   ])}
                 </ol>
               ) : (
-                <EmptyLine>No dated entries today.</EmptyLine>
+                !calendarState.loading && !calendarState.error ? <EmptyLine>No dated items today. <Link to="/today">Open Today</Link></EmptyLine> : null
               )}
             </section>
 
@@ -983,8 +1000,8 @@ export default function TheCourt() {
   const [status, setStatus] = useState('idle')
   const [submitError, setSubmitError] = useState('')
   const { entries, refetch } = useEntries('?limit=80')
-  const todayKey = useMemo(() => formatDateKey(new Date()), [])
-  const todayEntries = useEntries(`?from=${todayKey}&end=${todayKey}`)
+  const todayKey = useLondonToday()
+  const calendarState = useCalendar(todayKey, todayKey)
 
   const [now, setNow] = useState(() => new Date())
   const entryTypeOptions = useMemo(() => Object.entries(ENTRY_TYPES), [])
@@ -1010,22 +1027,22 @@ export default function TheCourt() {
     })
   }, [entries, rooms])
   const todayItems = useMemo(() => {
-    const currentTime = Date.now()
-
-    return todayEntries.entries.map((entry) => {
-      const room = roomForEntry(entry, rooms)
-      const startTime = entry.start_at ? new Date(entry.start_at).getTime() : Number.NaN
-
+    const items = todayGroups(filterCalendarItems(calendarState.items, { choices: calendarState.choices }), todayKey).today
+    return items.map((item) => {
+      const area = calendarArea(item.area)
+      const slug = { money: 'home', events: 'relationships', core: 'mind' }[item.area] || item.area
+      const room = rooms.find(candidate => candidate.slug === slug) || rooms[0]
       return {
-        id: entry.id,
-        title: entryTitle(entry),
-        type: entryTypeLabel(entry),
-        time: entry.all_day ? 'all day' : timeLabel(entry.start_at),
-        done: Number.isFinite(startTime) && startTime < currentTime,
-        room
+        id: item.id,
+        title: `${item.choice === 'maybe' ? 'Maybe · ' : ''}${item.title}`,
+        type: calendarKind(item.kind),
+        time: itemTime(item),
+        href: item.href || '/today',
+        done: false,
+        room: { ...room, displayName: area.label, accent: area.tone }
       }
     }).slice(0, 7)
-  }, [rooms, todayEntries.entries])
+  }, [rooms, calendarState.items, calendarState.choices, todayKey])
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -1061,7 +1078,7 @@ export default function TheCourt() {
       setDetailsDraft({})
       await Promise.all([
         refetch(),
-        todayEntries.refetch()
+        calendarState.refetch()
       ])
       setStatus('saved')
       window.setTimeout(() => setStatus('idle'), 1200)
@@ -1118,6 +1135,7 @@ export default function TheCourt() {
   }
   const commonProps = {
     captureProps,
+    calendarState,
     clockLabel: clockLabelFor(now),
     cycleGround,
     dailyPoem: COURT_POEMS[ground],

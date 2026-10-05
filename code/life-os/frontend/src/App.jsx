@@ -5,6 +5,7 @@ import CourtLayout from './components/CourtLayout.jsx'
 import DivanIntro from './components/DivanIntro.jsx'
 import TheCourt from './components/TheCourt.jsx'
 import TodayView from './components/TodayView.jsx'
+import LedgerView from './components/LedgerView.jsx'
 import { GroundProvider, useGround } from './lib/groundContext.jsx'
 
 const SKIP_INTRO_KEY = 'life-os.skip-intro'
@@ -126,6 +127,7 @@ function AppRoutes() {
           <Route path="/court" element={<TheCourt />} />
           <Route path="/calendar" element={<CalendarView />} />
           <Route path="/today" element={<TodayView />} />
+          <Route path="/ledger" element={<LedgerView />} />
         </Route>
         <Route path="/study" element={<StudyRoute />} />
         <Route path="/cardiff-life" element={<CardiffLifeRoute />} />

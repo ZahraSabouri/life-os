@@ -1,341 +1,153 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { apiFetch } from '../lib/api.js'
+import { CALENDAR_AREAS, CALENDAR_KINDS, addDays, calendarArea, dateForKey, dateKey, filterCalendarItems, formatCalendarDay, itemOverlaps, sortCalendarItems } from '../lib/calendar.js'
+import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
+import { isDateKey } from '@shared/calendar.js'
+import CalendarItems, { CalendarStatus } from './CalendarItems.jsx'
 
-const WEEKDAYS = [
-  { label: 'Mon', sample: new Date(2026, 0, 5) },
-  { label: 'Tue', sample: new Date(2026, 0, 6) },
-  { label: 'Wed', sample: new Date(2026, 0, 7) },
-  { label: 'Thu', sample: new Date(2026, 0, 8) },
-  { label: 'Fri', sample: new Date(2026, 0, 9) },
-  { label: 'Sat', sample: new Date(2026, 0, 10) },
-  { label: 'Sun', sample: new Date(2026, 0, 11) }
-]
-const ENTRY_TYPES = new Set(['task', 'event'])
-const PERSIAN_MONTH_FORMATTER = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
-  month: 'long',
-  year: 'numeric'
-})
-const PERSIAN_DAY_FORMATTER = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
-  day: 'numeric'
-})
-const PERSIAN_WEEKDAY_FORMATTER = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
-  weekday: 'short'
-})
+const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const persianMonth = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { timeZone: 'Europe/London', month: 'long', year: 'numeric' })
+const persianDay = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { timeZone: 'Europe/London', day: 'numeric' })
+const persianWeekday = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { timeZone: 'Europe/London', weekday: 'short' })
 
-const CALENDAR_LEGEND = [
-  { key: 'study', label: 'Study', tone: 'var(--g-acc)' },
-  { key: 'career', label: 'Career', tone: 'var(--g-blue)' },
-  { key: 'body', label: 'Body', tone: 'var(--g-coral)' },
-  { key: 'memories', label: 'Memories', tone: 'var(--g-sage)' },
-  { key: 'mind', label: 'Mind', tone: 'var(--g-rose)' },
-  { key: 'places', label: 'Places', tone: 'var(--g-coral)' }
-]
-
-function firstOfMonth(date) {
-  return new Date(date.getFullYear(), date.getMonth(), 1)
+function monthStart(key) { return `${key.slice(0, 7)}-01` }
+function shiftMonth(key, amount) {
+  const date = dateForKey(key)
+  date.setUTCMonth(date.getUTCMonth() + amount, 1)
+  return monthStart(dateKey(date))
 }
-
-function lastOfMonth(date) {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0)
-}
-
-function addMonths(date, amount) {
-  return firstOfMonth(new Date(date.getFullYear(), date.getMonth() + amount, 1))
-}
-
-function formatDateKey(date) {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-
-  return `${year}-${month}-${day}`
-}
-
-function dateKeyFromValue(value) {
-  if (typeof value !== 'string') return ''
-  const match = value.match(/^\d{4}-\d{2}-\d{2}/)
-  if (match) return match[0]
-
-  const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? '' : formatDateKey(date)
-}
-
-function buildMonthGrid(monthDate) {
-  const first = firstOfMonth(monthDate)
-  const last = lastOfMonth(monthDate)
-  const start = new Date(first)
-  const end = new Date(last)
-  const todayKey = formatDateKey(new Date())
+function monthGrid(month, today) {
+  const first = dateForKey(month)
+  const lastKey = addDays(shiftMonth(month, 1), -1)
+  const firstWeekday = (first.getUTCDay() + 6) % 7
+  const lastWeekday = (dateForKey(lastKey).getUTCDay() + 6) % 7
+  const from = addDays(month, -firstWeekday)
+  const to = addDays(lastKey, 6 - lastWeekday)
   const days = []
-  const firstWeekday = (first.getDay() + 6) % 7
-  const lastWeekday = (last.getDay() + 6) % 7
-
-  start.setDate(first.getDate() - firstWeekday)
-  end.setDate(last.getDate() + (6 - lastWeekday))
-
-  for (const cursor = new Date(start); cursor <= end; cursor.setDate(cursor.getDate() + 1)) {
-    const date = new Date(cursor)
-    const key = formatDateKey(date)
-
-    days.push({
-      date,
-      key,
-      isCurrentMonth: date.getMonth() === monthDate.getMonth(),
-      isToday: key === todayKey
-    })
+  for (let cursor = from; cursor <= to; cursor = addDays(cursor, 1)) {
+    days.push({ key: cursor, date: dateForKey(cursor), current: cursor.slice(0, 7) === month.slice(0, 7), today: cursor === today })
   }
-
-  return days
-}
-
-function domainForText(text, fallback = 'mind') {
-  const value = String(text || '').toLowerCase()
-
-  if (/\b(mat|cmt|ma\d|study|exam|revision|paper|module|notebook|seminar|lecture|course)\b/.test(value)) return 'study'
-  if (/\b(job|career|cv|phd|application|interview|role|email|bristol|cardiff)\b/.test(value)) return 'career'
-  if (/\b(gym|workout|run|lift|push|pull|body|doctor|health)\b/.test(value)) return 'body'
-  if (/\b(photo|memory|walk|family|maman|birthday)\b/.test(value)) return 'memories'
-  if (/\b(beach|bay|london|trip|travel|place|wales|penarth)\b/.test(value)) return 'places'
-
-  return fallback
-}
-
-function toneForDomain(domain) {
-  return CALENDAR_LEGEND.find((item) => item.key === domain)?.tone || 'var(--g-acc)'
-}
-
-function inferDateFromPrompt(prompt, fallbackKey, visibleMonth) {
-  const value = String(prompt || '').toLowerCase()
-  const explicit = value.match(/\b(20\d{2})-(\d{1,2})-(\d{1,2})\b/)
-
-  if (explicit) {
-    const date = new Date(Number(explicit[1]), Number(explicit[2]) - 1, Number(explicit[3]))
-    if (!Number.isNaN(date.getTime())) return formatDateKey(date)
-  }
-
-  const dayMatch = value.match(/\b([1-9]|[12]\d|3[01])(?:st|nd|rd|th)?\b/)
-
-  if (dayMatch) {
-    const candidate = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), Number(dayMatch[1]))
-    if (candidate.getMonth() === visibleMonth.getMonth()) return formatDateKey(candidate)
-  }
-
-  return fallbackKey
-}
-
-function birthdayKeyInMonth(person, visibleMonth) {
-  const match = String(person.birthday || '').match(/^\d{4}-(\d{2})-(\d{2})/)
-  if (!match) return ''
-
-  const date = new Date(visibleMonth.getFullYear(), Number(match[1]) - 1, Number(match[2]))
-  return date.getMonth() === visibleMonth.getMonth() ? formatDateKey(date) : ''
-}
-
-function persianRangeLabel(visibleMonth) {
-  const first = firstOfMonth(visibleMonth)
-  const last = lastOfMonth(visibleMonth)
-  const firstLabel = PERSIAN_MONTH_FORMATTER.format(first)
-  const lastLabel = PERSIAN_MONTH_FORMATTER.format(last)
-
-  return firstLabel === lastLabel ? firstLabel : `${firstLabel} - ${lastLabel}`
+  return { from, to, days, lastKey }
 }
 
 export default function CalendarView() {
-  const [visibleMonth, setVisibleMonth] = useState(() => firstOfMonth(new Date()))
-  const [entries, setEntries] = useState([])
-  const [people, setPeople] = useState([])
-  const [status, setStatus] = useState('idle')
-  const [error, setError] = useState('')
-  const [captureText, setCaptureText] = useState('')
-  const [captureDate, setCaptureDate] = useState(() => formatDateKey(new Date()))
-
-  const monthLabel = useMemo(() => new Intl.DateTimeFormat(undefined, {
-    month: 'long',
-    year: 'numeric'
-  }).format(visibleMonth), [visibleMonth])
-  const persianMonthLabel = useMemo(() => persianRangeLabel(visibleMonth), [visibleMonth])
-
-  const monthRange = useMemo(() => ({
-    from: formatDateKey(firstOfMonth(visibleMonth)),
-    end: formatDateKey(lastOfMonth(visibleMonth))
-  }), [visibleMonth])
-
-  const monthDays = useMemo(() => buildMonthGrid(visibleMonth), [visibleMonth])
-
-  const entriesByDay = useMemo(() => {
-    const grouped = new Map()
-
-    entries
-      .filter((entry) => ENTRY_TYPES.has(entry.type))
-      .forEach((entry) => {
-        const key = dateKeyFromValue(entry.start_at)
-        if (!key) return
-
-        const domain = domainForText(`${entry.title || ''} ${entry.details?.location || ''}`, entry.type === 'task' ? 'study' : 'mind')
-        const current = grouped.get(key) || []
-        current.push({
-          id: entry.id,
-          title: entry.title || entry.type,
-          domain,
-          tone: toneForDomain(domain),
-          type: entry.type
-        })
-        grouped.set(key, current)
-      })
-
-    people.forEach((person) => {
-      const key = birthdayKeyInMonth(person, visibleMonth)
-      if (!key) return
-
-      const current = grouped.get(key) || []
-      current.push({
-        id: `birthday-${person.id}`,
-        title: `${person.name} birthday`,
-        domain: 'memories',
-        tone: toneForDomain('memories'),
-        type: 'birthday'
-      })
-      grouped.set(key, current)
-    })
-
-    return grouped
-  }, [entries, people, visibleMonth])
-
-  const loadCalendar = useCallback(async () => {
-    setStatus('loading')
-    setError('')
-
-    try {
-      const params = new URLSearchParams(monthRange)
-      const [entryRows, peopleRows] = await Promise.all([
-        apiFetch(`/api/entries?${params.toString()}`),
-        apiFetch('/api/people')
-      ])
-
-      setEntries(entryRows)
-      setPeople(peopleRows)
-      setStatus('idle')
-    } catch (loadError) {
-      setError(loadError.message)
-      setStatus('idle')
-    }
-  }, [monthRange])
+  const today = useLondonToday()
+  const location = useLocation()
+  const requestedDay = new URLSearchParams(location.search).get('date')
+  const initialDay = isDateKey(requestedDay) ? requestedDay : today
+  const [visibleMonth, setVisibleMonth] = useState(() => monthStart(initialDay))
+  const [selectedDay, setSelectedDay] = useState(initialDay)
+  const [areas, setAreas] = useState(() => CALENDAR_AREAS.map(area => area.key))
+  const [cardiffScope, setCardiffScope] = useState('saved')
+  const [view, setView] = useState('month')
+  const [captureTitle, setCaptureTitle] = useState('')
+  const [captureDate, setCaptureDate] = useState(initialDay)
+  const [saving, setSaving] = useState(false)
+  const [actionError, setActionError] = useState('')
+  const grid = useMemo(() => monthGrid(visibleMonth, today), [visibleMonth, today])
+  const calendar = useCalendar(grid.from, grid.to)
+  const items = useMemo(() => sortCalendarItems(filterCalendarItems(calendar.items, { areas, cardiffScope, choices: calendar.choices })), [calendar.items, areas, cardiffScope, calendar.choices])
+  const selectedItems = items.filter(item => itemOverlaps(item, selectedDay, selectedDay))
+  const monthItems = items.filter(item => itemOverlaps(item, visibleMonth, grid.lastKey))
+  const monthLabel = formatCalendarDay(visibleMonth, { weekday: undefined, day: undefined, month: 'long', year: 'numeric' })
+  const firstPersian = persianMonth.format(dateForKey(visibleMonth))
+  const lastPersian = persianMonth.format(dateForKey(grid.lastKey))
 
   useEffect(() => {
-    loadCalendar()
-  }, [loadCalendar])
-
-  async function handleCaptureSubmit(event) {
-    event.preventDefault()
-
-    const title = captureText.trim().replace(/^["']|["']$/g, '')
-    if (!title || status === 'saving') return
-
-    setStatus('saving')
-    setError('')
-
-    try {
-      await apiFetch('/api/entries', {
-        method: 'POST',
-        body: JSON.stringify({
-          type: 'event',
-          title,
-          start_at: inferDateFromPrompt(title, captureDate, visibleMonth),
-          all_day: true
-        })
-      })
-
-      setCaptureText('')
-      await loadCalendar()
-    } catch (submitError) {
-      setError(submitError.message)
-      setStatus('idle')
+    if (isDateKey(requestedDay)) {
+      setVisibleMonth(monthStart(requestedDay))
+      setSelectedDay(requestedDay)
+      setCaptureDate(requestedDay)
     }
+  }, [requestedDay])
+
+  function changeMonth(amount) {
+    const next = shiftMonth(visibleMonth, amount)
+    setVisibleMonth(next)
+    setSelectedDay(next)
+    setCaptureDate(next)
+  }
+  function selectDay(key) { setSelectedDay(key); setCaptureDate(key) }
+  function toggleArea(key) { setAreas(current => current.includes(key) ? current.filter(area => area !== key) : [...current, key]) }
+  async function handleCapture(event) {
+    event.preventDefault()
+    if (!captureTitle.trim() || !captureDate || saving) return
+    setSaving(true)
+    setActionError('')
+    try {
+      await apiFetch('/api/entries', { method: 'POST', body: JSON.stringify({ type: 'event', title: captureTitle.trim(), start_at: captureDate, all_day: true }) })
+      setCaptureTitle('')
+      if (monthStart(captureDate) !== visibleMonth) setVisibleMonth(monthStart(captureDate))
+      setSelectedDay(captureDate)
+      calendar.refetch()
+    } catch (error) { setActionError(error.message) }
+    finally { setSaving(false) }
   }
 
-  return (
-    <section className="calendar-layout calendar-board-layout" aria-label="Calendar">
-      <header className="calendar-board-header">
-        <div className="calendar-brandline">
-          <h1>Life OS</h1>
-          <span />
+  return <section className="calendar-layout calendar-board-layout unified-calendar" aria-label="Calendar">
+    <header className="calendar-board-header">
+      <div className="calendar-brandline"><h1>Calendar</h1><span /></div>
+      <div className="calendar-title-stack">
+        <h2 id="calendar-month-heading">{monthLabel}</h2>
+        <p lang="fa" dir="rtl">{firstPersian === lastPersian ? firstPersian : `${firstPersian} – ${lastPersian}`}</p>
+        <div className="calendar-board-controls" aria-label="Month controls">
+          <button className="ghost-pill compact-pill" type="button" onClick={() => changeMonth(-1)} aria-label="Previous month">Prev</button>
+          <button className="ghost-pill compact-pill" type="button" onClick={() => { setVisibleMonth(monthStart(today)); selectDay(today) }}>Today</button>
+          <button className="ghost-pill compact-pill" type="button" onClick={() => changeMonth(1)} aria-label="Next month">Next</button>
         </div>
-        <div className="calendar-title-stack">
-          <h2 id="calendar-month-heading">{monthLabel}</h2>
-          <p lang="fa" dir="rtl">{persianMonthLabel}</p>
-          <div className="calendar-board-controls" aria-label="Month controls">
-            <button className="ghost-pill compact-pill" type="button" onClick={() => setVisibleMonth(addMonths(visibleMonth, -1))}>
-              Prev
-            </button>
-            <button className="ghost-pill compact-pill" type="button" onClick={() => setVisibleMonth(addMonths(visibleMonth, 1))}>
-              Next
-            </button>
-          </div>
-        </div>
-      </header>
+      </div>
+    </header>
 
-      <aside className="calendar-legend" aria-label="Calendar domains">
-        {CALENDAR_LEGEND.map((item) => (
-          <div key={item.key} style={{ '--item-accent': item.tone }}>
-            <span aria-hidden="true" />
-            <strong>{item.label}</strong>
-          </div>
-        ))}
-      </aside>
+    <aside className="calendar-legend calendar-filters" aria-label="Calendar filters">
+      <p className="calendar-filter-heading">Your areas</p>
+      {CALENDAR_AREAS.map(area => <label key={area.key} style={{ '--item-accent': area.tone }}>
+        <input type="checkbox" checked={areas.includes(area.key)} onChange={() => toggleArea(area.key)} /><span className="calendar-area-dot" aria-hidden="true" /><strong>{area.label}</strong>
+      </label>)}
+      <label className="calendar-scope-label" htmlFor="calendar-cardiff-scope">Cardiff events</label>
+      <select id="calendar-cardiff-scope" value={cardiffScope} onChange={event => setCardiffScope(event.target.value)}>
+        <option value="saved">Saved plans & maybe</option><option value="going">Plan to go</option><option value="all">All researched options</option>
+      </select>
+      <p className="calendar-filter-note">Choices come from Cardiff Life in this browser. <Link to="/cardiff-life">Open Cardiff Life</Link></p>
+      <div className="calendar-kind-legend" aria-label="Item kinds">{CALENDAR_KINDS.map(kind => <span key={kind.key} data-kind={kind.key}>{kind.label}</span>)}</div>
+    </aside>
 
-      <section className="calendar-month calendar-board" aria-labelledby="calendar-month-heading">
-        {error ? <p className="form-error">{error}</p> : null}
-
-        <div className="calendar-weekdays" aria-hidden="true">
-          {WEEKDAYS.map((day) => (
-            <span key={day.label}>
-              <strong>{day.label}</strong>
-              <small lang="fa" dir="rtl">{PERSIAN_WEEKDAY_FORMATTER.format(day.sample)}</small>
-            </span>
-          ))}
-        </div>
-
+    <section className="calendar-board calendar-month" aria-labelledby="calendar-month-heading">
+      <div className="calendar-view-controls" aria-label="Calendar view">
+        <button type="button" className="ghost-pill compact-pill" aria-pressed={view === 'month'} onClick={() => setView('month')}>Month</button>
+        <button type="button" className="ghost-pill compact-pill" aria-pressed={view === 'agenda'} onClick={() => setView('agenda')}>Agenda</button>
+        <button type="button" className="ghost-pill compact-pill" onClick={calendar.refetch} disabled={calendar.loading}>Refresh</button>
+        <span>{calendar.loading ? 'Loading…' : `${monthItems.length} dated ${monthItems.length === 1 ? 'item' : 'items'}`}</span>
+      </div>
+      <CalendarStatus calendar={calendar} />
+      {view === 'month' ? <>
+        <div className="calendar-weekdays" aria-hidden="true">{WEEKDAYS.map((label, index) => <span key={label}><strong>{label}</strong><small lang="fa" dir="rtl">{persianWeekday.format(dateForKey(addDays('2026-01-05', index)))}</small></span>)}</div>
         <div className="month-grid">
-          {monthDays.map((day) => {
-            const dayEntries = entriesByDay.get(day.key) || []
-
-            return (
-              <article
-                className={`calendar-day${day.isCurrentMonth ? '' : ' muted-day'}${day.isToday ? ' today-day' : ''}`}
-                key={day.key}
-              >
-                <time dateTime={day.key}>
-                  <span>{day.date.getDate()}</span>
-                  <small lang="fa" dir="rtl">{PERSIAN_DAY_FORMATTER.format(day.date)}</small>
-                </time>
-                <div className="day-entry-list">
-                  {dayEntries.map((entry) => (
-                    <span className="day-chip" data-type={entry.type} key={entry.id} style={{ '--item-accent': entry.tone }}>
-                      {entry.title}
-                    </span>
-                  ))}
-                </div>
-              </article>
-            )
+          {grid.days.map(day => {
+            const dayItems = items.filter(item => itemOverlaps(item, day.key, day.key))
+            return <article className={`calendar-day${day.current ? '' : ' muted-day'}${day.today ? ' today-day' : ''}${day.key === selectedDay ? ' selected-day' : ''}`} key={day.key}>
+              <button className="calendar-day-select" type="button" onClick={() => selectDay(day.key)} aria-pressed={day.key === selectedDay} aria-label={`${formatCalendarDay(day.key, { weekday: 'long', year: 'numeric' })}, ${dayItems.length} ${dayItems.length === 1 ? 'item' : 'items'}`}>
+                <time dateTime={day.key}><span>{day.date.getUTCDate()}</span><small lang="fa" dir="rtl">{persianDay.format(day.date)}</small></time>
+                <span className="calendar-mobile-count">{dayItems.length || ''}</span>
+              </button>
+              <div className="day-entry-list">{dayItems.slice(0, 3).map(item => <Link className="day-chip" data-kind={item.kind} data-choice={item.choice} key={item.id} to={item.href || '/calendar'} style={{ '--item-accent': calendarArea(item.area).tone }} title={`${item.choice === 'maybe' ? 'Maybe · ' : ''}${item.title} · ${calendarArea(item.area).label}`}>{item.choice === 'maybe' ? 'Maybe · ' : ''}{item.title}</Link>)}{dayItems.length > 3 ? <button className="calendar-more" type="button" onClick={() => selectDay(day.key)}>+{dayItems.length - 3} more</button> : null}</div>
+            </article>
           })}
         </div>
-      </section>
-
-      <form className="calendar-capture-bar" onSubmit={handleCaptureSubmit}>
-        <input
-          value={captureText}
-          onChange={(event) => setCaptureText(event.target.value)}
-          placeholder={'"Seminar on the 22nd, two in the afternoon..."'}
-          aria-label="Add calendar item"
-        />
-        <input
-          aria-label="Fallback date"
-          type="date"
-          value={captureDate}
-          onChange={(event) => setCaptureDate(event.target.value)}
-        />
-        <button className="capture-orb" type="submit" aria-label="Add to calendar" disabled={!captureText.trim() || status === 'saving'} />
-      </form>
+        <section className="calendar-day-agenda" aria-labelledby="calendar-day-heading">
+          <h3 id="calendar-day-heading">{formatCalendarDay(selectedDay, { weekday: 'long', year: 'numeric' })}</h3>
+          {!calendar.loading ? <CalendarItems items={selectedItems} empty={areas.length ? 'Nothing dated for this day in the selected areas.' : 'Choose an area to see its dates.'} /> : null}
+        </section>
+      </> : <section className="calendar-day-agenda" aria-label="Month agenda">
+        {!calendar.loading ? <CalendarItems items={monthItems} showDate empty={areas.length ? 'Nothing dated this month in the selected areas.' : 'Choose an area to see its dates.'} /> : null}
+      </section>}
     </section>
-  )
+
+    <form className="calendar-capture-bar calendar-explicit-capture" onSubmit={handleCapture}>
+      <label className="calendar-capture-title">Add a Life OS event<input value={captureTitle} onChange={event => setCaptureTitle(event.target.value)} placeholder="Event title" aria-label="Event title" /></label>
+      <label>Date<input aria-label="Event date" type="date" value={captureDate} onChange={event => setCaptureDate(event.target.value)} required /></label>
+      <button className="ghost-pill" type="submit" disabled={!captureTitle.trim() || !captureDate || saving}>{saving ? 'Saving…' : 'Add event'}</button>
+      {actionError ? <p className="form-error" role="alert">{actionError}</p> : null}
+    </form>
+  </section>
 }

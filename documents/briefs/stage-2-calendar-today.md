@@ -26,10 +26,11 @@ PostgreSQL installation/migration, native Study, account OAuth, timetable import
 - **Commit:** `[2-cp1] Add read-only calendar providers across attached apps`
 
 ### CP2: Calendar, Today and the home strip
-- [ ] Use the shared response in month/day/agenda views with area switches and fixed/plan/deadline/reminder styling.
-- [ ] Read Cardiff choices without modifying localStorage; show Going and visibly tentative Maybe, and offer available events separately.
-- [ ] Show Today, this week and relevant attention, with source links, clear loading/empty/error states, and core task completion through the existing API.
-- [ ] Preserve Gregorian/Persian display, grounds, capture and existing ledger. Check desktop and phone-width layouts.
+- [x] Use the shared response in month/day/agenda views with area switches and fixed/plan/deadline/reminder styling.
+- [x] Read Cardiff choices without modifying localStorage; show Going and visibly tentative Maybe, and offer available events separately. Retain truly missing saved snapshots with a visible verification note; suppress snapshots for rescheduled/cancelled catalogue IDs.
+- [x] Show Today, this week and relevant attention, with source links, clear loading/empty/error states, and core task completion through the existing API.
+- [x] Preserve Gregorian/Persian display, grounds, capture and existing ledger. Add phone-width layout rules, midnight date updates and source-aware error states.
+- [ ] Visually check desktop, phone width and all three grounds in a connected browser. CUA reports no available browsers in this session; this remains Xar's acceptance check.
 - **Done when:** `/calendar`, `/today` and `/court` use real provider data; filtering works; source failures and malformed browser choices are visible; the built pages work at phone width.
 - **Verify:** frontend production build, pure frontend helper tests, browser checks of these three routes without opening Study or saving personal records.
 - **Commit:** `[2-cp2] Connect Calendar and Today to all areas`
@@ -48,3 +49,10 @@ No schema or data migration, no source-file edits and no imported records. GET-o
 
 ## Risks and open questions
 The attached Study app is still a summer campaign; it cannot supply a new-semester timetable that has never been imported. Cardiff choices are specific to this browser/origin; missing or invalid saved choices must be reported. Most attached apps support section links rather than opening a specific record. Account connection instructions are in `../CONNECTIONS_SETUP.md`; no OAuth connection is implemented by this checkpoint.
+
+Today attention searches the last 350 days and next 14; older overdue work needs its source app until a dedicated Today provider exists. The ledger shows the latest 100 entries and explains when a linked older entry is outside that list. Review/acceptance and Stage 1a follow-up are recorded in STATUS.
+
+## Verification commands and result
+`Build Life OS.cmd`: both Life OS and Summer Rescue builds passed. The initial sandbox run could not traverse an ancestor directory while resolving Vite configuration; the same existing script passed outside the sandbox. Summer Rescue retains its existing large-chunk warning.
+
+`node --test code/life-os/shared/calendar.test.js hosting/calendar-route.test.mjs hosting/calendar/*.test.mjs code/life-os/frontend/test/calendar.test.js`: **26 passed**. Live routed API: all seven sources ready, authentication/range checks passed; all four core pages serve the current build and its assets. Attached state hashes and core entry/person content unchanged; counts unchanged. No browser interaction or live personal save was used for verification.

@@ -1,176 +1,61 @@
 import { useMemo, useState } from 'react'
-import { ENTRY_TYPES } from '@shared/entryTypes.js'
+import { Link } from 'react-router-dom'
 import { apiFetch } from '../lib/api.js'
+import { addDays, filterCalendarItems, formatCalendarDay, todayGroups } from '../lib/calendar.js'
+import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
 import { poemForDate } from '../lib/poems.js'
-import { useEntries } from '../lib/useEntries.js'
-
-const TYPE_TONES = {
-  task: 'var(--g-acc)',
-  event: 'var(--g-acc)',
-  workout: 'var(--g-coral)',
-  book: 'var(--g-blue)',
-  movie: 'var(--g-blue)',
-  place: 'var(--g-sage)',
-  'person-link': 'var(--g-rose)',
-  'job-application': 'var(--g-blue)',
-  material: 'var(--g-sage)',
-  snippet: 'var(--g-sage)',
-  'shopping-item': 'var(--g-acc)',
-  module: 'var(--g-acc)',
-  'module-session': 'var(--g-blue)',
-  note: 'var(--g-sage)'
-}
-
-function titleFromBody(body) {
-  const compact = body.trim().replace(/\s+/g, ' ')
-  return compact.length <= 78 ? compact : `${compact.slice(0, 75)}...`
-}
-
-function entryTypeLabel(entry) {
-  return ENTRY_TYPES[entry.type]?.label || 'Entry'
-}
-
-function entryTitle(entry) {
-  return entry.title || `Untitled ${entryTypeLabel(entry).toLowerCase()}`
-}
-
-function timeLabel(value) {
-  if (!value) return ''
-
-  return new Intl.DateTimeFormat(undefined, {
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(new Date(value))
-}
-
-function dayLabel(value) {
-  const date = new Date(value)
-  const today = new Date()
-  const yesterday = new Date()
-  yesterday.setDate(today.getDate() - 1)
-
-  if (date.toDateString() === today.toDateString()) return 'Today'
-  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday'
-
-  return new Intl.DateTimeFormat(undefined, { weekday: 'long' }).format(date)
-}
-
-function detailLine(entry) {
-  if (entry.details?.body) return entry.details.body
-  if (entry.type === 'event' && entry.start_at) return entry.all_day ? 'all day' : timeLabel(entry.start_at)
-  if (entry.type === 'task') return entry.status || 'open'
-  if (entry.type === 'book') return [entry.details?.author, entry.details?.status].filter(Boolean).join(' - ')
-  if (entry.type === 'workout') return [entry.details?.kind, entry.details?.duration_min ? `${entry.details.duration_min} minutes` : ''].filter(Boolean).join(' - ')
-  if (entry.type === 'place') return entry.details?.notes || entry.details?.name || ''
-  if (entry.type === 'module-session') return [entry.details?.module_code, entry.details?.topic].filter(Boolean).join(' - ')
-  if (entry.type === 'job-application') return [entry.details?.company, entry.details?.status].filter(Boolean).join(' - ')
-
-  return ''
-}
-
-function mediaLabel(entry) {
-  const body = `${entry.title || ''} ${entry.details?.body || ''}`.toLowerCase()
-  if (!/\b(photo|image|gallery|jpg|jpeg|png)\b/.test(body)) return ''
-
-  const fileMatch = body.match(/\b[\w-]+\.(?:jpg|jpeg|png)\b/)
-  return fileMatch ? fileMatch[0] : 'photo'
-}
+import CalendarItems, { CalendarStatus } from './CalendarItems.jsx'
 
 export default function TodayView() {
-  const [captureText, setCaptureText] = useState('')
-  const [status, setStatus] = useState('idle')
+  const today = useLondonToday()
+  const calendar = useCalendar(addDays(today, -350), addDays(today, 14))
+  const [savingId, setSavingId] = useState('')
   const [actionError, setActionError] = useState('')
-  const recentEntries = useEntries('?limit=30')
-  const dailyPoem = useMemo(() => poemForDate(new Date()), [])
-  const error = actionError || recentEntries.error
+  const [showAllAttention, setShowAllAttention] = useState(false)
+  const items = useMemo(() => filterCalendarItems(calendar.items, { choices: calendar.choices }), [calendar.items, calendar.choices])
+  const groups = useMemo(() => todayGroups(items, today), [items, today])
+  const dailyPoem = useMemo(() => poemForDate(new Date()), [today])
+  const attention = showAllAttention ? groups.attention : groups.attention.slice(0, 8)
 
-  async function handleCaptureSubmit(event) {
-    event.preventDefault()
-
-    const body = captureText.trim()
-    if (!body || status === 'saving') return
-
-    setStatus('saving')
+  async function completeTask(item) {
+    if (savingId || item.area !== 'core' || item.meta?.type !== 'task' || !item.meta?.entryId) return
+    setSavingId(item.id)
     setActionError('')
-
     try {
-      await apiFetch('/api/entries', {
-        method: 'POST',
-        body: JSON.stringify({
-          type: 'note',
-          title: titleFromBody(body),
-          details: { body }
-        })
+      await apiFetch(`/api/entries/${encodeURIComponent(item.meta.entryId)}`, {
+        method: 'PATCH', body: JSON.stringify({ status: 'done', ...(item.meta.revision === undefined ? {} : { revision: item.meta.revision }) })
       })
-
-      setCaptureText('')
-      await recentEntries.refetch()
-      setStatus('idle')
-    } catch (submitError) {
-      setActionError(submitError.message)
-      setStatus('idle')
-    }
+      calendar.refetch()
+    } catch (error) { setActionError(`Could not mark the task done: ${error.message}`) }
+    finally { setSavingId('') }
   }
 
-  return (
-    <section className="today-layout ledger-layout" aria-label="The ledger">
-      <header className="ledger-header">
-        <div className="ledger-brandline">
-          <h1>Life OS</h1>
-          <span />
-        </div>
-        <p>The ledger - {recentEntries.entries.length} recent entries</p>
-      </header>
-
-      <form className="ledger-capture" onSubmit={handleCaptureSubmit}>
-        <input
-          value={captureText}
-          onChange={(event) => setCaptureText(event.target.value)}
-          placeholder="Tell me something..."
-          aria-label="Capture a ledger entry"
-        />
-        <button className="capture-orb" type="submit" aria-label="File ledger entry" disabled={!captureText.trim() || status === 'saving'} />
-      </form>
-
-      {error ? <p className="form-error">{error}</p> : null}
-
-      {recentEntries.entries.length ? (
-        <ol className="ledger-entry-list">
-          {recentEntries.entries.map((entry) => {
-            const tone = TYPE_TONES[entry.type] || 'var(--g-acc)'
-            const media = mediaLabel(entry)
-
-            return (
-              <li className="ledger-entry" key={entry.id} style={{ '--item-accent': tone }}>
-                <aside>
-                  <time dateTime={entry.created_at}>{dayLabel(entry.created_at)} {timeLabel(entry.created_at)}</time>
-                  <span>{entryTypeLabel(entry)}</span>
-                </aside>
-                <div className="ledger-entry-body">
-                  <h2>{entryTitle(entry)}</h2>
-                  {detailLine(entry) ? <p>{detailLine(entry)}</p> : null}
-                  {media ? (
-                    <div className="ledger-media">
-                      <span>{media}</span>
-                    </div>
-                  ) : null}
-                </div>
-              </li>
-            )
-          })}
-        </ol>
-      ) : (
-        <p className="empty-state">No entries filed yet.</p>
-      )}
-
-      <footer className="ledger-poem" aria-label="Poem of the day">
-        <div lang="fa" dir="rtl">
-          {dailyPoem.lines.map((line, index) => (
-            <p key={`${line}-${index}`}>{line}</p>
-          ))}
-        </div>
-        <small lang="fa" dir="rtl">{dailyPoem.poet}</small>
-      </footer>
-    </section>
-  )
+  const listProps = { onComplete: completeTask, savingId }
+  return <section className="today-layout unified-today" aria-label="Today">
+    <header className="ledger-header">
+      <div className="ledger-brandline"><h1>Today</h1><span /></div>
+      <div className="today-date-stack"><time dateTime={today}>{formatCalendarDay(today, { weekday: 'long', year: 'numeric' })}</time><p lang="fa" dir="rtl">{new Intl.DateTimeFormat('fa-IR-u-ca-persian', { timeZone: 'Europe/London', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}</p></div>
+    </header>
+    <div className="today-page-controls"><Link className="ghost-pill compact-pill" to="/calendar">Open calendar</Link><Link className="ghost-pill compact-pill" to="/ledger">Recent entries</Link><button className="ghost-pill compact-pill" type="button" onClick={calendar.refetch} disabled={calendar.loading}>Refresh</button></div>
+    <CalendarStatus calendar={calendar} />
+    {actionError ? <p className="form-error" role="alert">{actionError}</p> : null}
+    <div className="today-cross-area-grid">
+      <section className="today-cross-area-panel today-main-panel" aria-labelledby="today-schedule-heading">
+        <div className="today-panel-title"><h2 id="today-schedule-heading">Your day</h2><span>{groups.today.length} {groups.today.length === 1 ? 'item' : 'items'}</span></div>
+        {!calendar.loading ? <CalendarItems items={groups.today} {...listProps} empty="Nothing dated for today. Add an event in the calendar, or plan in your rooms." /> : null}
+      </section>
+      <section className="today-cross-area-panel today-attention-panel" aria-labelledby="today-attention-heading">
+        <div className="today-panel-title"><h2 id="today-attention-heading">Needs attention</h2><span>{groups.attention.length}</span></div>
+        <p className="today-section-note">Unfinished work from the past 350 days, and follow-ups, deadlines and renewals in the next fortnight.</p>
+        {!calendar.loading ? <CalendarItems items={attention} showDate {...listProps} empty="No dated items need attention." /> : null}
+        {!showAllAttention && groups.attention.length > 8 ? <button className="ghost-pill compact-pill" type="button" onClick={() => setShowAllAttention(true)}>Show {groups.attention.length - 8} more</button> : null}
+      </section>
+      <section className="today-cross-area-panel today-week-panel" aria-labelledby="today-week-heading">
+        <div className="today-panel-title"><h2 id="today-week-heading">Next six days</h2><span>{groups.week.length} {groups.week.length === 1 ? 'item' : 'items'}</span></div>
+        {!calendar.loading ? <CalendarItems items={groups.week} showDate {...listProps} empty="No further dated plans in the coming week." /> : null}
+      </section>
+    </div>
+    <p className="today-section-note">Cardiff events show your saved plans and maybes from this browser. <Link to="/cardiff-life">Manage choices</Link>. Open an item to use its room’s original workflow.</p>
+    <footer className="ledger-poem" aria-label="Poem of the day"><div lang="fa" dir="rtl">{dailyPoem.lines.map((line, index) => <p key={index}>{line}</p>)}</div><small lang="fa" dir="rtl">{dailyPoem.poet}</small></footer>
+  </section>
 }

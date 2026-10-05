@@ -7,10 +7,11 @@ export default function CourtLayout() {
   const location = useLocation()
   const { ground, cycleGround } = useGround()
   const [now, setNow] = useState(() => new Date())
-  const isBoardRoute = location.pathname === '/calendar' || location.pathname === '/today'
+  const isBoardRoute = ['/calendar', '/today', '/ledger'].includes(location.pathname)
   const isCourtRoute = location.pathname === '/court'
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat(undefined, {
+    timeZone: 'Europe/London',
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -53,6 +54,9 @@ export default function CourtLayout() {
               onClick={() => navigate('/calendar')}
             >
               Calendar
+            </button>
+            <button type="button" onClick={() => navigate('/ledger')} className={location.pathname === '/ledger' ? 'active' : undefined}>
+              Ledger
             </button>
             <button
               className={location.pathname === '/study' ? 'active' : undefined}
