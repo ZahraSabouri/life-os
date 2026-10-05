@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { apiFetch } from '../lib/api.js'
-import { CALENDAR_AREAS, CALENDAR_KINDS, addDays, calendarArea, dateForKey, dateKey, filterCalendarItems, formatCalendarDay, itemOverlaps, sortCalendarItems } from '../lib/calendar.js'
+import { CALENDAR_AREAS, CALENDAR_KINDS, addDays, calendarArea, calendarDisplay, dateForKey, dateKey, filterCalendarItems, formatCalendarDay, itemOverlaps, sortCalendarItems } from '../lib/calendar.js'
 import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
 import { isDateKey } from '@shared/calendar.js'
 import CalendarItems, { CalendarStatus } from './CalendarItems.jsx'
@@ -117,7 +117,7 @@ export default function CalendarView() {
         <button type="button" className="ghost-pill compact-pill" aria-pressed={view === 'month'} onClick={() => setView('month')}>Month</button>
         <button type="button" className="ghost-pill compact-pill" aria-pressed={view === 'agenda'} onClick={() => setView('agenda')}>Agenda</button>
         <button type="button" className="ghost-pill compact-pill" onClick={calendar.refetch} disabled={calendar.loading}>Refresh</button>
-        <span>{calendar.loading ? 'Loading…' : `${monthItems.length} dated ${monthItems.length === 1 ? 'item' : 'items'}`}</span>
+        <span>{calendarDisplay(calendar, { areas, count: monthItems.length, noun: 'dated item' }).countLabel}</span>
       </div>
       <CalendarStatus calendar={calendar} />
       {view === 'month' ? <>
@@ -125,21 +125,22 @@ export default function CalendarView() {
         <div className="month-grid">
           {grid.days.map(day => {
             const dayItems = items.filter(item => itemOverlaps(item, day.key, day.key))
+            const dayDisplay = calendarDisplay(calendar, { areas, count: dayItems.length })
             return <article className={`calendar-day${day.current ? '' : ' muted-day'}${day.today ? ' today-day' : ''}${day.key === selectedDay ? ' selected-day' : ''}`} key={day.key}>
-              <button className="calendar-day-select" type="button" onClick={() => selectDay(day.key)} aria-pressed={day.key === selectedDay} aria-label={`${formatCalendarDay(day.key, { weekday: 'long', year: 'numeric' })}, ${dayItems.length} ${dayItems.length === 1 ? 'item' : 'items'}`}>
+              <button className="calendar-day-select" type="button" onClick={() => selectDay(day.key)} aria-pressed={day.key === selectedDay} aria-label={`${formatCalendarDay(day.key, { weekday: 'long', year: 'numeric' })}, ${dayDisplay.countLabel}`}>
                 <time dateTime={day.key}><span>{day.date.getUTCDate()}</span><small lang="fa" dir="rtl">{persianDay.format(day.date)}</small></time>
-                <span className="calendar-mobile-count">{dayItems.length || ''}</span>
+                <span className="calendar-mobile-count">{dayDisplay.state === 'ready' ? dayItems.length || '' : dayDisplay.state === 'partial' ? `${dayItems.length}+` : '?'}</span>
               </button>
-              <div className="day-entry-list">{dayItems.slice(0, 3).map(item => <Link className="day-chip" data-kind={item.kind} data-choice={item.choice} key={item.id} to={item.href || '/calendar'} style={{ '--item-accent': calendarArea(item.area).tone }} title={`${item.choice === 'maybe' ? 'Maybe · ' : ''}${item.title} · ${calendarArea(item.area).label}`}>{item.choice === 'maybe' ? 'Maybe · ' : ''}{item.title}</Link>)}{dayItems.length > 3 ? <button className="calendar-more" type="button" onClick={() => selectDay(day.key)}>+{dayItems.length - 3} more</button> : null}</div>
+              <div className="day-entry-list">{dayItems.slice(0, 3).map(item => <Link className="day-chip" data-kind={item.kind} data-choice={item.choice} key={item.id} to={item.href || '/calendar'} style={{ '--item-accent': calendarArea(item.area).tone }} title={`${item.meta?.savedSnapshot ? 'Saved copy; check the current listing · ' : ''}${item.choice === 'maybe' ? 'Maybe · ' : ''}${item.title} · ${calendarArea(item.area).label}`}>{item.meta?.savedSnapshot ? 'Saved copy · ' : ''}{item.choice === 'maybe' ? 'Maybe · ' : ''}{item.title}</Link>)}{dayItems.length > 3 ? <button className="calendar-more" type="button" onClick={() => selectDay(day.key)}>+{dayItems.length - 3} more</button> : null}</div>
             </article>
           })}
         </div>
         <section className="calendar-day-agenda" aria-labelledby="calendar-day-heading">
           <h3 id="calendar-day-heading">{formatCalendarDay(selectedDay, { weekday: 'long', year: 'numeric' })}</h3>
-          {!calendar.loading ? <CalendarItems items={selectedItems} empty={areas.length ? 'Nothing dated for this day in the selected areas.' : 'Choose an area to see its dates.'} /> : null}
+          {!calendar.loading ? <CalendarItems items={selectedItems} calendar={calendar} areas={areas} empty={areas.length ? 'Nothing dated for this day in the selected areas.' : 'Choose an area to see its dates.'} /> : null}
         </section>
       </> : <section className="calendar-day-agenda" aria-label="Month agenda">
-        {!calendar.loading ? <CalendarItems items={monthItems} showDate empty={areas.length ? 'Nothing dated this month in the selected areas.' : 'Choose an area to see its dates.'} /> : null}
+        {!calendar.loading ? <CalendarItems items={monthItems} calendar={calendar} areas={areas} showDate empty={areas.length ? 'Nothing dated this month in the selected areas.' : 'Choose an area to see its dates.'} /> : null}
       </section>}
     </section>
 

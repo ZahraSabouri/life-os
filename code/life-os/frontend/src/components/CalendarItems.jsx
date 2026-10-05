@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { calendarArea, calendarKind, dateKey, formatCalendarDay, isComplete, itemTime } from '../lib/calendar.js'
+import { calendarArea, calendarDisplay, calendarKind, dateKey, formatCalendarDay, isComplete, itemTime } from '../lib/calendar.js'
 
 export function CalendarStatus({ calendar, showChoices = true }) {
   const failures = calendar.sources.filter(source => source.status === 'unavailable')
@@ -11,8 +11,8 @@ export function CalendarStatus({ calendar, showChoices = true }) {
   </div>
 }
 
-export default function CalendarItems({ items, showDate = false, onComplete, savingId, empty = 'Nothing dated here.' }) {
-  if (!items.length) return <p className="empty-state">{empty}</p>
+export default function CalendarItems({ items, calendar, areas, showDate = false, onComplete, savingId, empty = 'Nothing dated here.' }) {
+  if (!items.length) return <p className="empty-state">{calendar ? calendarDisplay(calendar, { areas, empty }).emptyMessage : empty}</p>
   return <ol className="calendar-agenda-list">
     {items.map(item => {
       const area = calendarArea(item.area)

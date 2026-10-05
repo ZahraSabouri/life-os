@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { attentionReason, filterCalendarItems, itemTime, readCardiffChoices, todayGroups, withSavedCardiffItems } from '../src/lib/calendar.js'
+import { attentionReason, calendarDisplay, filterCalendarItems, itemTime, readCardiffChoices, todayGroups, withSavedCardiffItems } from '../src/lib/calendar.js'
 
 const item = (overrides = {}) => ({ id: 'example', area: 'core', kind: 'plan', title: 'Example', start: '2026-10-05', end: null, all_day: true, href: '/ledger', meta: {}, ...overrides })
 const choices = {
@@ -81,4 +81,49 @@ test('Today groups London dates, inclusive all-day spans and exclusive timed mid
   assert.deepEqual(groups.week.map(row => row.id), ['span', 'future'])
   assert.equal(groups.attention.length, 0)
   assert.equal(itemTime(rows[1]), '00:30')
+})
+
+test('calendar loading and failed reads never claim an empty schedule or zero items', () => {
+  const empty = 'No dated items need attention.'
+  const loading = calendarDisplay({ loading: true, error: '', sources: [] }, { empty })
+  assert.equal(loading.countLabel, 'Loading…')
+  assert.equal(loading.emptyMessage, 'Loading dates…')
+  const failed = { loading: false, error: 'Connection refused', sources: [] }
+  assert.equal(calendarDisplay(failed, { empty }).countLabel, 'Unavailable')
+  assert.equal(calendarDisplay(failed, { empty }).emptyMessage, 'Dates could not be loaded. Try again.')
+  // A saved browser copy remains usable without making source totals complete.
+  const saved = withSavedCardiffItems([], choices, '2026-10-05', '2026-10-05')
+  assert.equal(saved.length, 1)
+  assert.equal(saved[0].meta.savedSnapshot, true)
+  assert.equal(calendarDisplay(failed, { count: saved.length }).countLabel, 'Unavailable')
+  const allFailed = { loading: false, sources: [{ id: 'core', area: 'core', status: 'unavailable' }, { id: 'study', area: 'study', status: 'unavailable' }] }
+  assert.equal(calendarDisplay(allFailed).state, 'unavailable')
+})
+
+test('calendar partial results qualify counts and emptiness only for relevant sources', () => {
+  const partial = { loading: false, error: '', sources: [
+    { id: 'core', area: 'core', status: 'ready' },
+    { id: 'study', area: 'study', status: 'unavailable' },
+    { id: 'career', area: 'career', status: 'ready' }
+  ] }
+  const display = calendarDisplay(partial, { areas: ['study'], count: 2, noun: 'dated item' })
+  assert.equal(display.countLabel, '2 dated items loaded')
+  assert.equal(display.emptyMessage, 'No matching dates were found in the available sources. Some dates could not be checked.')
+  const career = calendarDisplay(partial, { areas: ['career'], empty: 'Nothing dated this month.' })
+  assert.equal(career.state, 'ready')
+  assert.equal(career.emptyMessage, 'Nothing dated this month.')
+  const failedCore = { ...partial, sources: partial.sources.map(source => source.id === 'core' ? { ...source, status: 'unavailable' } : source) }
+  assert.equal(calendarDisplay(failedCore, { areas: ['career'] }).state, 'partial')
+  assert.equal(calendarDisplay({ ...partial, choicesError: 'Unreadable choices' }, { areas: ['events'] }).state, 'partial')
+  assert.equal(calendarDisplay({ ...partial, choicesError: 'Unreadable choices' }, { areas: ['career'] }).state, 'ready')
+})
+
+test('ready calendar results keep normal empty text and item counts', () => {
+  const ready = { loading: false, error: '', sources: [{ id: 'core', area: 'core', status: 'ready' }] }
+  assert.deepEqual(calendarDisplay(ready, { count: 0, empty: 'Nothing dated today.' }), {
+    state: 'ready', countLabel: '0 items', emptyMessage: 'Nothing dated today.'
+  })
+  assert.equal(calendarDisplay(ready, { count: 1 }).countLabel, '1 item')
+  assert.equal(calendarDisplay(ready, { count: 3, noun: 'dated item' }).countLabel, '3 dated items')
+  assert.equal(calendarDisplay({ ...ready, sources: [{ area: 'study', status: 'unavailable' }] }, { areas: [], empty: 'Choose an area.' }).emptyMessage, 'Choose an area.')
 })

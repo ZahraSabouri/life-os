@@ -6,7 +6,7 @@ import FieldsForm from './FieldsForm.jsx'
 import { apiFetch } from '../lib/api.js'
 import { useEntries } from '../lib/useEntries.js'
 import { useGround } from '../lib/groundContext.jsx'
-import { calendarArea, calendarKind, filterCalendarItems, itemTime, todayGroups } from '../lib/calendar.js'
+import { calendarArea, calendarDisplay, calendarKind, filterCalendarItems, itemTime, todayGroups } from '../lib/calendar.js'
 import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
 
 const ROOM_NAME_OVERRIDES = {
@@ -600,7 +600,7 @@ function PaperCourt(props) {
                 ))}
               </ol>
             ) : (
-              !calendarState.loading && !calendarState.error ? <EmptyLine>No dated items today. <Link to="/today">Open Today</Link></EmptyLine> : null
+              !calendarState.loading && !calendarState.error ? <EmptyLine>{calendarDisplay(calendarState, { empty: 'No dated items today.' }).emptyMessage} <Link to="/today">Open Today</Link></EmptyLine> : null
             )}
           </article>
 
@@ -698,7 +698,7 @@ function MadderDayChannel({ clockLabel, todayItems, calendarState }) {
             )
           })
         ) : (
-          !calendarState.loading && !calendarState.error ? <EmptyLine>No dated items today. <Link to="/today">Open Today</Link></EmptyLine> : null
+          !calendarState.loading && !calendarState.error ? <EmptyLine>{calendarDisplay(calendarState, { empty: 'No dated items today.' }).emptyMessage} <Link to="/today">Open Today</Link></EmptyLine> : null
         )}
         <div className="madder-now-marker" style={{ '--stop-x': '52%' }}>
           <Dia />
@@ -910,7 +910,7 @@ function IndigoCourt(props) {
                   ])}
                 </ol>
               ) : (
-                !calendarState.loading && !calendarState.error ? <EmptyLine>No dated items today. <Link to="/today">Open Today</Link></EmptyLine> : null
+                !calendarState.loading && !calendarState.error ? <EmptyLine>{calendarDisplay(calendarState, { empty: 'No dated items today.' }).emptyMessage} <Link to="/today">Open Today</Link></EmptyLine> : null
               )}
             </section>
 
@@ -1034,7 +1034,7 @@ export default function TheCourt() {
       const room = rooms.find(candidate => candidate.slug === slug) || rooms[0]
       return {
         id: item.id,
-        title: `${item.choice === 'maybe' ? 'Maybe · ' : ''}${item.title}`,
+        title: `${item.meta?.savedSnapshot ? 'Saved copy · ' : ''}${item.choice === 'maybe' ? 'Maybe · ' : ''}${item.title}`,
         type: calendarKind(item.kind),
         time: itemTime(item),
         href: item.href || '/today',

@@ -6153,6 +6153,11 @@ progress::-moz-progress-bar {
 .ledger-entry:target { outline: 1px solid var(--g-acc); outline-offset: 0.5rem; scroll-margin: 5rem; }
 .unified-calendar button:focus-visible, .unified-today button:focus-visible, .calendar-day-select:focus-visible { outline: 2px solid var(--g-acc); outline-offset: 3px; }
 
+@media (min-width: 761px) and (max-width: 1400px) {
+  .court-topbar { grid-template-columns: auto minmax(0, 1fr); }
+  .court-topbar .court-nav { grid-column: 1 / -1; min-width: 0; flex-wrap: wrap; justify-content: flex-start; border-radius: 1.25rem; }
+}
+
 @media (max-width: 760px) {
   .unified-calendar { grid-template-columns: 1fr; grid-template-areas: 'header' 'legend' 'month' 'capture'; gap: 1.2rem; }
   .unified-calendar .calendar-board-header { grid-template-columns: 1fr; gap: 0.7rem; }

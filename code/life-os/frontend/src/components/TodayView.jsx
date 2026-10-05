@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { apiFetch } from '../lib/api.js'
-import { addDays, filterCalendarItems, formatCalendarDay, todayGroups } from '../lib/calendar.js'
+import { addDays, calendarDisplay, filterCalendarItems, formatCalendarDay, todayGroups } from '../lib/calendar.js'
 import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
 import { poemForDate } from '../lib/poems.js'
 import CalendarItems, { CalendarStatus } from './CalendarItems.jsx'
@@ -30,7 +30,7 @@ export default function TodayView() {
     finally { setSavingId('') }
   }
 
-  const listProps = { onComplete: completeTask, savingId }
+  const listProps = { calendar, onComplete: completeTask, savingId }
   return <section className="today-layout unified-today" aria-label="Today">
     <header className="ledger-header">
       <div className="ledger-brandline"><h1>Today</h1><span /></div>
@@ -41,17 +41,17 @@ export default function TodayView() {
     {actionError ? <p className="form-error" role="alert">{actionError}</p> : null}
     <div className="today-cross-area-grid">
       <section className="today-cross-area-panel today-main-panel" aria-labelledby="today-schedule-heading">
-        <div className="today-panel-title"><h2 id="today-schedule-heading">Your day</h2><span>{groups.today.length} {groups.today.length === 1 ? 'item' : 'items'}</span></div>
+        <div className="today-panel-title"><h2 id="today-schedule-heading">Your day</h2><span>{calendarDisplay(calendar, { count: groups.today.length }).countLabel}</span></div>
         {!calendar.loading ? <CalendarItems items={groups.today} {...listProps} empty="Nothing dated for today. Add an event in the calendar, or plan in your rooms." /> : null}
       </section>
       <section className="today-cross-area-panel today-attention-panel" aria-labelledby="today-attention-heading">
-        <div className="today-panel-title"><h2 id="today-attention-heading">Needs attention</h2><span>{groups.attention.length}</span></div>
+        <div className="today-panel-title"><h2 id="today-attention-heading">Needs attention</h2><span>{calendarDisplay(calendar, { count: groups.attention.length }).countLabel}</span></div>
         <p className="today-section-note">Unfinished work from the past 350 days, and follow-ups, deadlines and renewals in the next fortnight.</p>
         {!calendar.loading ? <CalendarItems items={attention} showDate {...listProps} empty="No dated items need attention." /> : null}
         {!showAllAttention && groups.attention.length > 8 ? <button className="ghost-pill compact-pill" type="button" onClick={() => setShowAllAttention(true)}>Show {groups.attention.length - 8} more</button> : null}
       </section>
       <section className="today-cross-area-panel today-week-panel" aria-labelledby="today-week-heading">
-        <div className="today-panel-title"><h2 id="today-week-heading">Next six days</h2><span>{groups.week.length} {groups.week.length === 1 ? 'item' : 'items'}</span></div>
+        <div className="today-panel-title"><h2 id="today-week-heading">Next six days</h2><span>{calendarDisplay(calendar, { count: groups.week.length }).countLabel}</span></div>
         {!calendar.loading ? <CalendarItems items={groups.week} showDate {...listProps} empty="No further dated plans in the coming week." /> : null}
       </section>
     </div>

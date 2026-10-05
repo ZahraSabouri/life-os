@@ -30,6 +30,28 @@ export function calendarKind(kind) {
   return CALENDAR_KINDS.find(item => item.key === kind)?.label || kind
 }
 
+// A failed read is not an empty schedule. Core entries can belong to any area,
+// so the core source matters even when only one attached area is selected.
+export function calendarDisplay(calendar, { areas, count = 0, noun = 'item', empty = 'Nothing dated here.' } = {}) {
+  const selected = areas ?? CALENDAR_AREAS.map(area => area.key)
+  const relevant = (calendar.sources || []).filter(source => selected.length > 0
+    && (source.id === 'core' || source.area === 'core' || selected.includes(source.area)))
+  const failed = relevant.some(source => source.status === 'unavailable')
+  const ready = relevant.some(source => source.status === 'ready')
+  const choicesMissing = selected.includes('events') && Boolean(calendar.choicesError)
+  const state = calendar.loading ? 'loading' : calendar.error || (failed && !ready) ? 'unavailable'
+    : failed || choicesMissing ? 'partial' : 'ready'
+  const total = `${count} ${noun}${count === 1 ? '' : 's'}`
+  return {
+    state,
+    countLabel: state === 'loading' ? 'Loading…' : state === 'unavailable' ? 'Unavailable'
+      : state === 'partial' ? `${total} loaded` : total,
+    emptyMessage: state === 'loading' ? 'Loading dates…'
+      : state === 'unavailable' ? 'Dates could not be loaded. Try again.'
+        : state === 'partial' ? 'No matching dates were found in the available sources. Some dates could not be checked.' : empty
+  }
+}
+
 export function dateForKey(key) {
   return new Date(`${key}T12:00:00Z`)
 }
