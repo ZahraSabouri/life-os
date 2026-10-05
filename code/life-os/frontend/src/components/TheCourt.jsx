@@ -8,6 +8,7 @@ import { useEntries } from '../lib/useEntries.js'
 import { useGround } from '../lib/groundContext.jsx'
 import { calendarArea, calendarDisplay, calendarKind, filterCalendarItems, itemTime, todayGroups } from '../lib/calendar.js'
 import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
+import { clockLabelFor, dateLabelFor, greetingFor, jalaliDateLabelFor, shortDateLabelFor, weekdayLabelFor } from '../lib/courtClock.js'
 
 const ROOM_NAME_OVERRIDES = {
   study: 'Study',
@@ -209,56 +210,6 @@ function roomSlugsForType(type) {
   }
 
   return TYPE_ROOM_FALLBACKS[type] || ['mind']
-}
-
-function greetingFor(date) {
-  const hour = date.getHours()
-
-  if (hour < 12) return 'Good morning'
-  if (hour < 18) return 'Good afternoon'
-  return 'Good evening'
-}
-
-function dateLabelFor(date) {
-  return new Intl.DateTimeFormat('en-GB', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  }).format(date).replace(',', ' ·')
-}
-
-function shortDateLabelFor(date) {
-  return new Intl.DateTimeFormat(undefined, {
-    day: 'numeric',
-    month: 'short'
-  }).format(date)
-}
-
-function clockLabelFor(date) {
-  return new Intl.DateTimeFormat('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  }).format(date)
-}
-
-function jalaliDateLabelFor(date) {
-  try {
-    return new Intl.DateTimeFormat('en-GB-u-ca-persian', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    }).format(date).replace(/\s+AP$/i, '')
-  } catch {
-    return ''
-  }
-}
-
-function weekdayLabelFor(date) {
-  return new Intl.DateTimeFormat('en-GB', {
-    weekday: 'long'
-  }).format(date)
 }
 
 function buildRoomModel(entries, ground) {

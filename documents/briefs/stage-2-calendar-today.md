@@ -1,6 +1,6 @@
 # Stage 2: Calendar and Today across the attached apps
 
-**Status:** implementation authorised by Xar in the interrupted Claude chat, 5 October 2026; awaiting hands-on acceptance.
+**Status:** implementation complete; visual acceptance remains pending. On 5 October Xar directly asked to finish remaining Calendar work and then build Study Hub, authorising that continuation without another stage gate.
 **Branch:** `stage/2-calendar-today`
 
 ## Goal
@@ -31,6 +31,7 @@ PostgreSQL installation/migration, native Study, account OAuth, timetable import
 - [x] Show Today, this week and relevant attention, with source links, clear loading/empty/error states, and core task completion through the existing API.
 - [x] Preserve Gregorian/Persian display, grounds, capture and existing ledger. Add phone-width layout rules, midnight date updates and source-aware error states.
 - [x] Resumed review: wrap the primary navigation at tablet widths; show loading/unavailable summaries instead of false zero/empty schedules, qualify partial-source results, and mark saved copies in month/Court displays.
+- [x] Final audit: Court clock, greeting and Gregorian/Persian dates follow Europe/London, including when the device uses another time zone.
 - [ ] Visually check desktop, phone width and all three grounds in a connected browser. CUA reports no available browsers in this session; this remains Xar's acceptance check.
 - **Done when:** `/calendar`, `/today` and `/court` use real provider data; filtering works; source failures and malformed browser choices are visible; the built pages work at phone width.
 - **Verify:** frontend production build, pure frontend helper tests, browser checks of these three routes without opening Study or saving personal records.
@@ -46,7 +47,7 @@ No schema or data migration, no source-file edits and no imported records. GET-o
 4. Open `/today`; compare Today, the next seven days and attention with the attached apps. Items open their source section. Completed or archived work should not demand attention.
 5. Add an event with an explicit date if desired, and complete a core task if present. External items remain editable in their original apps.
 6. Try Calendar and Today at phone width and with each ground. `/ledger` still shows recent captured entries.
-7. Report edits before accepting Stage 2. PostgreSQL is the next foundation task; native Study follows it.
+7. Report edits before accepting Stage 2. Xar's latest instruction puts native Study next; PostgreSQL is already installed and has been verified, so Study can use it while the existing core stays intact.
 
 ## Risks and open questions
 The attached Study app is still a summer campaign; it cannot supply a new-semester timetable that has never been imported. Cardiff choices are specific to this browser/origin; missing or invalid saved choices must be reported. Most attached apps support section links rather than opening a specific record. Account connection instructions are in `../CONNECTIONS_SETUP.md`; no OAuth connection is implemented by this checkpoint.
@@ -56,4 +57,4 @@ Today attention searches the last 350 days and next 14; older overdue work needs
 ## Verification commands and result
 `Build Life OS.cmd`: both Life OS and Summer Rescue builds passed. The initial sandbox run could not traverse an ancestor directory while resolving Vite configuration; the same existing script passed outside the sandbox. Summer Rescue retains its existing large-chunk warning.
 
-`node --test code/life-os/shared/calendar.test.js hosting/calendar-route.test.mjs hosting/calendar/*.test.mjs code/life-os/frontend/test/calendar.test.js`: **29 passed** after the resumed fixes (three new loading/failure/partial-result tests). Live routed API: all seven sources ready, authentication/range checks passed; all four core pages serve the current build and its assets. Core entry/person content and counts unchanged. Four attached files match the resumed baseline; Study saved during the review and its cause needs user confirmation. A separate live calendar read left all five checked source files unchanged. No agent browser interaction or live personal save was used for verification. See `../sessions/2026-10-05-codex-stage-2-resumed-review.md`.
+`node --test code/life-os/shared/calendar.test.js hosting/calendar-route.test.mjs hosting/calendar/*.test.mjs code/life-os/frontend/test/calendar.test.js code/life-os/frontend/test/courtClock.test.js`: **31 passed** including final Court timezone/DST tests. Both builds passed again. Live routed API: all seven sources ready, authentication/range checks passed; all four core pages serve the current build and its assets. Core entry/person content and counts unchanged during the resumed read checks. Study auto-save evidence and limits are in `../sessions/2026-10-05-codex-stage-2-resumed-review.md`. No agent browser interaction or live personal save was used for Calendar verification. Final continuation: `../sessions/2026-10-05-codex-stage-2-final-audit.md`.

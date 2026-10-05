@@ -4,6 +4,14 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 5 October 2026 — Finish Calendar, then Study Hub (Xar with Codex)
+
+- Xar directly instructed: "finish calendar if anything's left and then study hub", then reaffirmed "resetted the usage. go on". This authorises finishing Calendar and building native Study without another brief-approval or stage-acceptance question. Calendar visual acceptance is still unverified, not assumed.
+- The Calendar audit found one final Court device-timezone mismatch; its dates, clock and greeting now use Europe/London with fixture coverage.
+- Live inspection found PostgreSQL 18.6 running on localhost:5432, with only the default `postgres` database and role. Study can use new `lifeos`/`lifeos_test` databases and restricted project roles; no installation, password reset, existing database replacement or direct data-directory operation is needed.
+- Implementation sequence: native Study on PostgreSQL, retaining the existing SQLite core and shared Calendar provider interface during this step. Moving the other core tables and completing the broader Stage 1 foundation remains later work. This is a transitional implementation choice to meet the new order, not a reversal of the PostgreSQL decision.
+- Keep Summer Rescue accessible throughout the move, preserve its data and assets, inventory newer commits, and track every feature through parity before retirement.
+
 ## 5 October 2026 — Calendar first (Xar with Claude Code; resumed by Codex)
 
 - Xar asked Claude Code to start work from the plan, write down what it did and leave a brief and precise pickup point for review afterward. This authorises building the documented calendar scope without another brief-approval question for this continuation. Stage acceptance still belongs to Xar.
