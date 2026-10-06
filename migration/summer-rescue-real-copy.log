@@ -1,0 +1,45 @@
+
+-------------------------------------------------------------------------------
+   ROBOCOPY     ::     Robust File Copy for Windows                              
+-------------------------------------------------------------------------------
+
+  Started : 06 October 2026 17:12:04
+   Source : C:\Users\ctrlz\Documents\Apply\Applications\UK\Cardiff University\Data Science and Analytics\1. Spring 2026\Summer_Rescue_Campaign_2026\summer-rescue-plan-app\
+     Dest : C:\Users\ctrlz\Documents\Personal\Projects\Life_OS\summer-rescue\
+
+    Files : *.*
+	    
+Exc Files : backup_*
+	    *.sqlite
+	    *.sqlite-wal
+	    *.sqlite-shm
+	    .~lock*
+	    
+ Exc Dirs : .git
+	    node_modules
+	    dist
+	    .design-sync
+	    .ds-sync
+	    ds-bundle
+	    .health-check
+	    .ui-screens
+	    docs
+	    
+  Options : *.* /NDL /NFL /S /E /DCOPY:DAT /COPY:DAT /NP /XJ /MT:16 /R:1 /W:1 
+
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+
+               Total    Copied   Skipped  Mismatch    FAILED    Extras
+    Dirs :        92        82        10         0         0         0
+   Files :       664       647        17         0         0         0
+   Bytes :  394.32 m  389.88 m    4.43 m         0         0         0
+   Times :   0:00:05   0:00:00                       0:00:00   0:00:00
+
+
+   Speed :           1,358,230,279 Bytes/sec.
+   Speed :              77,718.563 MegaBytes/min.
+   Ended : 06 October 2026 17:12:04
+

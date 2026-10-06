@@ -32,7 +32,7 @@ export function mapNativeStudy(workspace, from, to) {
     const item = {
       id: `study:native:${entity}:${record.id}${suffix ? `:${suffix}` : ''}`, area: 'study', kind: values.kind,
       title: values.title || record.title || 'Study plan', start, end, all_day: allDay,
-      href: `/study?${entity === 'cards' ? 'card' : entity === 'assessments' ? 'assessment' : 'session'}=${encodeURIComponent(record.id)}`,
+      href: `/study-native?${entity === 'cards' ? 'card' : entity === 'assessments' ? 'assessment' : 'session'}=${encodeURIComponent(record.id)}`,
       ...(record.data?.location ? { location: record.data.location } : {}),
       meta: { source: 'native-study', readonly: true, entity, recordId: record.id,
         ...(entity === 'cards' ? { cardId: record.id } : {}), semesterId: record.semester_id, moduleId: record.module_id,

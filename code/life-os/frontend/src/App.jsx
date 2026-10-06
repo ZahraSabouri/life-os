@@ -63,8 +63,9 @@ function SubAppFrame({ route, documentPath, title }) {
   )
 }
 
+// The Study hub is the Summer Rescue app itself (the real one, with its own screens and data).
 function StudyRoute() {
-  return <SubAppFrame route="/study-legacy" documentPath="/apps/summer-rescue/" title="Summer Rescue Plan" />
+  return <SubAppFrame route="/study" documentPath="/apps/summer-rescue/" title="Study hub" />
 }
 
 function CardiffLifeRoute() {
@@ -114,8 +115,10 @@ function AppRoutes() {
           <Route path="/today" element={<TodayView />} />
           <Route path="/ledger" element={<LedgerView />} />
         </Route>
-        <Route path="/study" element={<StudyHub />} />
-        <Route path="/study-legacy" element={<StudyRoute />} />
+        <Route path="/study" element={<StudyRoute />} />
+        {/* The database-backed Study records (this semester's timetable, assessments and materials) until the Study hub reads them itself. */}
+        <Route path="/study-native" element={<StudyHub />} />
+        <Route path="/study-legacy" element={<Navigate to="/study" replace />} />
         <Route path="/cardiff-life" element={<CardiffLifeRoute />} />
         <Route path="/budget" element={<BudgetRoute />} />
         <Route path="/jobmap" element={<JobMapRoute />} />

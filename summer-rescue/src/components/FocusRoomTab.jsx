@@ -1,0 +1,500 @@
+import { Suspense, lazy, useEffect, useRef, useState } from 'react'
+import { StudyTimer } from './StudyTimer'
+import { FloatingVideoPlayer } from './FloatingVideoPlayer'
+import { focusRewards } from '../utils/focusRewards'
+import { clampPercent, normaliseResourceProgressEntry } from '../utils/resourceProgress'
+import {
+  FOCUS_TAB_HASH,
+  TAB_ID,
+  focusRoomCardId,
+  onFocusMessage,
+  postFocusMessage,
+} from '../utils/focusSession'
+
+// Mirrors the `resource=` param the main app writes into its own hash
+// (src/App.jsx's writeRoute) so this tab's address bar reflects what's open
+// here too — needed for the room's own back button and for reloads to
+// reopen whatever was showing.
+function resourceIdFromRoomHash(hash = window.location.hash) {
+  const query = String(hash ?? '').split('?')[1] ?? ''
+  return new URLSearchParams(query).get('resource') ?? ''
+}
+
+function roomHash(cardId, resourceId) {
+  const params = new URLSearchParams()
+  if (cardId) params.set('card', cardId)
+  if (resourceId) params.set('resource', resourceId)
+  const query = params.toString()
+  return `${FOCUS_TAB_HASH}${query ? `?${query}` : ''}`
+}
+
+// Lazy-loaded the same way App.jsx loads it, so opening a resource here
+// doesn't pull the whole ModuleWorkspace bundle into the room's own chunk.
+const ResourceReader = lazy(() => import('./ModuleWorkspace').then((module) => ({ default: module.ResourceReader })))
+
+// The Focus Room running as its own browser tab.
+//
+// This tab deliberately does NOT mount useTrackerState: two tabs auto-saving to
+// the same localStorage key would race and clobber the campaign. Instead it asks
+// the main app tab for a read-only snapshot of the card and forwards every
+// mutation (checklist ticks, logged sessions, restart cues) back over the focus
+// channel, so the main tab stays the single writer of tracker state.
+//
+// The timer itself runs here — this tab owns the clock while it is open (see the
+// claim/release handshake in StudyTimer's room variant). Focus rewards are the
+// one piece of state this tab drives directly: it hydrates them from the main
+// tab once, then streams changes back so trees and points still persist.
+export function FocusRoomTab() {
+  // Stateful (not a plain const) so picking a card from the "Next up" queue
+  // can move the room to a different card without a full tab reload — see
+  // switchToCard below, which updates this, the URL hash, and re-requests a
+  // snapshot for the new id.
+  const [cardId, setCardId] = useState(() => focusRoomCardId())
+  const [snapshot, setSnapshot] = useState(null)
+  const [status, setStatus] = useState(cardId ? 'connecting' : 'offline') // connecting | live | offline | closed
+  const [queue, setQueue] = useState([])
+  const rewardsHydratedRef = useRef(false)
+  const lastRewardsSentRef = useRef('')
+  const pendingResourcePatchesRef = useRef(new Map())
+  const pendingActionRequestsRef = useRef(new Map())
+  // This tab boots with no idea what the main tab's theme is (it's a fresh
+  // document, so document.documentElement starts with no data-theme at all).
+  // 'light' is just the pre-sync placeholder; the main tab's snapshot (and any
+  // live 'theme' broadcast) corrects it within one round trip.
+  const [theme, setTheme] = useState('light')
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+  }, [theme])
+
+  useEffect(
+    () => () => {
+      for (const pending of pendingActionRequestsRef.current.values()) {
+        window.clearTimeout(pending.timeout)
+        pending.reject(new Error('Focus Room closed before the save was confirmed.'))
+      }
+      pendingActionRequestsRef.current.clear()
+    },
+    [],
+  )
+
+  // Ask the main tab for card data, retrying until it answers (it may be loading,
+  // or the room may have been reopened from history before the app tab exists).
+  useEffect(() => {
+    if (!cardId) return undefined
+
+    const stop = onFocusMessage((message) => {
+      if (message.type === 'snapshot' && message.cardId === cardId) {
+        const nextResourceProgress = { ...(message.resourceProgress ?? {}) }
+        for (const [resourceId, patch] of pendingResourcePatchesRef.current) {
+          const serverEntry = normaliseResourceProgressEntry(nextResourceProgress[resourceId])
+          const mergedEntry = normaliseResourceProgressEntry({ ...serverEntry, ...patch })
+          const matchesPending = (
+            (!Object.hasOwn(patch, 'progressPercent') || serverEntry.progressPercent === mergedEntry.progressPercent) &&
+            (!Object.hasOwn(patch, 'understandingPercent') || serverEntry.understandingPercent === mergedEntry.understandingPercent) &&
+            (!Object.hasOwn(patch, 'note') || serverEntry.note === mergedEntry.note)
+          )
+          if (matchesPending) pendingResourcePatchesRef.current.delete(resourceId)
+          else nextResourceProgress[resourceId] = mergedEntry
+        }
+        setSnapshot({
+          card: message.card,
+          resources: message.resources ?? [],
+          resourceProgress: nextResourceProgress,
+          currentBoundary: message.currentBoundary ?? null,
+          nextBoundary: message.nextBoundary ?? null,
+          linkedNotes: message.linkedNotes ?? [],
+        })
+        setQueue(message.queue ?? [])
+        if (message.theme) setTheme(message.theme)
+        setStatus('live')
+      }
+      if (message.type === 'theme' && message.theme) {
+        setTheme(message.theme)
+      }
+      if (message.type === 'action-result' && message.target === TAB_ID && message.requestId) {
+        const pending = pendingActionRequestsRef.current.get(message.requestId)
+        if (pending) {
+          window.clearTimeout(pending.timeout)
+          pendingActionRequestsRef.current.delete(message.requestId)
+          if (message.ok) pending.resolve(message)
+          else pending.reject(new Error(message.error || 'The main app could not save this update.'))
+        }
+      }
+      if (message.type === 'rewards-init' && !rewardsHydratedRef.current) {
+        rewardsHydratedRef.current = true
+        lastRewardsSentRef.current = JSON.stringify(message.state ?? {})
+        focusRewards.hydrate(message.state ?? {})
+      }
+    })
+
+    let attempts = 0
+    postFocusMessage('request-snapshot', { cardId })
+    const retry = window.setInterval(() => {
+      attempts += 1
+      if (attempts > 12) {
+        window.clearInterval(retry)
+        // Still no answer: run offline. The timer works; logging is parked until a
+        // main tab appears (a fresh snapshot flips this straight back to 'live').
+        setStatus((current) => (current === 'live' ? current : 'offline'))
+        return
+      }
+      postFocusMessage('request-snapshot', { cardId })
+    }, 600)
+
+    return () => {
+      window.clearInterval(retry)
+      stop()
+    }
+  }, [cardId])
+
+  // Stream reward changes back to the main tab so it can persist them. Deduped by
+  // value so a hydrate we just received is never echoed straight back.
+  useEffect(() => {
+    return focusRewards.subscribe(() => {
+      const serialised = JSON.stringify(focusRewards.getPersistedState())
+      if (serialised === lastRewardsSentRef.current) return
+      lastRewardsSentRef.current = serialised
+      postFocusMessage('rewards-sync', { state: focusRewards.getPersistedState() })
+    })
+  }, [])
+
+  useEffect(() => {
+    if (snapshot?.card) {
+      document.title = `Focus Room · ${snapshot.card.title}`
+    } else {
+      document.title = 'Focus Room · Summer Rescue'
+    }
+  }, [snapshot])
+
+  const forward = (action, extra = {}) => postFocusMessage('action', { action, cardId, ...extra })
+
+  function forwardAndWait(action, extra = {}) {
+    const requestId = `focus-action-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+    return new Promise((resolve, reject) => {
+      const timeout = window.setTimeout(() => {
+        pendingActionRequestsRef.current.delete(requestId)
+        reject(new Error('Save confirmation timed out. Keep the main Summer Rescue tab open and try again.'))
+      }, 12000)
+      pendingActionRequestsRef.current.set(requestId, { resolve, reject, timeout })
+      if (!forward(action, { ...extra, requestId })) {
+        window.clearTimeout(timeout)
+        pendingActionRequestsRef.current.delete(requestId)
+        reject(new Error('This browser cannot connect the Focus Room to the main app tab.'))
+      }
+    })
+  }
+
+  // Optimistic like the other handlers below: flip the room's own theme
+  // immediately, then forward it so the main tab (the sole settings writer)
+  // persists it — same rule that already applies to checklist ticks and notes.
+  function handleThemeChange(next) {
+    setTheme(next)
+    forward('set-theme', { theme: next })
+  }
+
+  // Move the room to a different card without closing the tab — picked from
+  // the "Next up" queue. Clears the stale snapshot so the fallback "Connecting…"
+  // state shows instead of the old card while the new one loads, updates the
+  // URL so a reload reopens the right card, and lets the existing
+  // request-snapshot effect (keyed on cardId) do the rest.
+  function switchToCard(nextCardId) {
+    if (!nextCardId || nextCardId === cardId) return
+    setSnapshot(null)
+    setQueue([])
+    setStatus('connecting')
+    setOpenResourceIdState(null)
+    setCardId(nextCardId)
+    const nextHash = roomHash(nextCardId, '')
+    if (window.location.hash !== nextHash) window.history.pushState(null, '', nextHash)
+  }
+
+  function handleChecklistToggle(id, itemId) {
+    // Optimistic: reflect the tick immediately; the main tab echoes the authoritative
+    // card back in its next snapshot.
+    setSnapshot((current) => {
+      if (!current?.card) return current
+      const checklist = (current.card.checklist ?? []).map((item) =>
+        item.id === itemId ? { ...item, done: !item.done } : item,
+      )
+      return { ...current, card: { ...current.card, checklist } }
+    })
+    forward('toggle-checklist', { itemId })
+  }
+
+  function handleCardProgressChange(id, progressPercent) {
+    const next = clampPercent(progressPercent)
+    setSnapshot((current) => (
+      current?.card
+        ? { ...current, card: { ...current.card, progressPercent: next } }
+        : current
+    ))
+    forward('set-card-progress', { progressPercent: next })
+  }
+
+  function handleStatusChange(id, statusValue) {
+    setSnapshot((current) => (
+      current?.card
+        ? {
+            ...current,
+            card: {
+              ...current.card,
+              status: statusValue,
+              done: statusValue === 'Done',
+            },
+          }
+        : current
+    ))
+    forward('set-status', { status: statusValue })
+  }
+
+  function handleToggleDone() {
+    setSnapshot((current) => {
+      if (!current?.card) return current
+      const done = !current.card.done
+      return {
+        ...current,
+        card: {
+          ...current.card,
+          done,
+          status: done ? 'Done' : current.card.previousStatus || 'Backlog',
+        },
+      }
+    })
+    forward('toggle-done')
+  }
+
+  function handleCompleteSession(id, minutes) {
+    forward('complete-session', { minutes })
+    // Rewards are owned by this tab while it is open; record locally and let the
+    // rewards-sync effect persist them. The main tab only logs the card session.
+    focusRewards.recordMinutes(minutes)
+  }
+
+  // Notes and evidence — the same optimistic-then-reconciled pattern as
+  // checklist toggling above: reflect the change immediately using a
+  // temporary id, forward the real mutation to the main tab (the sole
+  // writer), and let its next snapshot echo back the authoritative version.
+  // Previously this tab could only ever fire one write ("add-note", used for
+  // the single restart-cue box) — no update, no delete, no evidence at all.
+  function handleAddNote(id, text) {
+    const optimistic = { id: `pending-${Date.now()}`, text, at: new Date().toISOString() }
+    setSnapshot((current) => {
+      if (!current?.card) return current
+      return { ...current, card: { ...current.card, notes: [optimistic, ...(current.card.notes ?? [])] } }
+    })
+    forward('add-note', { text })
+  }
+
+  function handleUpdateNote(id, noteId, text) {
+    setSnapshot((current) => {
+      if (!current?.card) return current
+      const notes = (current.card.notes ?? []).map((note) => (note.id === noteId ? { ...note, text } : note))
+      return { ...current, card: { ...current.card, notes } }
+    })
+    forward('update-note', { noteId, text })
+  }
+
+  function handleDeleteNote(id, noteId) {
+    setSnapshot((current) => {
+      if (!current?.card) return current
+      const notes = (current.card.notes ?? []).filter((note) => note.id !== noteId)
+      return { ...current, card: { ...current.card, notes } }
+    })
+    forward('delete-note', { noteId })
+  }
+
+  function handleAddEvidence(id, text) {
+    const optimistic = { id: `pending-${Date.now()}`, text, at: new Date().toISOString() }
+    setSnapshot((current) => {
+      if (!current?.card) return current
+      return {
+        ...current,
+        card: { ...current.card, evidenceEntries: [...(current.card.evidenceEntries ?? []), optimistic] },
+      }
+    })
+    forward('add-evidence', { text })
+  }
+
+  function handleUpdateEvidence(id, evidenceId, text) {
+    setSnapshot((current) => {
+      if (!current?.card) return current
+      const evidenceEntries = (current.card.evidenceEntries ?? []).map((entry) =>
+        entry.id === evidenceId ? { ...entry, text } : entry,
+      )
+      return { ...current, card: { ...current.card, evidenceEntries } }
+    })
+    forward('update-evidence', { evidenceId, text })
+  }
+
+  function handleDeleteEvidence(id, evidenceId) {
+    setSnapshot((current) => {
+      if (!current?.card) return current
+      const evidenceEntries = (current.card.evidenceEntries ?? []).filter((entry) => entry.id !== evidenceId)
+      return { ...current, card: { ...current.card, evidenceEntries } }
+    })
+    forward('delete-evidence', { evidenceId })
+  }
+
+  // File objects survive BroadcastChannel's structured clone intact, so the
+  // upload itself (which needs the local server) can stay entirely on the
+  // main tab — no separate upload path to maintain here.
+  function handleAddEvidenceFile(id, file) {
+    forward('add-evidence-file', { file })
+    return Promise.resolve()
+  }
+
+  function handleResourceProgressChange(resourceId, patch) {
+    pendingResourcePatchesRef.current.set(resourceId, {
+      ...(pendingResourcePatchesRef.current.get(resourceId) ?? {}),
+      ...patch,
+    })
+    setSnapshot((current) => {
+      if (!current) return current
+      const previous = normaliseResourceProgressEntry(current.resourceProgress?.[resourceId])
+      return {
+        ...current,
+        resourceProgress: {
+          ...(current.resourceProgress ?? {}),
+          [resourceId]: normaliseResourceProgressEntry({ ...previous, ...patch }),
+        },
+      }
+    })
+    forward('update-resource-progress', { resourceId, patch })
+  }
+
+  function handleResourceProgressSave(resourceId, patch) {
+    pendingResourcePatchesRef.current.set(resourceId, {
+      ...(pendingResourcePatchesRef.current.get(resourceId) ?? {}),
+      ...patch,
+    })
+    setSnapshot((current) => {
+      if (!current) return current
+      const previous = normaliseResourceProgressEntry(current.resourceProgress?.[resourceId])
+      return {
+        ...current,
+        resourceProgress: {
+          ...(current.resourceProgress ?? {}),
+          [resourceId]: normaliseResourceProgressEntry({ ...previous, ...patch }),
+        },
+      }
+    })
+    return forwardAndWait('save-resource-progress', { resourceId, patch })
+  }
+
+  function handleResourceReviewedToggle(resourceId) {
+    const previous = normaliseResourceProgressEntry(snapshot?.resourceProgress?.[resourceId])
+    handleResourceProgressChange(resourceId, {
+      progressPercent: previous.progressPercent >= 100 ? 0 : 100,
+    })
+  }
+
+  // Opening a resource (video/PDF/notebook) here needs no round trip to the
+  // main tab — ResourceReader renders purely from the resource object itself,
+  // which already arrived whole in the snapshot. Previously this tab had no
+  // onOpenResource at all, so every resource chip (in "Resources" and in "How
+  // to study this card") silently did nothing when clicked.
+  const [openResourceId, setOpenResourceIdState] = useState(() => resourceIdFromRoomHash() || null)
+  const activeResource = snapshot?.resources?.find((resource) => resource.id === openResourceId) ?? null
+
+  function setOpenResourceId(resourceId) {
+    setOpenResourceIdState(resourceId || null)
+    if (resourceId) forward('mark-resource-opened', { resourceId })
+    const nextHash = roomHash(cardId, resourceId || '')
+    if (window.location.hash !== nextHash) window.history.pushState(null, '', nextHash)
+  }
+
+  // Back/forward through a resource push (or a manual hash edit) should open
+  // or close the reader to match, same as the main app's hashchange handling.
+  useEffect(() => {
+    function syncFromHash() {
+      setOpenResourceIdState(resourceIdFromRoomHash() || null)
+    }
+    window.addEventListener('hashchange', syncFromHash)
+    window.addEventListener('popstate', syncFromHash)
+    return () => {
+      window.removeEventListener('hashchange', syncFromHash)
+      window.removeEventListener('popstate', syncFromHash)
+    }
+  }, [])
+
+  function exit() {
+    postFocusMessage('release', { cardId })
+    window.close()
+    // window.close() is ignored for tabs the user navigated to manually; show a
+    // dismissed state so they know it is safe to close.
+    setStatus('closed')
+  }
+
+  if (status === 'closed') {
+    return (
+      <div className="focus-tab-fallback">
+        <h1>Focus Room closed</h1>
+        <p>You can close this tab now. Your session stays logged in the main app.</p>
+      </div>
+    )
+  }
+
+  if (!snapshot?.card) {
+    return (
+      <div className="focus-tab-fallback">
+        <h1>Focus Room</h1>
+        {status === 'offline' ? (
+          <>
+            <p>Couldn’t reach the main Summer Rescue tab.</p>
+            <p>Open the app in another tab and this room will connect automatically.</p>
+          </>
+        ) : (
+          <p>Connecting to your session…</p>
+        )}
+        <FloatingVideoPlayer />
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <StudyTimer
+        variant="room"
+        activeCard={snapshot.card}
+        resources={snapshot.resources}
+        resourceProgress={snapshot.resourceProgress}
+        currentBoundary={snapshot.currentBoundary}
+        nextBoundary={snapshot.nextBoundary}
+        linkedNotes={snapshot.linkedNotes}
+        onCompleteSession={handleCompleteSession}
+        onFocusBlockComplete={(minutes) => focusRewards.recordBlockComplete(minutes)}
+        onChecklistToggle={handleChecklistToggle}
+        onAddNote={handleAddNote}
+        onNoteUpdate={handleUpdateNote}
+        onDeleteNote={handleDeleteNote}
+        onEvidenceAdd={handleAddEvidence}
+        onEvidenceUpdate={handleUpdateEvidence}
+        onEvidenceDelete={handleDeleteEvidence}
+        onEvidenceFileAdd={handleAddEvidenceFile}
+        onResourceProgressChange={handleResourceProgressChange}
+        onResourceProgressSave={handleResourceProgressSave}
+        onResourceReviewedToggle={handleResourceReviewedToggle}
+        onOpenResource={setOpenResourceId}
+        onCardProgressChange={handleCardProgressChange}
+        onStatusChange={handleStatusChange}
+        onToggleDone={handleToggleDone}
+        onExitRoom={exit}
+        queue={queue}
+        onSwitchCard={switchToCard}
+        theme={theme}
+        onThemeChange={handleThemeChange}
+      />
+      {activeResource && (
+        <Suspense fallback={null}>
+          <ResourceReader
+            resource={activeResource}
+            onClose={() => setOpenResourceId(null)}
+            theme={theme}
+            onThemeChange={handleThemeChange}
+          />
+        </Suspense>
+      )}
+    </>
+  )
+}

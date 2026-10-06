@@ -18,7 +18,7 @@ test('the shared service accepts native Study and maps it once without a legacy 
   assert.equal(result.sources.find(row => row.id === 'study').status, 'ready')
   assert.equal(result.items.length, 1)
   assert.equal(result.items[0].id, 'study:native:sessions:fixture-session')
-  assert.equal(result.items[0].href, '/study?session=fixture-session')
+  assert.equal(result.items[0].href, '/study-native?session=fixture-session')
 })
 
 test('core reads every dated type and inclusive multi-day spans, preserving source identity', () => {

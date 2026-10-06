@@ -1,0 +1,270 @@
+import { createReadStream } from 'node:fs'
+import fs from 'node:fs/promises'
+import http from 'node:http'
+import path from 'node:path'
+import process from 'node:process'
+import { APP_CSP, FRAMEABLE_ASSET_CSP, createLocalTrackerApi } from './localTrackerApi.js'
+
+// A process bound to 127.0.0.1 is unreachable from outside its own network
+// namespace — inside Docker that means the host's `-p 127.0.0.1:5173:5173`
+// port mapping has nothing to connect to. VITE_DOCKER (already set by
+// Dockerfile.dev for the dev server, see vite.config.js) doubles as the
+// signal here: bind wide only when actually running in the container. This
+// doesn't widen who can reach the app — docker-compose.yml's port mapping
+// already restricts the host side to 127.0.0.1 only, and localRequestAllowed
+// (localTrackerApi.js) independently rejects any request whose Host header
+// isn't a loopback name, regardless of which interface accepted the socket.
+export const LOCAL_APP_HOST = process.env.VITE_DOCKER ? '0.0.0.0' : '127.0.0.1'
+export const LOCAL_APP_PORT = 5173
+
+const CONTENT_TYPES = new Map([
+  ['.avif', 'image/avif'],
+  ['.css', 'text/css; charset=utf-8'],
+  ['.csv', 'text/csv; charset=utf-8'],
+  ['.gif', 'image/gif'],
+  ['.html', 'text/html; charset=utf-8'],
+  ['.ico', 'image/x-icon'],
+  ['.jpeg', 'image/jpeg'],
+  ['.jpg', 'image/jpeg'],
+  ['.js', 'text/javascript; charset=utf-8'],
+  ['.json', 'application/json; charset=utf-8'],
+  ['.mjs', 'text/javascript; charset=utf-8'],
+  ['.mp3', 'audio/mpeg'],
+  ['.mp4', 'video/mp4'],
+  ['.pdf', 'application/pdf'],
+  ['.png', 'image/png'],
+  ['.svg', 'image/svg+xml; charset=utf-8'],
+  ['.txt', 'text/plain; charset=utf-8'],
+  ['.webmanifest', 'application/manifest+json; charset=utf-8'],
+  ['.webm', 'video/webm'],
+  ['.webp', 'image/webp'],
+  ['.woff', 'font/woff'],
+  ['.woff2', 'font/woff2'],
+])
+
+function sendText(res, statusCode, text) {
+  res.statusCode = statusCode
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  res.end(text)
+}
+
+function setStaticHeaders(res, filePath, stat, isIndex, isStudyAsset) {
+  const extension = path.extname(filePath).toLowerCase()
+  res.setHeader('Content-Type', CONTENT_TYPES.get(extension) ?? 'application/octet-stream')
+  res.setHeader('Content-Length', String(stat.size))
+  res.setHeader('Last-Modified', stat.mtime.toUTCString())
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  // YouTube embeds require the parent page's origin in the Referer header.
+  // This policy shares only the origin cross-site, never the route or query.
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+  res.setHeader('Content-Security-Policy', isStudyAsset ? FRAMEABLE_ASSET_CSP : APP_CSP)
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  res.setHeader('Accept-Ranges', 'bytes')
+  res.setHeader('Cache-Control', isIndex || extension === '.webmanifest' ? 'no-cache' : 'public, max-age=3600')
+}
+
+function parseSingleByteRange(header, size) {
+  const match = /^bytes=(\d*)-(\d*)$/i.exec(String(header ?? '').trim())
+  if (!match) return null
+
+  const startText = match[1]
+  const endText = match[2]
+  if (!startText && !endText) return null
+
+  let start
+  let end
+  if (!startText) {
+    const suffixLength = Number(endText)
+    if (!Number.isInteger(suffixLength) || suffixLength <= 0) return null
+    start = Math.max(size - suffixLength, 0)
+    end = size - 1
+  } else {
+    start = Number(startText)
+    end = endText ? Number(endText) : size - 1
+  }
+
+  if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || start >= size || end < start) {
+    return null
+  }
+
+  return { start, end: Math.min(end, size - 1) }
+}
+
+// Study-asset HTML is framed with `sandbox="allow-scripts allow-forms
+// allow-popups"` (ModuleWorkspace.jsx) — deliberately no allow-same-origin,
+// so it can't read the parent app's cookies/localStorage. But that also
+// gives the frame an opaque origin, and *reading the localStorage property
+// at all* throws a SecurityError in that case — some study HTML (the
+// mastery-guide packs) reads it as one of its first statements to restore
+// saved progress, which throws before any of the file's own event listeners
+// (timer, night mode, video loading) get registered, silently breaking the
+// whole page. Rather than patch every such file, or rewrite the sandbox
+// policy, inject a tiny shim that only replaces localStorage/sessionStorage
+// with an in-memory stand-in when the real one is inaccessible — the file's
+// own "saved progress" then only lasts the current viewing, but nothing
+// throws and every other control keeps working. A normal (non-sandboxed)
+// open of the same file is unaffected: the probe succeeds and nothing here
+// runs.
+const STORAGE_SHIM = `<script>(function(){function stub(){var s={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(s,k)?s[k]:null;},setItem:function(k,v){s[k]=String(v);},removeItem:function(k){delete s[k];},clear:function(){s={};},key:function(i){return Object.keys(s)[i]||null;},get length(){return Object.keys(s).length;}};}['localStorage','sessionStorage'].forEach(function(name){try{window[name]&&window[name].getItem;}catch(e){try{Object.defineProperty(window,name,{value:stub(),configurable:true});}catch(e2){}}});})();</script>`
+
+async function sendFile(req, res, filePath, { isIndex = false, isStudyAsset = false } = {}) {
+  const stat = await fs.stat(filePath)
+  if (!stat.isFile()) return false
+
+  if (isStudyAsset && filePath.toLowerCase().endsWith('.html')) {
+    const raw = await fs.readFile(filePath, 'utf8')
+    const headMatch = /<head[^>]*>/i.exec(raw)
+    const body = headMatch
+      ? raw.slice(0, headMatch.index + headMatch[0].length) + STORAGE_SHIM + raw.slice(headMatch.index + headMatch[0].length)
+      : STORAGE_SHIM + raw
+    const buffer = Buffer.from(body, 'utf8')
+    setStaticHeaders(res, filePath, { size: buffer.byteLength, mtime: stat.mtime }, isIndex, isStudyAsset)
+    res.statusCode = 200
+    if (req.method === 'HEAD') res.end()
+    else res.end(buffer)
+    return true
+  }
+
+  const requestedRange = req.headers.range
+  if (requestedRange) {
+    const range = parseSingleByteRange(requestedRange, stat.size)
+    if (!range) {
+      res.statusCode = 416
+      res.setHeader('Content-Range', `bytes */${stat.size}`)
+      res.end()
+      return true
+    }
+
+    const bodyLength = range.end - range.start + 1
+    setStaticHeaders(res, filePath, { size: bodyLength, mtime: stat.mtime }, isIndex, isStudyAsset)
+    res.statusCode = 206
+    res.setHeader('Content-Range', `bytes ${range.start}-${range.end}/${stat.size}`)
+    if (req.method === 'HEAD') res.end()
+    else createReadStream(filePath, { start: range.start, end: range.end }).pipe(res)
+    return true
+  }
+
+  setStaticHeaders(res, filePath, stat, isIndex, isStudyAsset)
+  res.statusCode = 200
+  if (req.method === 'HEAD') res.end()
+  else createReadStream(filePath).pipe(res)
+  return true
+}
+
+function requestPath(req) {
+  try {
+    return decodeURIComponent(new URL(req.url ?? '/', 'http://local.invalid').pathname)
+  } catch {
+    return null
+  }
+}
+
+function safeStaticPath(distDir, pathname) {
+  const relativePath = pathname.replace(/^\/+/, '')
+  const candidate = path.resolve(distDir, relativePath)
+  const rootPrefix = `${path.resolve(distDir)}${path.sep}`
+  if (candidate !== path.resolve(distDir) && !candidate.startsWith(rootPrefix)) return null
+  return candidate
+}
+
+export function createLocalAppHandler(options = {}) {
+  const projectRoot = path.resolve(options.projectRoot ?? '.')
+  const distDir = path.resolve(options.distDir ?? path.join(projectRoot, 'dist'))
+  const apiHandler = createLocalTrackerApi({
+    projectRoot,
+    ...(options.apiOptions ?? {}),
+  })
+
+  return function localAppHandler(req, res) {
+    apiHandler(req, res, async () => {
+      try {
+        const pathname = requestPath(req)
+        if (!pathname) {
+          sendText(res, 400, 'Bad request')
+          return
+        }
+
+        if (pathname.startsWith('/api/')) {
+          sendText(res, 404, 'API endpoint not found')
+          return
+        }
+
+        if (req.method !== 'GET' && req.method !== 'HEAD') {
+          res.setHeader('Allow', 'GET, HEAD')
+          sendText(res, 405, 'Method not allowed')
+          return
+        }
+
+        const requestedFile = pathname === '/' ? path.join(distDir, 'index.html') : safeStaticPath(distDir, pathname)
+        if (!requestedFile) {
+          sendText(res, 403, 'Forbidden')
+          return
+        }
+
+        try {
+          const isStudyAsset = pathname.startsWith('/study-assets/')
+          if (await sendFile(req, res, requestedFile, { isIndex: pathname === '/', isStudyAsset })) return
+        } catch (error) {
+          if (error.code !== 'ENOENT' && error.code !== 'EISDIR') throw error
+        }
+
+        // Hash routes never reach the server, but an extensionless fallback keeps
+        // direct navigation robust if a future view adopts path-based routing.
+        if (!path.extname(pathname)) {
+          try {
+            if (await sendFile(req, res, path.join(distDir, 'index.html'), { isIndex: true })) return
+          } catch (error) {
+            if (error.code !== 'ENOENT') throw error
+          }
+        }
+
+        sendText(res, 404, 'Not found')
+      } catch (error) {
+        console.error('Local app server request failed:', error)
+        if (!res.headersSent) sendText(res, 500, 'Local app server error')
+        else res.end()
+      }
+    }).catch((error) => {
+      console.error('Local tracker API request failed:', error)
+      if (!res.headersSent) sendText(res, 500, 'Local tracker API error')
+      else res.end()
+    })
+  }
+}
+
+export async function startLocalAppServer(options = {}) {
+  const projectRoot = path.resolve(options.projectRoot ?? '.')
+  const distDir = path.resolve(options.distDir ?? path.join(projectRoot, 'dist'))
+  const host = options.host ?? LOCAL_APP_HOST
+  const port = options.port ?? LOCAL_APP_PORT
+
+  try {
+    await fs.access(path.join(distDir, 'index.html'))
+  } catch {
+    throw new Error(`Production build not found at ${distDir}. Run "npm run build" first.`)
+  }
+
+  const server = http.createServer(
+    createLocalAppHandler({ projectRoot, distDir, apiOptions: options.apiOptions }),
+  )
+
+  server.on('clientError', (_error, socket) => {
+    socket.end('HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\n')
+  })
+
+  await new Promise((resolve, reject) => {
+    const onError = (error) => {
+      server.off('listening', onListening)
+      reject(error)
+    }
+    const onListening = () => {
+      server.off('error', onError)
+      resolve()
+    }
+    server.once('error', onError)
+    server.once('listening', onListening)
+    server.listen(port, host)
+  })
+
+  return server
+}

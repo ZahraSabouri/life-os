@@ -1,0 +1,903 @@
+/* Knowledge notes: a reading surface, not a form.
+   Wide reference tables scroll inside their own frame so the prose column keeps
+   a fixed, comfortable measure. */
+
+.kn-shell {
+  display: grid;
+  grid-template-columns: minmax(240px, 288px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+
+  --kind-concept: var(--blue);
+  --kind-cheatsheet: var(--green);
+  --kind-formula: #8a6bb0;
+  --kind-traps: var(--red);
+  --kind-qa: var(--amber);
+}
+
+@media (max-width: 900px) {
+  .kn-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Wide read hides the library so a dense reference note gets the full width.
+   Worth a dedicated mode: these documents carry eight-column tables. */
+.kn-shell.is-wide {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.kn-shell.is-wide .kn-rail {
+  display: none;
+}
+
+/* ---------- Library rail ---------- */
+
+.kn-rail {
+  position: sticky;
+  top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(100vh - 40px);
+  padding: 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+@media (max-width: 900px) {
+  .kn-rail {
+    position: static;
+    max-height: none;
+  }
+}
+
+.kn-rail-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kn-rail-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.kn-rail-summary strong {
+  font-family: var(--font-num);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.kn-summary-flag {
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+}
+
+.kn-summary-flag.due {
+  color: var(--warning-ink);
+  background: var(--warning-bg);
+  border-color: var(--warning-line);
+  cursor: pointer;
+}
+
+.kn-summary-flag.new {
+  color: var(--muted);
+  background: var(--chip-bg);
+  border-color: var(--line);
+}
+
+.kn-search {
+  width: 100%;
+  padding: 8px 11px;
+  font: inherit;
+  font-size: 0.86rem;
+  color: var(--input-ink);
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.kn-filter-row {
+  display: flex;
+  gap: 6px;
+}
+
+.kn-filter {
+  flex: 1;
+  padding: 5px 4px;
+  font: inherit;
+  font-size: 0.76rem;
+  color: var(--muted);
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+}
+
+.kn-filter.active {
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.kn-rail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.kn-rail-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.kn-rail-topic {
+  margin: 0 0 2px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.kn-rail-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 9px;
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+}
+
+.kn-rail-item:hover {
+  background: var(--chip-bg);
+}
+
+.kn-rail-item.active {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 32%, transparent);
+}
+
+.kn-kind-dot {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  font-size: 0.8rem;
+  color: #fff;
+  border-radius: 7px;
+  background: var(--kind, var(--accent));
+}
+
+.kn-kind-dot.kind-concept { --kind: var(--kind-concept); }
+.kn-kind-dot.kind-cheatsheet { --kind: var(--kind-cheatsheet); }
+.kn-kind-dot.kind-formula { --kind: var(--kind-formula); }
+.kn-kind-dot.kind-traps { --kind: var(--kind-traps); }
+.kn-kind-dot.kind-qa { --kind: var(--kind-qa); }
+
+.kn-rail-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1px;
+}
+
+.kn-rail-text strong {
+  overflow: hidden;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kn-rail-text small {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.kn-due-flag {
+  font-weight: 700;
+  color: var(--amber);
+}
+
+.kn-new-flag {
+  font-weight: 600;
+  color: var(--blue);
+}
+
+/* The reader's own manual triage flag — visually distinct from the automatic
+   due/unread review flags above so the two concepts never look like one. */
+.kn-revisit-flag {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Editorial "this one matters" marker, distinct from the reader's own star. */
+.kn-key-mark {
+  margin-right: 4px;
+  font-size: 0.66rem;
+  color: var(--accent);
+}
+
+.kn-key-chip {
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 34%, transparent);
+  border-radius: var(--radius-pill);
+}
+
+.kn-star-mark {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--amber);
+}
+
+.kn-new-btn {
+  width: 100%;
+}
+
+/* ---------- Reader ---------- */
+
+.kn-main {
+  min-width: 0;
+}
+
+.kn-reader {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kn-reader-head {
+  position: relative;
+  padding: 20px 22px 18px;
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+/* The accent bar is the only per-kind colour in the header, so a note reads as
+   itself without the page turning into a paint chart. */
+.kn-reader-head::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  content: '';
+  background: var(--kind, var(--accent));
+}
+
+.kn-reader-head.kind-concept { --kind: var(--kind-concept); }
+.kn-reader-head.kind-cheatsheet { --kind: var(--kind-cheatsheet); }
+.kn-reader-head.kind-formula { --kind: var(--kind-formula); }
+.kn-reader-head.kind-traps { --kind: var(--kind-traps); }
+.kn-reader-head.kind-qa { --kind: var(--kind-qa); }
+
+.kn-reader-head-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.kn-kind-badge {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  border-radius: var(--radius-pill);
+  background: var(--kind, var(--accent));
+}
+
+.kn-topic-chip,
+.kn-review-chip {
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--chip-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+}
+
+.kn-review-chip.state-due {
+  color: var(--warning-ink);
+  background: var(--warning-bg);
+  border-color: var(--warning-line);
+}
+
+.kn-review-chip.state-scheduled {
+  color: var(--success-ink);
+  background: var(--success-bg);
+  border-color: var(--success-line);
+}
+
+.kn-reader-head h2 {
+  margin: 0 0 6px;
+  font-family: var(--font-serif);
+  font-size: 1.65rem;
+  line-height: 1.2;
+}
+
+.kn-reader-meta {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.kn-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 9px;
+}
+
+.kn-tag {
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  color: var(--muted);
+  background: var(--chip-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+}
+
+.kn-reader-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* Manual unread/read/revisit marker. Kept visually apart from the review-chip
+   in the header (spaced-review scheduling) and from starred (the reader's
+   bookmark) — three different questions, three different controls. */
+.kn-status-toggle {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+}
+
+.kn-status-option {
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--line);
+}
+
+.kn-status-option:last-child {
+  border-right: 0;
+}
+
+.kn-status-option.active {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+}
+
+.kn-reader-actions .secondary-button.is-starred {
+  color: var(--amber);
+  border-color: var(--warning-line);
+}
+
+.text-button.danger {
+  color: var(--red);
+}
+
+/* ---------- Card links ---------- */
+
+.kn-link-panel,
+.kn-linked-cards,
+.kn-sources {
+  padding: 14px 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.kn-link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.kn-link-option {
+  display: flex;
+  gap: 8px;
+  align-items: start;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.kn-linked-row,
+.kn-source-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.kn-linked-chip {
+  padding: 4px 11px;
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: var(--radius-pill);
+}
+
+.kn-source-chip {
+  padding: 4px 11px;
+  font-family: var(--font-num);
+  font-size: 0.74rem;
+  color: var(--muted);
+  background: var(--chip-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+}
+
+/* ---------- Reader layout: contents rail + body ---------- */
+
+.kn-reader-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 208px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .kn-reader-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.kn-toc {
+  position: sticky;
+  top: 16px;
+  order: 2;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+@media (max-width: 1100px) {
+  .kn-toc {
+    position: static;
+    order: 0;
+    max-height: none;
+  }
+}
+
+.kn-toc ol {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kn-toc button {
+  width: 100%;
+  padding: 3px 6px;
+  font: inherit;
+  font-size: 0.76rem;
+  line-height: 1.3;
+  text-align: left;
+  color: var(--muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-left: 2px solid transparent;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.kn-toc button:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-left-color: var(--accent);
+}
+
+.kn-toc li.level-2 button { padding-left: 14px; }
+.kn-toc li.level-3 button { padding-left: 24px; font-size: 0.72rem; }
+
+.kn-reader-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* ---------- Markdown document + TeX rendering ---------- */
+/* Moved to App.css: MarkdownDoc.jsx is used outside this lazy-loaded
+   chunk (the card drawer's note popup, the Focus Room tab), so its base
+   rendering styles need to be somewhere always loaded, not here. */
+
+/* ---------- Self test ---------- */
+
+.kn-selftest {
+  padding: 18px 20px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.kn-selftest-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kn-selftest-head h3 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+}
+
+.kn-selftest-bar {
+  height: 5px;
+  margin: 12px 0 14px;
+  overflow: hidden;
+  background: var(--track);
+  border-radius: var(--radius-pill);
+}
+
+.kn-selftest-bar span {
+  display: block;
+  height: 100%;
+  background: var(--green);
+  border-radius: var(--radius-pill);
+  transition: width 0.25s ease;
+}
+
+.kn-question-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: kn-q;
+}
+
+.kn-question {
+  position: relative;
+  padding: 12px 14px 12px 40px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line-strong);
+  border-radius: var(--radius);
+  counter-increment: kn-q;
+}
+
+.kn-question::before {
+  position: absolute;
+  top: 12px;
+  left: 13px;
+  font-family: var(--font-num);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  content: counter(kn-q);
+}
+
+.kn-question.rated-know {
+  border-left-color: var(--green);
+  background: var(--success-bg);
+}
+
+.kn-question.rated-unsure {
+  border-left-color: var(--amber);
+  background: var(--warning-bg);
+}
+
+.kn-question-text {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.kn-answer-zone {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.kn-answer {
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  background: var(--panel);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+}
+
+.kn-question-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.kn-rate {
+  padding: 4px 12px;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+}
+
+.kn-rate.know.active {
+  color: #fff;
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.kn-rate.unsure.active {
+  color: #fff;
+  background: var(--amber);
+  border-color: var(--amber);
+}
+
+/* ---------- Review footer ---------- */
+
+.kn-review-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.kn-review-footer h3 {
+  margin: 0 0 4px;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+}
+
+.kn-review-hint {
+  max-width: 46ch;
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.kn-review-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.kn-review-btn {
+  padding: 9px 20px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.kn-review-btn.shaky:hover { border-color: var(--red); color: var(--red); }
+.kn-review-btn.ok:hover { border-color: var(--blue); color: var(--blue); }
+.kn-review-btn.solid:hover { border-color: var(--green); color: var(--green); }
+
+/* ---------- Editor ---------- */
+
+.kn-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 22px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.kn-editor-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kn-editor-head h3 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+}
+
+.kn-editor-head-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.kn-editor-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.kn-editor-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.kn-editor-fields input,
+.kn-editor-fields select {
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 400;
+  color: var(--input-ink);
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.kn-editor-hint {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.kn-editor-hint code {
+  padding: 1px 5px;
+  font-family: var(--font-num);
+  font-size: 0.88em;
+  background: var(--chip-bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.kn-editor-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.kn-editor-body.split {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+@media (max-width: 900px) {
+  .kn-editor-body.split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.kn-editor-textarea {
+  min-height: 440px;
+  padding: 14px 16px;
+  font-family: var(--font-num), 'Consolas', monospace;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: var(--input-ink);
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  resize: vertical;
+}
+
+.kn-editor-preview {
+  max-height: 620px;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.kn-editor-preview .md-doc {
+  border: 0;
+  background: transparent;
+}
+
+.kn-editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.kn-editor-note {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* ---------- Empty state ---------- */
+
+.kn-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: start;
+  padding: 40px 32px;
+  background: var(--panel);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+}
+
+.kn-empty h3 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+}
+
+.kn-empty p {
+  max-width: 56ch;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ---------- Dark theme ---------- */
+
+:root[data-theme='dark'] .md-pre {
+  background: #100f0c;
+  border: 1px solid var(--line);
+}
+
+:root[data-theme='dark'] .kn-question {
+  background: color-mix(in srgb, var(--surface) 70%, #000);
+}
+
+:root[data-theme='dark'] .kn-kind-badge,
+:root[data-theme='dark'] .kn-kind-dot {
+  color: #14130f;
+}

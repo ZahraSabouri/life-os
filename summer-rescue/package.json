@@ -1,0 +1,48 @@
+{
+  "name": "summer-rescue-plan-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "test": "node --test",
+    "assets:sync": "node scripts/syncStudyAssets.mjs",
+    "assets:verify": "node scripts/syncStudyAssets.mjs --verify-only",
+    "db:seed": "node scripts/initTrackerDb.mjs",
+    "db:rebuild": "node scripts/initTrackerDb.mjs --rebuild",
+    "preview": "vite preview",
+    "app": "npm run build && npm run app:start",
+    "app:start": "node scripts/startLocalApp.mjs"
+  },
+  "dependencies": {
+    "@tiptap/core": "^3.28.0",
+    "@tiptap/extension-color": "^3.28.0",
+    "@tiptap/extension-font-family": "^3.28.0",
+    "@tiptap/extension-link": "^3.28.0",
+    "@tiptap/extension-placeholder": "^3.28.0",
+    "@tiptap/extension-table": "^3.28.0",
+    "@tiptap/extension-table-cell": "^3.28.0",
+    "@tiptap/extension-table-header": "^3.28.0",
+    "@tiptap/extension-table-row": "^3.28.0",
+    "@tiptap/extension-text-style": "^3.28.0",
+    "@tiptap/extension-underline": "^3.28.0",
+    "@tiptap/react": "^3.28.0",
+    "@tiptap/starter-kit": "^3.28.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "eslint": "^10.6.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.7.0",
+    "playwright-core": "^1.61.1",
+    "vite": "^8.1.1"
+  }
+}

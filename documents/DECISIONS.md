@@ -4,6 +4,15 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 6 October 2026 (late) — The Study hub is the Summer Rescue app (Xar's correction to Claude Code)
+
+- **The Study hub's structure is the Summer Rescue app's structure.** Same screens, same tools. The one difference: a new module does not come with premade cards. *Supersedes* the proposal in the entry below to remove Planner, Evidence, Rescue, "Why this next?" and similar: nothing of that kind is removed.
+- **The summer cards, plans and evidence are Xar's own past entries**, not something fixed in the app. They become data that can be added, read, edited and removed, in a past semester.
+- **The right source is the app in her university folder** (`…\1. Spring 2026\Summer_Rescue_Campaign_2026\summer-rescue-plan-app`, last saved 23 August). Everything built before used a copy frozen on 6 July, with almost no progress and about 40 fewer screens and tools.
+- **Health and Admin leave Study** (confirmed from the entry below): in the real app these are "Life & Admin", "Admin & Dates", Job Hunt, the interview pages and the shopping list. Their data is kept for a later home.
+- **Modules do not run across two semesters.** A module can be duplicated, with its whole planning, into a new time frame.
+- **No work on the Life OS frame at this stage.** What matters there: Study is correctly connected to the Life OS calendar, with nothing shown twice.
+
 ## 6 October 2026 (evening) — Study is a general study app; one frame for the whole app (Xar with Claude Code)
 
 Xar's correction after using native Study:

@@ -5,7 +5,7 @@ cd /d "%LIFE_OS_BUILD_ROOT%code\life-os\frontend"
 if errorlevel 1 goto fail
 call npm.cmd run build
 if errorlevel 1 goto fail
-cd /d "%LIFE_OS_BUILD_ROOT%summer-rescue-plan-app"
+cd /d "%LIFE_OS_BUILD_ROOT%summer-rescue"
 if errorlevel 1 goto fail
 call npm.cmd run build -- --base=/apps/summer-rescue/
 if errorlevel 1 goto fail

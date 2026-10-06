@@ -46,7 +46,7 @@ PostgreSQL 18.6 is running. Fresh `lifeos`/`lifeos_test` and owner/app roles are
 - **Commit:** `[3-cp2] Import Study history and connect the shared calendar`.
 
 ### CP3: Timetable and final parity
-**On hold since 6 October (evening).** Xar reviewed Study and changed its direction: a general study app for anyone, one frame shared with the rest of Life OS, and no planning by the app itself (`../DECISIONS.md`, newest entry). The unticked items below, and the parity ledger further down, are not to be continued. The replacement plan is proposed in `../sessions/2026-10-06-claude-code-stage-3-study-feedback.md` and becomes new checkpoints here once Xar has answered its questions.
+**Closed unfinished on 6 October (late); replaced by CP4 to CP8 below.** Xar's correction (`../DECISIONS.md`, newest entry): the Study hub is the Summer Rescue app itself, the real one from her university folder, made general. Everything in CP1 to CP3 was built from a copy frozen on 6 July. The unticked items below and the parity ledger further down are not to be continued; the page they describe now lives at `/study-native` and retires in CP5.
 
 **6 October scope changes, all asked for directly by Xar during the Claude Code session:** (1) a style menu on every page; (2) a fourth, modern style for the whole app, unified rather than different per area; (3) backend for Calendar and Study finished first, styles second; (4) a report on data structure and functions (`../Study_and_Calendar_Backend.md`). Folder discovery now watches for new files only unless the existing files are asked for (decision recorded in DECISIONS).
 - [x] Transfer original Summer Rescue design/components and native reusable data. Sidebar overflow and summary tiles fixed. Study's own light/dark switch is replaced by the four Life OS styles (Xar: one unified design); the saved `theme` preference is left in the data, unused.
@@ -59,6 +59,41 @@ PostgreSQL 18.6 is running. Fresh `lifeos`/`lifeos_test` and owner/app roles are
 - [ ] Added, not done: Cardiff Life, Budget and JobMap follow the four styles. They have the style menu but keep their own look.
 - **Done when:** Study is reusable for the next semester and its recorded study features/data work through the native module; Xar can review it before retirement of the source.
 - **Commit:** `[3-cp3] Complete Study planning and import workflows`.
+
+### CP4: The real Summer Rescue is the Study hub
+- [x] The real app and its data (23 August) copied from the university folder into `summer-rescue/`; the original is only read. Six absolute image and file addresses changed so it runs under `/apps/summer-rescue/`; nothing else in it was edited.
+- [x] Life OS serves it at `/study`. Its local API is handed only the addresses it owns, because it sets "never show in a frame" headers on everything it sees.
+- [x] The database-backed page moved to `/study-native`; calendar links follow it. The stale summer copy in the database is marked completed so it stops raising overdue items.
+- **Done when:** the Study hub button opens the real app with the real progress; Calendar and Today are unchanged apart from losing the stale overdue items.
+- **Commit:** `[3-cp4] Make the real Summer Rescue the Study hub`.
+
+### CP5: One store: the app saves into the Study database
+The app talks to its server through one file (`src/utils/localStateFile.js`): `/api/state`, `/api/events`, `/api/resources`. Answer those from PostgreSQL instead of the JSON file.
+- [ ] A server adapter between the app's saved state and Study records (cards, modules, materials, settings, progress events), in both directions. Test: the real state, turned into records and back, comes out identical.
+- [ ] The app's own revision check on save (409 on a stale tab) keeps working; every change still lands in Study history.
+- [ ] Bring the real data in once, updating the stale 6 July records in place by their source id so nothing appears twice. Health, Admin, the shopping list, Job Hunt and the interview items are not brought into Study; they stay in the saved source for a later home.
+- [ ] The autumn records already in the database (timetable, assessments, materials) show in the same app. `/study-native` and its components are removed.
+- **Done when:** `/study` reads and writes only the database; counts match the source; a restart keeps everything; the JSON file is no longer written.
+- **Verify:** round-trip test, counts before and after, a backup first, the calendar duplicate check.
+- **Commit:** `[3-cp5] Run the Study hub on the Study database`.
+
+### CP6: Nothing premade: the plan becomes data
+- [ ] `App.jsx` and the eight components that import `src/data/*` take modules, cards, study sequences, schedule rules, exam dates and knowledge notes from the chosen semester instead.
+- [ ] Semesters: define, choose on entering Study, mark as past. "Summer 2026" becomes a past semester holding everything that used to be in code, editable like anything else.
+- [ ] Modules: add, edit and remove, with all their detail. A new module starts empty.
+- [ ] The areas that are not study leave Study's menus (Life & Admin, Admin & Dates, Job Hunt, Sati Interview, Shopping). Their data is kept.
+- **Done when:** a new semester with a new module works without touching code, and the summer semester looks and behaves as it does today.
+- **Commit:** `[3-cp6] Move the built-in plan into data and add semesters`.
+
+### CP7: Duplicate a module into a new time frame
+- [ ] Copies the module with its cards, checklists, study sequences, notes, resource links, classes and assessments into a chosen semester. Every date shifts by the chosen offset. Progress is cleared in the copy (done, logged hours, evidence, focus sessions).
+- **Done when:** a duplicated module is independent: editing either one leaves the other unchanged.
+- **Commit:** `[3-cp7] Duplicate a module into a new time frame`.
+
+### CP8: Calendar and acceptance
+- [ ] Calendar and Today read the one store: active semesters only, each thing once; a link opens the item in `/study`.
+- [ ] Xar's acceptance checklist, rewritten for the app as it then is. No merge to main before that.
+- **Commit:** `[3-cp8] Connect the Study hub to the calendar`.
 
 ## Source feature inventory and parity ledger
 Inventory of both checked-out source and five cached newer commits (`6360120` → `9bba45f`). No source checkout/reset/fetch needed.

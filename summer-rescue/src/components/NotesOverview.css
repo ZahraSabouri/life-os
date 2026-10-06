@@ -1,0 +1,257 @@
+/* Notes overview: a finder across module/card/resource notes and Knowledge
+   revisit flags. Four clearly separated sections, not one blended feed —
+   visual language (kind dots, chips) borrowed from ModuleKnowledge.css so
+   this reads as the same app. */
+
+.notes-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 860px;
+  margin: 0 auto;
+
+  --tone-module: var(--blue);
+  --tone-card: var(--green);
+  --tone-resource: var(--amber);
+  --tone-knowledge: #8a6bb0;
+}
+
+.notes-overview-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notes-overview-head h2 {
+  margin: 0;
+}
+
+.notes-overview-sub {
+  margin: 2px 0 6px;
+  color: var(--muted);
+}
+
+.notes-overview-search {
+  width: 100%;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 0.88rem;
+  color: var(--input-ink);
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.notes-overview-stats {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.notes-overview-stats strong {
+  font-family: var(--font-num);
+  color: var(--ink);
+}
+
+.notes-filter-facet {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.notes-filter-facet-label {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.notes-module-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.notes-tag-filter {
+  padding: 4px 11px;
+  font: inherit;
+  font-size: 0.76rem;
+  color: var(--muted);
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+}
+
+.notes-tag-filter.active {
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.notes-sort-select {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.notes-sort-select select {
+  padding: 5px 8px;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--input-ink);
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.notes-show-more {
+  align-self: flex-start;
+}
+
+.notes-overview-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.notes-section-icon {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  font-size: 0.85rem;
+  color: #fff;
+  border-radius: 8px;
+  background: var(--tone, var(--accent));
+}
+
+.notes-section-icon.tone-module { --tone: var(--tone-module); }
+.notes-section-icon.tone-card { --tone: var(--tone-card); }
+.notes-section-icon.tone-resource { --tone: var(--tone-resource); }
+.notes-section-icon.tone-knowledge { --tone: var(--tone-knowledge); }
+/* Group headers (a module or History/Life/Admin/Job Hunt) get a neutral tone
+   of their own — the colour-coding budget is spent on the per-row TYPE badge
+   instead, since a group now mixes module/card/resource/concept together. */
+.notes-section-icon.tone-group { --tone: var(--ink); background: color-mix(in srgb, var(--ink) 78%, transparent); }
+
+.notes-group-code {
+  padding: 1px 7px;
+  margin-left: -2px;
+  font-family: var(--font-num);
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--chip-bg);
+  border-radius: var(--radius-pill);
+}
+
+.notes-overview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.notes-overview-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  cursor: pointer;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.notes-overview-row:hover {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--line));
+  background: var(--accent-soft);
+}
+
+.notes-overview-row .notes-section-icon {
+  margin-top: 1px;
+}
+
+.notes-overview-row-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.notes-overview-row-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.notes-overview-row-head strong {
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+
+.notes-chip-row {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.notes-chip {
+  padding: 2px 9px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--chip-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+}
+
+.notes-chip.tone-module { color: var(--tone-module); }
+.notes-chip.tone-card { color: var(--tone-card); }
+.notes-chip.tone-resource { color: color-mix(in srgb, var(--tone-resource) 70%, black 15%); }
+.notes-chip.tone-knowledge { color: var(--tone-knowledge); }
+
+.notes-overview-preview {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The Knowledge section's row icon reuses ModuleKnowledge's own kind-dot
+   colour mapping (App.css / ModuleKnowledge.css .kn-kind-dot) so a concept
+   note's kind reads identically in both places. */
+.notes-kind-dot {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  font-size: 0.8rem;
+  color: #fff;
+  border-radius: 8px;
+  background: var(--kind, var(--accent));
+}
+
+.notes-kind-dot.kind-concept { --kind: var(--blue); }
+.notes-kind-dot.kind-cheatsheet { --kind: var(--green); }
+.notes-kind-dot.kind-formula { --kind: #8a6bb0; }
+.notes-kind-dot.kind-traps { --kind: var(--red); }
+.notes-kind-dot.kind-qa { --kind: var(--amber); }
