@@ -23,7 +23,8 @@ Xar needs to add cards for her autumn modules inside the Study hub and see them 
 - Rehearsal on a copy of the live data in `lifeos_test`, on a private server (port 47860), driven in headless Chrome: opened Autumn 2026, visited all 16 views, opened a module's Materials tab, added a card, went back to Summer 2026. No page errors. Calendar on the copy: 60 study items, no repeated id, no repeated title and start, nothing from the finished summer.
 - Earlier the same night, on an empty test semester: add a semester, add a module, add a card; the card reached the calendar once.
 - After the switch, on the live server: the semester list shows inside Life OS; calendar 1 October to 30 November has 116 items, 58 from Study, no repeated id and no repeated area, title and start.
-- **Not checked:** duplicate module (never run); a save conflict between two tabs in the browser; the app's own tests in `summer-rescue` (not run, many describe the old built-in plan); phone width; the four Life OS styles.
+- Duplicate module, on the test copy: the summer Time Series module (11 cards, 55 notes, 125 resources) copied into a new semester starting 1 February 2027. All 11 cards arrived 181 days later, 10 with their checklists and resource links, none done, no hours, evidence or focus sessions; the summer semester was byte-for-byte unchanged. The Duplicate button in Semester setup then made a second copy inside that semester (22 cards, two modules in the menu), no page errors.
+- **Not checked:** a save conflict between two tabs in the browser; the app's own tests in `summer-rescue` (not run, many describe the old built-in plan); phone width; the four Life OS styles.
 
 ## Data touched
 - Live database `lifeos`, each step after a dump in `../Life_OS_backups/study-2026-10-06/`:
@@ -56,4 +57,4 @@ Xar needs to add cards for her autumn modules inside the Study hub and see them 
 7. Change semester returns to the list.
 
 ## Next step
-Run "Duplicate module" on `lifeos_test` and fix what breaks, then write tests for `hosting/study/hub/`. The clean-up list is in STATUS under "Known problems and limits".
+Write tests for `hosting/study/hub/` (store, card records, router, duplicate). The clean-up list is in STATUS under "Known problems and limits".

@@ -17,11 +17,10 @@ Active brief: `briefs/stage-3-study-hub.md` (CP5 to CP8). Latest note: `sessions
 
 ## Exact next step
 1. Ask Xar to try the acceptance list at the end of the session note and collect what is wrong.
-2. Test "Duplicate module" end to end on `lifeos_test` (it is written and wired, never run).
-3. Add automated tests for `hosting/study/hub/` (store, card records, router, duplicate).
-4. Clean-up listed under "Known problems and limits".
+2. Add automated tests for `hosting/study/hub/` (store, card records, router, duplicate).
+3. Clean-up listed under "Known problems and limits".
 
-**Next prompt:** Continue Life OS: finish CP5 to CP8 from the brief, starting with the duplicate-module test.
+**Next prompt:** Continue Life OS: finish CP5 to CP8 from the brief, starting with tests for `hosting/study/hub/`.
 
 ## How to see it
 `Start Life OS.cmd`, then http://127.0.0.1:47850 → Study hub. After changing `summer-rescue/` or the frontend: `Build Life OS.cmd`. After changing `hosting/`: stop and start.
@@ -39,7 +38,7 @@ To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-t
 - **Renaming a module** changes its title and menu name; cards keep the name it was created with in their Module field.
 - **Classes and assessments** show in the hub but are not yet editable there (the addresses exist, the screen does not). The 5 university reminders that belong to no semester are on the calendar, not in the hub.
 - **An exam date typed into the hub's settings** for a module that already has an assessment record would show twice on the calendar.
-- **Duplicate module** has never been run end to end.
+- **Duplicate module** was tried on the test copy only (see the session note); Xar has not used it yet.
 - **Leftover summer wording inside pages:** Schedule totals say "Project" and "Job hunt"; Planner says "Exam window in 0 days" when no exam date is set; about 200 places in the page code still mention summer module names (harmless for other semesters, to be made general).
 - **Schedule:** a class block squeezes its title into a narrow column at some window widths.
 - **Uploaded files** (`/api/resources`) are still kept as files in `summer-rescue/local-data/resources`, shared by all semesters.

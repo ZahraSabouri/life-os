@@ -94,9 +94,9 @@ The app talks to its server through one file (`src/utils/localStateFile.js`): `/
 - **Done when:** a new semester with a new module works without touching code, and the summer semester looks and behaves as it does today.
 
 ### CP7: Duplicate a module into a new time frame
-- [ ] Copies the module with its cards, checklists, study sequences, notes, resource links, classes and assessments into a chosen semester. Every date shifts by the chosen offset. Progress is cleared in the copy (done, logged hours, evidence, focus sessions). **Written (`hosting/study/hub/duplicate.mjs`, button in Semester setup), never run.** Test on `lifeos_test` first.
+- [x] Copies the module with its cards, checklists, study sequences, notes, resource links, classes and assessments into a chosen semester. Every date shifts by the chosen offset. Progress is cleared in the copy (done, logged hours, evidence, focus sessions). Tried on `lifeos_test` on 7 October: a summer module with 11 cards, 55 notes and 125 resources copied into a new semester 181 days later with no progress carried over and the original unchanged; the button in Semester setup then copied it again inside that semester. No automated test yet.
 - **Done when:** a duplicated module is independent: editing either one leaves the other unchanged.
-- **Commit:** `[3-cp7] Duplicate a module into a new time frame`.
+- **Commit:** in 732f3a8; the trial is recorded in the 7 October session note.
 
 ### CP8: Calendar and acceptance
 - [x] Calendar and Today read the one store: active semesters only, each thing once (checked live: 116 items over two months, none repeated).
