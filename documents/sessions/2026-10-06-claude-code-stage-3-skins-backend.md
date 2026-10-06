@@ -13,7 +13,7 @@ Continue from where Codex stopped mid-CP3. During the session Xar added: a style
 ## Files and commits
 - `6f455f9` [3-cp3] Work in progress: Summer Rescue design transfer, folder discovery, focus workbench (Codex's work, saved)
 - `46f965e` [3-cp3] Add the modern skin, a style menu on every page, and Study in all four styles
-- This session's last commit: [3-cp3] Restore and roll back Study records, daily backups, safe folder discovery
+- `f4a8068` [3-cp3] Restore and roll back Study records, daily backups, safe folder discovery
 
 ## How I checked it
 - 140 isolated tests pass: `node --test code/life-os/shared/calendar.test.js hosting/calendar-route.test.mjs hosting/calendar/*.test.mjs hosting/study/*.test.mjs code/life-os/frontend/test/*.test.js code/life-os/backend/src/modules/study/{schema,router,repository}.test.js`. Study render test: 2 pass. Frontend build passes.
