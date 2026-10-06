@@ -1,28 +1,17 @@
 // Exam-date confidence model.
 //
-// The app stores the overall Cardiff assessment window separately from the
-// user's confirmed per-module dates. The live plan now supplies all three
-// confirmed sittings, while these helpers retain an explicit fallback state for
-// imported or manually cleared settings.
+// A semester may publish an overall exam window, and each module may have its own
+// confirmed exam date. Both are things the owner enters; nothing is assumed.
 //
 // Three states are distinguishable at every consumer:
-//   confirmed   - a real personal date has been entered for this module
-//   unconfirmed - no personal date is known for this module
-//   window      - the countdown is running against the overall window placeholder
-//
-// Constants are duplicated from data/summerRescuePlan.js rather than imported so
-// that utils stay free of the card catalogue. examDates.test.mjs asserts they
-// have not drifted apart.
+//   confirmed   - a real date has been entered for this module
+//   unconfirmed - no date is known for this module
+//   window      - the countdown is running against the start of the exam window
+import { STUDY_MODULES } from '../data/studyModules.js'
+import { semesterWindow } from '../data/plan.js'
 
-export const CAMPAIGN_START = '2026-08-08'
-export const EXAM_WINDOW_START = '2026-08-18'
-export const EXAM_WINDOW_END = '2026-08-28'
-
-export const EXAM_MODULES = [
-  { id: 'aml', label: 'Applied ML', code: 'CMT307' },
-  { id: 'time-series', label: 'Time Series', code: 'MA4508' },
-  { id: 'mat700', label: 'MAT700', code: 'MAT700' },
-]
+// Any module of the open semester can have an exam date.
+export const EXAM_MODULES = STUDY_MODULES.map((module) => ({ id: module.id, label: module.label, code: module.code || module.label }))
 
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/
 
@@ -36,10 +25,11 @@ export function isIsoDay(value) {
   )
 }
 
+// The days exams can fall on. Without a published window that is the whole semester.
 export function examWindow(schedule = {}) {
-  const start = isIsoDay(schedule.examWindowStart) ? schedule.examWindowStart : EXAM_WINDOW_START
-  const rawEnd = isIsoDay(schedule.examWindowEnd) ? schedule.examWindowEnd : EXAM_WINDOW_END
-  return { start, end: rawEnd < start ? start : rawEnd }
+  const first = [schedule.examWindowStart, schedule.campaignStart, semesterWindow.start].find(isIsoDay) ?? '0001-01-01'
+  const last = [schedule.examWindowEnd, schedule.campaignEnd, semesterWindow.end].find(isIsoDay) ?? '9999-12-31'
+  return { start: first, end: last < first ? first : last, published: isIsoDay(schedule.examWindowStart) }
 }
 
 export function examModule(moduleId) {
@@ -65,14 +55,14 @@ export function validateModuleExamDate(value, { schedule = {}, allowException = 
     }
   }
 
-  const campaignStart = isIsoDay(schedule.campaignStart) ? schedule.campaignStart : CAMPAIGN_START
-  if (text < campaignStart) {
+  const campaignStart = [schedule.campaignStart, semesterWindow.start].find(isIsoDay) ?? ''
+  if (campaignStart && text < campaignStart) {
     return {
       ok: false,
       status: 'invalid',
       date: null,
       code: 'pre-campaign',
-      message: `An exam cannot fall before the campaign starts on ${campaignStart}.`,
+      message: `An exam cannot fall before the semester starts on ${campaignStart}.`,
     }
   }
 
@@ -137,7 +127,7 @@ export function confirmedExamDates(moduleExamDates = {}, schedule = {}) {
  * placeholder against the window start; consumers must label it as such.
  */
 export function resolveExamTarget({ moduleExamDates = {}, schedule = {}, referenceDate = '' } = {}) {
-  const { start, end } = examWindow(schedule)
+  const { start, end, published } = examWindow(schedule)
   const confirmed = confirmedExamDates(moduleExamDates, schedule).sort((a, b) =>
     a.date.localeCompare(b.date),
   )
@@ -164,7 +154,8 @@ export function resolveExamTarget({ moduleExamDates = {}, schedule = {}, referen
     confirmed: false,
     moduleId: null,
     label: 'exam window',
-    date: start,
+    // With neither a module date nor a published window there is nothing to count down to.
+    date: published ? start : null,
     windowStart: start,
     windowEnd: end,
     confirmedCount: 0,

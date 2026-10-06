@@ -2,7 +2,6 @@ import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } fro
 import './App.css'
 import { AddCardDialog } from './components/AddCardDialog'
 import { AccessibleDialog } from './components/AccessibleDialog'
-import { AppIntro } from './components/AppIntro'
 import { CardDetailDrawer } from './components/CardDetailDrawer'
 import { CommandPalette } from './components/CommandPalette'
 import { FilterBar } from './components/FilterBar'
@@ -13,12 +12,10 @@ import { StudyTimer } from './components/StudyTimer'
 import { ThemeToggle } from './components/ThemeToggle'
 import { FocusStatsBadge } from './components/FocusStats'
 import { FocusToasts } from './components/FocusToasts'
-import { ExamDateStatus, ModuleExamDateFields } from './components/ModuleExamDates'
-import { ShoppingList } from './components/ShoppingList'
+import { ModuleExamDateFields } from './components/ModuleExamDates'
 import { TodayView } from './components/TodayView'
 import { Celebration } from './components/Celebration'
 import { ImportPreviewDialog } from './components/ImportPreviewDialog'
-import { InstallDesktopApp } from './components/InstallDesktopApp'
 import { buildHashRoute, parseHashRoute } from './utils/appRoute'
 
 // Route-level code splitting.
@@ -40,7 +37,7 @@ const ProgressView = lazyNamed(() => import('./components/ProgressView'), 'Progr
 const ScheduleView = lazyNamed(() => import('./components/ScheduleView'), 'ScheduleView')
 const StudyHub = lazyNamed(() => import('./components/StudyHub'), 'StudyHub')
 const DayReview = lazyNamed(() => import('./components/DayReview'), 'DayReview')
-const JobHuntPlaybook = lazyNamed(() => import('./components/JobHuntPlaybook'), 'JobHuntPlaybook')
+const SemesterSetup = lazyNamed(() => import('./hub/SemesterSetup'), 'SemesterSetup')
 const RescueTriage = lazyNamed(() => import('./components/RescueTriage'), 'RescueTriage')
 const AnalyticsView = lazyNamed(() => import('./components/TrackerViews'), 'AnalyticsView')
 const BoardView = lazyNamed(() => import('./components/TrackerViews'), 'BoardView')
@@ -59,26 +56,22 @@ function ViewLoading({ label = 'Loading view' }) {
   )
 }
 import {
+  basePlanCards,
   campaignMeta,
-  rescueCards,
   scheduleExceptions,
   scheduleRules,
-} from './data/summerRescuePlan'
-import { applyAmlVideoStudyPlan } from './data/amlVideoPlan'
-import { applyCardStudySequences } from './data/cardStudySequences'
-import { attachCardResourceLinks } from './data/cardResources'
-import { FILTER_DEFAULTS, MODULE_OPTIONS, PHASE_OPTIONS, TAG_OPTIONS, VIEW_OPTIONS } from './data/constants'
+} from './data/plan'
+import { FILTER_DEFAULTS, MODULE_OPTIONS, MODULE_VIEWS, PHASE_OPTIONS, TAG_OPTIONS, VIEW_OPTIONS } from './data/constants'
 import { STUDY_MODULES } from './data/studyModules'
 import { KNOWLEDGE_SEEDS } from './data/knowledgeSeeds'
+import { askForSemesterOnNextLoad, session } from './hub/session'
 import { relatedNotesForCard, resolveModuleNotes } from './utils/knowledge'
 import { onFocusMessage, postFocusMessage } from './utils/focusSession'
 import { EVENT_COVERAGE, coverageSummary } from './state/eventCoverage'
 import { useTrackerState } from './state/useTrackerState'
 import {
   examCountdownDays,
-  examWindow,
   resolveExamTarget,
-  resolveModuleExamDates,
 } from './utils/examDates'
 import {
   chooseBackupHandle,
@@ -92,21 +85,19 @@ import {
   isCardAttachmentResource,
   readLocalDataHealth,
   readLocalResources,
-  rebuildLocalDatabase,
   uploadCardAttachmentFile,
   uploadLocalResource,
 } from './utils/localStateFile'
-import { cardPlanLane, deriveStats, filterCards, sortCards, startOfWeek, sumHours, todayString } from './utils/progress'
-import { buildWeeklyLifeCardInputs, recurringLifeCardIdentity } from './utils/lifeCards'
+import { cardPlanLane, deriveStats, filterCards, sortCards, sumHours, todayString } from './utils/progress'
 import { buildExecutionContext, expandScheduleForDate } from './utils/schedule'
 import { applyBlockTimeOverride, blockLogKey } from './utils/dayReview'
 import { generateNotifications } from './utils/notifications'
 import { focusRewards } from './utils/focusRewards'
 import { listRollingBackups, readRollingBackup, recordRollingBackup } from './utils/rollingBackup'
 
-const SEQUENCED_BASE_CARDS = applyCardStudySequences(rescueCards)
-const PLANNED_BASE_CARDS = applyAmlVideoStudyPlan(SEQUENCED_BASE_CARDS)
-const ENRICHED_BASE_CARDS = attachCardResourceLinks(PLANNED_BASE_CARDS, STUDY_MODULES)
+// Cards that came with the open semester's plan, already complete (study steps and
+// resource links included). A semester the owner starts herself has none.
+const ENRICHED_BASE_CARDS = basePlanCards
 
 const LABEL_BY_ID = Object.fromEntries(VIEW_OPTIONS.map((view) => [view.id, view.label]))
 
@@ -143,13 +134,24 @@ function optionExists(options, value, except = '') {
   return options.some((option) => option.toLowerCase() === normalised && option.toLowerCase() !== excluded)
 }
 
+// The semester's own modules sit in the Study group, after Today and the hub.
 const NAV_GROUPS = [
-  { label: 'Study', items: ['today', 'hub', 'aml', 'time-series', 'team-project', 'mat700'] },
+  { label: 'Study', items: ['today', 'hub', ...MODULE_VIEWS.map((view) => view.id)] },
   { label: 'Knowledge', items: ['general-knowledge', 'notes'] },
   { label: 'Planning', items: ['schedule', 'review', 'dashboard', 'progress', 'analytics'] },
   { label: 'Board', items: ['board', 'table', 'week', 'evidence'] },
-  { label: 'Focus', items: ['interview', 'rescue', 'areas', 'project', 'jobs', 'admin'] },
+  { label: 'Focus', items: ['rescue'] },
+  { label: 'Semester', items: ['setup'] },
 ]
+
+const MODULE_VIEW_IDS = new Set(MODULE_VIEWS.map((view) => view.id))
+const MODULE_ICON_COUNT = 4
+
+// Modules have no drawing of their own, so each takes one of four in turn.
+function iconForView(viewId) {
+  if (!MODULE_VIEW_IDS.has(viewId)) return viewId
+  return `module-${MODULE_VIEWS.findIndex((view) => view.id === viewId) % MODULE_ICON_COUNT}`
+}
 
 const FILTERABLE_VIEWS = new Set(['evidence', 'rescue', 'table', 'dashboard', 'analytics', 'week', 'board'])
 
@@ -167,7 +169,7 @@ function routeFilters(filters = {}) {
 
 const VIEW_META = {
   today: { title: 'Today', subtitle: 'Your mission control — now, next, and protected capacity.' },
-  hub: { title: 'Study Hub', subtitle: 'Command center for the whole rescue campaign.' },
+  hub: { title: 'Study Hub', subtitle: 'The whole semester in one place.' },
   dashboard: { title: 'Planner', subtitle: 'Pace, pipeline, and this week at a glance.' },
   progress: { title: 'Progress', subtitle: 'Trajectory, pace, and burn-down.' },
   schedule: { title: 'Schedule', subtitle: 'Hour-by-hour protected routines, study, project, and job blocks.' },
@@ -180,21 +182,14 @@ const VIEW_META = {
     title: 'Notes',
     subtitle: 'Every module, card, and resource note, plus Knowledge concepts flagged to revisit — classified, not blended.',
   },
-  aml: { title: 'Applied ML', subtitle: 'Lab-first practice — the priority module.' },
-  'time-series': { title: 'Time Series', subtitle: 'Exam-template drills, repeated to fluency.' },
-  'team-project': { title: 'Team Project', subtitle: 'Protected CMT501 capacity; detailed project management stays elsewhere.' },
-  mat700: { title: 'Mathematical Methods for Data Mining', subtitle: 'Tutorial-first recovery, timed recall, and paper practice.' },
-  interview: { title: 'Sati Interview', subtitle: 'Bounded practical preparation, group rehearsal, and buffered Bridgend travel.' },
+  ...Object.fromEntries(STUDY_MODULES.map((module) => [module.viewId, { title: module.title, subtitle: module.subtitle ?? '' }])),
   board: { title: 'Columns', subtitle: 'Status board across every lane.' },
   table: { title: 'Table', subtitle: 'Dense, editable card grid.' },
   week: { title: 'This Week', subtitle: 'Your seven-day working plan.' },
   analytics: { title: 'Analytics', subtitle: 'Charts, heatmap, and module mix.' },
   evidence: { title: 'Evidence', subtitle: 'Outputs and proof of work.' },
   rescue: { title: 'Rescue Lane', subtitle: 'Buffers and slipped-card recovery.' },
-  project: { title: 'Project Capacity', subtitle: 'Bounded CMT501 space without duplicating the project app.' },
-  jobs: { title: 'Job Hunt', subtitle: 'A bounded opportunity lane that cannot consume exam preparation.' },
-  admin: { title: 'Admin & Dates', subtitle: 'Exam logistics and date watch.' },
-  areas: { title: 'Life, Health & Admin', subtitle: 'Personal routines and logistics, tracked separately from academic pace.' },
+  setup: { title: 'Semester setup', subtitle: 'This semester’s modules, classes and assessments: add, change or remove them.' },
 }
 
 const VALID_VIEW_IDS = new Set(Object.keys(VIEW_META))
@@ -268,7 +263,7 @@ function Icon({ name }) {
         </>
       )
       break
-    case 'aml':
+    case 'module-0':
       body = (
         <>
           <rect {...p} x="7" y="7" width="10" height="10" rx="2" />
@@ -276,7 +271,7 @@ function Icon({ name }) {
         </>
       )
       break
-    case 'time-series':
+    case 'module-1':
       body = <path {...p} d="M3 12h3l2-6 4 12 3-8 1.5 3H21" />
       break
     case 'review':
@@ -295,20 +290,12 @@ function Icon({ name }) {
         </>
       )
       break
-    case 'team-project':
+    case 'module-2':
       body = (
         <>
           <path {...p} d="M21 8l-9-5-9 5v8l9 5 9-5V8Z" />
           <path {...p} d="M3 8l9 5 9-5M12 13v8" />
           <path {...p} d="M8 15l4 2 4-2" />
-        </>
-      )
-      break
-    case 'interview':
-      body = (
-        <>
-          <rect {...p} x="3" y="7" width="18" height="13" rx="2" />
-          <path {...p} d="M8 7V5.5A2.5 2.5 0 0 1 10.5 3h3A2.5 2.5 0 0 1 16 5.5V7M3 12h18M10 12v2h4v-2" />
         </>
       )
       break
@@ -321,7 +308,7 @@ function Icon({ name }) {
         </>
       )
       break
-    case 'mat700':
+    case 'module-3':
       body = (
         <>
           <circle {...p} cx="6" cy="6" r="1.3" />
@@ -412,35 +399,11 @@ function Icon({ name }) {
         </>
       )
       break
-    case 'project':
+    case 'setup':
       body = (
         <>
-          <path {...p} d="M21 8l-9-5-9 5v8l9 5 9-5V8Z" />
-          <path {...p} d="M3 8l9 5 9-5M12 13v9" />
-        </>
-      )
-      break
-    case 'admin':
-      body = (
-        <>
-          <path {...p} d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6l7-3Z" />
-          <path {...p} d="M9 12l2 2 4-4" />
-        </>
-      )
-      break
-    case 'areas':
-      body = (
-        <>
-          <path {...p} d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.7A4 4 0 0 1 19 11c0 5.6-7 10-7 10Z" />
-          <path {...p} d="M12 8v8M8 12h8" />
-        </>
-      )
-      break
-    case 'jobs':
-      body = (
-        <>
-          <rect {...p} x="3" y="7" width="18" height="13" rx="2.5" />
-          <path {...p} d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2" />
+          <rect {...p} x="3" y="5" width="18" height="16" rx="2.5" />
+          <path {...p} d="M3 9.5h18M8 3v4M16 3v4M12 12.5v5M9.5 15h5" />
         </>
       )
       break
@@ -486,24 +449,13 @@ function scopeCardsForView(view, cards, referenceDate) {
       (card) => cardPlanLane(card, referenceDate) === 'Rescue Lane' || card.tags.includes('rescue'),
     )
   }
-  if (view === 'mat700') {
-    return cards.filter((card) => card.moduleGroup === 'MAT700')
-  }
-  if (view === 'project') {
-    return cards.filter((card) => card.moduleGroup === 'Group Project')
-  }
-  if (view === 'admin') {
-    return cards.filter((card) => card.moduleGroup === 'Admin')
-  }
-  if (view === 'jobs') {
-    return cards.filter((card) => card.moduleGroup === 'Job Hunt')
-  }
   return cards
 }
 
 function buildBackupName() {
   const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-  return `summer-rescue-tracker-backup-${stamp}.json`
+  const name = String(session.semester?.title ?? 'semester').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+  return `study-hub-${name || 'semester'}-backup-${stamp}.json`
 }
 
 function formatExportStamp(value) {
@@ -523,7 +475,7 @@ function latestStamp(...values) {
 function buildTrackerBackupPayload(state, snapshots, exportedAt) {
   return {
     exportedAt,
-    app: 'summer-rescue-plan-app',
+    app: 'study-hub',
     campaignMeta,
     state: {
       ...state,
@@ -585,7 +537,6 @@ export default function App() {
     }
   })
   const [navOpen, setNavOpen] = useState(false)
-  const [cardiffLinksOpen, setCardiffLinksOpen] = useState(false)
   // Bumped on every nav click, including a click back to the page you're
   // already on. `.view-anim`'s key below combines this with activeView, so a
   // repeat click still forces a full remount (filters/local view state reset
@@ -596,21 +547,6 @@ export default function App() {
   const [newPhaseName, setNewPhaseName] = useState('')
   const [moduleNameEdits, setModuleNameEdits] = useState({})
   const [phaseNameEdits, setPhaseNameEdits] = useState({})
-  const [entered, setEntered] = useState(() => {
-    const route = parseAppHash()
-    try {
-      return localStorage.getItem('srp-skip-intro') === '1' || route.view !== 'today' || Boolean(route.cardId || route.resourceId)
-    } catch {
-      return route.view !== 'today' || Boolean(route.cardId || route.resourceId)
-    }
-  })
-  const [skipIntro, setSkipIntro] = useState(() => {
-    try {
-      return localStorage.getItem('srp-skip-intro') === '1'
-    } catch {
-      return false
-    }
-  })
   const [dataHealth, setDataHealth] = useState(null)
   const [dataHealthStatus, setDataHealthStatus] = useState('idle')
   const autosaveSupported = fileBackupSupported()
@@ -628,7 +564,8 @@ export default function App() {
 
   const configuredReferenceDate = tracker.state.settings.referenceDate
   const referenceDate = configuredReferenceDate < todayString() ? todayString() : configuredReferenceDate
-  const mat700Active = tracker.state.settings.mat700Active
+  // Every module of the semester is in play; pausing one is not offered.
+  const mat700Active = true
   const theme = tracker.state.settings.theme ?? 'light'
   const referenceDateRef = useRef(referenceDate)
   const updateSettingsRef = useRef(tracker.updateSettings)
@@ -689,7 +626,7 @@ export default function App() {
   const backupStatusText = unsavedSinceBackup
     ? 'Unsaved since backup'
     : localFileSavedAt === lastBackupAt
-      ? `Local file saved ${formatExportStamp(localFileSavedAt)}`
+      ? `Saved to Life OS ${formatExportStamp(localFileSavedAt)}`
       : autosaveSavedAt === lastBackupAt
       ? `Autosaved ${formatExportStamp(autosaveSavedAt)}`
       : `Exported ${formatExportStamp(lastExportedAt)}`
@@ -719,7 +656,7 @@ export default function App() {
         ? `Saved ${formatExportStamp(lastBackupAt)}`
         : 'Save'
   const saveButtonDetail = localFileActive
-    ? 'Local file'
+    ? 'Life OS'
     : !autosaveSupported
     ? 'Exports JSON'
     : autosaveHandle
@@ -1104,11 +1041,6 @@ export default function App() {
     () => examCountdownDays(examTarget.date, referenceDate),
     [examTarget.date, referenceDate],
   )
-  const resolvedExamDates = useMemo(
-    () => resolveModuleExamDates(moduleExamDates, schedule),
-    [moduleExamDates, schedule],
-  )
-  const examWindowRange = useMemo(() => examWindow(schedule), [schedule])
   // Static: derived from the coverage matrix, not from live data.
   const eventCoverage = useMemo(() => coverageSummary(), [])
 
@@ -1168,29 +1100,6 @@ export default function App() {
     tracker.addNotifications(missing)
     tracker.markAllNotificationsRead()
   }
-
-  function generateWeeklyLifeCards() {
-    const calendarWeekStart = startOfWeek(referenceDate)
-    const weekStart = calendarWeekStart < schedule.campaignStart ? schedule.campaignStart : calendarWeekStart
-    const inputs = buildWeeklyLifeCardInputs(weekStart)
-    const existingKeys = new Set(tracker.cards.map(recurringLifeCardIdentity).filter(Boolean))
-    const missing = inputs.filter((input) => !existingKeys.has(input.recurrenceKey))
-    missing.forEach((input) => tracker.addCard(input))
-    setMessage(missing.length ? `Added ${missing.length} bounded routine cards for the week.` : 'This week’s routine cards already exist.')
-  }
-
-  const seededWeekRef = useRef('')
-  useEffect(() => {
-    if (tracker.localFile.status === 'checking') return
-    const calendarWeekStart = startOfWeek(referenceDate)
-    const weekStart = calendarWeekStart < schedule.campaignStart ? schedule.campaignStart : calendarWeekStart
-    if (seededWeekRef.current === weekStart) return
-    seededWeekRef.current = weekStart
-    const existingKeys = new Set(tracker.cards.map(recurringLifeCardIdentity).filter(Boolean))
-    for (const input of buildWeeklyLifeCardInputs(weekStart)) {
-      if (!existingKeys.has(input.recurrenceKey)) tracker.addCard(input)
-    }
-  }, [referenceDate, schedule.campaignStart, tracker])
 
   // A card can already be the active timer card, so setState alone is a no-op and
   // the timer effect never re-fires. Bump a signal on every request so re-clicking
@@ -1341,7 +1250,7 @@ export default function App() {
 
   async function saveNow() {
     if (tracker.localFile.status === 'saving') {
-      setMessage('Local file save already running.')
+      setMessage('Already saving.')
       return
     }
 
@@ -1352,7 +1261,7 @@ export default function App() {
         return
       } catch (error) {
         console.error(error)
-        setMessage('Local file save failed. Use Export JSON or choose an autosave file as a fallback.')
+        setMessage('Saving to Life OS failed. Use Export JSON or choose an autosave file as a fallback.')
         return
       }
     }
@@ -1745,18 +1654,6 @@ export default function App() {
     tracker.state.resourceProgress,
   ])
 
-  async function verifyDatabaseMirror() {
-    if (!window.confirm('Rebuild the SQLite mirror from the audit event log? JSON remains authoritative.')) return
-    try {
-      const result = await rebuildLocalDatabase()
-      setMessage(`Database mirror rebuilt from ${result.eventCount ?? 0} valid audit events.`)
-      setDataHealth(await readLocalDataHealth())
-      setDataHealthStatus('ready')
-    } catch (error) {
-      setMessage(`Database rebuild failed: ${error.message}`)
-    }
-  }
-
   async function reloadAfterConflict() {
     if (!window.confirm('Reload the newer local file? Export JSON first if you need to keep this tab’s unsaved edits.')) return
     try {
@@ -1769,13 +1666,13 @@ export default function App() {
 
   function resetTracker() {
     const confirmed = window.confirm(
-      'Restore the unfinished canonical 25 July recovery plan? Completed cards, partial work, notes, evidence, and past day/focus history are retained, and a JSON backup is downloaded first. This does not move the campaign start to today; use Re-plan remaining exam cards for later slippage.',
+      'Clear this semester’s unfinished work? Completed cards, notes, and past day and focus history are kept, and a JSON backup is downloaded first. Unfinished cards you added are removed, and prepared cards go back to how they started.',
     )
     if (!confirmed) return
     downloadBackup(new Date().toISOString())
     tracker.resetTrackerState()
     closeCard({ replace: true })
-    setMessage('Backup exported; unfinished work restored to the 25 July recovery plan while completed and partial history was retained.')
+    setMessage('Backup exported; unfinished work cleared while completed work and history were kept.')
   }
 
   // Real hrefs on every nav link, so the browser's own "open in new tab" /
@@ -1827,17 +1724,7 @@ export default function App() {
 
   function openCardFacet(type, value) {
     if (type !== 'all' && !value) return
-    const moduleViews = {
-      'Applied ML': 'aml',
-      'Time Series': 'time-series',
-      MAT700: 'mat700',
-      'Group Project': 'team-project',
-      'Interview Prep': 'interview',
-      'Job Hunt': 'jobs',
-      Admin: 'admin',
-      Health: 'areas',
-      General: 'areas',
-    }
+    const moduleViews = Object.fromEntries(STUDY_MODULES.map((module) => [module.moduleGroup, module.viewId]))
     if (type === 'module' && moduleViews[value]) {
       openModuleView(moduleViews[value], value)
       setSelectedCardId(null)
@@ -1891,11 +1778,9 @@ export default function App() {
           cards={tracker.cards}
           stats={allStats}
           referenceDate={referenceDate}
-          mat700Active={mat700Active}
           actions={actions}
           setActiveView={openGlobalView}
           openModuleView={openModuleView}
-          onGenerateWeeklyLifeCards={generateWeeklyLifeCards}
         />
       )
     }
@@ -2070,102 +1955,8 @@ export default function App() {
         </div>
       )
     }
-    if (activeView === 'project') {
-      return (
-        <FocusView
-          eyebrow="Shipping"
-          title="Project Capacity"
-          description="Protected CMT501 blocks only: current bottleneck, integration, coordination, and evidence. Detailed project management stays elsewhere."
-          cards={visibleCards}
-          actions={actions}
-        />
-      )
-    }
-    if (activeView === 'areas') {
-      const areaCards = tracker.cards.filter((card) => ['Admin', 'Health', 'General'].includes(card.moduleGroup))
-      const currentRoutines = areaCards.filter((card) => card.custom && card.startDate >= schedule.campaignStart && !card.done)
-      const campaignAdmin = areaCards.filter((card) => card.moduleGroup === 'Admin' && !card.custom)
-      const historical = areaCards.filter((card) => card.done)
-      return (
-        <div className="view-grid">
-          <section className="panel area-boundary-note">
-            <p className="eyebrow">Separate operating lane</p>
-            <h2>Life, health and admin</h2>
-            <p>These cards remain visible and checkable, but they never count as academic backlog or consume exam re-planning capacity.</p>
-            <div className="area-count-links">
-              <button type="button" className="metric-tile" onClick={() => openCardFacet('kind', 'life')}><strong>{currentRoutines.length}</strong><span>current weekly routines</span></button>
-              <button type="button" className="metric-tile" onClick={() => openCardFacet('module', 'Admin')}><strong>{campaignAdmin.length}</strong><span>fixed campaign admin checkpoints</span></button>
-              <button type="button" className="metric-tile" onClick={() => openCardFacet('status', 'Done')}><strong>{historical.length}</strong><span>completed records</span></button>
-            </div>
-            <p className="muted small">The routine set is deliberately generated as two household cards, one movement card, and one bounded admin card per week. Add personal chores only when they are real; the app does not invent a household inventory.</p>
-          </section>
-          <ShoppingList
-            items={tracker.shoppingList}
-            onAdd={tracker.addShoppingItem}
-            onToggle={tracker.toggleShoppingItem}
-            onRemove={tracker.removeShoppingItem}
-            onClearBought={tracker.clearBoughtShoppingItems}
-          />
-          <FocusView
-            eyebrow="Personal operations"
-            title="Live routines and records"
-            description="Weekly essentials, movement, room reset, forms, and exam administration—including completed history."
-            cards={areaCards}
-            actions={actions}
-          />
-        </div>
-      )
-    }
-    if (activeView === 'admin') {
-      return (
-        <div className="view-grid">
-          <section className="panel" aria-labelledby="exam-date-watch-title">
-            <p className="eyebrow">Exam date watch</p>
-            <h2 id="exam-date-watch-title">Module exam dates</h2>
-            <p>
-              The official resit window is {examWindowRange.start} to {examWindowRange.end}. Personal
-              module dates are only shown once Cardiff confirms them; the window start is never used
-              as a substitute.
-            </p>
-            <ul className="exam-date-watch">
-              {resolvedExamDates.map((resolved) => (
-                <li key={resolved.moduleId}>
-                  <span className="exam-date-watch-name">
-                    <strong>{resolved.label}</strong>
-                    <span>{resolved.code}</span>
-                  </span>
-                  {resolved.date ? <time dateTime={resolved.date}>{resolved.date}</time> : <span>—</span>}
-                  <ExamDateStatus resolved={resolved} />
-                </li>
-              ))}
-            </ul>
-            <button type="button" className="ghost-button" onClick={() => setSettingsOpen(true)}>
-              {resolvedExamDates.some((entry) => entry.confirmed) ? 'Edit exam dates' : 'Add a confirmed exam date'}
-            </button>
-          </section>
-          <FocusView
-            eyebrow="Date Watch"
-            title="Admin and Date Watch"
-            description="Assessment dates, SIMS status, exam logistics, checkpoints, and weekly plan control."
-            cards={visibleCards}
-            actions={actions}
-          />
-        </div>
-      )
-    }
-    if (activeView === 'jobs') {
-      return (
-        <div className="view-grid">
-          <JobHuntPlaybook />
-          <FocusView
-            eyebrow="Bounded opportunity lane"
-            title="Job Hunt cards"
-            description="One weekly maintenance card, a hard two-hour ceiling, and a 30-minute reserve that returns to study unless a strong role closes within seven days."
-            cards={visibleCards}
-            actions={actions}
-          />
-        </div>
-      )
+    if (activeView === 'setup') {
+      return <SemesterSetup cards={tracker.cards} />
     }
     return null
   }
@@ -2184,44 +1975,18 @@ export default function App() {
     )
   }
 
-  if (!entered) {
-    return (
-      <AppIntro
-        countdown={examCountdown}
-        examDate={examTarget.date}
-        progressPct={donePct}
-        doneCount={doneCount}
-        totalCount={totalCount}
-        skipIntro={skipIntro}
-        onToggleSkip={(value) => {
-          setSkipIntro(value)
-          try {
-            localStorage.setItem('srp-skip-intro', value ? '1' : '0')
-          } catch {
-            /* keep the current-session preference */
-          }
-        }}
-        onEnter={() => setEntered(true)}
-        onJump={(view) => {
-          openGlobalView(view)
-          setEntered(true)
-        }}
-      />
-    )
-  }
-
   return (
     <div className={`app-shell${navCollapsed ? ' nav-collapsed' : ''}${navOpen ? ' nav-open' : ''}`}>
       {navOpen && <button type="button" className="nav-scrim" aria-label="Close menu" onClick={() => setNavOpen(false)} />}
 
       <aside className="app-sidebar" aria-label="Primary navigation">
         <a href={navHref('today')} className="sidebar-brand" onClick={(event) => handleNavClick(event, 'today')} title="Open Today">
-          <span className="brand-mark">
-            <img src={`${import.meta.env.BASE_URL}summer-rescue-gazelle.png`} alt="" />
+          <span className="brand-mark brand-mark-plain">
+            <Icon name="brand" />
           </span>
           <span className="brand-text">
-            <strong>Summer Rescue</strong>
-            <small>Cardiff University · MSc</small>
+            <strong>Study hub</strong>
+            <small>{session.semester?.title ?? ''}</small>
           </span>
         </a>
 
@@ -2239,10 +2004,9 @@ export default function App() {
                   aria-current={activeView === id ? 'page' : undefined}
                 >
                   <span className="nav-ico">
-                    <Icon name={id} />
+                    <Icon name={iconForView(id)} />
                   </span>
                   <span className="nav-label">{LABEL_BY_ID[id]}</span>
-                  {id === 'mat700' && !mat700Active && <span className="nav-flag">paused</span>}
                 </a>
               ))}
             </div>
@@ -2254,40 +2018,17 @@ export default function App() {
             <button
               type="button"
               className="sidebar-crest"
-              aria-expanded={cardiffLinksOpen}
-              onClick={() => setCardiffLinksOpen((value) => !value)}
+              title="Choose another semester, or add one"
+              onClick={() => {
+                askForSemesterOnNextLoad()
+                window.location.reload()
+              }}
             >
-              <img
-                src={`${import.meta.env.BASE_URL}cardiff-logo.png`}
-                alt="Cardiff University"
-                onError={(event) => {
-                  event.currentTarget.style.display = 'none'
-                }}
-              />
-              <span>Cardiff University</span>
-              <span className={`sidebar-crest-chevron${cardiffLinksOpen ? ' is-open' : ''}`}>
-                <Icon name="chevron" />
+              <span className="sidebar-crest-ico">
+                <Icon name="setup" />
               </span>
+              <span>Change semester</span>
             </button>
-            {cardiffLinksOpen && (
-              <ul className="sidebar-crest-links">
-                <li>
-                  <a href="https://learningcentral.cf.ac.uk/" target="_blank" rel="noreferrer">
-                    Learning Central
-                  </a>
-                </li>
-                <li>
-                  <a href="https://www.cardiff.ac.uk/" target="_blank" rel="noreferrer">
-                    Cardiff University website
-                  </a>
-                </li>
-                <li>
-                  <a href="https://sims.cardiff.ac.uk/" target="_blank" rel="noreferrer">
-                    SIMS portal
-                  </a>
-                </li>
-              </ul>
-            )}
           </div>
           <a
             href={navHref('progress')}
@@ -2296,14 +2037,14 @@ export default function App() {
             onClick={(event) => handleNavClick(event, 'progress')}
           >
             <div className="mini-progress-head">
-              <span>Campaign progress</span>
+              <span>Semester progress</span>
               <strong>{donePct}%</strong>
             </div>
             <div className="mini-progress-track">
               <span style={{ width: `${donePct}%` }} />
             </div>
             <small>
-              {doneCount} of {totalCount} completed · {tracker.state.addedCards.length} personal/routine
+              {doneCount} of {tracker.cards.length} cards completed
             </small>
           </a>
           <div className="collapse-row">
@@ -2407,7 +2148,7 @@ export default function App() {
 
         {!tracker.state.settings.saveHintDismissed && (
           <div className="save-hint" role="status">
-            <span>Progress autosaves to the local state file when the dev server is running, and also in this browser. Export JSON remains available in Settings.</span>
+            <span>Everything you do here saves to Life OS on its own. Export JSON remains available in Settings.</span>
             <button type="button" className="text-button" onClick={() => tracker.updateSettings({ saveHintDismissed: true })}>
               Dismiss
             </button>
@@ -2459,11 +2200,11 @@ export default function App() {
                   <input type="date" value={configuredReferenceDate} onChange={(event) => tracker.updateSettings({ referenceDate: event.target.value })} />
                 </label>
                 <label>
-                  <span>Campaign start</span>
+                  <span>Semester start</span>
                   <input type="date" value={schedule.campaignStart} onChange={(event) => tracker.updateSettings({ campaignStart: event.target.value })} />
                 </label>
                 <label>
-                  <span>Campaign end</span>
+                  <span>Semester end</span>
                   <input type="date" value={schedule.campaignEnd} onChange={(event) => tracker.updateSettings({ campaignEnd: event.target.value })} />
                 </label>
                 <label>
@@ -2477,14 +2218,6 @@ export default function App() {
                 schedule={schedule}
                 onChange={(next) => tracker.updateSettings({ moduleExamDates: next })}
               />
-              <label className="toggle-field">
-                <input
-                  type="checkbox"
-                  checked={mat700Active}
-                  onChange={(event) => tracker.updateSettings({ mat700Active: event.target.checked })}
-                />
-                <span>Data Mining study lane active (pause only after a safely passed result)</span>
-              </label>
             </div>
 
             <div className="settings-section">
@@ -2590,10 +2323,6 @@ export default function App() {
             </div>
 
             <div className="settings-section">
-              <InstallDesktopApp serviceAvailable={localFileActive} />
-            </div>
-
-            <div className="settings-section">
               <h3>Backup &amp; data</h3>
               <p className="muted">{autosaveDetail || backupStatusText}</p>
               <p className="muted">{localFileStatusText}</p>
@@ -2636,7 +2365,7 @@ export default function App() {
                   <div><dt>State revision</dt><dd>{dataHealth.state?.revision ?? 0}</dd></div>
                   <div><dt>State schema</dt><dd>{dataHealth.state?.schemaVersion ?? 'unknown'}</dd></div>
                   <div><dt>Last committed</dt><dd>{formatExportStamp(dataHealth.state?.writtenAt) || 'not written'}</dd></div>
-                  <div><dt>SQLite integrity</dt><dd>{dataHealth.database?.integrity ?? 'unavailable'}</dd></div>
+                  <div><dt>Database</dt><dd>{dataHealth.database?.integrity ?? 'unavailable'}</dd></div>
                   <div><dt>Audit events</dt><dd>{dataHealth.eventLog?.validCount ?? 0} valid</dd></div>
                   <div><dt>Quarantined</dt><dd>{dataHealth.eventLog?.malformedCount ?? 0} malformed</dd></div>
                   <div>
@@ -2694,11 +2423,6 @@ export default function App() {
                   ))}
                 </ul>
               </details>
-              <details className="advanced-data-action">
-                <summary>Advanced database repair</summary>
-                <p className="muted small">Replays only valid audit events into the SQLite mirror. JSON remains authoritative and is not replaced.</p>
-                <button type="button" className="secondary-button" onClick={verifyDatabaseMirror}>Rebuild audit projection</button>
-              </details>
             </div>
 
             <div className="settings-section">
@@ -2726,24 +2450,14 @@ export default function App() {
             <div className="settings-section">
               <h3>Snapshot</h3>
               <div className="settings-stat-row">
-                <span>{campaignMeta.cardCount} campaign cards</span>
+                <span>{tracker.cards.length} cards</span>
                 <span>{sortCards(tracker.cards).filter((card) => card.done).length} done</span>
-                <span>{tracker.state.addedCards.length} personal/routine cards</span>
-                <span>{studyModules.filter((module) => module.id !== 'interview').length} academic workspaces + interview hub</span>
+                <span>{tracker.state.addedCards.length} added by you</span>
+                <span>{studyModules.length} modules</span>
                 <span>
                   Assets {assetManifest?.syncedAt ? `synced ${formatExportStamp(assetManifest.syncedAt)}` : 'not stamped'}
                 </span>
               </div>
-              <button
-                type="button"
-                className="text-button"
-                onClick={() => {
-                  setSettingsOpen(false)
-                  setEntered(false)
-                }}
-              >
-                Open About / welcome screen
-              </button>
             </div>
       </AccessibleDialog>
 

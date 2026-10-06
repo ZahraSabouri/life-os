@@ -289,7 +289,7 @@ export function TodayView({
       <section className="today-hero panel" aria-label="Today at a glance">
         <div className="today-hero-main">
           <button type="button" className="eyebrow today-date-link" onClick={() => onOpenView('schedule')}>{formatDate(referenceDate)}</button>
-          <h2 className="today-greeting">{preCampaign ? 'The campaign starts soon, Zahra.' : `${greeting()}, Zahra.`}</h2>
+          <h2 className="today-greeting">{preCampaign ? 'The semester starts soon.' : `${greeting()}.`}</h2>
           <p className="today-line">
             {preCampaign
               ? `Nothing in the rescue plan is due yet. Preview the protected launch on ${formatDate(campaignStart)} and start rested.`

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { buildReplan, buildStudyCapacityLookup, computeReplanSchedule } from '../utils/replan'
 import { expandScheduleForDate } from '../utils/schedule'
-import { scheduleRules, scheduleExceptions } from '../data/summerRescuePlan'
+import { scheduleRules, scheduleExceptions } from '../data/plan'
 
 const MODULE_LABELS = {
   'Applied ML': 'Applied ML',

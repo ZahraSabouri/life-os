@@ -9,7 +9,7 @@ cd /d "%LIFE_OS_BUILD_ROOT%summer-rescue"
 if errorlevel 1 goto fail
 call npm.cmd run build -- --base=/apps/summer-rescue/
 if errorlevel 1 goto fail
-echo Life OS and Summer Rescue built successfully. Restart Life OS to use the builds.
+echo Life OS and the Study hub built successfully. Restart Life OS to use the builds.
 exit /b 0
 :fail
 echo Build failed. The preserved original has not been changed.

@@ -303,5 +303,49 @@ export function createStudyRepository({ pool, beforeImport } = {}) {
     })
   }
 
-  return Object.freeze({ workspace, exportWorkspace: () => workspace({ includeDeleted: true, historyLimit: null }), create, patch, remove, restore, revert, recordHistory, deleted, previewImport, importRecords })
+  // Keeps the rows that one source derives (a Study hub semester's cards, for example) equal
+  // to the given set: new ones are added, changed ones updated, vanished ones removed. Every
+  // change is recorded in history like any other save, and a removed row comes back if its
+  // source id returns.
+  async function syncProjected(entity, source, items, { actor = 'study-hub' } = {}) {
+    assertEntity(entity)
+    if (typeof source !== 'string' || !source.trim() || source.length > 200) throw new StudyError(400, 'A projection needs a short source name')
+    if (!Array.isArray(items) || items.length > 20000) throw new StudyError(400, 'A projection needs a bounded list of records')
+    const wanted = new Map()
+    for (const item of items) {
+      if (typeof item?.source_id !== 'string' || !item.source_id || item.source_id.length > 1000) throw new StudyError(400, 'Projected records require source_id')
+      if (wanted.has(item.source_id)) throw new StudyError(400, 'Duplicate projected source record')
+      const record = validateRecord(entity, item.record)
+      record.provenance = { source, source_id: item.source_id }
+      wanted.set(item.source_id, record)
+    }
+    return transaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [`study-projection:${source}`])
+      const existing = (await client.query(`SELECT ${SELECT_COLUMNS} FROM study.${entity} WHERE provenance->>'source' = $1 FOR UPDATE`, [source])).rows.map(serialize)
+      const current = new Map(existing.map((row) => [row.provenance.source_id, row]))
+      const result = { added: 0, updated: 0, removed: 0, unchanged: 0 }
+      for (const [sourceId, record] of wanted) {
+        const previous = current.get(sourceId)
+        if (!previous) { await insert(client, entity, record, actor); result.added += 1; continue }
+        const next = { ...record, id: previous.id }
+        await parents(client, next)
+        const same = !previous.deleted_at && MUTABLE_FIELDS.every((field) => canonical(previous[field] ?? null) === canonical(next[field] ?? null))
+        if (same) { result.unchanged += 1; continue }
+        const values = MUTABLE_FIELDS.map((field) => field === 'data' ? JSON.stringify(next[field]) : next[field])
+        const updated = serialize((await client.query(`UPDATE study.${entity} SET ${MUTABLE_FIELDS.map((field, index) => `${field} = $${index + 1}`).join(', ')},
+          deleted_at = NULL, revision = revision + 1, updated_at = now() WHERE id = $${MUTABLE_FIELDS.length + 1} RETURNING ${SELECT_COLUMNS}`, [...values, previous.id])).rows[0])
+        await history(client, entity, 'update', previous, updated, actor)
+        result.updated += 1
+      }
+      for (const previous of existing) {
+        if (previous.deleted_at || wanted.has(previous.provenance.source_id)) continue
+        const removed = serialize((await client.query(`UPDATE study.${entity} SET deleted_at = now(), updated_at = now(), revision = revision + 1 WHERE id = $1 RETURNING ${SELECT_COLUMNS}`, [previous.id])).rows[0])
+        await history(client, entity, 'delete', previous, removed, actor)
+        result.removed += 1
+      }
+      return result
+    })
+  }
+
+  return Object.freeze({ workspace, exportWorkspace: () => workspace({ includeDeleted: true, historyLimit: null }), create, patch, remove, restore, revert, recordHistory, deleted, previewImport, importRecords, syncProjected })
 }

@@ -5,6 +5,7 @@ import {
   appendLocalProgressEvent,
   deleteCardAttachmentFile,
   isCardAttachmentUrl,
+  progressEventsUrl,
   readLocalTrackerStateFile,
   writeLocalTrackerStateFile,
 } from '../utils/localStateFile'
@@ -13,28 +14,25 @@ import { dayLog } from '../utils/dayLog'
 import { focusRewards } from '../utils/focusRewards'
 import { normaliseGeneralKnowledge, normaliseGeneralKnowledgeEntry } from '../utils/generalKnowledge'
 import { emptyKnowledge, normaliseKnowledge, normaliseNote, normaliseNoteMeta } from '../utils/knowledge'
-import { cleanWeeklyLifeCardTitle, recurringLifeCardIdentity } from '../utils/lifeCards'
+import { STUDY_MODULES } from '../data/studyModules.js'
+import { STORAGE_KEY } from './storageKey.js'
 import { isTrackableCard, todayString } from '../utils/progress'
 import { clampPercent, normaliseResourceProgressEntry } from '../utils/resourceProgress'
 import {
   createInitialTrackerState,
   migrateTrackerState,
-  normaliseShoppingItem,
   normaliseUploadedResource,
 } from './trackerStateMigration.js'
 
-export const STORAGE_KEY = 'summer-rescue-tracker-state-v3'
+export { STORAGE_KEY }
 const LEGACY_MODULE_NOTE_PREFIX = 'summer-rescue-module-note-'
 const LEGACY_MODULE_NOTE_SUFFIX = '-v1'
 const TRACKER_CHANNEL = 'summer-rescue-tracker-state'
 const WRITER_ID_KEY = 'summer-rescue-writer-id'
-const RESOURCE_PREFIXES_BY_MODULE = {
-  'Applied ML': ['aml-', 'amlPlan-'],
-  'Time Series': ['timeSeries-', 'timeSeriesPlan-'],
-  MAT700: ['mat700-', 'mat700Plan-'],
-  'Group Project': ['teamProject-'],
-}
-const MANAGED_RESOURCE_PREFIXES = Object.values(RESOURCE_PREFIXES_BY_MODULE).flat()
+// Which module each of the semester's listed resources belongs to.
+const RESOURCE_OWNER = new Map(
+  STUDY_MODULES.flatMap((module) => (module.resources ?? []).map((resource) => [resource.id, module.moduleGroup])),
+)
 
 function makeId(prefix = 'item') {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -207,14 +205,11 @@ function getCardState(state, cardId) {
   return state.cards[cardId] ?? {}
 }
 
+// A card keeps only its own module's listed resources. Anything not listed under a module
+// (an upload, an attachment) can be linked from any card.
 function filterResourceIdsForModule(moduleGroup, resourceIds) {
-  const allowedPrefixes = RESOURCE_PREFIXES_BY_MODULE[moduleGroup]
-  if (!allowedPrefixes) return resourceIds
-
-  return resourceIds.filter((id) => {
-    const managed = MANAGED_RESOURCE_PREFIXES.some((prefix) => id.startsWith(prefix))
-    return !managed || allowedPrefixes.some((prefix) => id.startsWith(prefix))
-  })
+  if (!STUDY_MODULES.some((module) => module.moduleGroup === moduleGroup)) return resourceIds
+  return resourceIds.filter((id) => !RESOURCE_OWNER.has(id) || RESOURCE_OWNER.get(id) === moduleGroup)
 }
 
 function normaliseEvidenceEntries(cardId, cardState = {}) {
@@ -265,10 +260,7 @@ function mergeCard(baseCard, cardState = {}) {
   const status = cardState.status ?? edits.status ?? baseCard.status
   const done = Boolean(cardState.done || status === 'Done')
   const moduleGroup = edits.moduleGroup ?? edits.module ?? baseCard.moduleGroup
-  const recurrenceKey = recurringLifeCardIdentity({ ...baseCard, ...edits })
-  const title = recurrenceKey
-    ? cleanWeeklyLifeCardTitle(edits.title ?? baseCard.title)
-    : edits.title ?? baseCard.title
+  const title = edits.title ?? baseCard.title
   const evidenceEntries = normaliseEvidenceEntries(baseCard.id, cardState)
   const resourceIds = filterResourceIdsForModule(
     moduleGroup,
@@ -285,7 +277,6 @@ function mergeCard(baseCard, cardState = {}) {
     ...baseCard,
     ...edits,
     title,
-    recurrenceKey,
     status: done ? 'Done' : status,
     done,
     progressPercent: done ? 100 : clampPercent(cardState.progressPercent ?? 0),
@@ -437,7 +428,7 @@ export function useTrackerState(baseCards) {
       const flushWithBeacon = () => {
         if (!navigator.sendBeacon) return
         for (const event of pendingProgressEventsRef.current) {
-          navigator.sendBeacon('/api/events', new Blob([JSON.stringify(event)], { type: 'application/json' }))
+          navigator.sendBeacon(progressEventsUrl(), new Blob([JSON.stringify(event)], { type: 'application/json' }))
         }
       }
       window.addEventListener('pagehide', flushWithBeacon)
@@ -456,9 +447,9 @@ export function useTrackerState(baseCards) {
 
   const withCurrentSnapshot = useCallback(
     (nextState) => {
-      const snapshotCards = [...baseCards, ...nextState.addedCards].map((card) =>
-        mergeCard(card, nextState.cards[card.id]),
-      )
+      const snapshotCards = [...baseCards, ...nextState.addedCards]
+        .filter((card) => !nextState.cards[card.id]?.removed)
+        .map((card) => mergeCard(card, nextState.cards[card.id]))
       const today = todayString()
       const snap = buildDailySnapshot(snapshotCards)
       const existing = nextState.snapshots?.[today]
@@ -589,7 +580,9 @@ export function useTrackerState(baseCards) {
   }, [flushProgressEvents, withCurrentSnapshot])
 
   const cards = useMemo(() => {
-    const combinedBaseCards = [...baseCards, ...state.addedCards]
+    // A card that came with the semester's plan is removed by marking it; one the owner
+    // added is taken out of the list. Either way it no longer appears anywhere.
+    const combinedBaseCards = [...baseCards, ...state.addedCards].filter((card) => !state.cards[card.id]?.removed)
     return combinedBaseCards.map((card) => mergeCard(card, state.cards[card.id]))
   }, [baseCards, state])
 
@@ -625,7 +618,7 @@ export function useTrackerState(baseCards) {
     try {
       const result = await writeLocalTrackerStateFile({
         exportedAt,
-        app: 'summer-rescue-plan-app',
+        app: 'study-hub',
         schemaVersion: persistedState.version,
         writerId: writerIdRef.current,
         state: persistedState,
@@ -856,47 +849,6 @@ export function useTrackerState(baseCards) {
         ...(current.moduleNotes ?? {}),
         [moduleId]: note,
       },
-      updatedAt: nowIso(),
-    }))
-  }
-
-  // --- Shopping list --------------------------------------------------------
-  // Deliberately outside the card/progress system: buying shampoo isn't
-  // academic backlog, so these items never touch cards, events, or capacity.
-  function addShoppingItem(text, category = 'other') {
-    const clean = normaliseShoppingItem({ id: makeId('shopping'), text, category, done: false })
-    if (!clean) return
-    setState((current) => ({
-      ...current,
-      shoppingList: [...(current.shoppingList ?? []), clean],
-      updatedAt: nowIso(),
-    }))
-  }
-
-  function toggleShoppingItem(itemId) {
-    setState((current) => ({
-      ...current,
-      shoppingList: (current.shoppingList ?? []).map((item) =>
-        item.id === itemId
-          ? { ...item, done: !item.done, doneAt: !item.done ? nowIso() : null }
-          : item,
-      ),
-      updatedAt: nowIso(),
-    }))
-  }
-
-  function removeShoppingItem(itemId) {
-    setState((current) => ({
-      ...current,
-      shoppingList: (current.shoppingList ?? []).filter((item) => item.id !== itemId),
-      updatedAt: nowIso(),
-    }))
-  }
-
-  function clearBoughtShoppingItems() {
-    setState((current) => ({
-      ...current,
-      shoppingList: (current.shoppingList ?? []).filter((item) => !item.done),
       updatedAt: nowIso(),
     }))
   }
@@ -1711,14 +1663,15 @@ export function useTrackerState(baseCards) {
 
   function deleteCard(cardId) {
     const card = cards.find((item) => item.id === cardId)
-    if (!card?.custom) return false
+    if (!card) return false
     queueCardEvent('card.deleted', cardId, {
       status: card.status,
       dueDate: card.dueDate,
     })
     setState((current) => {
       const nextCards = { ...(current.cards ?? {}) }
-      delete nextCards[cardId]
+      if (card.custom) delete nextCards[cardId]
+      else nextCards[cardId] = { ...(nextCards[cardId] ?? {}), removed: true, updatedAt: nowIso() }
       return withCurrentSnapshot({
         ...current,
         addedCards: (current.addedCards ?? []).filter((item) => item.id !== cardId),
@@ -1934,11 +1887,6 @@ export function useTrackerState(baseCards) {
     setNotificationRead,
     markAllNotificationsRead,
     markExported,
-    shoppingList: state.shoppingList ?? [],
-    addShoppingItem,
-    toggleShoppingItem,
-    removeShoppingItem,
-    clearBoughtShoppingItems,
     setModuleNote,
     saveKnowledgeNote,
     deleteKnowledgeNote,

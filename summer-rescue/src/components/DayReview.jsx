@@ -8,7 +8,7 @@ import {
   previousReviewDates,
 } from '../utils/dayReview'
 import { buildDayTimeline, expandScheduleForDate } from '../utils/schedule'
-import { scheduleRules, scheduleExceptions } from '../data/summerRescuePlan'
+import { scheduleRules, scheduleExceptions } from '../data/plan'
 import { addDays, cardPlanLane, formatDate } from '../utils/progress'
 
 const CATEGORY_LABELS = {

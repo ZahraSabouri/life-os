@@ -1,4 +1,5 @@
 import { STUDY_MODULES } from '../data/studyModules'
+import { session } from '../hub/session'
 import {
   addDays,
   formatDate,
@@ -20,7 +21,7 @@ function hours(value) {
   return Number.isInteger(number) ? `${number}h` : `${number.toFixed(1)}h`
 }
 
-function ModuleCommandCard({ module, cards, referenceDate, mat700Active, onOpen, onOpenModuleView }) {
+function ModuleCommandCard({ module, cards, referenceDate, onOpen, onOpenModuleView }) {
   const moduleCards = cards.filter((card) => card.moduleGroup === module.moduleGroup)
   const openCards = sortCards(moduleCards.filter((card) => !card.done))
   const dueSoonEnd = addDays(referenceDate, 7)
@@ -28,11 +29,10 @@ function ModuleCommandCard({ module, cards, referenceDate, mat700Active, onOpen,
   const overdue = openCards.filter((card) => isOverdue(card, referenceDate))
   const done = moduleCards.filter((card) => card.done).length
   const deadlineGates = moduleCards.filter((card) => card.deadlineDriven).length
-  const inactiveInsurance = module.id === 'mat700' && !mat700Active
 
   return (
     <article
-      className={`module-command-card clickable-card ${inactiveInsurance ? 'is-muted' : ''}`}
+      className="module-command-card clickable-card"
       role="button"
       tabIndex={0}
       onClick={() => onOpen(module.viewId)}
@@ -57,7 +57,6 @@ function ModuleCommandCard({ module, cards, referenceDate, mat700Active, onOpen,
           <span>{dueSoon.length} due next 7d</span>
           {overdue.length > 0 && <span className="danger">{overdue.length} overdue</span>}
         </div>
-        {inactiveInsurance && <p className="module-insurance-note">The MAT700 study lane is switched off in planner settings.</p>}
       </div>
       <div className="module-card-actions">
         <button type="button" className="primary-button" onClick={() => onOpen(module.viewId)}>
@@ -98,9 +97,8 @@ function CompactQueue({ title, eyebrow, cards, empty, actions }) {
   )
 }
 
-export function StudyHub({ cards, stats, referenceDate, mat700Active, actions, setActiveView, openModuleView, onGenerateWeeklyLifeCards }) {
-  const activeCards = mat700Active ? cards : cards.filter((card) => card.moduleGroup !== 'MAT700')
-  const openCards = activeCards.filter((card) => !card.done)
+export function StudyHub({ cards, stats, referenceDate, actions, setActiveView, openModuleView }) {
+  const openCards = cards.filter((card) => !card.done)
   const overdueCards = openCards.filter((card) => isOverdue(card, referenceDate))
   const todayCards = openCards.filter((card) => getCardDate(card) === referenceDate)
   const nextSevenEnd = addDays(referenceDate, 7)
@@ -111,11 +109,10 @@ export function StudyHub({ cards, stats, referenceDate, mat700Active, actions, s
     <div className="study-hub">
       <section className="super-hero">
         <div className="super-hero-copy">
-          <p className="eyebrow">Summer Rescue Campaign 2026</p>
-          <h2>Unified study cockpit</h2>
+          <p className="eyebrow">{session.semester?.title}</p>
+          <h2>The semester in one place</h2>
           <p>
-            One place for the rescue tracker, specialist module workspaces, local resources, evidence logging,
-            bounded life lanes, and the weekly execution queue.
+            Every module with its cards, materials, notes and evidence, and the queue of what to do this week.
           </p>
           <div className="hub-command-strip" aria-label="Primary study commands">
             <button type="button" className="primary-button" onClick={() => setActiveView('dashboard')}>
@@ -182,59 +179,20 @@ export function StudyHub({ cards, stats, referenceDate, mat700Active, actions, s
             module={module}
             cards={cards}
             referenceDate={referenceDate}
-            mat700Active={mat700Active}
             onOpen={setActiveView}
             onOpenModuleView={openModuleView}
           />
         ))}
       </section>
 
-      <section className="bounded-area-grid" aria-label="Bounded life areas">
-        <article
-          className="clickable-card"
-          role="button"
-          tabIndex={0}
-          onClick={() => setActiveView('jobs')}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault()
-              setActiveView('jobs')
-            }
-          }}
-        >
-          <p className="eyebrow">Bounded area</p>
-          <h2>Job Hunt</h2>
-          <p>Weekly maintenance with a hard time ceiling so it cannot consume exam preparation.</p>
-          <button type="button" className="secondary-button" onClick={() => setActiveView('jobs')}>Open Job Hunt</button>
-        </article>
-        <article
-          className="clickable-card"
-          role="button"
-          tabIndex={0}
-          onClick={() => setActiveView('admin')}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault()
-              setActiveView('admin')
-            }
-          }}
-        >
-          <p className="eyebrow">Bounded area</p>
-          <h2>Life Admin & Dates</h2>
-          <p>Exam logistics, university date checks, health, and recurring life-admin boundaries.</p>
-          <button type="button" className="secondary-button" onClick={() => setActiveView('admin')}>Open Life Admin</button>
-          <button
-            type="button"
-            className="text-button"
-            onClick={(event) => {
-              event.stopPropagation()
-              onGenerateWeeklyLifeCards()
-            }}
-          >
-            Generate this week’s routine cards
-          </button>
-        </article>
-      </section>
+      {STUDY_MODULES.length === 0 && (
+        <section className="panel">
+          <p className="eyebrow">Start here</p>
+          <h2>Add your modules</h2>
+          <p>This semester has no modules yet. Add them in Semester setup, then add cards to each one.</p>
+          <button type="button" className="primary-button" onClick={() => setActiveView('setup')}>Open Semester setup</button>
+        </section>
+      )}
 
       <section className="hub-split">
         <CompactQueue

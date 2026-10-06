@@ -1,17 +1,17 @@
 import { Component } from 'react'
-import { STORAGE_KEY } from '../state/useTrackerState'
+import { STORAGE_KEY } from '../state/storageKey'
 
 function downloadLocalState() {
   const raw = window.localStorage.getItem(STORAGE_KEY)
   const exportedAt = new Date().toISOString()
   const payload = raw
-    ? JSON.stringify({ exportedAt, app: 'summer-rescue-plan-app', state: JSON.parse(raw) }, null, 2)
-    : JSON.stringify({ exportedAt, app: 'summer-rescue-plan-app', state: null }, null, 2)
+    ? JSON.stringify({ exportedAt, app: 'study-hub', state: JSON.parse(raw) }, null, 2)
+    : JSON.stringify({ exportedAt, app: 'study-hub', state: null }, null, 2)
   const blob = new Blob([payload], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `summer-rescue-crash-export-${exportedAt.replace(/[:.]/g, '-').slice(0, 19)}.json`
+  link.download = `study-hub-crash-export-${exportedAt.replace(/[:.]/g, '-').slice(0, 19)}.json`
   link.click()
   URL.revokeObjectURL(url)
 }
@@ -27,7 +27,7 @@ export class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
-    console.error('Summer Rescue app crashed:', error, info)
+    console.error('The Study hub crashed:', error, info)
   }
 
   render() {

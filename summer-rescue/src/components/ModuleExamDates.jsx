@@ -59,8 +59,8 @@ export function ModuleExamDateFields({ moduleExamDates = {}, schedule = {}, onCh
   return (
     <div className="module-exam-dates">
       <p className="module-exam-window-note">
-        Official exam window {start} to {end}. Personal module dates stay unconfirmed until you enter
-        the date Cardiff gives you — the window start is never used as a module date.
+        Exams fall between {start} and {end}. A module stays unconfirmed until you enter the date you
+        are given for it — the start of the window is never used as a module date.
       </p>
       <div className="settings-grid">
         {EXAM_MODULES.map((module) => {

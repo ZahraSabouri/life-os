@@ -1,12 +1,17 @@
+import { api } from '../hub/session.js'
+
+// Everything the app saves goes to Life OS, for the semester that is open.
 const STATE_ENDPOINT = '/api/state'
 const EVENTS_ENDPOINT = '/api/events'
 const RESOURCES_ENDPOINT = '/api/resources'
 const RESOURCE_UPLOAD_ENDPOINT = '/api/resources/upload'
 const DATA_HEALTH_ENDPOINT = '/api/data-health'
-const DB_REBUILD_TOKEN_ENDPOINT = '/api/db/rebuild-token'
-const DB_REBUILD_ENDPOINT = '/api/db/rebuild'
 
-export const LOCAL_STATE_FILE_LABEL = 'local-data/summer-rescue-tracker-state.json'
+export const LOCAL_STATE_FILE_LABEL = 'Life OS database'
+
+export function progressEventsUrl() {
+  return api(EVENTS_ENDPOINT)
+}
 
 function responseRevision(response) {
   return Math.max(0, Number(response.headers.get('X-State-Revision')) || 0)
@@ -21,7 +26,7 @@ export class StateConflictError extends Error {
 }
 
 export async function readLocalTrackerStateFile() {
-  const response = await fetch(STATE_ENDPOINT, {
+  const response = await fetch(api(STATE_ENDPOINT), {
     headers: { Accept: 'application/json' },
   })
 
@@ -41,7 +46,7 @@ export async function readLocalTrackerStateFile() {
 }
 
 export async function writeLocalTrackerStateFile(payload, { revision = 0, writerId = '' } = {}) {
-  const response = await fetch(STATE_ENDPOINT, {
+  const response = await fetch(api(STATE_ENDPOINT), {
     method: 'PUT',
     headers: {
       Accept: 'application/json',
@@ -62,28 +67,13 @@ export async function writeLocalTrackerStateFile(payload, { revision = 0, writer
 }
 
 export async function readLocalDataHealth() {
-  const response = await fetch(DATA_HEALTH_ENDPOINT, { headers: { Accept: 'application/json' } })
+  const response = await fetch(api(DATA_HEALTH_ENDPOINT), { headers: { Accept: 'application/json' } })
   if (!response.ok) throw new Error(`Data health read failed (${response.status})`)
   return response.json()
 }
 
-export async function rebuildLocalDatabase() {
-  const tokenResponse = await fetch(DB_REBUILD_TOKEN_ENDPOINT, {
-    method: 'POST',
-    headers: { Accept: 'application/json' },
-  })
-  if (!tokenResponse.ok) throw new Error(`Database confirmation token failed (${tokenResponse.status})`)
-  const { token } = await tokenResponse.json()
-  const response = await fetch(DB_REBUILD_ENDPOINT, {
-    method: 'POST',
-    headers: { Accept: 'application/json', 'X-Rebuild-Token': token },
-  })
-  if (!response.ok) throw new Error(`Database rebuild failed (${response.status})`)
-  return response.json()
-}
-
 export async function appendLocalProgressEvent(event) {
-  const response = await fetch(EVENTS_ENDPOINT, {
+  const response = await fetch(api(EVENTS_ENDPOINT), {
     method: 'POST',
     headers: {
       Accept: 'application/json',

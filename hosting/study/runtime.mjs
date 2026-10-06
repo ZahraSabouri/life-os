@@ -6,11 +6,14 @@ import { readLegacyStudy } from './legacy.mjs'
 import { StudyError } from '../../code/life-os/backend/src/modules/study/schema.js'
 import { createStudyDiscovery } from './discovery.mjs'
 import { createStudyBackups } from './backups.mjs'
+import { createHubStore } from './hub/store.mjs'
 import path from 'node:path'
 
-export function createStudyRuntime(projectRoot) {
+// database: which of the two Life OS databases to use (the test one for trying things out).
+// background: whether to watch module folders and take the regular backups.
+export function createStudyRuntime(projectRoot, { database, background = true } = {}) {
   let config, pool
-  try { config = postgresConfig(projectRoot); pool = createPostgresPool(config) }
+  try { config = postgresConfig(projectRoot); pool = createPostgresPool(config, database ? { database } : undefined) }
   catch {
     const unavailable = async () => { throw new StudyError(503, 'Study storage is not configured. The original Study remains available.') }
     return { repository: Object.fromEntries(['workspace','exportWorkspace','create','patch','remove','restore','revert','recordHistory','deleted','previewImport','importRecords'].map(name => [name, unavailable])), imports: {}, close: async () => {}, configured: false }
@@ -32,8 +35,8 @@ export function createStudyRuntime(projectRoot) {
     }
   } })
   const discovery = createStudyDiscovery({ projectRoot, repository })
-  discovery.start()
-  backups.start()
+  if (background) { discovery.start(); backups.start() }
   return { repository, imports: createStudyImports({ projectRoot, repository }), discovery, backups, configured: true, pool,
+    hub: createHubStore({ pool, repository }),
     close: async () => { await discovery.close(); await backups.close(); await pool.end() } }
 }

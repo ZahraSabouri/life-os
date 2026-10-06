@@ -1,3 +1,12 @@
+// The app's fixed vocabulary (how a card moves, its priority, its slot) and the lists that
+// come from the open semester (its modules, its phases, its tags).
+import { openSemester } from '../hub/session.js'
+
+const session = openSemester()
+
+const list = (value) => (Array.isArray(value) ? value.map((item) => String(item).trim()).filter(Boolean) : [])
+const options = session.plan?.options ?? {}
+
 export const STATUS_OPTIONS = [
   'Today',
   'Yesterday',
@@ -24,39 +33,23 @@ export const STATUS_COLUMNS = [
   { id: 'Done', label: 'Done' },
 ]
 
-export const PHASE_OPTIONS = ['Phase 0', 'Phase 1', 'Phase 2']
+// Work that belongs to the semester as a whole rather than to one module.
+export const GENERAL_GROUP = 'General'
 
-export const MODULE_OPTIONS = [
-  'Applied ML',
-  'Time Series',
-  'MAT700',
-  'Group Project',
-  'Interview Prep',
-  'Job Hunt',
-  'Admin',
-  'Health',
-  'Cross-module',
-  'General',
-]
+export const PHASE_OPTIONS = list(options.phases).length > 0 ? list(options.phases) : ['Phase 1', 'Phase 2', 'Phase 3']
+
+export const MODULE_OPTIONS = [...new Set([...session.modules.map((module) => module.moduleGroup), GENERAL_GROUP])]
 
 export const PRIORITY_OPTIONS = ['Critical', 'High', 'Medium', 'Low']
 
 export const SLOT_OPTIONS = ['AM', 'PM', 'Light/Eve', 'Fixed', 'Flex']
 
-export const TAG_OPTIONS = [
-  'rescue',
-  'admin',
-  'project',
-  'health',
-  'exam',
-  'evidence',
-  'fixed',
-  'date-watch',
-  'gitlab',
-  'recovery',
-  'job-hunt',
-  'bounded',
-]
+export const TAG_OPTIONS = list(options.tags).length > 0
+  ? list(options.tags)
+  : ['exam', 'coursework', 'project', 'reading', 'lab', 'revision', 'fixed', 'evidence']
+
+// One view per module of the open semester, between the study views and the planning views.
+export const MODULE_VIEWS = session.modules.map((module) => ({ id: module.viewId, label: module.label, moduleId: module.id }))
 
 export const VIEW_OPTIONS = [
   { id: 'today', label: 'Today' },
@@ -67,21 +60,14 @@ export const VIEW_OPTIONS = [
   { id: 'review', label: 'Review' },
   { id: 'general-knowledge', label: 'General Knowledge' },
   { id: 'notes', label: 'Notes' },
-  { id: 'aml', label: 'Applied ML' },
-  { id: 'time-series', label: 'Time Series' },
-  { id: 'team-project', label: 'Team Project' },
-  { id: 'mat700', label: 'Data Mining' },
-  { id: 'interview', label: 'Sati Interview' },
+  ...MODULE_VIEWS,
   { id: 'board', label: 'Columns' },
   { id: 'table', label: 'Table' },
   { id: 'week', label: 'Week' },
   { id: 'analytics', label: 'Analytics' },
   { id: 'evidence', label: 'Evidence' },
   { id: 'rescue', label: 'Rescue Lane' },
-  { id: 'areas', label: 'Life & Admin' },
-  { id: 'project', label: 'Project Capacity' },
-  { id: 'admin', label: 'Admin & Dates' },
-  { id: 'jobs', label: 'Job Hunt' },
+  { id: 'setup', label: 'Semester setup' },
 ]
 
 export const FILTER_DEFAULTS = {
@@ -99,5 +85,3 @@ export const FILTER_DEFAULTS = {
   dateFrom: '',
   dateTo: '',
 }
-
-// v2: 'progress' view added to VIEW_OPTIONS above.

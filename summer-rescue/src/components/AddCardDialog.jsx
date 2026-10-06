@@ -5,8 +5,8 @@ import { LazyRichTextEditor } from './LazyRichTextEditor'
 
 const emptyCard = {
   title: '',
-  module: 'Admin',
-  phase: 'Phase 0',
+  module: MODULE_OPTIONS[0],
+  phase: PHASE_OPTIONS[0],
   status: 'Today',
   priority: 'Medium',
   slotType: 'Flex',
@@ -57,7 +57,7 @@ export function AddCardDialog({
             <input required value={form.title} onChange={(event) => update('title', event.target.value)} />
           </label>
           <label>
-            <span>Academic module or life area</span>
+            <span>Module</span>
             <select value={form.module} onChange={(event) => update('module', event.target.value)}>
               {moduleOptions.map((module) => (
                 <option key={module} value={module}>

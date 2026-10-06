@@ -992,9 +992,11 @@ export function ModuleWorkspace({
             </button>
           </div>
         </div>
-        <div className="module-hero-visual">
-          <img src={(module.hero ?? module.visual).url} alt="" />
-        </div>
+        {!(module.hero ?? module.visual).plain && (
+          <div className="module-hero-visual">
+            <img src={(module.hero ?? module.visual).url} alt="" />
+          </div>
+        )}
       </section>
 
       {mat700Inactive && (

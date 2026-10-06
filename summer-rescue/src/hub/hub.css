@@ -1,0 +1,99 @@
+/* The Study hub's entry screen and the dialogs that manage semesters and modules.
+   Colours, type and radii come from the tokens in index.css, so both themes follow. */
+.hub-gate {
+  min-height: 100vh;
+  padding: clamp(24px, 6vw, 72px) clamp(16px, 4vw, 40px);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+.hub-gate-inner { max-width: 880px; margin: 0 auto; display: grid; gap: 22px; }
+.hub-gate-head h1 { margin: 4px 0 8px; font-family: var(--font-serif); font-weight: 600; font-size: clamp(2rem, 4.4vw, 3rem); letter-spacing: -0.01em; }
+.hub-eyebrow { margin: 0; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.hub-lede { margin: 0; max-width: 62ch; color: var(--muted); line-height: 1.55; }
+.hub-wait, .hub-empty { margin: 0; padding: 28px; border: 1px dashed var(--line-strong); border-radius: var(--radius); color: var(--muted); text-align: center; background: var(--surface); }
+.hub-error { margin: 0; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid color-mix(in srgb, var(--red) 40%, var(--line)); background: color-mix(in srgb, var(--red) 8%, var(--panel)); color: var(--red); font-size: 0.92rem; }
+
+.hub-semesters { display: grid; gap: 12px; }
+.hub-semester {
+  display: flex; gap: 18px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  padding: 18px 20px; border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--panel); box-shadow: var(--shadow-1);
+}
+.hub-semester.standing-current { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.hub-semester.standing-past, .hub-semester.standing-archived { background: var(--surface); }
+.hub-semester.is-editing { display: block; }
+.hub-semester-main { min-width: 0; flex: 1 1 320px; }
+.hub-semester-main h2 { margin: 6px 0 2px; font-family: var(--font-serif); font-weight: 600; font-size: 1.4rem; overflow-wrap: anywhere; }
+.hub-semester-dates, .hub-semester-counts, .hub-semester-note { margin: 2px 0 0; color: var(--muted); font-size: 0.92rem; }
+.hub-semester-note { overflow-wrap: anywhere; }
+.hub-semester-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.hub-badge { display: inline-block; padding: 2px 10px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: var(--panel-2); color: var(--muted); }
+.hub-badge.standing-current { background: var(--accent-soft); color: var(--accent); }
+.hub-badge.standing-upcoming { background: color-mix(in srgb, var(--blue) 14%, transparent); color: var(--blue); }
+.hub-badge.standing-ended { background: var(--warning-bg); color: var(--warning-ink); }
+
+.hub-primary, .hub-secondary {
+  min-height: 40px; padding: 0 16px; border-radius: var(--radius-sm); font: inherit; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--line-strong); background: var(--panel); color: var(--ink);
+}
+.hub-primary { border-color: transparent; background: var(--accent); color: #fff; }
+.hub-primary:hover { filter: brightness(1.06); }
+.hub-secondary:hover { background: var(--panel-2); }
+.hub-danger { color: var(--red); }
+.hub-primary:disabled, .hub-secondary:disabled { opacity: 0.6; cursor: default; }
+.hub-primary:focus-visible, .hub-secondary:focus-visible, .hub-field input:focus-visible, .hub-field select:focus-visible, .hub-field textarea:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 1px; }
+.hub-add-button { justify-self: start; }
+
+.hub-add { padding: 18px 20px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--panel); }
+.hub-add h2 { margin: 0 0 12px; font-family: var(--font-serif); font-weight: 600; font-size: 1.25rem; }
+.hub-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px 14px; }
+.hub-field { display: grid; gap: 5px; font-size: 0.86rem; color: var(--muted); min-width: 0; }
+.hub-field-wide { grid-column: 1 / -1; }
+.hub-field input, .hub-field select, .hub-field textarea {
+  min-height: 40px; padding: 8px 11px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  background: var(--input-bg); color: var(--input-ink); font: inherit; width: 100%; box-sizing: border-box;
+}
+.hub-field textarea { min-height: 84px; resize: vertical; line-height: 1.45; }
+.hub-form .hub-error { grid-column: 1 / -1; }
+.hub-form-actions { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
+.hub-hint { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 0.86rem; line-height: 1.5; }
+
+.hub-open-last { display: flex; gap: 10px; align-items: center; color: var(--muted); font-size: 0.92rem; }
+.hub-open-last input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+/* Lists of things the owner manages inside a semester (modules, classes, assessments). */
+.hub-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.hub-list-row { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.hub-list-row strong { overflow-wrap: anywhere; }
+.hub-list-row small { display: block; color: var(--muted); }
+.hub-list-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.hub-list-actions button { min-height: 34px; padding: 0 12px; }
+
+@media (max-width: 560px) {
+  .hub-semester-actions { width: 100%; }
+  .hub-semester-actions button { flex: 1 1 auto; }
+}
+
+/* Semester setup, inside the app */
+.hub-setup .hub-list { margin-top: 14px; }
+.hub-list-item { display: grid; gap: 10px; }
+.hub-list-item > .hub-form { padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--panel); }
+.hub-list-actions a.hub-secondary { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; text-decoration: none; }
+.hub-setup .hub-add { margin-top: 14px; }
+.hub-setup .hub-add h3 { margin: 0 0 12px; }
+.hub-setup .hub-add-button { margin-top: 14px; }
+.hub-setup .hub-empty { margin-top: 12px; }
+.hub-notice { margin: 10px 0 0; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); background: var(--accent-soft); color: var(--ink, inherit); font-size: 0.92rem; }
+.brand-mark-plain { color: var(--accent); }
+.brand-mark-plain svg { width: 26px; height: 26px; }
+.sidebar-crest-ico { display: inline-flex; width: 18px; height: 18px; flex: none; color: var(--muted); }
+.sidebar-crest-ico svg { width: 100%; height: 100%; }
+.sidebar-crest { cursor: pointer; }
+
+/* Names come from the owner's own data and can be long: they shorten inside the menu. */
+.app-sidebar, .app-sidebar .sidebar-nav, .app-sidebar .nav-group, .app-sidebar .sidebar-foot { grid-template-columns: minmax(0, 1fr); min-width: 0; }
+.app-sidebar .nav-item, .app-sidebar .sidebar-brand, .app-sidebar .mini-progress, .app-sidebar .sidebar-crest { min-width: 0; max-width: 100%; }
+.app-sidebar .nav-label { flex: 1 1 auto; }
+.brand-text small { overflow: hidden; text-overflow: ellipsis; }
