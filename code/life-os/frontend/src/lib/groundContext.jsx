@@ -1,29 +1,29 @@
 import { createContext, useContext, useMemo, useState } from 'react'
+import { GROUND_KEY, GROUNDS, nextGround, readGround } from './grounds.js'
 
-const GROUND_KEY = 'life-os.ground'
-const GROUNDS = ['madder', 'indigo', 'paper']
+export { GROUNDS, GROUND_LABELS, GROUND_SWATCHES } from './grounds.js'
+
 const GroundContext = createContext(null)
 
-function getInitialGround() {
-  const savedGround = window.localStorage.getItem(GROUND_KEY)
-  return GROUNDS.includes(savedGround) ? savedGround : GROUNDS[0]
+function saveGround(ground) {
+  try { window.localStorage.setItem(GROUND_KEY, ground) } catch { /* The style still changes for this visit. */ }
 }
 
 export function GroundProvider({ children }) {
-  const [ground, setCurrentGround] = useState(getInitialGround)
+  const [ground, setCurrentGround] = useState(() => readGround(window.localStorage))
 
   const value = useMemo(() => ({
     ground,
-    setGround(nextGround) {
-      if (!GROUNDS.includes(nextGround)) return
-      window.localStorage.setItem(GROUND_KEY, nextGround)
-      setCurrentGround(nextGround)
+    setGround(nextValue) {
+      if (!GROUNDS.includes(nextValue)) return
+      saveGround(nextValue)
+      setCurrentGround(nextValue)
     },
     cycleGround() {
       setCurrentGround((currentGround) => {
-        const nextGround = GROUNDS[(GROUNDS.indexOf(currentGround) + 1) % GROUNDS.length]
-        window.localStorage.setItem(GROUND_KEY, nextGround)
-        return nextGround
+        const nextValue = nextGround(currentGround)
+        saveGround(nextValue)
+        return nextValue
       })
     }
   }), [ground])

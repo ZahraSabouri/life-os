@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useGround } from '../lib/groundContext.jsx'
+import StyleSwitch from './StyleSwitch.jsx'
 import { getPoemPool, pickPoem } from '../lib/poems.js'
 
 const GROUND_PALETTES = {
@@ -44,6 +45,20 @@ const GROUND_PALETTES = {
     blue: '#47648e',
     deep: '#cdbc99',
     line: 'rgba(51,43,48,0.18)'
+  },
+  modern: {
+    bg: '#f4f2ea',
+    bg2: '#fffdf8',
+    ink: '#22302b',
+    sub: '#5f6b65',
+    cream: '#22302b',
+    ochre: '#1f6f5e',
+    coral: '#c96f45',
+    rose: '#b0647c',
+    sage: '#5d7f52',
+    blue: '#3a6ea5',
+    deep: '#d9d6c6',
+    line: 'rgba(34,48,43,0.16)'
   }
 }
 
@@ -438,7 +453,7 @@ function renderLine(line, highlight) {
 }
 
 export default function DivanIntro({ onEnter, skipKey }) {
-  const { ground, cycleGround } = useGround()
+  const { ground } = useGround()
   const [poem, setPoem] = useState(() => pickPoem())
   const [skipNextTime, setSkipNextTime] = useState(
     () => window.localStorage.getItem(skipKey) === 'true'
@@ -541,9 +556,7 @@ export default function DivanIntro({ onEnter, skipKey }) {
         <button className="ghost-pill" type="button" onClick={() => setPoem(pickPoem())}>
           New poem
         </button>
-        <button className="ghost-pill" type="button" onClick={cycleGround}>
-          Ground: {ground}
-        </button>
+        <StyleSwitch className="ghost-pill" placement="above" />
         <label className="skip-control">
           <input
             type="checkbox"

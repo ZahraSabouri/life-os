@@ -6,6 +6,7 @@ import FieldsForm from './FieldsForm.jsx'
 import { apiFetch } from '../lib/api.js'
 import { useEntries } from '../lib/useEntries.js'
 import { useGround } from '../lib/groundContext.jsx'
+import StyleSwitch from './StyleSwitch.jsx'
 import { calendarArea, calendarDisplay, calendarKind, filterCalendarItems, itemTime, todayGroups } from '../lib/calendar.js'
 import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
 import { clockLabelFor, dateLabelFor, greetingFor, jalaliDateLabelFor, shortDateLabelFor, weekdayLabelFor } from '../lib/courtClock.js'
@@ -86,6 +87,7 @@ const TYPE_ROOM_FALLBACKS = {
 }
 
 const FEATURED_ROOMS = ['study', 'career', 'body']
+const LIGHT_GROUNDS = ['paper', 'modern']
 const ROOM_ORDER = [
   'study', 'academia', 'career', 'growth', 'body', 'style',
   'relationships', 'travel', 'home', 'culture', 'memories', 'mind'
@@ -235,8 +237,8 @@ function buildRoomModel(entries, ground) {
       latest: latestEntry ? entryTitle(latestEntry) : ROOM_PRESENTATION[room.slug]?.latest || room.blurb,
       motif: ROOM_PRESENTATION[room.slug]?.motif || 'note',
       wing: ROOM_PRESENTATION[room.slug]?.wing || 'soul',
-      accent: ROOM_ACCENTS[room.slug]?.[ground === 'paper' ? 'paper' : 'dark'] || room.accent,
-      style: { '--room-accent': ROOM_ACCENTS[room.slug]?.[ground === 'paper' ? 'paper' : 'dark'] || room.accent }
+      accent: ROOM_ACCENTS[room.slug]?.[LIGHT_GROUNDS.includes(ground) ? 'paper' : 'dark'] || room.accent,
+      style: { '--room-accent': ROOM_ACCENTS[room.slug]?.[LIGHT_GROUNDS.includes(ground) ? 'paper' : 'dark'] || room.accent }
     }
   }).sort((left, right) => ROOM_ORDER.indexOf(left.slug) - ROOM_ORDER.indexOf(right.slug))
 }
@@ -286,16 +288,13 @@ function Glyph({ name, size = 20, stroke = 1.5 }) {
   )
 }
 
-function CourtNav({ ground, cycleGround, navigate, quiet = false }) {
+function CourtNav({ navigate, quiet = false }) {
   return (
     <nav className={quiet ? 'redesign-nav redesign-nav-quiet' : 'redesign-nav'} aria-label="Primary">
       <button type="button" onClick={() => navigate('/today')}>Today</button>
       <button type="button" onClick={() => navigate('/calendar')}>Calendar</button>
       <button className="redesign-search-button" type="button">Search <kbd>⌘K</kbd></button>
-      <button className="redesign-ground-button" type="button" onClick={cycleGround} aria-label={`Switch ground from ${ground}`}>
-        <span aria-hidden="true" />
-        Ground
-      </button>
+      <StyleSwitch className="redesign-ground-button" compact />
     </nav>
   )
 }
@@ -492,8 +491,7 @@ function PaperCourt(props) {
     rooms,
     shortDateLabel,
     streakDays,
-    todayItems,
-    cycleGround
+    todayItems
   } = props
   const paperRooms = rooms
   const nextItems = todayItems.slice(0, 3)
@@ -512,7 +510,7 @@ function PaperCourt(props) {
           <strong>{jalaliDateLabel || clockLabel}</strong>
         </header>
 
-        <CourtNav ground={ground} cycleGround={cycleGround} navigate={navigate} quiet />
+        <CourtNav navigate={navigate} quiet />
 
         <section className="paper-greeting" aria-label="Court greeting">
           <h1>{greeting}, Xar.</h1>
@@ -675,8 +673,7 @@ function MadderCourt(props) {
     recentEntries,
     rooms,
     streakDays,
-    todayItems,
-    cycleGround
+    todayItems
   } = props
   const featuredRooms = FEATURED_ROOMS.map((slug) => rooms.find((room) => room.slug === slug)).filter(Boolean)
   const quietRooms = rooms.filter((room) => !FEATURED_ROOMS.includes(room.slug))
@@ -693,7 +690,7 @@ function MadderCourt(props) {
 
         <header className="madder-header">
           <span>Life OS</span>
-          <CourtNav ground={ground} cycleGround={cycleGround} navigate={navigate} />
+          <CourtNav navigate={navigate} />
           <div className="madder-date-stack">
             <time>{dateLabel}</time>
             <strong>{jalaliDateLabel}</strong>
@@ -823,8 +820,7 @@ function IndigoCourt(props) {
     rooms,
     streakDays,
     todayItems,
-    weekdayLabel,
-    cycleGround
+    weekdayLabel
   } = props
 
   return (
@@ -832,7 +828,7 @@ function IndigoCourt(props) {
       <div className="indigo-page">
         <header className="indigo-header">
           <span>Life OS</span>
-          <CourtNav ground={ground} cycleGround={cycleGround} navigate={navigate} />
+          <CourtNav navigate={navigate} />
           <i aria-hidden="true" />
           <time>{dateLabel}<strong>{jalaliDateLabel}</strong></time>
         </header>
@@ -918,6 +914,98 @@ function IndigoCourt(props) {
   )
 }
 
+// Rooms that already open somewhere; the rest stay plain tiles until their area exists.
+const ROOM_DESTINATIONS = { study: 'Study Hub', career: 'JobMap', relationships: 'Cardiff Life', home: 'Budget' }
+
+function ModernRoom({ room, onOpen }) {
+  const destination = ROOM_DESTINATIONS[room.slug]
+  const body = (
+    <>
+      <span className="modern-room-icon" aria-hidden="true"><Glyph name={room.motif} size={18} /></span>
+      <span className="modern-room-copy">
+        <strong>{room.displayName}</strong>
+        <small>{destination ? `Open ${destination}` : room.count ? room.latest : room.blurb}</small>
+      </span>
+      <span className="modern-room-count" aria-label={`${room.count} filed`}>{room.count}</span>
+    </>
+  )
+  return destination
+    ? <button className="modern-room is-linked" style={room.style} type="button" onClick={() => onOpen(room)}>{body}</button>
+    : <div className="modern-room" style={room.style}>{body}</div>
+}
+
+function ModernCourt(props) {
+  const { captureProps, calendarState, dailyPoem, greeting, jalaliDateLabel, onOpenRoom, recentEntries, rooms, todayItems, weekdayLabel } = props
+
+  return (
+    <section className="modern-court" aria-label="Home">
+      <header className="modern-court-heading">
+        <p className="modern-eyebrow">{weekdayLabel} · {jalaliDateLabel}</p>
+        <h1>{greeting}, Xar.</h1>
+      </header>
+
+      <form className="modern-card modern-capture" onSubmit={captureProps.handleSubmit}>
+        <CaptureFields {...captureProps} variant="modern" />
+      </form>
+
+      <div className="modern-court-grid">
+        <section className="modern-card" aria-labelledby="modern-today">
+          <div className="modern-card-heading">
+            <h2 id="modern-today">Today</h2>
+            <Link to="/today">Open Today</Link>
+          </div>
+          <CourtCalendarNote calendar={calendarState} />
+          {todayItems.length ? (
+            <ol className="modern-today-list">
+              {todayItems.map((entry) => (
+                <li key={entry.id} style={{ '--room-accent': entry.room.accent }}>
+                  <time>{entry.time}</time>
+                  <p><Link to={entry.href}>{entry.title}</Link><small>{entry.room.displayName} · {entry.type}</small></p>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            !calendarState.loading && !calendarState.error ? <p className="modern-empty">{calendarDisplay(calendarState, { empty: 'No dated items today.' }).emptyMessage}</p> : null
+          )}
+        </section>
+
+        <section className="modern-card" aria-labelledby="modern-filed">
+          <div className="modern-card-heading">
+            <h2 id="modern-filed">Recently filed</h2>
+            <Link to="/ledger">Open Ledger</Link>
+          </div>
+          {recentEntries.length ? (
+            <ol className="modern-filed-list">
+              {recentEntries.slice(0, 5).map((entry) => (
+                <li key={entry.id} style={{ '--room-accent': entry.room.accent }}>
+                  <span aria-hidden="true"><Glyph name={entry.glyph} size={15} /></span>
+                  <p>{entry.title}<small>{entry.type}</small></p>
+                  <time>{entry.ago}</time>
+                </li>
+              ))}
+            </ol>
+          ) : <p className="modern-empty">No entries filed yet.</p>}
+        </section>
+      </div>
+
+      <section aria-labelledby="modern-areas">
+        <div className="modern-card-heading">
+          <h2 id="modern-areas">Your areas</h2>
+        </div>
+        <div className="modern-rooms">
+          {rooms.map((room) => <ModernRoom key={room.slug} room={room} onOpen={onOpenRoom} />)}
+        </div>
+      </section>
+
+      <aside className="modern-card modern-poem" aria-label="Poem of the day">
+        <div dir="rtl">{dailyPoem.lines.map((line, index) => <p key={`${line}-${index}`}>{line}</p>)}</div>
+        <p className="modern-poem-credit" dir="auto">{dailyPoem.poet}</p>
+        {dailyPoem.en ? <p className="modern-poem-en">{dailyPoem.en}</p> : null}
+      </aside>
+    </section>
+  )
+}
+
 function CourtStage({ children }) {
   const [scale, setScale] = useState(() => Math.min(
     window.innerWidth / 1512,
@@ -944,7 +1032,7 @@ function CourtStage({ children }) {
 
 export default function TheCourt() {
   const navigate = useNavigate()
-  const { ground, cycleGround } = useGround()
+  const { ground } = useGround()
   const [body, setBody] = useState('')
   const [entryType, setEntryType] = useState('note')
   const [detailsDraft, setDetailsDraft] = useState({})
@@ -1088,8 +1176,7 @@ export default function TheCourt() {
     captureProps,
     calendarState,
     clockLabel: clockLabelFor(now),
-    cycleGround,
-    dailyPoem: COURT_POEMS[ground],
+    dailyPoem: COURT_POEMS[ground] || COURT_POEMS.paper,
     dateLabel: dateLabelFor(now),
     ground,
     greeting: greetingFor(now),
@@ -1102,6 +1189,10 @@ export default function TheCourt() {
     streakDays,
     todayItems,
     weekdayLabel: weekdayLabelFor(now)
+  }
+
+  if (ground === 'modern') {
+    return <ModernCourt {...commonProps} />
   }
 
   if (ground === 'paper') {

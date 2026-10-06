@@ -7,30 +7,10 @@ import TheCourt from './components/TheCourt.jsx'
 import TodayView from './components/TodayView.jsx'
 import LedgerView from './components/LedgerView.jsx'
 import StudyHub from './components/study/StudyHub.jsx'
+import StyleSwitch from './components/StyleSwitch.jsx'
 import { GroundProvider, useGround } from './lib/groundContext.jsx'
 
 const SKIP_INTRO_KEY = 'life-os.skip-intro'
-
-// Life OS-owned way home. It sits above the sub-app frame so Summer Rescue's
-// own code and layout stay untouched; bottom-left avoids its header controls.
-const backPillStyle = {
-  position: 'fixed',
-  left: 'calc(12px + env(safe-area-inset-left, 0px))',
-  bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
-  zIndex: 101,
-  padding: '6px 12px',
-  border: '1px solid rgba(255, 255, 255, 0.35)',
-  borderRadius: 999,
-  background: 'rgba(28, 30, 33, 0.62)',
-  color: '#f6f1e7',
-  font: "600 12px/1.2 'Manrope', system-ui, sans-serif",
-  letterSpacing: '0.02em',
-  backdropFilter: 'blur(8px)',
-  WebkitBackdropFilter: 'blur(8px)',
-  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.18)',
-  cursor: 'pointer',
-  opacity: 0.85,
-}
 
 // Each standalone app keeps its own document, CSS and runtime inside a
 // same-origin frame, so nothing about its appearance or behaviour changes.
@@ -72,9 +52,13 @@ function SubAppFrame({ route, documentPath, title }) {
         allow="fullscreen; autoplay"
         style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', border: 0, display: 'block', zIndex: 100 }}
       />
-      <button type="button" onClick={() => navigate('/court')} style={backPillStyle} aria-label="Back to Life OS">
-        ← Life OS
-      </button>
+      {/* Life OS-owned controls sit above the frame, bottom-left, clear of each app's own header. */}
+      <div className="subapp-bar">
+        <button type="button" className="subapp-pill" onClick={() => navigate('/court')} aria-label="Back to Life OS">
+          ← Life OS
+        </button>
+        <StyleSwitch className="subapp-pill" placement="above" compact />
+      </div>
     </>
   )
 }

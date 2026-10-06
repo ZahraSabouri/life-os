@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useGround } from '../lib/groundContext.jsx'
+import StyleSwitch from './StyleSwitch.jsx'
 
 export default function CourtLayout() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { ground, cycleGround } = useGround()
   const [now, setNow] = useState(() => new Date())
-  const isBoardRoute = ['/calendar', '/today', '/ledger', '/study'].includes(location.pathname)
-  const isCourtRoute = location.pathname === '/court'
+  const { ground } = useGround()
+  // The modern skin gives the Court the same header and page frame as every other page.
+  const isManuscriptCourt = location.pathname === '/court' && ground !== 'modern'
+  const isBoardRoute = !isManuscriptCourt
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat(undefined, {
     timeZone: 'Europe/London',
@@ -28,8 +30,8 @@ export default function CourtLayout() {
   }
 
   return (
-    <main className={`court-screen${isBoardRoute ? ' board-screen' : ''}${isCourtRoute ? ' court-redesign-screen' : ''}`}>
-      {!isCourtRoute ? (
+    <main className={`court-screen${isBoardRoute ? ' board-screen' : ''}${isManuscriptCourt ? ' court-redesign-screen' : ''}`}>
+      {!isManuscriptCourt ? (
         <header className="court-topbar">
           <div className="wordmark">Life OS</div>
           <div className="date-line">{dateLabel}</div>
@@ -86,7 +88,7 @@ export default function CourtLayout() {
             >
               JobMap
             </button>
-            <button type="button" onClick={cycleGround}>Ground: {ground}</button>
+            <StyleSwitch />
             <button type="button" onClick={goDivan}>Divan</button>
           </nav>
         </header>

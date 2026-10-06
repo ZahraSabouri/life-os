@@ -17,8 +17,11 @@ import StudyShell from './StudyShell.jsx'
 import StudyIcon from './StudyIcon.jsx'
 import { MusicPopover } from './StudyMusicPopover.jsx'
 import { Celebration } from './StudyCelebration.jsx'
+import StyleSwitch from '../StyleSwitch.jsx'
+import { useGround } from '../../lib/groundContext.jsx'
 import './summer-rescue-transferred.css'
 import './summer-rescue-native.css'
+import './study-skin.css'
 
 const VIEWS = [['overview', 'Overview'], ['planner', 'Planner'], ['board', 'Board'], ['table', 'List'], ['week', 'Week'], ['schedule', 'Timetable'], ['assessments', 'Assessments'], ['materials', 'Materials'], ['progress', 'Progress'], ['evidence', 'Evidence'], ['rescue', 'Rescue'], ['admin', 'Settings'], ['history', 'History']]
 const emptyFilters = { search: '', lane: '', priority: '', phase: '', slot: '', tag: '', date: '' }
@@ -34,13 +37,13 @@ function StudyPreferences({ preferences, record, onSave, onClose }) {
     <label className="study-check-label"><input type="checkbox" checked={form.celebrations !== false} onChange={e => setForm(current => ({ ...current, celebrations: e.target.checked }))} />Celebrate completed cards</label>
     <label className="study-check-label"><input type="checkbox" checked={form.showWelcome !== false} onChange={e => setForm(current => ({ ...current, showWelcome: e.target.checked }))} />Show the Study introduction</label>
     <label>Focus music link (optional)<input type="url" value={form.focusMusicUrl} onChange={e => setForm(current => ({ ...current, focusMusicUrl: e.target.value }))} /></label>
-    <p className="study-muted">The three Life OS grounds also apply here. All edits save through Life OS; export keeps a portable copy. The original Study app remains available until you accept its replacement.</p>
+    <p className="study-muted">Study follows the Life OS style you choose. All edits save through Life OS; export keeps a portable copy. The original Study app remains available until you accept its replacement.</p>
     {error && <p className="study-error" role="alert">{error}</p>}<button type="submit" className="study-primary" disabled={busy}>{busy ? 'Saving…' : 'Save preferences'}</button>
   </form></StudyDialog>
 }
 
 export default function StudyHub() {
-  const today = useLondonToday(), location = useLocation()
+  const today = useLondonToday(), location = useLocation(), { ground } = useGround()
   const [workspace, setWorkspace] = useState(EMPTY_WORKSPACE), [loading, setLoading] = useState(true), [loadError, setLoadError] = useState(''), [actionError, setActionError] = useState('')
   const [semesterId, setSemesterId] = useState(''), [moduleId, setModuleId] = useState(''), [view, setView] = useState('overview'), [filters, setFilters] = useState(emptyFilters)
   const [editor, setEditor] = useState(null), [reader, setReader] = useState(null), [importOpen, setImportOpen] = useState(false), [preferencesOpen, setPreferencesOpen] = useState(false)
@@ -223,14 +226,15 @@ export default function StudyHub() {
   }
   // An open draft keeps its original revision. A refreshed workspace cannot silently rebase it.
   const updatedEditor = editor?.record || null
-  const theme = preferences.theme === 'dark' ? 'dark' : 'light'
+  // One Life OS style drives every page; the dark grounds reuse Summer Rescue's dark component rules.
+  const theme = ['madder', 'indigo'].includes(ground) ? 'dark' : 'light'
   const controls = <>
     <button type="button" className="primary-button" onClick={() => edit('cards')} disabled={loading || Boolean(loadError)}><StudyIcon name="plus" /><span>Add card</span></button>
     <StudyTimer setting={timerSetting} cards={workspace.cards} sessions={contextSessions} materials={workspace.materials} parents={parents} focusedCardId={focusedCardId} open={timerOpen} setOpen={setTimerOpen} onSaveTimer={(value, captured) => saveSetting('focusTimer', value, captured)} onLogFocus={logFocus} onRestartCue={restartCue} onSaveCard={saveWorkbenchCard} onMaterialOpen={markMaterialOpened} onReviewed={markMaterialReviewed} onCompleteCard={async id => { const card = workspaceRef.current.cards.find(row => row.id === id); if (!card) throw new Error('The card is no longer available.'); await done(card) }} />
     <MusicPopover theme={theme} url={musicUrl} onSetup={() => setPreferencesOpen(true)} />
     <button type="button" className="secondary-button" onClick={() => { setCommandQuery(''); setCommandOpen(true) }}>Search</button>
     <button type="button" className="secondary-button" onClick={() => setNotificationsOpen(true)} disabled={loading || Boolean(loadError)}>Notifications ({unread})</button>
-    <button type="button" className="icon-button" aria-label={theme === 'dark' ? 'Switch Study to light mode' : 'Switch Study to dark mode'} onClick={() => quick(() => saveSetting('preferences', { ...dataOf(workspaceRef.current.settings.find(row => dataOf(row).key === 'preferences')), theme: theme === 'dark' ? 'light' : 'dark' }))} disabled={loading || Boolean(loadError)}><StudyIcon name={theme === 'dark' ? 'sun' : 'moon'} /></button>
+    <StyleSwitch className="secondary-button" compact />
     <button type="button" className="icon-button" aria-label="Study preferences" onClick={() => setPreferencesOpen(true)} disabled={loading || Boolean(loadError)}><StudyIcon name="settings" /></button>
   </>
   return <section ref={shellRef} className="study-native srp-native" data-study-theme={theme} aria-label="Study Hub">

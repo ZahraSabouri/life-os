@@ -1,0 +1,86 @@
+/* Study reads the shared Life OS palette (styles/skins.css), so all four styles apply here.
+   The Summer Rescue layout and components stay; only their colour, type and shape variables are fed from --m-*. */
+.app-shell[data-ground] .study-native.srp-native {
+  --bg: var(--m-bg);
+  --surface: var(--m-surface);
+  --panel: var(--m-card);
+  --panel-2: var(--m-sunken);
+  --input-bg: var(--m-card);
+  --input-ink: var(--m-ink);
+  --chip-bg: var(--m-card);
+  --track: var(--m-line-strong);
+  --done-bg: color-mix(in srgb, var(--m-green) 13%, var(--m-card));
+
+  --toast-bg: color-mix(in srgb, var(--m-amber) 15%, var(--m-card));
+  --toast-ink: var(--m-ink);
+  --success-bg: color-mix(in srgb, var(--m-green) 13%, var(--m-card));
+  --success-ink: var(--m-ink);
+  --success-line: color-mix(in srgb, var(--m-green) 45%, var(--m-line));
+  --warning-bg: color-mix(in srgb, var(--m-amber) 15%, var(--m-card));
+  --warning-ink: var(--m-ink);
+  --warning-line: color-mix(in srgb, var(--m-amber) 50%, var(--m-line));
+
+  --overlay: rgba(18, 14, 10, 0.5);
+  --drawer-shadow: -26px 0 64px rgba(18, 14, 10, 0.3);
+  --focus-ring: color-mix(in srgb, var(--m-accent) 36%, transparent);
+
+  --ink: var(--m-ink);
+  --muted: var(--m-muted);
+  --line: var(--m-line);
+  --line-strong: var(--m-line-strong);
+
+  --red: var(--m-red);
+  --green: var(--m-green);
+  --amber: var(--m-amber);
+  --blue: var(--m-blue);
+
+  --accent: var(--m-accent);
+  --accent-2: var(--m-spark);
+  --accent-soft: color-mix(in srgb, var(--m-accent) 13%, transparent);
+  --header-grad: linear-gradient(118deg, var(--m-accent) 0%, color-mix(in srgb, var(--m-accent) 72%, var(--m-spark)) 58%, var(--m-spark) 122%);
+
+  --shadow-1: var(--m-shadow);
+  --shadow-2: var(--m-shadow-lift);
+
+  --chart-1: var(--m-accent);
+  --chart-2: var(--m-spark);
+  --chart-ideal: var(--m-faint);
+  --chart-ts: var(--m-green);
+  --chart-aml: var(--m-blue);
+  --chart-mat700: var(--m-red);
+  --chart-admin: var(--m-amber);
+  --chart-health: var(--m-spark);
+  --heat-0: var(--m-sunken);
+  --heat-1: color-mix(in srgb, var(--m-accent) 22%, var(--m-card));
+  --heat-2: color-mix(in srgb, var(--m-accent) 45%, var(--m-card));
+  --heat-3: color-mix(in srgb, var(--m-accent) 72%, var(--m-card));
+  --heat-4: var(--m-accent);
+
+  --font-sans: var(--m-font);
+  --font-serif: var(--m-display);
+  --font-num: var(--m-num);
+  --radius-sm: var(--m-radius-sm);
+  --radius: var(--m-radius);
+  --radius-lg: var(--m-radius-lg);
+}
+
+/* Text that sits on the accent takes the style's own on-accent colour. */
+.app-shell[data-ground] .study-native.srp-native button.study-primary,
+.app-shell[data-ground] .study-native.srp-native .primary-button,
+.app-shell[data-ground] .study-native.srp-native .brand-mark { color: var(--m-on-accent); }
+.app-shell[data-ground] .study-native.srp-native .app-sidebar { background: color-mix(in srgb, var(--m-sidebar) 86%, transparent); }
+
+/* Module and semester names are data and can be long: the sidebar keeps its column and trims them. */
+.study-native.srp-native .app-sidebar,
+.study-native.srp-native .sidebar-nav,
+.study-native.srp-native .nav-group,
+.study-native.srp-native .sidebar-foot,
+.study-native.srp-native .mini-progress { grid-template-columns: minmax(0, 1fr); min-width: 0; }
+.study-native.srp-native .sidebar-brand,
+.study-native.srp-native .nav-item { min-width: 0; }
+.study-native.srp-native .brand-text small { overflow: hidden; text-overflow: ellipsis; }
+.study-native.srp-native .topbar-right { justify-content: flex-end; }
+
+/* Native Study shows five summary tiles, not Summer Rescue's twelve: let them share one even row. */
+.study-native.srp-native .study-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.study-native.srp-native .study-metrics > div { grid-column: auto !important; min-height: 0; }

@@ -1,0 +1,288 @@
+/* Skins: one shared palette per style, and the style menu.
+   Every surface reads the same --m-* values for the chosen style: Life OS boards
+   (through --g-*), Study (through its Summer Rescue variables) and the framed
+   apps (copied into each frame by lib/frameSkins.js). Change a style here only. */
+
+/* ---- Shared palette: the three manuscript grounds ---- */
+.app-shell {
+  --m-bg: #6f241b;
+  --m-surface: #76281f;
+  --m-card: #7e2e24;
+  --m-sunken: #641f17;
+  --m-ink: #efe3c8;
+  --m-muted: #d8b9a2;
+  --m-faint: #c8a690;
+  --m-line: color-mix(in srgb, #efe3c8 13%, #6f241b);
+  --m-line-strong: color-mix(in srgb, #efe3c8 26%, #6f241b);
+  --m-accent: #dfae4f;
+  --m-accent-strong: #ecc375;
+  --m-accent-soft: color-mix(in srgb, #dfae4f 20%, #6f241b);
+  --m-on-accent: #43130c;
+  --m-spark: #e0916f;
+  --m-blue: #93a8bf;
+  --m-red: #ffd0c4;
+  --m-amber: #e6c07f;
+  --m-green: #a3ab7d;
+  --m-sidebar: #641f17;
+  --m-radius-sm: 9px;
+  --m-radius: 13px;
+  --m-radius-lg: 20px;
+  --m-shadow: 0 1px 2px rgba(39, 9, 6, 0.3);
+  --m-shadow-lift: 0 16px 42px rgba(39, 9, 6, 0.45);
+  --m-font: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+  --m-display: 'Cormorant Garamond', Georgia, serif;
+  --m-num: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+  --m-scheme: dark;
+}
+.app-shell[data-ground='indigo'] {
+  --m-bg: #171b2c;
+  --m-surface: #1b2034;
+  --m-card: #21273d;
+  --m-sunken: #121625;
+  --m-ink: #e9dcc0;
+  --m-muted: #aeb0bf;
+  --m-faint: #9a9daf;
+  --m-line: color-mix(in srgb, #e9dcc0 11%, #171b2c);
+  --m-line-strong: color-mix(in srgb, #e9dcc0 24%, #171b2c);
+  --m-accent: #d7a445;
+  --m-accent-strong: #e6bc6c;
+  --m-accent-soft: color-mix(in srgb, #d7a445 18%, #171b2c);
+  --m-on-accent: #0b0e19;
+  --m-spark: #cf7a63;
+  --m-blue: #7f9ab8;
+  --m-red: #ffc8bc;
+  --m-amber: #e0b264;
+  --m-green: #97a878;
+  --m-sidebar: #121625;
+  --m-shadow: 0 1px 2px rgba(5, 8, 18, 0.4);
+  --m-shadow-lift: 0 16px 42px rgba(5, 8, 18, 0.55);
+}
+.app-shell[data-ground='paper'] {
+  --m-bg: #eee1c6;
+  --m-surface: #f1e6cf;
+  --m-card: #f6edda;
+  --m-sunken: #e5d5b4;
+  --m-ink: #332b30;
+  --m-muted: #6f6255;
+  --m-faint: #7d6f61;
+  --m-line: color-mix(in srgb, #332b30 12%, #eee1c6);
+  --m-line-strong: color-mix(in srgb, #332b30 26%, #eee1c6);
+  --m-accent: #a5432f;
+  --m-accent-strong: #8a3524;
+  --m-accent-soft: color-mix(in srgb, #a5432f 14%, #eee1c6);
+  --m-on-accent: #fbf3e2;
+  --m-spark: #b95f4c;
+  --m-blue: #536d8c;
+  --m-red: #7c1f18;
+  --m-amber: #8a5a12;
+  --m-green: #697642;
+  --m-sidebar: #e8dbbd;
+  --m-shadow: 0 1px 2px rgba(83, 55, 38, 0.08), 0 4px 14px rgba(83, 55, 38, 0.06);
+  --m-shadow-lift: 0 14px 38px rgba(83, 55, 38, 0.2);
+  --m-scheme: light;
+}
+
+/* ---- Style menu (all four styles) ---- */
+.style-switch { position: relative; display: inline-flex; }
+.app-shell .style-switch .style-switch-trigger { display: inline-flex; align-items: center; gap: 0.45rem; white-space: nowrap; }
+.app-shell .style-switch .style-switch-swatch {
+  flex: none; width: 0.8rem; height: 0.8rem; min-height: 0; padding: 0; border-radius: 50%;
+  border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  background: linear-gradient(135deg, var(--swatch-base) 0 50%, var(--swatch-accent) 50% 100%);
+}
+.app-shell .style-switch .style-switch-label { width: auto; height: auto; border-radius: 0; background: none; }
+.app-shell .style-switch .style-switch-menu {
+  position: absolute; z-index: 300; top: calc(100% + 0.4rem); right: 0;
+  display: grid; gap: 2px; min-width: 9.5rem; padding: 0.35rem;
+  border: 1px solid var(--g-line); border-radius: 12px;
+  background: var(--g-bg); color: var(--g-ink);
+  box-shadow: 0 0.9rem 2.2rem var(--g-shadow);
+  text-transform: none; letter-spacing: 0;
+}
+.app-shell .style-switch.style-switch-above .style-switch-menu { top: auto; bottom: calc(100% + 0.4rem); right: auto; left: 0; }
+.app-shell .style-switch .style-switch-option {
+  display: flex; align-items: center; gap: 0.6rem; width: 100%; min-height: 2.25rem;
+  padding: 0.4rem 0.65rem; border: 0; border-radius: 8px;
+  background: transparent; color: var(--g-ink);
+  font: 500 0.95rem/1.2 var(--font-ui); letter-spacing: 0; text-transform: none; text-align: left; cursor: pointer;
+  box-shadow: none;
+}
+.app-shell .style-switch .style-switch-option:hover { background: var(--g-wash); }
+.app-shell .style-switch .style-switch-option[aria-pressed='true'] { background: color-mix(in srgb, var(--g-acc) 16%, transparent); font-weight: 700; }
+.app-shell .style-switch .style-switch-option:focus-visible,
+.app-shell .style-switch .style-switch-trigger:focus-visible { outline: 2px solid var(--g-acc); outline-offset: 2px; }
+
+/* ---- Life OS controls over a framed app ---- */
+.subapp-bar {
+  position: fixed; z-index: 101;
+  left: calc(12px + env(safe-area-inset-left, 0px)); bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  display: flex; gap: 6px; align-items: center;
+}
+.app-shell .subapp-bar .subapp-pill {
+  min-height: 0; padding: 6px 12px; border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 999px;
+  background: rgba(28, 30, 33, 0.72); color: #f6f1e7;
+  font: 600 12px/1.2 'Manrope', system-ui, sans-serif; letter-spacing: 0.02em; text-transform: none;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18); cursor: pointer; opacity: 0.9;
+}
+.app-shell .subapp-bar .subapp-pill:hover, .app-shell .subapp-bar .is-open .subapp-pill { opacity: 1; }
+
+/* ---- Shared palette: the modern skin (the look of the four attached apps, unified) ---- */
+.app-shell[data-ground='modern'] {
+  --m-bg: #f4f2ea;
+  --m-surface: #faf8f1;
+  --m-card: #fffdf8;
+  --m-sunken: #eeebe0;
+  --m-ink: #22302b;
+  --m-muted: #5f6b65;
+  --m-faint: #6f7972;
+  --m-line: #e2dfd2;
+  --m-line-strong: #cbc8b8;
+  --m-accent: #1f6f5e;
+  --m-accent-strong: #185748;
+  --m-accent-soft: #e1ece5;
+  --m-on-accent: #ffffff;
+  --m-green: #1f6f5e;
+  --m-scheme: light;
+  --m-spark: #c96f45;
+  --m-blue: #3a6ea5;
+  --m-red: #a8402f;
+  --m-amber: #a9781c;
+  --m-sidebar: #f7f5ed;
+  --m-radius-sm: 9px;
+  --m-radius: 13px;
+  --m-radius-lg: 20px;
+  --m-shadow: 0 1px 2px rgba(34, 48, 43, 0.05), 0 4px 14px rgba(34, 48, 43, 0.05);
+  --m-shadow-lift: 0 14px 38px rgba(34, 48, 43, 0.13);
+  --m-font: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+  --m-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --m-num: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+
+  --g-bg: var(--m-bg);
+  --g-bg2: var(--m-card);
+  --g-ink: var(--m-ink);
+  --g-acc: var(--m-accent);
+  --g-sub: var(--m-muted);
+  --g-line: var(--m-line-strong);
+  --g-panel: var(--m-card);
+  --g-accsoft: color-mix(in srgb, var(--m-accent) 40%, transparent);
+  --g-shadow: rgba(34, 48, 43, 0.1);
+  --g-danger: var(--m-red);
+  --g-muted: var(--m-muted);
+  --g-faint: var(--m-faint);
+  --g-hairline: var(--m-line);
+  --g-wash: var(--m-surface);
+  --g-coral: var(--m-spark);
+  --g-rose: #b0647c;
+  --g-sage: #5d7f52;
+  --g-blue: var(--m-blue);
+  --g-deep: #1c2a25;
+  --font-ui: var(--m-font);
+  background: var(--m-bg);
+  font-family: var(--m-font);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* ---- Modern page frame and header (Court, Today, Calendar, Ledger) ---- */
+.app-shell[data-ground='modern'] .court-screen.board-screen {
+  min-height: 100vh; margin: 0; padding: 0 clamp(1rem, 3vw, 2.25rem) 3rem;
+  border: 0; border-radius: 0; background: transparent; box-shadow: none;
+}
+.app-shell[data-ground='modern'] .court-screen.board-screen::before { content: none; }
+.app-shell[data-ground='modern'] .court-topbar {
+  position: sticky; top: 0; z-index: 20;
+  grid-template-columns: auto auto 1fr; gap: 1rem;
+  max-width: none; margin: 0 calc(-1 * clamp(1rem, 3vw, 2.25rem)) 1.75rem; padding: 0.7rem clamp(1rem, 3vw, 2.25rem);
+  border-bottom: 1px solid var(--m-line);
+  background: color-mix(in srgb, var(--m-card) 88%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.app-shell[data-ground='modern'] .wordmark { font: 600 1.35rem/1.1 var(--m-display); letter-spacing: -0.02em; }
+.app-shell[data-ground='modern'] .date-line { text-align: left; font-size: 0.85rem; color: var(--m-muted); }
+.app-shell[data-ground='modern'] .court-nav {
+  justify-self: end; flex-wrap: wrap; justify-content: flex-end; gap: 0.2rem;
+  padding: 0; border: 0; background: transparent;
+}
+.app-shell[data-ground='modern'] .court-nav button {
+  min-height: 2.1rem; padding: 0.4rem 0.8rem; border-radius: 999px;
+  color: var(--m-muted); font: 600 0.84rem/1.2 var(--m-font);
+}
+.app-shell[data-ground='modern'] .court-nav button:hover { background: var(--m-sunken); color: var(--m-ink); }
+.app-shell[data-ground='modern'] .court-nav .active { background: var(--m-accent-soft); color: var(--m-accent-strong); font-weight: 700; }
+.app-shell[data-ground='modern'] .court-nav .style-switch-trigger { border: 1px solid var(--m-line-strong); background: var(--m-card); color: var(--m-ink); }
+
+.app-shell[data-ground='modern'] h1,
+.app-shell[data-ground='modern'] h2,
+.app-shell[data-ground='modern'] h3 { font-family: var(--m-display); font-weight: 500; letter-spacing: -0.015em; }
+
+/* ---- Modern home ---- */
+.modern-court { position: relative; z-index: 1; display: grid; gap: 1.4rem; width: min(74rem, 100%); margin: 0 auto; }
+.modern-eyebrow { margin: 0 0 0.35rem; color: var(--m-accent); font: 700 0.7rem/1.4 var(--m-font); letter-spacing: 0.16em; text-transform: uppercase; }
+.modern-court-heading h1 { margin: 0; font-size: clamp(2rem, 4vw, 2.9rem); line-height: 1.12; }
+.modern-card {
+  min-width: 0; padding: 1.15rem 1.25rem; border: 1px solid var(--m-line); border-radius: var(--m-radius);
+  background: var(--m-card); box-shadow: var(--m-shadow);
+}
+.modern-card-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; }
+.modern-card-heading h2 { margin: 0; font-size: 1.3rem; }
+.modern-card-heading a { color: var(--m-accent); font: 600 0.82rem/1.2 var(--m-font); text-underline-offset: 3px; }
+.modern-court-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1.4rem; }
+.modern-empty, .modern-court .court-calendar-note { margin: 0; color: var(--m-muted); font-size: 0.9rem; }
+
+.modern-capture { display: grid; gap: 0.75rem; }
+.modern-capture textarea {
+  width: 100%; min-height: 4.6rem; resize: vertical; padding: 0.2rem 0; border: 0; outline: 0;
+  background: transparent; color: var(--m-ink); font: 500 1.05rem/1.5 var(--m-font);
+}
+.modern-capture textarea::placeholder { color: var(--m-faint); }
+.modern-capture .redesign-capture-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--m-line); }
+.modern-capture .redesign-capture-tools label { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--m-muted); font: 600 0.8rem/1.2 var(--m-font); }
+.modern-capture select, .modern-capture input:not([type='checkbox']), .modern-capture .fields-form textarea {
+  min-height: 2.25rem; padding: 0.35rem 0.6rem; border: 1px solid var(--m-line-strong); border-radius: var(--m-radius-sm);
+  background: var(--m-card); color: var(--m-ink); font: 500 0.88rem/1.3 var(--m-font); color-scheme: light;
+}
+.modern-capture .redesign-submit {
+  min-height: 2.35rem; padding: 0.5rem 1.1rem; border: 0; border-radius: var(--m-radius-sm);
+  background: var(--m-accent); color: #fff; font: 700 0.86rem/1.2 var(--m-font); cursor: pointer;
+}
+.modern-capture .redesign-submit:disabled { opacity: 0.45; cursor: default; }
+.modern-capture .form-error { margin: 0; color: var(--m-red); font-size: 0.88rem; }
+
+.modern-today-list, .modern-filed-list { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.modern-today-list li { display: grid; grid-template-columns: 6.2rem minmax(0, 1fr); gap: 0.85rem; align-items: baseline; padding: 0.6rem 0 0.6rem 0.8rem; border-left: 3px solid var(--room-accent, var(--m-accent)); }
+.modern-today-list li + li, .modern-filed-list li + li { border-top: 1px solid var(--m-line); }
+.modern-today-list time, .modern-filed-list time { color: var(--m-muted); font: 600 0.78rem/1.4 var(--m-num); }
+.modern-today-list p, .modern-filed-list p { margin: 0; min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.modern-today-list a { color: inherit; text-decoration: none; }
+.modern-today-list a:hover { color: var(--m-accent); text-decoration: underline; text-underline-offset: 3px; }
+.modern-today-list small, .modern-filed-list small { display: block; color: var(--m-muted); font-weight: 500; font-size: 0.8rem; }
+.modern-filed-list li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0.7rem; align-items: center; padding: 0.55rem 0; }
+.modern-filed-list li > span { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; background: color-mix(in srgb, var(--room-accent, var(--m-accent)) 14%, transparent); color: var(--room-accent, var(--m-accent)); }
+
+.modern-rooms { display: grid; grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr)); gap: 0.75rem; }
+.modern-room {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0.75rem; align-items: center;
+  min-width: 0; padding: 0.8rem 0.95rem; border: 1px solid var(--m-line); border-radius: var(--m-radius);
+  background: var(--m-surface); color: var(--m-ink); font: inherit; text-align: left;
+}
+button.modern-room { cursor: pointer; background: var(--m-card); box-shadow: var(--m-shadow); transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+button.modern-room:hover { transform: translateY(-1px); border-color: var(--m-line-strong); box-shadow: var(--m-shadow-lift); }
+.modern-room-icon { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: 10px; background: color-mix(in srgb, var(--room-accent, var(--m-accent)) 14%, transparent); color: var(--room-accent, var(--m-accent)); }
+.modern-room-copy { display: grid; min-width: 0; }
+.modern-room-copy strong { font: 700 0.95rem/1.3 var(--m-font); }
+.modern-room-copy small { overflow: hidden; color: var(--m-muted); font-size: 0.8rem; text-overflow: ellipsis; white-space: nowrap; }
+.modern-room.is-linked .modern-room-copy small { color: var(--m-accent); font-weight: 600; }
+.modern-room-count { color: var(--m-muted); font: 600 0.85rem/1 var(--m-num); }
+
+.modern-poem { display: grid; justify-items: center; gap: 0.5rem; padding-block: 1.6rem; text-align: center; background: var(--m-surface); box-shadow: none; }
+.modern-poem div p { margin: 0; font-family: var(--font-poem); font-size: 1.5rem; line-height: 2.3; }
+.modern-poem-credit { margin: 0; color: var(--m-accent); font-family: var(--font-poem); font-size: 1rem; }
+.modern-poem-en { max-width: 38rem; margin: 0; color: var(--m-muted); font: italic 400 0.95rem/1.6 var(--m-display); }
+
+@media (max-width: 860px) {
+  .app-shell[data-ground='modern'] .court-topbar { grid-template-columns: 1fr auto; }
+  .app-shell[data-ground='modern'] .court-nav { grid-column: 1 / -1; justify-self: start; justify-content: flex-start; }
+  .modern-court-grid { grid-template-columns: 1fr; }
+  .modern-today-list li { grid-template-columns: 1fr; gap: 0.1rem; }
+}
