@@ -1,0 +1,102 @@
+{
+  "sourceFingerprint": "b4880f7ec990a67fd1713ec0b343f8b6796068f80fead6b27352eff36c8ddf0e",
+  "sourceAddedOn": "2026-09-13",
+  "sourceEvidence": "Initial collection saved 13 September 2026, documented in README.md; source file unchanged.",
+  "customJobs": {
+    "CUSTOM-f2dbe053-b374-4f29-8455-254b7a3940ec": {
+      "addedOn": "2026-09-17",
+      "importRun": "2026-09-16-morning",
+      "importedAt": "2026-09-16T23:32:36.557Z"
+    },
+    "CUSTOM-ecb470d6-0ff2-4b97-836c-e13acba6d482": {
+      "addedOn": "2026-09-17",
+      "importRun": "2026-09-16-morning",
+      "importedAt": "2026-09-16T23:32:36.557Z"
+    },
+    "CUSTOM-89119f86-3cd0-446b-86b9-b530ad64362a": {
+      "addedOn": "2026-09-17",
+      "importRun": "2026-09-16-morning",
+      "importedAt": "2026-09-16T23:32:36.557Z"
+    },
+    "CUSTOM-56a017f0-6117-49d2-8f0b-51fd7c950b06": {
+      "addedOn": "2026-09-17",
+      "importRun": "2026-09-16-morning",
+      "importedAt": "2026-09-16T23:32:36.557Z"
+    },
+    "CUSTOM-d20af7dd-c2f6-454a-b23c-c5f6626a8b4c": {
+      "addedOn": "2026-09-17",
+      "importRun": "2026-09-16-morning",
+      "importedAt": "2026-09-16T23:32:36.557Z"
+    },
+    "CUSTOM-43766157-531f-4b4a-9ff3-01a94013da35": {
+      "addedOn": "2026-09-17",
+      "importRun": "2026-09-16-morning",
+      "importedAt": "2026-09-16T23:32:36.557Z"
+    },
+    "CUSTOM-8f0ee5b5-44ca-4cc2-8b98-48fbdc2f2160": {
+      "addedOn": "2026-09-17",
+      "importRun": "2026-09-16-morning",
+      "importedAt": "2026-09-16T23:32:36.557Z"
+    },
+    "CUSTOM-f919359a-c6df-404c-80a7-54a11b21477a": {
+      "addedOn": "2026-10-06",
+      "importRun": "2026-09-17-1508-public-shortlist",
+      "importedAt": "2026-10-06T17:12:12.746Z"
+    },
+    "CUSTOM-985ee846-ee52-4d38-8b7a-f5cf6c5f4b99": {
+      "addedOn": "2026-10-06",
+      "importRun": "2026-09-17-1508-public-shortlist",
+      "importedAt": "2026-10-06T17:12:12.746Z"
+    },
+    "CUSTOM-8ee32b15-d4b5-4898-9d22-8067fcc5863d": {
+      "addedOn": "2026-10-06",
+      "importRun": "2026-09-22-1624-public-shortlist",
+      "importedAt": "2026-10-06T17:12:12.788Z"
+    },
+    "CUSTOM-c974cfb5-80e3-4c73-809b-185f67fca824": {
+      "addedOn": "2026-10-06",
+      "importRun": "2026-09-22-1624-public-shortlist",
+      "importedAt": "2026-10-06T17:12:12.788Z"
+    },
+    "CUSTOM-a0e1c9a3-ec5f-4ecb-b6c0-1b4a91c88a3a": {
+      "addedOn": "2026-10-06",
+      "importRun": "2026-09-22-1624-public-shortlist",
+      "importedAt": "2026-10-06T17:12:12.788Z"
+    },
+    "CUSTOM-b2979a8d-20fc-4ec1-ada1-48276f021ca1": {
+      "addedOn": "2026-10-06",
+      "importRun": "2026-09-24-1829-public-shortlist",
+      "importedAt": "2026-10-06T17:12:12.801Z"
+    },
+    "CUSTOM-608e4e95-f661-4e12-81c3-5a050e8a0055": {
+      "addedOn": "2026-10-06",
+      "importRun": "2026-09-29-1555-public-shortlist-3",
+      "importedAt": "2026-10-06T17:12:12.839Z"
+    },
+    "CUSTOM-68b7f1e6-f698-4b79-a216-e79253692544": {
+      "addedOn": "2026-10-06",
+      "importRun": "2026-09-29-1555-public-shortlist-3",
+      "importedAt": "2026-10-06T17:12:12.839Z"
+    },
+    "CUSTOM-bd159265-68be-4f11-9526-80e2572b1a41": {
+      "addedOn": "2026-10-06",
+      "importRun": "2026-10-01-1536-public-shortlist-16",
+      "importedAt": "2026-10-06T17:12:12.875Z"
+    },
+    "CUSTOM-1e5ec51e-5fc1-40d2-a805-61a9e1c9166c": {
+      "addedOn": "2026-10-06",
+      "importRun": "2026-10-01-1536-public-shortlist-16",
+      "importedAt": "2026-10-06T17:12:12.875Z"
+    },
+    "CUSTOM-638ae851-01fb-4bb2-a722-2305c6723331": {
+      "addedOn": "2026-10-06",
+      "importRun": "2026-10-01-1536-public-shortlist-16",
+      "importedAt": "2026-10-06T17:12:12.875Z"
+    },
+    "CUSTOM-e71d6ad7-bc73-413d-b8f2-17c8797fc2df": {
+      "addedOn": "2026-10-06",
+      "importRun": "2026-10-04-1508-public-shortlist-37",
+      "importedAt": "2026-10-06T17:12:12.899Z"
+    }
+  }
+}

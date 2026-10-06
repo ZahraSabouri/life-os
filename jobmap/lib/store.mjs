@@ -3,14 +3,16 @@ import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 import { DEFAULT_PROFILE } from './matching.mjs';
 import {planImport,validateObservation} from './discovery.mjs';
+import {calendarDay,isDate} from './job-dates.mjs';
+import legacyDates from './legacy-dates.json' with {type:'json'};
 
 export const STATUSES = ['To review','Check details','Preparing','Applied','Interview','Offer','Rejected','Archived'];
-const strings = {notes:30000,nextStep:1000,followUp:10,applied:10,cv:2000,coverLetter:2000,hours:500,role:500,company:300,location:1000,salary:3000,url:4000,deadline:10};
-const dateKeys = new Set(['followUp','applied','deadline']);
+const strings = {notes:30000,nextStep:1000,followUp:10,applied:10,cv:2000,coverLetter:2000,hours:500,role:500,company:300,location:1000,salary:3000,url:4000,deadline:10,advertisedOn:10};
+const dateKeys = new Set(['followUp','applied','deadline','advertisedOn']);
 const empty = () => ({schemaVersion:1,revision:0,updatedAt:null,overrides:{},customJobs:[],preferences:{...DEFAULT_PROFILE}});
 function validateProfile(p){if(!object(p)||typeof p.skills!=='string'||p.skills.length>3000||!['balanced','software','data'].includes(p.focus)||!Number.isInteger(p.maxHours)||p.maxHours<1||p.maxHours>40)throw new Error('Check the matching preferences.');return {skills:p.skills,focus:p.focus,maxHours:p.maxHours};}
-export function localDay(date=new Date()) {return new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);}
-export function validDate(s){if(!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;const d=new Date(s+'T12:00:00Z');return Number.isFinite(+d)&&d.toISOString().slice(0,10)===s;}
+export const localDay=calendarDay;
+export const validDate=isDate;
 export function safeUrl(s){if(!s)return true;try{return ['https:','http:'].includes(new URL(s).protocol)}catch{return false}}
 function object(value){return value!==null&&typeof value==='object'&&!Array.isArray(value);}
 export function validatePatch(patch){
@@ -35,9 +37,17 @@ export class Store {
   for(const [id,override] of Object.entries(state.overrides)){if(!ids.has(id)||!object(override))throw new Error('Unknown job in backup.');const {history,...fields}=override;validatePatch(fields);if(history!==undefined&&(!Array.isArray(history)||history.length>100||history.some(e=>!object(e)||typeof e.at!=='string'||typeof e.label!=='string'||e.label.length>200)))throw new Error('Invalid activity history.');}
   if(state.observations!==undefined){if(!object(state.observations))throw new Error('Invalid vacancy observations.');for(const [id,entry]of Object.entries(state.observations)){if(!ids.has(id))throw new Error('Unknown observed job.');validateObservation(entry,validatePatch);}}
   if(state.importRuns!==undefined&&(!Array.isArray(state.importRuns)||state.importRuns.length>200||state.importRuns.some(r=>!object(r)||typeof r.id!=='string'||typeof r.at!=='string'||!['added','updated','skipped'].every(k=>Number.isSafeInteger(r[k])&&r[k]>=0))))throw new Error('Invalid search history.');
-  return {...structuredClone(state),preferences:validateProfile(state.preferences||DEFAULT_PROFILE)};
+  for(const j of state.customJobs){
+   if(j.addedOn!==undefined&&!validDate(j.addedOn))throw new Error('Invalid date added.');
+   if(j.advertisedOn!==undefined)validatePatch({advertisedOn:j.advertisedOn});
+  }
+  const result={...structuredClone(state),preferences:validateProfile(state.preferences||DEFAULT_PROFILE)};
+  // Recovered from consecutive saved revisions and their completed import runs.
+  // Never substitute a verification date or today's date for missing history.
+  for(const j of result.customJobs)if(!j.addedOn&&legacyDates.customJobs[j.id])j.addedOn=legacyDates.customJobs[j.id].addedOn;
+  return result;
  }
- jobs(){return [...this.base,...this.state.customJobs].map(j=>({...j,status:j.status==='Open'?'To review':j.status,saved:false,nextStep:'',followUp:'',cv:'',coverLetter:'',hours:j.hours||'',notes:j.notes||'',applied:j.applied?.slice(0,10)||'',deadline:j.deadline?.slice(0,10)||'',...this.state.observations?.[j.id],...this.state.overrides[j.id],userEditedDeadline:Object.hasOwn(this.state.overrides[j.id]||{},'deadline')}));}
+ jobs(){const baseIds=new Set(this.base.map(j=>j.id));return [...this.base,...this.state.customJobs].map(j=>({...j,addedOn:j.addedOn||(baseIds.has(j.id)&&this.fingerprint===legacyDates.sourceFingerprint?legacyDates.sourceAddedOn:''),advertisedOn:j.advertisedOn||'',status:j.status==='Open'?'To review':j.status,saved:false,nextStep:'',followUp:'',cv:'',coverLetter:'',hours:j.hours||'',notes:j.notes||'',applied:j.applied?.slice(0,10)||'',deadline:j.deadline?.slice(0,10)||'',...this.state.observations?.[j.id],...this.state.overrides[j.id],userEditedDeadline:Object.hasOwn(this.state.overrides[j.id]||{},'deadline')}));}
  ingest(raw,revision,dryRun=false){return this.run(async()=>{this.check(revision);const {state,...result}=planImport(this.state,this.base,raw,validatePatch);if(!dryRun&&!result.repeated)await this.persist(state,'search');return {...result,dryRun,revision:this.state.revision};});}
  run(action){const next=this.queue.then(action);this.queue=next.catch(()=>{});return next;}
  preferences(raw,revision){return this.run(async()=>{this.check(revision);const preferences=validateProfile(raw);const next=structuredClone(this.state);next.preferences=preferences;await this.persist(next);return {preferences,revision:this.state.revision};});}
@@ -64,6 +74,7 @@ export class Store {
   this.check(revision);if(!object(raw))throw new Error('Invalid job.');const {description='',...values}=raw;const p=validatePatch(values);if(!p.role?.trim()||!p.company?.trim())throw new Error('Role and company are required.');if(typeof description!=='string'||description.length>100000)throw new Error('Description is too long.');
   const duplicate=p.url&&this.jobs().find(j=>j.url&&j.url.replace(/\/$/,'')===p.url.replace(/\/$/,''));if(duplicate){const e=new Error(`That link is already saved: ${duplicate.role} at ${duplicate.company}.`);e.status=409;throw e;}
   const job={id:'CUSTOM-'+randomUUID(),source:'Added by you',sourceDetail:'Manual entry',role:p.role.trim(),company:p.company.trim(),location:p.location||'',salary:p.salary||'',url:p.url||'',deadline:p.deadline||'',hours:p.hours||'',description,employment:'',stack:'',watch:'',notes:'',status:'To review',priority:'P2',rank:this.base.length+this.state.customJobs.length+1,checked:new Date().toISOString(),coverage:'Added by you',fields:{},links:[],track:'',reason:'Added by you.'};
+  job.addedOn=localDay();job.advertisedOn=p.advertisedOn||'';
   const next=structuredClone(this.state);next.customJobs.push(job);next.overrides[job.id]={saved:true};await this.persist(next);return {job:this.jobs().find(j=>j.id===job.id),revision:this.state.revision};
  });}
  export(){return {format:'jobmap-backup',version:1,exportedAt:new Date().toISOString(),sourceFingerprint:this.fingerprint,sourceJobs:this.base,progress:this.state};}

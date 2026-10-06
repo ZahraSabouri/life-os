@@ -19,7 +19,7 @@ Create `data/discoveries/YYYY-MM-DD-HHMM.json` in the app folder. The file is a 
 - `description`: factual saved advert text or a clearly labelled factual summary. Never reconstruct missing requirements.
 - `checked`: the actual verification date as YYYY-MM-DD.
 
-Optional string fields: `location`, `salary`, `hours`, `deadline` (YYYY-MM-DD or empty), `employment`, `stack`, `watch` (unresolved questions and the next action), `reason` (CV fit with supported evidence), `sourceDetail`, `availability` (open, closed or uncertain). Include only source-supported facts. Unknown values may be omitted. Do not use personal `notes`, `status`, `priority`, `saved` or follow-up fields in a batch.
+Optional string fields: `location`, `salary`, `hours`, `deadline` (YYYY-MM-DD or empty), `advertisedOn` (original publication date as YYYY-MM-DD, only when explicitly supported by the source), `employment`, `stack`, `watch` (unresolved questions and the next action), `reason` (CV fit with supported evidence), `sourceDetail`, `availability` (open, closed or uncertain). Include only source-supported facts. Unknown values may be omitted. Do not use personal `notes`, `status`, `priority`, `saved` or follow-up fields in a batch.
 
 For an already saved vacancy, provide `existingId` only after verifying that it is the same vacancy. A matching URL is deduplicated automatically, ignoring common tracking parameters. A matching company, role and location with a different link is returned for identity review. Resolve that result with a verified existingId or leave it for review; never bypass the check by changing the spelling.
 
@@ -32,3 +32,7 @@ Keep run messages brief. Notify only for worthwhile new jobs, meaningful vacancy
 ## Local operation
 
 The computer must be awake and Codex running at the scheduled time. Open JobMap with Start JobMap.cmd to process any queued batches. No cloud endpoint or public exposure of JobMap is required. Cloud tasks cannot write directly to the local folder, so the former cloud shortlist is paused after the local replacement is configured.
+
+## Job dates
+
+The app records `addedOn` automatically on the day a vacancy is first imported or manually added, in Europe/London time. Do not supply or change it in discovery batches. `checked` is the verification date, not the publication date. Save `advertisedOn` only if the original advert or an explicitly identified source gives a publication date; mention that evidence in `sourceDetail`. A search-engine crawl date or the date an email arrived is not a publication date. Leave unknown publication and closing dates empty. Preserve the advertised closing date when an employer closes early and record closure in `availability` and `watch`.

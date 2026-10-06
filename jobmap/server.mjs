@@ -26,7 +26,7 @@ const server=http.createServer(async(req,res)=>{
    if(req.headers.origin&&!allowed.has(req.headers.origin)){json(res,{error:'Origin not allowed.'},403);return;}
    if(req.headers['x-jobmap-client']!=='workspace-v1'||!req.headers['content-type']?.startsWith('application/json')){json(res,{error:'Invalid workspace request.'},403);return;}
   }
-  if(url.pathname==='/api/health'){json(res,{app:'jobmap-local',version:1,count:store.jobs().length,revision:store.state.revision,discoveryVersion:1,inboxVersion:1});return;}
+  if(url.pathname==='/api/health'){json(res,{app:'jobmap-local',version:1,count:store.jobs().length,revision:store.state.revision,discoveryVersion:1,inboxVersion:1,dateVersion:1});return;}
   if(url.pathname==='/api/discoveries'&&req.method==='POST'){const b=await body(req);json(res,await store.ingest(b.batch,b.revision,b.dryRun===true));return;}
   if(url.pathname==='/api/inbox'&&req.method==='GET'){json(res,await inbox.status());return;}
   if(url.pathname==='/api/inbox/scan'&&req.method==='POST'){await body(req);json(res,await inbox.scan());return;}

@@ -42,3 +42,9 @@ Run `npm run build` to rebuild the local interface, `npm test` for data/persiste
 The local build uses Vite and React. The existing Sites/Vinext scaffold is retained for development, with the same page component, but no site has been registered or published. Private files are excluded from source-control defaults.
 
 The active local search is **UK Tech Job Shortlist — JobMap**, running Tuesday, Thursday, Saturday and Sunday at **3 pm UK time**. Keep the computer awake and Codex running. The former ChatGPT cloud shortlist is paused.
+
+## Job dates
+
+Each job shows Added to JobMap, Advertised and Closing date in the list and detail panel. Use Newest added or Recently advertised to sort; unknown dates sort last. Advertised and Closing date can be corrected under Edit details. Added dates are automatic and stay unchanged when a job is refreshed.
+
+The original collection uses its documented saved date, 13 September 2026. Dates for 19 previously imported jobs were recovered from consecutive progress snapshots and completed import runs (see lib/legacy-dates.json); the London calendar date is used. Other missing dates remain unknown. Existing workbook dates are retained separately unless verified as publication dates. Backups preserve dates alongside application progress.

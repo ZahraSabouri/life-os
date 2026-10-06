@@ -74,6 +74,7 @@ export function selectJobs(jobs,{view='all',scope='parttime',source='',search=''
   if(sort==='effort'&&a.match.effort!==b.match.effort)return b.match.effort-a.match.effort;
   if(sort==='deadline'){const deadline=(reviewDeadline(a.job)||'9999').localeCompare(reviewDeadline(b.job)||'9999');if(deadline)return deadline;}
   if(sort==='priority'){const p=(a.job.priority||'P4').localeCompare(b.job.priority||'P4');if(p)return p;}
+  if(sort==='added'||sort==='advertised'){const key=sort==='added'?'addedOn':'advertisedOn';const date=(b.job[key]||'').localeCompare(a.job[key]||'');if(date)return date;}
   return b.match.score-a.match.score||(a.job.rank||9999)-(b.job.rank||9999);
  });return rows;
 }

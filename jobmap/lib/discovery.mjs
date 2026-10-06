@@ -1,6 +1,7 @@
 import {randomUUID} from 'node:crypto';
+import {calendarDay} from './job-dates.mjs';
 
-const limits={role:500,company:300,url:4000,location:1000,salary:3000,hours:500,deadline:10,description:100000,employment:1000,stack:3000,watch:5000,reason:5000,checked:10,source:200,sourceDetail:1000,availability:20};
+const limits={role:500,company:300,url:4000,location:1000,salary:3000,hours:500,deadline:10,advertisedOn:10,description:100000,employment:1000,stack:3000,watch:5000,reason:5000,checked:10,source:200,sourceDetail:1000,availability:20};
 const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
 export function canonicalUrl(raw){
  try{const u=new URL(raw);u.hash='';u.hostname=u.hostname.toLowerCase().replace(/^www\./,'');u.pathname=u.pathname.replace(/\/$/,'');
@@ -15,7 +16,7 @@ export function validateObservation(raw,validatePatch){
   if(!Object.hasOwn(limits,key)||typeof value!=='string'||value.length>limits[key])throw new Error('Invalid evidence field: '+key);
   clean[key]=value;
  }
- validatePatch(Object.fromEntries(Object.entries(clean).filter(([k])=>['role','company','url','location','salary','hours','deadline'].includes(k))));
+ validatePatch(Object.fromEntries(Object.entries(clean).filter(([k])=>['role','company','url','location','salary','hours','deadline','advertisedOn'].includes(k))));
  if(clean.checked&&!/^\d{4}-\d{2}-\d{2}$/.test(clean.checked))throw new Error('Use a checked date as YYYY-MM-DD.');
  if(clean.checked)validatePatch({deadline:clean.checked});
  if(clean.availability&&!['open','closed','uncertain'].includes(clean.availability))throw new Error('Invalid vacancy availability.');
@@ -52,6 +53,7 @@ export function planImport(state,base,raw,validatePatch){
   }else{
    if(value.availability==='closed'){skipped.push({role:value.role,reason:'Closed vacancy was not added.'});continue;}
    const job={id:'CUSTOM-'+randomUUID(),rank:base.length+next.customJobs.length+1,status:'To review',priority:'P2',salary:'',hours:'',location:'',deadline:'',employment:'',stack:'',watch:'',reason:'',notes:'',description:'',fields:{},links:[],coverage:'Scheduled search',track:'',...value};
+   job.addedOn=calendarDay();
    next.customJobs.push(job);records.push(job);next.overrides[job.id]={saved:true};added.push(job.id);
   }
  }
