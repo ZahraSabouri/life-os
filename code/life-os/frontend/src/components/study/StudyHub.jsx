@@ -18,6 +18,7 @@ import StudyIcon from './StudyIcon.jsx'
 import { MusicPopover } from './StudyMusicPopover.jsx'
 import { Celebration } from './StudyCelebration.jsx'
 import StyleSwitch from '../StyleSwitch.jsx'
+import StudyHistory from './StudyHistory.jsx'
 import { useGround } from '../../lib/groundContext.jsx'
 import './summer-rescue-transferred.css'
 import './summer-rescue-native.css'
@@ -220,7 +221,7 @@ export default function StudyHub() {
     if (view === 'schedule') return <StudySchedule sessions={sessions} assessments={assessments} today={today} onEdit={edit} onOpenCard={id => { const record = workspace.cards.find(row => row.id === id); if (record) actions.onOpen(record); else setActionError('This session’s linked card is unavailable.') }} />
     if (view === 'assessments') return <StudyAssessments assessments={assessments} modules={modules} onEdit={edit} />
     if (view === 'materials') return <StudyMaterials materials={materials} workspace={workspace} semesterId={semesterId} moduleId={moduleId} discovery={discovery} onOpen={openMaterial} onEdit={edit} onReviewed={(row, reviewed) => quick(() => save('materials', row, { data: { ...dataOf(row), reviewed } }))} onUploaded={async () => { await refresh(true); setNotice('Material uploaded.') }} />
-    if (view === 'history') return <section><h2>Saved history</h2><p className="study-muted">Study writes are recorded with their previous version. Imported progress logs remain available below.</p><ol className="study-history">{workspace.history.slice().reverse().slice(0, 100).map((row, i) => <li key={row.id || i}><strong>{row.action || row.operation || dataOf(row).eventType || 'Saved change'}</strong><small>{displayDate(row.created_at || row.at)} · {row.entity_type || row.table_name || row.entity || ''}</small></li>)}</ol><details><summary>Imported progress records ({workspace.progress.length})</summary><ul>{workspace.progress.map(row => <li key={row.id}>{titleOf(row)} · {displayDate(row.start_date || row.start_at || row.created_at)}<details><summary>View preserved record</summary><pre>{JSON.stringify(dataOf(row), null, 2)}</pre></details></li>)}</ul></details>{!workspace.history.length && !workspace.progress.length && <p className="study-empty">No saved history yet.</p>}</section>
+    if (view === 'history') return <StudyHistory workspace={workspace} onChanged={() => refresh(true)} />
     if (view === 'admin') return <><StudyAssessments assessments={assessments} modules={modules} onEdit={edit} /><section><h2>Semesters and modules</h2><div className="study-admin-list">{workspace.semesters.map(row => <button type="button" key={row.id} onClick={() => edit('semesters', row)}>{titleOf(row)} · {displayDate(row.start_date)} – {displayDate(row.end_date)}</button>)}{modules.map(row => <button type="button" key={row.id} onClick={() => edit('modules', row)}>{dataOf(row).code} · {titleOf(row)}</button>)}</div></section><section><h2>Waiting cards</h2><CardList cards={stats.waiting} {...actions} empty="No waiting cards in this selection." /></section><details><summary>Preserved study settings</summary>{workspace.settings.filter(row => !['preferences', 'focusTimer'].includes(dataOf(row).key)).map(row => <section key={row.id}><h3>{titleOf(row)}</h3><pre>{JSON.stringify(dataOf(row), null, 2)}</pre></section>)}</details></>
     return null
   }

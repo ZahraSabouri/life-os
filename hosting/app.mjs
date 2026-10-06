@@ -102,6 +102,14 @@ export function createLifeOsApp(options = {}) {
   app.get('/api/study/discovery', discoveryAction('status'))
   app.post('/api/study/discovery/configure', discoveryAction('configure', true))
   app.post('/api/study/discovery/scan', discoveryAction('scan', true))
+  app.post('/api/study/discovery/preview', discoveryAction('preview', true))
+  app.get('/api/study/backups', async (_req, res, next) => {
+    try {
+      if (!study.backups) throw Object.assign(new Error('Study backups are unavailable until storage is configured'), { status: 503 })
+      res.set('Cache-Control', 'no-store')
+      res.json(await study.backups.status())
+    } catch (error) { next(error) }
+  })
   app.use('/api/study', createStudyRouter({ repository: study.repository, imports: study.imports }))
   const calendarLoaders = createCalendarLoaders({
     projectRoot, summerRoot, cardiffRoot, getBudgetPort, getJobMapPort,

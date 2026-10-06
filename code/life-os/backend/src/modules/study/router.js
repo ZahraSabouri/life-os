@@ -21,6 +21,7 @@ export function createStudyRouter({ repository, imports = {} } = {}) {
     res.set('Content-Disposition', 'attachment; filename="life-os-study.json"')
     res.json(await repository.exportWorkspace())
   }))
+  router.get('/deleted', handler(async (_req, res) => res.json(await repository.deleted())))
   router.post('/imports/:format/:action', handler(async (req, res) => {
     const { format, action } = req.params
     if (!['preview', 'apply'].includes(action) || !Object.hasOwn(imports, format) || typeof imports[format]?.[action] !== 'function') throw new StudyError(404, 'This Study import format is unavailable')
@@ -29,6 +30,13 @@ export function createStudyRouter({ repository, imports = {} } = {}) {
   for (const entity of STUDY_ENTITIES) {
     router.post(`/${entity}`, handler(async (req, res) => res.status(201).json(await repository.create(entity, req.body))))
     router.patch(`/${entity}/:id`, handler(async (req, res) => res.json(await repository.patch(entity, req.params.id, req.body))))
+    router.get(`/${entity}/:id/history`, handler(async (req, res) => res.json(await repository.recordHistory(entity, req.params.id))))
+    router.post(`/${entity}/:id/restore`, handler(async (req, res) => {
+      const body = req.body ?? {}
+      if (Object.keys(body).some((key) => key !== 'revision')) throw new StudyError(400, 'Restore accepts only the current revision')
+      res.json(await repository.restore(entity, req.params.id, body.revision))
+    }))
+    router.post(`/${entity}/:id/revert`, handler(async (req, res) => res.json(await repository.revert(entity, req.params.id, req.body ?? {}))))
     router.delete(`/${entity}/:id`, handler(async (req, res) => {
       const body = req.body ?? {}
       if (Object.keys(body).some((key) => key !== 'revision')) throw new StudyError(400, 'Delete accepts only the current revision')

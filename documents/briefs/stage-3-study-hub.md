@@ -46,12 +46,15 @@ PostgreSQL 18.6 is running. Fresh `lifeos`/`lifeos_test` and owner/app roles are
 - **Commit:** `[3-cp2] Import Study history and connect the shared calendar`.
 
 ### CP3: Timetable and final parity
-- [ ] Transfer original Summer Rescue design/components, keeping light/dark preferences and native reusable data.
-- [ ] Automatic trusted module-folder resource discovery: supported new files appear while host runs; repeat scans skip linked content; changed versions and personal edits remain; original files untouched.
-- [ ] Manual timetable/assessments/materials inputs; validated JSON/CSV/ICS preview/apply with recurrence and exception handling.
+**6 October scope changes, all asked for directly by Xar during the Claude Code session:** (1) a style menu on every page; (2) a fourth, modern style for the whole app, unified rather than different per area; (3) backend for Calendar and Study finished first, styles second; (4) a report on data structure and functions (`../Study_and_Calendar_Backend.md`). Folder discovery now watches for new files only unless the existing files are asked for (decision recorded in DECISIONS).
+- [x] Transfer original Summer Rescue design/components and native reusable data. Sidebar overflow and summary tiles fixed. Study's own light/dark switch is replaced by the four Life OS styles (Xar: one unified design); the saved `theme` preference is left in the data, unused.
+- [x] Automatic trusted module-folder resource discovery: supported new files appear while host runs; repeat scans skip linked content; changed versions and personal edits remain; original files untouched. 14 tests. **No folder is connected yet:** the seven candidates hold about 10,700 files (table in the 6 October Claude Code session note), so connecting them is Xar's choice per module.
+- [x] Manual timetable/assessments/materials inputs; validated JSON/CSV/ICS preview/apply with recurrence and exception handling (built in CP1/CP2, 21 import and timetable tests).
 - [ ] Schedule/day/week views and conflict/daily totals, true activity progress, timer execution context and rescue triage.
 - [ ] Check every feature below; document any remaining parity explicitly, keep original accessible, and never silently replace the current plan with a newer private seed.
-- [ ] Desktop/phone/all-ground visual review in an available browser; no connected browser means this stays pending, not passed.
+- [ ] Desktop/phone/all-ground visual review in an available browser. Partly done 6 October with headless Chrome, saves blocked: Overview and History at desktop and phone width in all four styles, the phone menu, and the style menu on Court, Today, Calendar and a framed app. Not yet looked at: the other eleven Study views, dialogs, the focus timer and workbench.
+- [x] Added: restore a removed record, put an earlier version back, per-record history, removed-records list, daily database backup, folder preview. Tested on `lifeos_test` (9 guarded checks).
+- [ ] Added, not done: Cardiff Life, Budget and JobMap follow the four styles. They have the style menu but keep their own look.
 - **Done when:** Study is reusable for the next semester and its recorded study features/data work through the native module; Xar can review it before retirement of the source.
 - **Commit:** `[3-cp3] Complete Study planning and import workflows`.
 

@@ -187,6 +187,65 @@ export function createStudyRepository({ pool, beforeImport } = {}) {
     })
   }
 
+  // Soft delete only hides a record; this brings it back with a new revision.
+  async function restore(entity, id, revision, { actor = 'user' } = {}) {
+    assertEntity(entity)
+    validateId(id)
+    validateRevision(revision)
+    return transaction(async (client) => {
+      const previous = serialize((await client.query(`SELECT ${SELECT_COLUMNS} FROM study.${entity} WHERE id = $1 FOR UPDATE`, [id])).rows[0])
+      if (!previous) throw new StudyError(404, 'Study record was not found')
+      if (!previous.deleted_at) throw new StudyError(409, 'This Study record is not removed.', { current: previous })
+      if (previous.revision !== revision) throw new StudyError(409, 'This Study record changed. Reload before restoring.', { current: previous })
+      // A record returns only to parents that still exist, so nothing reappears detached.
+      await parents(client, { ...previous })
+      const restored = serialize((await client.query(`UPDATE study.${entity} SET deleted_at = NULL, updated_at = now(), revision = revision + 1 WHERE id = $1 AND revision = $2 RETURNING ${SELECT_COLUMNS}`, [id, revision])).rows[0])
+      if (!restored) throw new StudyError(409, 'This Study record changed. Reload before restoring.')
+      await history(client, entity, 'update', previous, restored, actor)
+      return restored
+    })
+  }
+
+  async function recordHistory(entity, id, { limit = 50 } = {}) {
+    assertEntity(entity)
+    validateId(id)
+    const bounded = Math.max(1, Math.min(Number.isSafeInteger(limit) ? limit : 50, 500))
+    try {
+      const record = serialize((await pool.query(`SELECT ${SELECT_COLUMNS} FROM study.${entity} WHERE id = $1`, [id])).rows[0])
+      if (!record) throw new StudyError(404, 'Study record was not found')
+      const rows = (await pool.query('SELECT id, entity, record_id, action, before_data, after_data, actor, created_at FROM study.history WHERE entity = $1 AND record_id = $2 ORDER BY created_at DESC, id LIMIT $3', [entity, id, bounded])).rows.map(serialize)
+      return { entity, record, history: rows }
+    } catch (error) { throw databaseError(error) }
+  }
+
+  // Puts back the content a record had after one of its saved changes. It is an ordinary
+  // revision-checked edit, so the versions in between stay in history.
+  async function revert(entity, id, body, { actor = 'user' } = {}) {
+    assertEntity(entity)
+    validateId(id)
+    const revision = validateRevision(body?.revision)
+    const historyId = validateId(body?.history_id, 'history_id')
+    if (Object.keys(body).some((key) => !['revision', 'history_id'].includes(key))) throw new StudyError(400, 'Revert accepts only revision and history_id')
+    let version
+    try {
+      version = (await pool.query('SELECT after_data, before_data FROM study.history WHERE id = $1 AND entity = $2 AND record_id = $3', [historyId, entity, id])).rows[0]
+    } catch (error) { throw databaseError(error) }
+    const snapshot = version?.after_data ?? version?.before_data
+    if (!snapshot) throw new StudyError(404, 'That saved version was not found for this record')
+    return patch(entity, id, { ...Object.fromEntries(MUTABLE_FIELDS.filter((field) => field in snapshot).map((field) => [field, snapshot[field]])), revision }, { actor })
+  }
+
+  async function deleted({ limit = 200 } = {}) {
+    const bounded = Math.max(1, Math.min(Number.isSafeInteger(limit) ? limit : 200, 1000))
+    try {
+      const result = {}
+      for (const entity of STUDY_ENTITIES) {
+        result[entity] = (await pool.query(`SELECT ${SELECT_COLUMNS} FROM study.${entity} WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC, id LIMIT $1`, [bounded])).rows.map(serialize)
+      }
+      return result
+    } catch (error) { throw databaseError(error) }
+  }
+
   async function inspectImport(client, batch) {
     // Resolve omitted parent context consistently in preview and apply, so a
     // repeated import is compared with the exact content previously stored.
@@ -244,5 +303,5 @@ export function createStudyRepository({ pool, beforeImport } = {}) {
     })
   }
 
-  return Object.freeze({ workspace, exportWorkspace: () => workspace({ includeDeleted: true, historyLimit: null }), create, patch, remove, previewImport, importRecords })
+  return Object.freeze({ workspace, exportWorkspace: () => workspace({ includeDeleted: true, historyLimit: null }), create, patch, remove, restore, revert, recordHistory, deleted, previewImport, importRecords })
 }

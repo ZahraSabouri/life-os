@@ -43,3 +43,21 @@ test('preview and apply delegate only supported actions and formats', async (t) 
   assert.equal((await fetchApi('/imports/json/delete', request)).status, 404)
   assert.equal((await fetchApi('/imports/__proto__/preview', request)).status, 404)
 })
+
+test('history, removed records, restore and revert are routed with strict bodies', async (t) => {
+  const seen = []
+  const fetchApi = await fixture(t, {
+    deleted: async () => ({ cards: [{ id: 'gone' }] }),
+    recordHistory: async (entity, id) => ({ entity, record: { id }, history: [] }),
+    restore: async (entity, id, revision) => { seen.push(['restore', entity, id, revision]); return { id, deleted_at: null } },
+    revert: async (entity, id, body) => { seen.push(['revert', entity, id, body]); return { id, revision: 9 } },
+  })
+  const post = body => ({ method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+  assert.equal((await (await fetchApi('/deleted')).json()).cards[0].id, 'gone')
+  assert.equal((await (await fetchApi('/cards/abc/history')).json()).record.id, 'abc')
+  assert.equal((await (await fetchApi('/cards/abc/restore', post({ revision: 4 }))).json()).deleted_at, null)
+  assert.equal((await fetchApi('/cards/abc/restore', post({ revision: 4, title: 'Changed while restoring' }))).status, 400)
+  assert.equal((await (await fetchApi('/modules/abc/revert', post({ revision: 2, history_id: 'h' }))).json()).revision, 9)
+  assert.deepEqual(seen, [['restore', 'cards', 'abc', 4], ['revert', 'modules', 'abc', { revision: 2, history_id: 'h' }]])
+  assert.equal((await fetchApi('/unknown/abc/restore', post({ revision: 1 }))).status, 404)
+})

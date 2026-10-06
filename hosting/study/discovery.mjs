@@ -8,6 +8,8 @@ const MAX_FILE_BYTES = 100 * 1024 * 1024
 const MAX_SCAN_BYTES = 500 * 1024 * 1024
 const MAX_FILES = 10000
 const MAX_DEPTH = 20
+// A folder holding this many items is a dataset or export, not reading material.
+const MAX_FOLDER_ITEMS = 500
 const STABLE_AGE_MS = 2000
 const INTERVAL_MS = 30000
 const IGNORED_DIRECTORIES = new Set(['node_modules', '.venv', 'venv', '__pycache__', 'dist', 'build', 'tmp', 'temp'])
@@ -92,7 +94,7 @@ function materialRelative(material, directory) {
 }
 
 function mappingState(mapping, state = {}) {
-  return { ...mapping, status: !mapping.enabled ? 'disabled' : state.errors?.length ? 'error' : 'watching', last_scan_at: null, added: 0, pending: 0, changed: 0, skipped: 0, errors: [], ...state }
+  return { ...mapping, status: !mapping.enabled ? 'disabled' : state.errors?.length ? 'error' : 'watching', last_scan_at: null, added: 0, pending: 0, changed: 0, skipped: 0, existing: 0, bulk_folders: [], errors: [], ...state }
 }
 
 export function createStudyDiscovery({ projectRoot, repository, configFile = path.join(projectRoot, '.runtime/study-folders.json'), clock = () => Date.now() } = {}) {
@@ -114,7 +116,9 @@ export function createStudyDiscovery({ projectRoot, repository, configFile = pat
       const parsed = stored.mappings.map(mapping => {
         if (!mapping || typeof mapping.directory !== 'string' || !path.isAbsolute(mapping.directory) || typeof mapping.enabled !== 'boolean') throw new StudyError(503, 'Study folder configuration is invalid')
         try { validateId(mapping.module_id, 'module_id') } catch { throw new StudyError(503, 'Study folder configuration has an invalid module ID') }
-        return { module_id: mapping.module_id, directory: path.resolve(mapping.directory), enabled: mapping.enabled }
+        const baseline = mapping.baseline_at ?? null
+        if (baseline !== null && (typeof baseline !== 'string' || !Number.isFinite(Date.parse(baseline)))) throw new StudyError(503, 'Study folder configuration has an invalid baseline time')
+        return { module_id: mapping.module_id, directory: path.resolve(mapping.directory), enabled: mapping.enabled, baseline_at: baseline }
       })
       if (new Set(parsed.map(row => row.module_id)).size !== parsed.length) throw new StudyError(503, 'Study folder configuration has duplicate modules')
       mappings = parsed
@@ -152,7 +156,14 @@ export function createStudyDiscovery({ projectRoot, repository, configFile = pat
     if (!stat?.isDirectory() || stat.isSymbolicLink()) throw new StudyError(400, 'Choose an existing folder, not a symbolic link')
     const resolved = await safeSourceRoot(directory)
     if (mappings.some(row => row.module_id !== moduleId && samePath(row.directory, resolved))) throw new StudyError(409, 'This folder is already mapped to another Study module')
-    const next = { module_id: moduleId, directory: resolved, enabled }
+    if (body.include_existing !== undefined && typeof body.include_existing !== 'boolean') throw new StudyError(400, 'include_existing must be true or false')
+    // Connecting a folder watches for files added from now on. Files already
+    // there are brought in only when asked for, so a full folder cannot flood Materials.
+    const sameFolder = Boolean(previous) && samePath(previous.directory, resolved)
+    const baseline_at = body.include_existing === true ? null
+      : sameFolder && body.include_existing === undefined ? previous.baseline_at ?? null
+      : (sameFolder && previous.baseline_at) || new Date(clock()).toISOString()
+    const next = { module_id: moduleId, directory: resolved, enabled, baseline_at }
     const updated = [...mappings.filter(row => row.module_id !== moduleId), next]
     if (updated.length > 100) throw new StudyError(400, 'At most 100 Study folders can be configured')
     await fs.mkdir(path.dirname(configFile), { recursive: true })
@@ -161,7 +172,7 @@ export function createStudyDiscovery({ projectRoot, repository, configFile = pat
     await fs.writeFile(temporary, JSON.stringify({ version: 1, mappings: updated }, null, 2), { flag: 'wx' })
     await fs.rename(temporary, resolvedConfig)
     mappings = updated
-    if (!previous || previous.directory !== resolved) {
+    if (!previous || previous.directory !== resolved || previous.baseline_at !== baseline_at) {
       states.delete(moduleId)
       for (const key of observations.keys()) if (key.startsWith(`${moduleId}\0`)) observations.delete(key)
     }
@@ -180,8 +191,13 @@ export function createStudyDiscovery({ projectRoot, repository, configFile = pat
     async function visit(folder, relative = '', depth = 0) {
       if (depth > MAX_DEPTH) { summary.errors.push('A deeply nested folder was skipped'); return }
       const entries = (await fs.readdir(folder, { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name))
+      if (entries.length > MAX_FOLDER_ITEMS) {
+        summary.skipped += entries.length
+        summary.bulk_folders.push({ path: slash(relative) || '.', items: entries.length })
+        return
+      }
       for (const entry of entries) {
-        if (++visited > MAX_FILES) { summary.errors.push('The scan reached 10000 entries; narrow the module folder'); return }
+        if (++visited > MAX_FILES) { if (!summary.truncated) summary.errors.push('The scan reached 10000 entries; narrow the module folder'); summary.truncated = true; return }
         const name = entry.name.toLowerCase(), local = path.join(relative, entry.name)
         if (entry.name.startsWith('.') || IGNORED_FILES.has(name) || name.startsWith('.env')) { summary.skipped++; continue }
         if (entry.isSymbolicLink()) { summary.skipped++; summary.errors.push(`Symbolic link skipped: ${slash(local)}`); continue }
@@ -200,7 +216,7 @@ export function createStudyDiscovery({ projectRoot, repository, configFile = pat
   }
 
   async function scanMapping(mapping, workspace, budget) {
-    const summary = { module_id: mapping.module_id, last_scan_at: new Date(clock()).toISOString(), added: 0, pending: 0, changed: 0, skipped: 0, errors: [] }
+    const summary = { module_id: mapping.module_id, last_scan_at: new Date(clock()).toISOString(), added: 0, pending: 0, changed: 0, skipped: 0, existing: 0, bulk_folders: [], errors: [] }
     try {
       const module = workspace.modules.find(row => row.id === mapping.module_id && !row.deleted_at)
       if (!module) throw new StudyError(400, 'Mapped Study module is unavailable')
@@ -210,14 +226,19 @@ export function createStudyDiscovery({ projectRoot, repository, configFile = pat
       const materials = workspace.materials.filter(row => row.module_id === mapping.module_id)
       const existing = await Promise.all(materials.map(async material => ({ material, relative: materialRelative(material, mapping.directory), sha256: dataOf(material).sha256 || await safeNativeHash(nativeRoot, dataOf(material).url, nativeHashes) })))
       const files = await filesUnder(mapping.directory, summary), records = [], source = `module-folder:${mapping.module_id}`, seen = new Set()
+      const baseline = mapping.baseline_at ? Date.parse(mapping.baseline_at) : null
+      // Part of an oversized folder is never brought in: that would fill Materials with an arbitrary slice of it.
+      if (summary.truncated && baseline === null) throw new StudyError(400, 'This folder holds more than 10000 items, so its existing files were not brought in. Connect a narrower folder, or watch it for new files only.')
       for (const file of files) {
         const key = `${mapping.module_id}\0${file.relative}`
         seen.add(key)
         try {
-          const resolved = await fs.realpath(file.filename)
-          if (!within(mapping.directory, resolved) || !samePath(resolved, path.resolve(file.filename))) { summary.skipped++; summary.errors.push(`Symbolic link path skipped: ${file.relative}`); continue }
           const current = await fs.lstat(file.filename)
           if (!current.isFile() || current.isSymbolicLink()) { summary.skipped++; continue }
+          // Copying or moving a file into the folder refreshes its creation or change time, even when its modified time is old.
+          if (baseline !== null && Math.max(current.mtimeMs, current.ctimeMs, current.birthtimeMs) < baseline) { summary.existing++; continue }
+          const resolved = await fs.realpath(file.filename)
+          if (!within(mapping.directory, resolved) || !samePath(resolved, path.resolve(file.filename))) { summary.skipped++; summary.errors.push(`Symbolic link path skipped: ${file.relative}`); continue }
           if (!current.size || current.size > MAX_FILE_BYTES) { summary.skipped++; if (current.size > MAX_FILE_BYTES) summary.errors.push(`File exceeds 100 MB: ${file.relative}`); continue }
           const previous = observations.get(key), fileSignature = signature(current)
           let observation = previous
@@ -268,8 +289,36 @@ export function createStudyDiscovery({ projectRoot, repository, configFile = pat
       }
     } catch (error) { summary.errors.push(error instanceof StudyError ? error.message : 'Folder scan could not finish; existing materials were kept') }
     summary.errors = summary.errors.slice(0, 30)
+    summary.bulk_folders = summary.bulk_folders.slice(0, 30)
     states.set(mapping.module_id, summary)
     return summary
+  }
+
+  // Counts what connecting a folder would involve. Reads names and sizes only; nothing is copied or saved.
+  async function preview(body = {}) {
+    await load()
+    if (!body || typeof body !== 'object' || Array.isArray(body)) throw new StudyError(400, 'Folder preview must be an object')
+    const moduleId = validateId(body.module_id, 'module_id')
+    const mapping = mappings.find(row => row.module_id === moduleId)
+    const value = body.directory === undefined ? mapping?.directory : body.directory
+    if (typeof value !== 'string' || !value.trim() || value.length > 4096 || !path.isAbsolute(value.trim())) throw new StudyError(400, 'Choose an absolute module-material folder path')
+    const directory = path.resolve(value.trim()), stat = await fs.lstat(directory).catch(() => null)
+    if (!stat?.isDirectory() || stat.isSymbolicLink()) throw new StudyError(400, 'Choose an existing folder, not a symbolic link')
+    const resolved = await safeSourceRoot(directory)
+    const summary = { skipped: 0, bulk_folders: [], errors: [] }
+    const files = await filesUnder(resolved, summary), types = {}
+    let bytes = 0, tooLarge = 0, empty = 0
+    for (const file of files) {
+      const current = await fs.lstat(file.filename).catch(() => null)
+      if (!current?.isFile()) continue
+      if (!current.size) { empty++; continue }
+      if (current.size > MAX_FILE_BYTES) { tooLarge++; continue }
+      bytes += current.size
+      types[file.extension] = (types[file.extension] || 0) + 1
+    }
+    const eligible = Object.values(types).reduce((sum, count) => sum + count, 0)
+    return { module_id: moduleId, connected: Boolean(mapping && samePath(mapping.directory, resolved)), baseline_at: mapping?.baseline_at ?? null,
+      files: eligible, bytes, types, too_large: tooLarge, empty, over_limit: Boolean(summary.truncated), unsupported_or_hidden: summary.skipped, bulk_folders: summary.bulk_folders.slice(0, 30), errors: summary.errors.slice(0, 30) }
   }
 
   function scan(input = {}) {
@@ -285,7 +334,7 @@ export function createStudyDiscovery({ projectRoot, repository, configFile = pat
         for (const mapping of mappings.filter(row => row.enabled && (!moduleId || row.module_id === moduleId))) summaries.push(await scanMapping(mapping, workspace, budget))
         lastScanAt = new Date(clock()).toISOString()
         return { scanned_modules: summaries.length, added: summaries.reduce((n, row) => n + row.added, 0), pending: summaries.reduce((n, row) => n + row.pending, 0),
-          changed: summaries.reduce((n, row) => n + row.changed, 0), skipped: summaries.reduce((n, row) => n + row.skipped, 0), errors: summaries.flatMap(row => row.errors), mappings: summaries }
+          changed: summaries.reduce((n, row) => n + row.changed, 0), skipped: summaries.reduce((n, row) => n + row.skipped, 0), existing: summaries.reduce((n, row) => n + row.existing, 0), errors: summaries.flatMap(row => row.errors), mappings: summaries }
       } finally { scanning = false }
     }
     const result = queue.then(run)
@@ -300,5 +349,5 @@ export function createStudyDiscovery({ projectRoot, repository, configFile = pat
     interval.unref?.()
   }
   async function close() { closed = true; if (interval) clearInterval(interval); interval = null; await queue }
-  return Object.freeze({ status, configure, scan, start, close })
+  return Object.freeze({ status, configure, preview, scan, start, close })
 }

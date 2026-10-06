@@ -166,3 +166,66 @@ test('refresh imports skip unchanged records despite new file bookkeeping and ap
   const conflict = await repository.previewImport({ ...batch, fingerprint: 'edited-file', records: [{ entity: 'cards', source_id: 'original', record: { ...record, data: { ...record.data, notes: 'Source edit would replace work' } } }] })
   assert.equal(conflict.conflicts.length, 1)
 })
+
+const removed = { ...row, deleted_at: '2026-10-06T10:00:00.000Z', revision: 4 }
+
+test('a removed record is restored with its content, a new revision and a history entry', async () => {
+  const f = fixture((sql) => {
+    if (sql.startsWith('SELECT id, title')) return { rows: [removed] }
+    if (sql.startsWith('UPDATE study.cards SET deleted_at = NULL')) return { rows: [{ ...removed, deleted_at: null, revision: 5 }] }
+  })
+  const repository = createStudyRepository({ pool: f.pool })
+  const restored = await repository.restore('cards', id, 4)
+  assert.equal(restored.deleted_at, null)
+  assert.equal(restored.data.notes, 'Keep me')
+  const historyCall = f.calls.find(({ sql }) => sql.startsWith('INSERT INTO study.history'))
+  assert.equal(JSON.parse(historyCall.params[4]).deleted_at, removed.deleted_at)
+  assert.equal(JSON.parse(historyCall.params[5]).deleted_at, null)
+  assert.equal(f.calls.at(-1).sql, 'COMMIT')
+})
+
+test('restore refuses a live record, a stale revision and a record whose parent is still removed', async () => {
+  const live = createStudyRepository({ pool: fixture((sql) => sql.startsWith('SELECT id, title') ? { rows: [row] } : undefined).pool })
+  await assert.rejects(live.restore('cards', id, 3), (error) => error.status === 409 && /not removed/.test(error.message))
+  const stale = fixture((sql) => sql.startsWith('SELECT id, title') ? { rows: [removed] } : undefined)
+  await assert.rejects(createStudyRepository({ pool: stale.pool }).restore('cards', id, 3), (error) => error.status === 409)
+  assert.equal(stale.calls.some(({ sql }) => sql.startsWith('UPDATE')), false)
+  const orphan = fixture((sql) => sql.startsWith('SELECT id, title') ? { rows: [{ ...removed, module_id: '22222222-2222-4222-8222-222222222222' }] } : undefined)
+  await assert.rejects(createStudyRepository({ pool: orphan.pool }).restore('cards', id, 4), (error) => error.status === 400 && /module_id/.test(error.message))
+  assert.equal(orphan.calls.some(({ sql }) => sql.startsWith('UPDATE')), false)
+  assert.equal(orphan.calls.at(-1).sql, 'ROLLBACK')
+})
+
+test('revert writes an earlier saved version back as a normal revision-checked edit', async () => {
+  const historyId = '33333333-3333-4333-8333-333333333333'
+  const f = fixture((sql, params) => {
+    if (sql.startsWith('SELECT after_data')) return { rows: params[0] === historyId ? [{ after_data: { ...row, title: 'Earlier title', data: { notes: 'Earlier notes' }, revision: 1 }, before_data: null }] : [] }
+    if (sql.startsWith('SELECT id, title')) return { rows: [row] }
+    if (sql.startsWith('UPDATE study.cards')) return { rows: [{ ...row, title: params[0], revision: 4 }] }
+  })
+  const repository = createStudyRepository({ pool: f.pool })
+  const reverted = await repository.revert('cards', id, { revision: 3, history_id: historyId })
+  assert.equal(reverted.title, 'Earlier title')
+  const update = f.calls.find(({ sql }) => sql.startsWith('UPDATE study.cards'))
+  assert.ok(update.params.includes(JSON.stringify({ notes: 'Earlier notes' })))
+  assert.equal(update.params.at(-1), 3, 'the caller\'s current revision guards the write, not the old one')
+  assert.ok(f.calls.some(({ sql }) => sql.startsWith('INSERT INTO study.history')))
+  await assert.rejects(repository.revert('cards', id, { revision: 3, history_id: '44444444-4444-4444-8444-444444444444' }), (error) => error.status === 404)
+  await assert.rejects(repository.revert('cards', id, { revision: 3, history_id: historyId, title: 'Sneaky' }), (error) => error.status === 400)
+})
+
+test('record history and the removed list read without writing', async () => {
+  const f = fixture((sql) => {
+    if (sql.startsWith('SELECT id, title') && sql.includes('deleted_at IS NOT NULL')) return { rows: sql.includes('study.cards') ? [removed] : [] }
+    if (sql.startsWith('SELECT id, title')) return { rows: [row] }
+    if (sql.startsWith('SELECT id, entity')) return { rows: [{ id: 'h1', action: 'update', created_at: new Date('2026-10-06T09:00:00Z') }] }
+  })
+  const repository = createStudyRepository({ pool: f.pool })
+  const result = await repository.recordHistory('cards', id)
+  assert.equal(result.record.id, id)
+  assert.equal(result.history[0].created_at, '2026-10-06T09:00:00.000Z')
+  const list = await repository.deleted()
+  assert.equal(list.cards.length, 1)
+  assert.equal(list.modules.length, 0)
+  assert.equal(f.calls.some(({ sql }) => /^(INSERT|UPDATE|DELETE)/.test(sql)), false)
+})

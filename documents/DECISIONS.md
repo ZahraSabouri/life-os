@@ -4,6 +4,15 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 6 October 2026 — Four styles for the whole app; backend first (Xar with Claude Code)
+
+- **A fourth, modern style.** Xar: the three existing styles are traditional; she wants a fourth, modern one for the whole app, close to Summer Rescue, JobMap, Cardiff Life and Budget, but one unified style and not a different look in each area. Built as `modern`: warm paper, near-white cards, deep teal-green accent, a terracotta spark, sans text with serif headings, soft rounded cards.
+- **The style menu is on every page, in every style**, including the modern one and over the framed apps. The button says "Style" (plain words); the grounds keep their names.
+- **One palette per style.** `frontend/src/styles/skins.css` holds a shared `--m-*` palette for each of the four styles. Boards, the modern home and Study all read it. This replaces Study having its own Summer Rescue colours and its own light/dark switch (my reading of "unified"; say if you want a dark modern style as a fifth).
+- **Order.** Xar: finish the Calendar and Study backend thoroughly first; styles can follow.
+- **Folder discovery watches for new files only (Claude Code's choice, for Xar to confirm).** The seven candidate folders hold about 10,700 supported files, one of them 9,900. Connecting a folder now brings in files added from then on; the existing files come in only when asked for, a folder with more than 500 items is skipped as a dataset, and a folder with more than 10,000 items is never partly brought in. Discovery no longer copies the whole material store before each scan.
+- **Backups are never pruned automatically.** The daily dump keeps every copy; removing old ones stays Xar's step. The architecture's "keep 14 daily and 8 weekly" is still a proposal.
+
 ## 6 October 2026 — Keep Summer Rescue's design; discover module resources (Xar with Codex)
 
 - Xar prefers the Summer Rescue app design/style over the newly styled Study page, and explicitly says to transfer/reuse existing code rather than rewrite it unnecessarily. The original sidebar/topbar, light/dark palette, component styling and useful studying tools are adapted into native Study; the manuscript Court wrapper no longer owns this page. The source copy remains untouched.
