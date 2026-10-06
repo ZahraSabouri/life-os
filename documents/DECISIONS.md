@@ -4,6 +4,15 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 7 October 2026 — How the Study hub keeps its data (Claude Code, following Xar's direction)
+
+- **One workspace per semester.** The app saves its whole state for the open semester, as it always did; the server keeps that state in the Study database (`study.hub_workspaces`). *Replaces* the plan in the stage brief to turn the state into records and back: a two-way translation of an app this large was the riskiest way to lose something of hers.
+- **Cards are also written as ordinary Study records after every save**, one way only, so the calendar and Today read them like any other record. The app's state is the source; those records are a copy.
+- **Modules, classes, assessments and materials stay ordinary records.** A module record carries the app's description of the module. The app reads them when a semester is opened.
+- **The app's lists are worked out when its code loads**, so the code loads only after a semester has been chosen. That is why changing a module restarts the app in the same semester.
+- **What is not study is kept aside** inside the summer semester's workspace (`set_aside`) until it has a home elsewhere.
+- **Each semester has its own browser storage**, so one semester's leftovers cannot show in another.
+
 ## 6 October 2026 (late) — The Study hub is the Summer Rescue app (Xar's correction to Claude Code)
 
 - **The Study hub's structure is the Summer Rescue app's structure.** Same screens, same tools. The one difference: a new module does not come with premade cards. *Supersedes* the proposal in the entry below to remove Planner, Evidence, Rescue, "Why this next?" and similar: nothing of that kind is removed.

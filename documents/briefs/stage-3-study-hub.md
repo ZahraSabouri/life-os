@@ -69,30 +69,39 @@ PostgreSQL 18.6 is running. Fresh `lifeos`/`lifeos_test` and owner/app roles are
 
 ### CP5: One store: the app saves into the Study database
 The app talks to its server through one file (`src/utils/localStateFile.js`): `/api/state`, `/api/events`, `/api/resources`. Answer those from PostgreSQL instead of the JSON file.
-- [ ] A server adapter between the app's saved state and Study records (cards, modules, materials, settings, progress events), in both directions. Test: the real state, turned into records and back, comes out identical.
-- [ ] The app's own revision check on save (409 on a stale tab) keeps working; every change still lands in Study history.
-- [ ] Bring the real data in once, updating the stale 6 July records in place by their source id so nothing appears twice. Health, Admin, the shopping list, Job Hunt and the interview items are not brought into Study; they stay in the saved source for a later home.
-- [ ] The autumn records already in the database (timetable, assessments, materials) show in the same app. `/study-native` and its components are removed.
+
+**Changed on 7 October** (`../DECISIONS.md`, newest entry): the state is kept whole, one workspace per semester, and the cards are also written as ordinary Study records after each save. There is no translation back from records, so the round-trip test below was dropped.
+- [x] The app's saved state lives in the Study database, one workspace per semester, with earlier copies and the app's event log. ~~Two-way adapter and round-trip test~~ (dropped, see above).
+- [x] The app's own revision check on save (409 on a stale tab) is kept. Cards reach Study records, with history, after every save. *Not yet covered by an automated test; the conflict was not tried in a browser.*
+- [x] The real data brought in once, reusing the stale July semester so nothing appears twice (331 stale records removed, restorable). Health, Admin, the shopping list, Job Hunt and the interview items are kept aside, not shown.
+- [x] The autumn records already in the database (timetable, assessments, materials, 4 cards) show in the same app.
+- [ ] `/study-native` and its components are removed. Calendar links for classes and for the 5 reminders that belong to no semester still point to it.
+- [ ] `/api/resources` (uploaded files) still reads and writes files in `summer-rescue/local-data/resources`.
+- [ ] Automated tests for `hosting/study/hub/`.
 - **Done when:** `/study` reads and writes only the database; counts match the source; a restart keeps everything; the JSON file is no longer written.
-- **Verify:** round-trip test, counts before and after, a backup first, the calendar duplicate check.
-- **Commit:** `[3-cp5] Run the Study hub on the Study database`.
+- **Verify:** counts before and after, a backup first, the calendar duplicate check.
+- **Commit:** `[3-cp5] Study hub: semesters and modules as data, saved in the Life OS database` (732f3a8, covers the ticked items of CP5 to CP8).
 
 ### CP6: Nothing premade: the plan becomes data
-- [ ] `App.jsx` and the eight components that import `src/data/*` take modules, cards, study sequences, schedule rules, exam dates and knowledge notes from the chosen semester instead.
-- [ ] Semesters: define, choose on entering Study, mark as past. "Summer 2026" becomes a past semester holding everything that used to be in code, editable like anything else.
-- [ ] Modules: add, edit and remove, with all their detail. A new module starts empty.
-- [ ] The areas that are not study leave Study's menus (Life & Admin, Admin & Dates, Job Hunt, Sati Interview, Shopping). Their data is kept.
+- [x] Modules, prepared cards, study sequences, schedule rules, exam dates and knowledge notes come from the chosen semester (`src/data/plan.js`, `studyModules.js`, `knowledgeSeeds.js`, `constants.js`, `utils/examDates.js`).
+- [x] Semesters: define, choose on entering Study, mark as past. "Summer 2026" is a past semester holding what used to be in code.
+- [x] Modules: add, edit and remove. A new module starts empty. *Limit: renaming keeps the old name in the cards' Module field.*
+- [x] The areas that are not study left Study's menus. Their data is kept.
+- [ ] Classes and assessments editable inside the hub (the addresses exist, the screen does not).
+- [ ] About 200 places in the page code still mention summer module names or summer wording (Schedule totals "Project" and "Job hunt", "Exam window in 0 days"). Make them general.
+- [ ] Remove the unused built-in plan files and screens from `summer-rescue/src`; update or remove the app's own tests that describe the built-in plan; remove `hosting/study/legacy.mjs` and what else names the deleted July folder.
+- [ ] Rename the folder and address from `summer-rescue` to `study-hub`.
 - **Done when:** a new semester with a new module works without touching code, and the summer semester looks and behaves as it does today.
-- **Commit:** `[3-cp6] Move the built-in plan into data and add semesters`.
 
 ### CP7: Duplicate a module into a new time frame
-- [ ] Copies the module with its cards, checklists, study sequences, notes, resource links, classes and assessments into a chosen semester. Every date shifts by the chosen offset. Progress is cleared in the copy (done, logged hours, evidence, focus sessions).
+- [ ] Copies the module with its cards, checklists, study sequences, notes, resource links, classes and assessments into a chosen semester. Every date shifts by the chosen offset. Progress is cleared in the copy (done, logged hours, evidence, focus sessions). **Written (`hosting/study/hub/duplicate.mjs`, button in Semester setup), never run.** Test on `lifeos_test` first.
 - **Done when:** a duplicated module is independent: editing either one leaves the other unchanged.
 - **Commit:** `[3-cp7] Duplicate a module into a new time frame`.
 
 ### CP8: Calendar and acceptance
-- [ ] Calendar and Today read the one store: active semesters only, each thing once; a link opens the item in `/study`.
-- [ ] Xar's acceptance checklist, rewritten for the app as it then is. No merge to main before that.
+- [x] Calendar and Today read the one store: active semesters only, each thing once (checked live: 116 items over two months, none repeated).
+- [ ] A calendar link opens the item itself in `/study`. Today it opens the Study hub.
+- [ ] Xar's acceptance: the list at the end of `../sessions/2026-10-07-claude-code-stage-3-study-hub-live.md`. No merge to main before that.
 - **Commit:** `[3-cp8] Connect the Study hub to the calendar`.
 
 ## Source feature inventory and parity ledger
