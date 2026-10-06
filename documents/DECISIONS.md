@@ -11,6 +11,7 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 - Live inspection found PostgreSQL 18.6 running on localhost:5432, with only the default `postgres` database and role. Study can use new `lifeos`/`lifeos_test` databases and restricted project roles; no installation, password reset, existing database replacement or direct data-directory operation is needed.
 - Implementation sequence: native Study on PostgreSQL, retaining the existing SQLite core and shared Calendar provider interface during this step. Moving the other core tables and completing the broader Stage 1 foundation remains later work. This is a transitional implementation choice to meet the new order, not a reversal of the PostgreSQL decision.
 - Keep Summer Rescue accessible throughout the move, preserve its data and assets, inventory newer commits, and track every feature through parity before retirement.
+- Xar reiterated during implementation that Study Hub is for studying across all kinds of modules/students, with varied features. Exam campaigns and rescue are optional, while readings/exercises/coursework/projects/materials/notes/assessments are ordinary study workflows. New semesters/modules are empty editable data; the current personalised campaign is imported history, not a universal template.
 
 ## 5 October 2026 — Calendar first (Xar with Claude Code; resumed by Codex)
 

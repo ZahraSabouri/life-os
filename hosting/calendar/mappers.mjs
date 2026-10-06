@@ -1,4 +1,5 @@
 import { dateKey, isDateKey, addDays, inRange, itemOverlaps, londonDateTime } from '../../code/life-os/shared/calendar.js'
+import { mapNativeStudy } from '../study/calendar.mjs'
 
 const inactive = new Set(['archived', 'cancelled', 'canceled', 'deleted', 'inactive', 'rejected', 'closed'])
 const finished = new Set(['done', 'completed', 'complete', 'bought', 'given', 'skipped'])
@@ -93,6 +94,7 @@ export function mapPeople(value, range) {
 }
 
 export function mapStudy(value, range) {
+  if (value?.nativeWorkspace) return mapNativeStudy(value.nativeWorkspace, range.from, range.to)
   if (!value) return []
   const state = value.state ?? value
   const settings = state.settings ?? {}

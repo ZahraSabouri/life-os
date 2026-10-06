@@ -6,6 +6,7 @@ import DivanIntro from './components/DivanIntro.jsx'
 import TheCourt from './components/TheCourt.jsx'
 import TodayView from './components/TodayView.jsx'
 import LedgerView from './components/LedgerView.jsx'
+import StudyHub from './components/study/StudyHub.jsx'
 import { GroundProvider, useGround } from './lib/groundContext.jsx'
 
 const SKIP_INTRO_KEY = 'life-os.skip-intro'
@@ -79,7 +80,7 @@ function SubAppFrame({ route, documentPath, title }) {
 }
 
 function StudyRoute() {
-  return <SubAppFrame route="/study" documentPath="/apps/summer-rescue/" title="Summer Rescue Plan" />
+  return <SubAppFrame route="/study-legacy" documentPath="/apps/summer-rescue/" title="Summer Rescue Plan" />
 }
 
 function CardiffLifeRoute() {
@@ -128,8 +129,9 @@ function AppRoutes() {
           <Route path="/calendar" element={<CalendarView />} />
           <Route path="/today" element={<TodayView />} />
           <Route path="/ledger" element={<LedgerView />} />
+          <Route path="/study" element={<StudyHub />} />
         </Route>
-        <Route path="/study" element={<StudyRoute />} />
+        <Route path="/study-legacy" element={<StudyRoute />} />
         <Route path="/cardiff-life" element={<CardiffLifeRoute />} />
         <Route path="/budget" element={<BudgetRoute />} />
         <Route path="/jobmap" element={<JobMapRoute />} />

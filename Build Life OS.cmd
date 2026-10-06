@@ -1,8 +1,12 @@
 @echo off
-cd /d "%~dp0code\life-os\frontend"
+setlocal
+set "LIFE_OS_BUILD_ROOT=%~dp0"
+cd /d "%LIFE_OS_BUILD_ROOT%code\life-os\frontend"
+if errorlevel 1 goto fail
 call npm.cmd run build
 if errorlevel 1 goto fail
-cd /d "%~dp0summer-rescue-plan-app"
+cd /d "%LIFE_OS_BUILD_ROOT%summer-rescue-plan-app"
+if errorlevel 1 goto fail
 call npm.cmd run build -- --base=/apps/summer-rescue/
 if errorlevel 1 goto fail
 echo Life OS and Summer Rescue built successfully. Restart Life OS to use the builds.

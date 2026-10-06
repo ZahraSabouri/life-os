@@ -1,35 +1,29 @@
 # Life OS: status
 
-**Updated 5 October 2026 by Codex.** Branch: `stage/2-calendar-today`. Calendar implementation complete; Xar directly authorised native Study next. Visual acceptance remains pending.
+**Updated 6 October 2026 by Codex.** Branch: stage/3-study-hub; main untouched. Calendar implementation complete. Native Study CP1 built; CP2 import/recovery and CP3 richness/visual review are next. Xar directly authorised this order.
 
 ## Now
-**Calendar and Today are built across the attached apps**, following Xar's later Claude chat: Calendar first, PostgreSQL afterward. The interrupted mapping jobs had failed; the stale Session 0 status has been replaced. Active brief: `briefs/stage-2-calendar-today.md`.
+Active brief: briefs/stage-3-study-hub.md. Study supports general studying, dynamic semesters/modules and optional rescue/exam workflows. Native /study has cards/checklists/notes/evidence/hours, modules, board/list/week, materials/readers, timetable/assessments, focus/progress/rescue, notifications/preferences/search/import/export. Fresh lifeos/lifeos_test and restricted owner/app roles exist; Study owns its PostgreSQL schema. Existing core remains SQLite temporarily.
 
-- CP1: read-only providers, shared London dates, authenticated `/api/calendar`, independent source statuses, catalogue-wide Cardiff IDs. Commit `a9d584a`.
-- CP2: month/day/agenda, area switches, kind markers, Cardiff choices/Maybe, Today/week/attention and real Court strips. Ledger preserved at `/ledger`. Commit `8f90386`.
-- Resumed review: restored the host after shutdown; fixed tablet navigation wrapping and false empty/zero summaries after failed calendar reads. Partial results are qualified; saved Cardiff copies are marked in the grid and Court too. Commit carrying this status: `[2-cp2] Fix Calendar status and tablet navigation`.
-- Final audit: Court clock/greeting/dates now agree with the London schedule on any device timezone. **31 isolated tests**, both production builds and live routed Calendar/build checks pass. **Browser visual/click/save checks remain unverified** because no browser is connected to CUA.
+CP1: 66 safe fixtures, 2 real view-render checks, 8 guarded PostgreSQL checks; both official builds and current asset/routes checks pass. Blank page fixed (overview count/array mismatch), confirmed visually. Windows build script now stops on failed folder changes. Native production still empty before reviewed import. Latest preview: 352 records, 128 cards, 503 checklist items, 211 materials, 949 material links; zero conflicts.
 
 ## Exact next step
-Create the Stage 3 native Study brief/branch and continue the build, as Xar explicitly requested. PostgreSQL 18.6 is already running locally; only its default database/role exists. Use fresh project databases/roles, preserve the SQLite core, and keep Summer Rescue available during parity/migration. Calendar feedback can still be fixed; Stage 2 is not merged or marked visually accepted.
+Save CP1, apply reviewed original-data import via API; verify repeat/source integrity and restore a dump into a fresh isolated target. Finish the rich studying tools Xar flagged: reasoned picks, pace/hour insights, connected focus workbench, editable practice tools, grouped shelves. Then responsive/grounds review. Source remains /study-legacy; no retirement/main merge until acceptance.
 
-**Next prompt:** Continue native Study Hub from its Stage 3 brief and latest session note. Back up before schema/import work, preserve source data, and keep each checkpoint runnable and documented.
+**Next prompt:** Continue Stage 3 from its latest note and brief, finishing import/recovery and rich feature parity without hardcoding a semester.
 
 ## How to see it
-Host is running: http://127.0.0.1:47850/calendar and `/today`; `/court` has the new Today strips; `/ledger` keeps recent capture/history. Restart if needed with Start Life OS.cmd. Account setup and PostgreSQL self-install checklist: `CONNECTIONS_SETUP.md`.
+http://127.0.0.1:47850/study; /calendar, /today, /court and /ledger remain. Start Life OS.cmd starts the host; Build Life OS.cmd builds both apps.
 
-## Waiting on Xar / known limits
-- Visual review/acceptance; no real personal save was made for testing. Study has no saved October timetable to supply. Source links generally open their app/section.
-- Today attention covers the last 350 days and next 14; Ledger the latest 100 entries. Cardiff choices belong to this browser/origin; removed listings show a marked saved copy.
-- PostgreSQL verified via its client; installation/login is no longer a blocker. The broader core foundation, data-folder/off-laptop backup choices and nested `.git` housekeeping remain separate work.
-- Existing `hosting/app.test.mjs` and backend query tests still initialise the live DB; do not run them. New calendar tests use fixtures. Study's original page saves on opening. Existing sample Court door lines and automation folder targets remain foundation/housekeeping work.
+## Waiting / limits
+Xar acceptance pending. CUA opens main origin but blocks the separate test origin; synthetic saves stay on guarded lifeos_test. PWA/Career playbook, universal imports/core migration and off-laptop backups remain separate. No new-semester timetable supplied. Do not run hosting/app.test.mjs or old query tests (reseed live DB); original Study auto-saves on opening.
 
 ## Data
-No migration/import or agent save. Core entry/person content and counts unchanged: 7 entries, 1 person, 12 spaces. Resumed backup (WAL included, integrity checked): `../Life_OS_backups/calendar-2026-10-05/core-before-calendar-1791209451106.db`; earlier and Session 0 backups preserved. Study's saved JSON changed at 14:17:56 UTC during review; its existing page auto-saves on opening, and user confirmation is pending. The other four protected files match the resumed baseline. A separate before/after live calendar read leaves all five files unchanged. Private evidence stays ignored in `.runtime/`.
+Latest source/core SQLite-aware backup: ../Life_OS_backups/study-2026-10-05/source-1791293355218; 211 files hash-verified, 140,141,241 bytes. Pre-schema dumps preserved. Source changed since yesterday; latest backed up, not reset. Core entry/person content/counts unchanged: 7 entries, 1 person, 12 spaces. No dummy production writes; private evidence/config ignored in .runtime.
 
 ## Last five sessions
-- 2026-10-05 · Codex · Calendar final audit: `sessions/2026-10-05-codex-stage-2-final-audit.md`.
-- 2026-10-05 · Codex · Stage 2 resumed review: `sessions/2026-10-05-codex-stage-2-resumed-review.md`.
-- 2026-10-05 · Codex · Stage 2 CP2: `sessions/2026-10-05-codex-stage-2-calendar-today.md`.
-- 2026-10-05 · Codex · Stage 2 CP1: `sessions/2026-10-05-codex-stage-2-providers.md`.
-- 2026-10-05 · Claude Code · Session 0: `sessions/2026-10-05-claude-code-session-0-setup.md`.
+- 2026-10-06 Codex Study CP1: sessions/2026-10-06-codex-stage-3-workspace.md.
+- 2026-10-05 Codex Calendar final audit: sessions/2026-10-05-codex-stage-2-final-audit.md.
+- 2026-10-05 Codex Calendar resumed: sessions/2026-10-05-codex-stage-2-resumed-review.md.
+- 2026-10-05 Codex Calendar CP2: sessions/2026-10-05-codex-stage-2-calendar-today.md.
+- 2026-10-05 Codex Calendar CP1: sessions/2026-10-05-codex-stage-2-providers.md.

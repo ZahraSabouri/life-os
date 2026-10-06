@@ -11,6 +11,9 @@ import db from '../code/life-os/backend/src/db.js'
 import { createCalendarService } from './calendar/service.mjs'
 import { createCalendarLoaders, getLocalJson } from './calendar/loaders.mjs'
 import { createCalendarRouter } from './calendar-route.mjs'
+import { createStudyRuntime } from './study/runtime.mjs'
+import { createStudyRouter } from '../code/life-os/backend/src/modules/study/router.js'
+import { saveStudyUpload, studyFilesRoot } from './study/storage.mjs'
 
 export const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 export const SUMMER_PATH = '/apps/summer-rescue/'
@@ -27,11 +30,13 @@ export function createLifeOsApp(options = {}) {
   const getJobMapPort = options.getJobMapPort ?? (() => null)
   const mainDist = options.mainDist ?? path.join(projectRoot, 'code/life-os/frontend/dist')
   const token = options.token ?? process.env.LIFE_OS_TOKEN ?? 'dev-token-change-me'
+  const study = options.studyRuntime ?? createStudyRuntime(projectRoot)
+  app.locals.studyRuntime = study
 
   app.get('/__life-os/health', (_req, res) => res.json({
     app: 'life-os', root: projectRoot, pid: process.pid,
     subapps: [
-      { id: 'summer-rescue', route: '/study', document: SUMMER_PATH, root: summerRoot },
+      { id: 'summer-rescue', route: '/study-legacy', document: SUMMER_PATH, root: summerRoot },
       { id: 'cardiff-life', route: '/cardiff-life', document: CARDIFF_PATH, root: cardiffRoot },
       { id: 'budget', route: '/budget', document: BUDGET_PATH, root: budgetRoot, running: Boolean(getBudgetPort()) },
       { id: 'jobmap', route: '/jobmap', document: JOBMAP_PATH, root: jobmapRoot, running: Boolean(getJobMapPort()) },
@@ -65,8 +70,16 @@ export function createLifeOsApp(options = {}) {
       if (/\.(md|csv)$/i.test(filePath)) res.setHeader('Content-Type', 'text/plain; charset=utf-8')
     },
   }))
+  app.use('/study-files', express.static(studyFilesRoot(projectRoot), {
+    fallthrough: false, dotfiles: 'deny',
+    setHeaders(res, filename) {
+      res.setHeader('X-Content-Type-Options', 'nosniff')
+      if (/\.html?$/i.test(filename)) res.setHeader('Content-Security-Policy', 'sandbox')
+      if (/\.(?:py|r|js|sql|md|txt|csv|ipynb|json)$/i.test(filename)) res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+    }
+  }))
 
-  app.use(express.json())
+  app.use(express.json({ limit: '36mb' }))
   app.use('/api', (req, res, next) => {
     if ((req.get('authorization') || '') !== `Bearer ${token}`) {
       return res.status(401).json({ error: 'unauthorized' })
@@ -75,6 +88,11 @@ export function createLifeOsApp(options = {}) {
   })
   app.use('/api/entries', entriesRouter)
   app.use('/api/people', peopleRouter)
+  app.post('/api/study/uploads', async (req, res, next) => {
+    try { res.status(201).json(await saveStudyUpload(projectRoot, req.body, study.repository)) }
+    catch (error) { next(error) }
+  })
+  app.use('/api/study', createStudyRouter({ repository: study.repository, imports: study.imports }))
   const calendarLoaders = createCalendarLoaders({
     projectRoot, summerRoot, cardiffRoot, getBudgetPort, getJobMapPort,
     // The range filter happens in the provider so it can include spanning
@@ -82,6 +100,10 @@ export function createLifeOsApp(options = {}) {
     loadEntries: () => db.prepare('SELECT * FROM entries').all(),
     loadPeople: () => db.prepare('SELECT * FROM people').all(),
     loadStudy: async () => {
+      if (study.configured) {
+        const workspace = await study.repository.workspace()
+        if (workspace.semesters.length) return { nativeWorkspace: workspace }
+      }
       const saved = await getLocalJson(Number(process.env.LIFE_OS_PORT || 47850), '/api/state')
       if (!saved?.state) throw new Error('Study state is unavailable')
       return saved.state
@@ -99,7 +121,7 @@ export function createLifeOsApp(options = {}) {
   app.use((error, _req, res, next) => {
     if (res.headersSent) return next(error)
     const status = error.status || 500
-    res.status(status).json({ error: status === 404 ? 'not found' : 'Local server error' })
+    res.status(status).json({ error: status === 404 ? 'not found' : status >= 400 && status < 500 ? error.message : 'Local server error' })
   })
   return app
 }

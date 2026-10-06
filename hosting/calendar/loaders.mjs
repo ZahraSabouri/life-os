@@ -60,7 +60,9 @@ export function createCalendarLoaders({ projectRoot, summerRoot = path.join(proj
     loadEntries, loadPeople,
     loadStudy: async range => {
       if (typeof loadStudy !== 'function') throw new Error('Study source is unavailable')
-      const [state, plan] = await Promise.all([loadStudy(range), import(pathToFileURL(path.join(summerRoot, 'src/data/baseCards.js')).href)])
+      const state = await loadStudy(range)
+      if (state?.nativeWorkspace) return state
+      const plan = await import(pathToFileURL(path.join(summerRoot, 'src/data/baseCards.js')).href)
       return state ? { state, baseCards: plan.baseCards } : null
     },
     loadCareer: () => getLocalJson(getJobMapPort?.(), '/api/jobs', { timeoutMs }),

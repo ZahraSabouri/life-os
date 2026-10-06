@@ -18,6 +18,7 @@ function stop() {
   server.close(async () => {
     await budget?.stop().catch(() => {})
     await jobmap?.stop().catch(() => {})
+    await app.locals.studyRuntime?.close().catch(() => {})
     db.close()
     process.exit(0)
   })

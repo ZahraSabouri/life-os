@@ -7,7 +7,7 @@ export default function CourtLayout() {
   const location = useLocation()
   const { ground, cycleGround } = useGround()
   const [now, setNow] = useState(() => new Date())
-  const isBoardRoute = ['/calendar', '/today', '/ledger'].includes(location.pathname)
+  const isBoardRoute = ['/calendar', '/today', '/ledger', '/study'].includes(location.pathname)
   const isCourtRoute = location.pathname === '/court'
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat(undefined, {
