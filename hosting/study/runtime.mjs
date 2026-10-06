@@ -4,6 +4,7 @@ import { createStudyImports } from './imports.mjs'
 import { backupStudySources, backupStudyMaterials, preserveStudyFiles } from './storage.mjs'
 import { readLegacyStudy } from './legacy.mjs'
 import { StudyError } from '../../code/life-os/backend/src/modules/study/schema.js'
+import { createStudyDiscovery } from './discovery.mjs'
 
 export function createStudyRuntime(projectRoot) {
   let config, pool
@@ -21,5 +22,8 @@ export function createStudyRuntime(projectRoot) {
       if ((await readLegacyStudy(projectRoot)).fingerprint !== batch.fingerprint) throw new StudyError(409, 'Study changed during the backup. Preview the import again.')
     }
   } })
-  return { repository, imports: createStudyImports({ projectRoot, repository }), configured: true, pool, close: () => pool.end() }
+  const discovery = createStudyDiscovery({ projectRoot, repository })
+  discovery.start()
+  return { repository, imports: createStudyImports({ projectRoot, repository }), discovery, configured: true, pool,
+    close: async () => { await discovery.close(); await pool.end() } }
 }

@@ -12,6 +12,8 @@ A native Study section inside Life OS supports every semester without code chang
 AGENTS, STATUS, ROADMAP Stage 3, Architecture sections 3–6, 9–10 and 15; `2026-10-05-codex-stage-2-final-audit.md`; the feature inventory below; actual Summer Rescue state/card assembly rather than its incomplete SQLite mirror.
 
 ## Scope and transition
+**6 October user correction:** preserve Summer Rescue's actual design/style and reuse its code/components wherever useful. Transfer its sidebar/topbar, source light/dark palette and rich workspaces instead of applying the manuscript shell to Study. Native data/API and reusable semesters/modules remain. Add trusted automatic discovery for the existing Cardiff module-material folders; connect the seven identified Spring/Autumn directories, preserve originals/versions and provide folder controls.
+
 Native semesters, modules, cards, checklists, notes/evidence, logged hours/focus sessions, assessments, timetable sessions, materials/readers, overview/board/list/week/progress views, rescue, search, preferences and safe import/export. Timetable imports preserve dates, London times, recurrence and exclusions; unsupported input must be explained rather than guessed. Existing Summer Rescue stays at `/study-legacy` and its original document URLs stay available. Keep the source untouched until acceptance.
 
 PostgreSQL 18.6 is running. Fresh `lifeos`/`lifeos_test` and owner/app roles are configured outside git. Study owns schema `study`; existing core SQLite remains during transition. Shared Calendar asks both core and native Study. Broader Stage 1 core/import-worker/backup scheduling and external-account connections stay separate. Existing newer autumn records were preserved alongside the legacy import; no current-semester content was invented.
@@ -44,6 +46,8 @@ PostgreSQL 18.6 is running. Fresh `lifeos`/`lifeos_test` and owner/app roles are
 - **Commit:** `[3-cp2] Import Study history and connect the shared calendar`.
 
 ### CP3: Timetable and final parity
+- [ ] Transfer original Summer Rescue design/components, keeping light/dark preferences and native reusable data.
+- [ ] Automatic trusted module-folder resource discovery: supported new files appear while host runs; repeat scans skip linked content; changed versions and personal edits remain; original files untouched.
 - [ ] Manual timetable/assessments/materials inputs; validated JSON/CSV/ICS preview/apply with recurrence and exception handling.
 - [ ] Schedule/day/week views and conflict/daily totals, true activity progress, timer execution context and rescue triage.
 - [ ] Check every feature below; document any remaining parity explicitly, keep original accessible, and never silently replace the current plan with a newer private seed.

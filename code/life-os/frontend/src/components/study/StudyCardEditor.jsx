@@ -38,11 +38,16 @@ export default function StudyCardEditor({ record, workspace, semesterId = '', mo
   function field(name, caption, type = 'text', attrs = {}) { return <label>{caption}<input type={type} value={form[name]} onChange={e => set(name, e.target.value)} {...attrs} /></label> }
   async function submit(event) {
     event.preventDefault(); setSaving(true); setError('')
+    const focusAfterSave = event.nativeEvent?.submitter?.value === 'focus'
     try {
       const nextDone = form.lane === 'Done'
       const changedHours = Number(form.actualHours) !== cardHours(record)
       const now = new Date().toISOString()
-      const dates = cardDateFields(form.start_date, form.end_date, form.startTime, form.dueTime)
+      const keepStart = record?.start_at && form.start_date === cardStart(record) && form.startTime === localClock(record.start_at)
+      const keepDue = record?.end_at && form.end_date === cardDue(record) && form.dueTime === localClock(record.end_at)
+      const dates = cardDateFields(form.start_date, form.end_date, keepStart ? '' : form.startTime, keepDue ? '' : form.dueTime)
+      if (keepStart) dates.start_at = record.start_at
+      if (keepDue) dates.end_at = record.end_at
       const next = { ...data, lane: form.lane, done: nextDone, phase: form.phase, priority: form.priority, slotType: form.slotType, slotLabel: form.slotLabel,
         startDate: form.start_date || null, dueDate: form.end_date || null, startTime: form.startTime || null, dueTime: form.dueTime || null, dueDateTime: dates.end_at || form.end_date || null,
         estimatedHours: Number(form.estimatedHours || 0), actualHours: Number(form.actualHours || 0), description: form.description, evidenceRequirement: form.evidenceRequirement,
@@ -52,8 +57,9 @@ export default function StudyCardEditor({ record, workspace, semesterId = '', mo
         completedAt: nextDone ? data.completedAt || now : null,
         activity: [...(data.activity ?? []), { id: id(), at: now, action: nextDone && !cardDone(record) ? 'Marked done' : 'Edited card', details: changedHours ? `Logged hours: ${form.actualHours}` : '' }],
         ...(changedHours && !resetProgress ? { hoursLog: [...(data.hoursLog ?? []), { id: id(), at: now, hours: Number(form.actualHours) - cardHours(record) }] } : {}) }
-      await onSave('cards', record, recordPayload(record, { title: form.title.trim(), status: laneStatus(form.lane), semester_id: form.semester_id || workspace.modules.find(row => row.id === form.module_id)?.semester_id || null, module_id: form.module_id || null,
+      const result = await onSave('cards', record, recordPayload(record, { title: form.title.trim(), status: laneStatus(form.lane), semester_id: form.semester_id || workspace.modules.find(row => row.id === form.module_id)?.semester_id || null, module_id: form.module_id || null,
         ...dates, data: next }))
+      if (focusAfterSave) { const saved = result?.record || result?.row || result; if (saved?.id) onFocus(saved) }
       onClose()
     } catch (cause) { setError(cause.message) } finally { setSaving(false) }
   }
@@ -81,7 +87,7 @@ export default function StudyCardEditor({ record, workspace, semesterId = '', mo
       {record && <section className="study-card-section"><h3>Logged activity</h3><p>{(data.focusSessions ?? []).length} focus sessions · {cardHours(record).toFixed(2)} logged hours</p><ol className="study-history">{[...(data.activity ?? [])].reverse().slice(0, 12).map((row, i) => <li key={row.id || i}><span>{row.action}</span><small>{row.at && new Date(row.at).toLocaleString('en-GB', { timeZone: 'Europe/London' })}{row.details ? ` · ${row.details}` : ''}</small></li>)}</ol></section>}
       {error && <p className="study-error" role="alert">{error}</p>}
       <footer className="study-actions"><button type="submit" className="study-primary" disabled={saving}>{saving ? 'Saving…' : 'Save card'}</button><button type="button" disabled={saving} onClick={onClose}>Cancel</button>
-        {record && <button type="button" disabled={saving} onClick={() => { onFocus(record); onClose() }}>Focus on saved card</button>}
+        <button type="submit" name="intent" value="focus" disabled={saving || form.lane === 'Done'}>Save & focus</button>
         {record && <button type="button" disabled={saving} onClick={() => { if (!window.confirm('Clear this card’s checklist ticks, notes, evidence and logged hours in the editor? Save card applies the reset; its previous version remains in history.')) return; setResetProgress(true); setChecklist(rows => rows.map(row => ({ ...row, done: false }))); setNotes([]); setEvidence([]); setForm(current => ({ ...current, lane: 'Backlog', actualHours: 0 })) }}>Reset recorded progress</button>}
         {record && <button type="button" className="study-danger" disabled={saving} onClick={async () => { if (!window.confirm('Remove this card? Its history will remain.')) return; setSaving(true); try { await onDelete('cards', record); onClose() } catch (cause) { setError(cause.message); setSaving(false) } }}>Remove card</button>}
       </footer>

@@ -4,6 +4,13 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 6 October 2026 — Keep Summer Rescue's design; discover module resources (Xar with Codex)
+
+- Xar prefers the Summer Rescue app design/style over the newly styled Study page, and explicitly says to transfer/reuse existing code rather than rewrite it unnecessarily. The original sidebar/topbar, light/dark palette, component styling and useful studying tools are adapted into native Study; the manuscript Court wrapper no longer owns this page. The source copy remains untouched.
+- Study still serves general studying across reusable semesters/modules. Original campaign content stays data; visual familiarity does not reintroduce fixed personal modules/dates.
+- Xar asked for automatic discovery when files are added to module folders, and authorised finding the existing Cardiff university materials tree. Seven matching module directories were identified across Spring/Autumn. The server maintains explicit trusted folder mappings outside git, reads supported files, makes native copies and links them through normal Study writes. Imports cannot silently activate arbitrary scan paths. Existing notes/review status and old file versions remain; no originals are deleted.
+- New content versions need review; already linked content is skipped. Folder controls expose connection, scanning/errors and a manual refresh. The host scans while running; there is no claim of background discovery while it is shut down.
+
 ## 5 October 2026 — Finish Calendar, then Study Hub (Xar with Codex)
 
 - Xar directly instructed: "finish calendar if anything's left and then study hub", then reaffirmed "resetted the usage. go on". This authorises finishing Calendar and building native Study without another brief-approval or stage-acceptance question. Calendar visual acceptance is still unverified, not assumed.

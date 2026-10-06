@@ -145,7 +145,7 @@ export function timerElapsed(timer, now = Date.now()) {
   if (!Number.isFinite(start) || !Number.isFinite(deadline) || !Number.isFinite(now)) return elapsed
   return elapsed + Math.max(0, Math.min(now, deadline) - start)
 }
-export function minutesToLog(milliseconds) { return !Number.isFinite(milliseconds) || milliseconds < 60_000 ? 0 : Math.round(milliseconds / 60_000) }
+export function minutesToLog(milliseconds) { return !Number.isFinite(milliseconds) || milliseconds <= 0 ? 0 : milliseconds / 60_000 }
 export function localClock(iso) {
   if (!iso || Number.isNaN(Date.parse(iso))) return ''
   return new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(iso))

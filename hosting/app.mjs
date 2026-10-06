@@ -92,6 +92,16 @@ export function createLifeOsApp(options = {}) {
     try { res.status(201).json(await saveStudyUpload(projectRoot, req.body, study.repository)) }
     catch (error) { next(error) }
   })
+  const discoveryAction = (action, readBody = false) => async (req, res, next) => {
+    try {
+      if (!study.discovery || typeof study.discovery[action] !== 'function') throw Object.assign(new Error('Study folder discovery is unavailable until storage is configured'), { status: 503 })
+      res.set('Cache-Control', 'no-store')
+      res.json(await study.discovery[action](readBody ? req.body || {} : undefined))
+    } catch (error) { next(error) }
+  }
+  app.get('/api/study/discovery', discoveryAction('status'))
+  app.post('/api/study/discovery/configure', discoveryAction('configure', true))
+  app.post('/api/study/discovery/scan', discoveryAction('scan', true))
   app.use('/api/study', createStudyRouter({ repository: study.repository, imports: study.imports }))
   const calendarLoaders = createCalendarLoaders({
     projectRoot, summerRoot, cardiffRoot, getBudgetPort, getJobMapPort,

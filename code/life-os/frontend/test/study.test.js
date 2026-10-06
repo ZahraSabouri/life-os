@@ -69,11 +69,20 @@ test('wall-clock timer survives sleep without logging beyond its deadline', () =
   assert.equal(timerRemaining(timer, start + 60_000), 1440)
   assert.equal(timerElapsed(timer, deadline + 3_600_000), 25 * 60_000)
   assert.equal(timerRemaining(timer, deadline + 3_600_000), 0)
-  assert.equal(minutesToLog(59_999), 0)
+  assert.equal(minutesToLog(59_999), 59_999 / 60_000)
   assert.equal(minutesToLog(25 * 60_000), 25)
   assert.equal(timerRemaining({ running: true, deadlineAt: 'invalid', remainingSeconds: 60 }), 60)
   assert.equal(timerElapsed({ running: true, segmentStartedAt: 'invalid', deadlineAt: 'invalid', elapsedMs: 0 }), 0)
   assert.equal(minutesToLog(NaN), 0)
+})
+
+test('paused focus segments retain earned fractions without losing or inflating cumulative work', () => {
+  const shortSegments = [15_000, 30_000, 45_000, 59_000]
+  const loggedShort = shortSegments.map(minutesToLog).reduce((sum, minutes) => sum + minutes, 0)
+  assert.ok(Math.abs(loggedShort * 60_000 - shortSegments.reduce((sum, milliseconds) => sum + milliseconds, 0)) < 1e-9)
+  assert.equal(minutesToLog(90_000), 1.5)
+  assert.equal([90_000, 90_000, 90_000].map(minutesToLog).reduce((sum, minutes) => sum + minutes, 0), 4.5)
+  for (const value of [0, -1, NaN, Infinity, -Infinity]) assert.equal(minutesToLog(value), 0)
 })
 
 test('concrete imported timetable rows are shown once even when provenance holds RRULE metadata', () => {

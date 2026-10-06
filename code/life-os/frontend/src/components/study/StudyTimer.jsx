@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { dataOf, localClock, minutesToLog, timerElapsed, timerRemaining, titleOf } from '../../lib/study.js'
+import { cardActionable, dataOf, localClock, minutesToLog, timerElapsed, timerRemaining, titleOf } from '../../lib/study.js'
 import StudyDialog from './StudyDialog.jsx'
+import StudyWorkbench from './StudyWorkbench.jsx'
 
 const MODES = { focus: 'Focus', short: 'Short break', long: 'Long break' }
 const DEFAULT_TIMER = { mode: 'focus', durations: { focus: 25, short: 5, long: 15 }, remainingSeconds: 1500, running: false, elapsedMs: 0, completedSessions: 0, cardId: null }
@@ -19,7 +20,7 @@ function chime() {
     oscillator.start(); oscillator.stop(context.currentTime + 0.65); oscillator.onended = () => context.close()
   } catch { /* The timer still works when audio is unavailable. */ }
 }
-export default function StudyTimer({ setting, cards, sessions, focusedCardId, open, setOpen, onSaveTimer, onLogFocus, onRestartCue }) {
+export default function StudyTimer({ setting, cards, sessions, materials = [], parents = {}, focusedCardId, open, setOpen, onSaveTimer, onLogFocus, onRestartCue, onSaveCard, onMaterialOpen, onReviewed, onCompleteCard }) {
   const [timer, setTimer] = useState(() => makeTimer(dataOf(setting)))
   const [selectedCardId, setSelectedCardId] = useState(focusedCardId || dataOf(setting).cardId || '')
   const [now, setNow] = useState(Date.now()), [busy, setBusy] = useState(false), [error, setError] = useState(''), [restartCue, setRestartCue] = useState('')
@@ -30,26 +31,29 @@ export default function StudyTimer({ setting, cards, sessions, focusedCardId, op
   useEffect(() => { const handle = setInterval(() => setNow(Date.now()), 1000); const refresh = () => setNow(Date.now()); window.addEventListener('focus', refresh); return () => { clearInterval(handle); window.removeEventListener('focus', refresh) } }, [])
   const cardId = selectedCardId || timer.cardId
   const card = cards.find(row => row.id === cardId)
+  const focusCards = cards.filter(row => cardActionable(row, parents) || timer.running && row.id === timer.cardId)
   const remaining = timerRemaining(timer, now)
   const boundaries = sessions.filter(row => row.start_at && Date.parse(row.end_at || row.start_at) >= now && !['cancelled', 'archived'].includes(row.status)).sort((a, b) => Date.parse(a.start_at) - Date.parse(b.start_at)).slice(0, 2)
-  async function save(next) {
-    await onSaveTimer({ ...next, key: 'focusTimer' })
+  async function save(next, capturedSetting) {
+    await onSaveTimer({ ...next, key: 'focusTimer' }, capturedSetting)
     setTimer(next)
   }
   async function logSegment(current) {
     if (current.mode !== 'focus' || !current.cardId) return
     const minutes = minutesToLog(timerElapsed(current))
-    if (minutes > 0) await onLogFocus(current.cardId, minutes, current.segmentId || current.deadlineAt || crypto.randomUUID())
+    const deadline = Date.parse(current.deadlineAt), end = Number.isFinite(deadline) ? Math.min(Date.now(), deadline) : Date.now()
+    if (minutes > 0) await onLogFocus(current.cardId, minutes, current.segmentId || current.deadlineAt || crypto.randomUUID(), new Date(end).toISOString())
   }
   async function finish() {
     if (completing.current) return
     completing.current = true; setBusy(true); setError('')
+    const capturedSetting = setting || null
     try {
       const current = timerRef.current
       await logSegment(current)
       const count = (Number(current.completedSessions) || 0) + (current.mode === 'focus' ? 1 : 0)
       const nextMode = current.mode === 'focus' ? (count % 4 === 0 ? 'long' : 'short') : 'focus'
-      await save({ ...current, mode: nextMode, completedSessions: count, remainingSeconds: current.durations[nextMode] * 60, running: false, elapsedMs: 0, segmentStartedAt: null, deadlineAt: null, segmentId: null })
+      await save({ ...current, mode: nextMode, completedSessions: count, remainingSeconds: current.durations[nextMode] * 60, running: false, elapsedMs: 0, segmentStartedAt: null, deadlineAt: null, segmentId: null }, capturedSetting)
       chime()
     } catch (cause) { setError(`The block ended, but its log could not be saved: ${cause.message}`) } finally { setBusy(false); completing.current = false }
   }
@@ -57,6 +61,7 @@ export default function StudyTimer({ setting, cards, sessions, focusedCardId, op
   async function action(kind, value) {
     if (busy) return
     setBusy(true); setError('')
+    const capturedSetting = setting || null
     try {
       let next = { ...timerRef.current }
       if (next.running) {
@@ -73,15 +78,17 @@ export default function StudyTimer({ setting, cards, sessions, focusedCardId, op
       if (kind === 'duration') next = { ...next, durations: { ...next.durations, [value.mode]: value.minutes }, remainingSeconds: value.mode === next.mode ? value.minutes * 60 : next.remainingSeconds }
       if (kind === 'preset') { const durations = value === '50-10' ? { focus: 50, short: 10, long: 20 } : { focus: 25, short: 5, long: 15 }; next = { ...next, durations, remainingSeconds: durations[next.mode] * 60 } }
       if (kind === 'card') next.cardId = value || null
-      await save(next)
+      await save(next, capturedSetting)
       if (kind === 'card') setSelectedCardId(value || '')
-    } catch (cause) { setError(cause.message) } finally { setBusy(false) }
+      return true
+    } catch (cause) { setError(cause.message); return false } finally { setBusy(false) }
   }
   return <>
     <button type="button" className="study-timer-trigger" onClick={() => setOpen(true)} aria-label="Open study focus timer">{timer.running ? `${MODES[timer.mode]} ${format(remaining)}` : 'Focus timer'}</button>
     {open && <StudyDialog title={card ? `Focus: ${titleOf(card)}` : 'Focus timer'} wide onClose={() => setOpen(false)}>
-      <div className="study-focus-room"><section className="study-focus-controls">
-        <label>Card<select value={cardId || ''} disabled={busy || timer.running} onChange={e => action('card', e.target.value)}><option value="">Unassigned timer</option>{cards.filter(row => dataOf(row).done !== true).map(row => <option key={row.id} value={row.id}>{titleOf(row)}</option>)}</select></label>
+      <div className="study-focus-commandbar"><span>{MODES[timer.mode]}</span><output aria-label="Focus countdown">{format(remaining)}</output><button type="button" disabled={busy} onClick={() => action('toggle')}>{timer.running ? 'Pause focus & log' : 'Start focus'}</button><span className="study-muted">{card ? titleOf(card) : 'Unassigned timer'}</span></div>
+      <div className="study-focus-room study-focus-room-rich"><section className="study-focus-controls">
+        <label>Card<select value={cardId || ''} disabled={busy || timer.running} onChange={e => action('card', e.target.value)}><option value="">Unassigned timer</option>{focusCards.map(row => <option key={row.id} value={row.id}>{titleOf(row)}</option>)}</select></label>
         <div className="study-actions">{Object.entries(MODES).map(([mode, label]) => <button type="button" key={mode} aria-pressed={mode === timer.mode} disabled={busy} onClick={() => action('mode', mode)}>{label}</button>)}</div>
         <output className="study-timer-face" aria-label={`${MODES[timer.mode]}, ${format(remaining)} remaining`}>{format(remaining)}</output>
         <div className="study-actions"><button type="button" className="study-primary" disabled={busy} onClick={() => action('toggle')}>{busy ? 'Saving…' : timer.running ? 'Pause & log' : 'Start'}</button><button type="button" disabled={busy} onClick={() => action('reset')}>Log & reset</button></div>
@@ -95,6 +102,7 @@ export default function StudyTimer({ setting, cards, sessions, focusedCardId, op
         <p className="study-eyebrow">Schedule boundaries</p>{boundaries.length ? boundaries.map(row => <p key={row.id}><strong>{localClock(row.start_at)} · {titleOf(row)}</strong>{dataOf(row).location && <span> · {dataOf(row).location}</span>}</p>) : <p className="study-muted">No upcoming timetable boundary is recorded.</p>}
         {card && <form className="study-form" onSubmit={async event => { event.preventDefault(); setBusy(true); setError(''); try { await onRestartCue(card.id, restartCue.trim()); setRestartCue('') } catch (cause) { setError(cause.message) } finally { setBusy(false) } }}><label>Make restarting easy<textarea placeholder="One exact next move for your future self" value={restartCue} onChange={e => setRestartCue(e.target.value)} /></label><button type="submit" disabled={busy || !restartCue.trim()}>Save restart note</button></form>}
       </aside></div>
+      {card && onSaveCard && <StudyWorkbench key={card.id} card={card} materials={materials} onSaveCard={onSaveCard} onMaterialOpen={onMaterialOpen} onReviewed={onReviewed} onCompleteCard={onCompleteCard ? async id => { if (timerRef.current.running && !await action('toggle')) throw new Error('The focus log could not be saved. The card remains open.'); await onCompleteCard(id) } : undefined} />}
     </StudyDialog>}
   </>
 }

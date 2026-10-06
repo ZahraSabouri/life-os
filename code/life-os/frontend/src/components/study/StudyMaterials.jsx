@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { apiFetch } from '../../lib/api.js'
 import { dataOf, safeMaterialUrl, titleOf, youtubeEmbed } from '../../lib/study.js'
 import StudyDialog from './StudyDialog.jsx'
+import { materialShelves, materialViewer } from './workbench.js'
 
 function Markdown({ text }) {
   const chunks = String(text).split(/(```[\s\S]*?```)/g)
@@ -12,23 +13,20 @@ function Notebook({ text }) {
   try { notebook = JSON.parse(text) } catch { return <pre>{text}</pre> }
   return <div className="study-notebook">{(notebook.cells ?? []).map((cell, i) => <section key={i}>{cell.cell_type === 'markdown' ? <Markdown text={Array.isArray(cell.source) ? cell.source.join('') : cell.source} /> : <pre>{Array.isArray(cell.source) ? cell.source.join('') : cell.source}</pre>}{(cell.outputs ?? []).map((output, n) => <div key={n}>{output.data?.['image/png'] && <img alt={`Notebook output ${n + 1}`} src={`data:image/png;base64,${Array.isArray(output.data['image/png']) ? output.data['image/png'].join('') : output.data['image/png']}`} />}<pre>{[output.text, output.data?.['text/plain'], output.traceback].filter(Boolean).map(v => Array.isArray(v) ? v.join('') : v).join('\n')}</pre></div>)}</section>)}</div>
 }
-export function StudyReader({ material, onClose }) {
+export function MaterialPreview({ material, frameRef }) {
   const data = dataOf(material), url = safeMaterialUrl(data.url)
-  const rawViewer = data.viewer || 'file'
-  const viewer = rawViewer === 'pdf' || /\.pdf(\?|$)/i.test(url) ? 'frame' : rawViewer === 'ipynb' || /\.ipynb(\?|$)/i.test(url) ? 'notebook' : rawViewer
+  const viewer = materialViewer(material)
   const embed = youtubeEmbed(url)
   const [text, setText] = useState(''), [loading, setLoading] = useState(false), [error, setError] = useState('')
-  const frame = useRef(null)
+  const localFrame = useRef(null), frame = frameRef || localFrame
   useEffect(() => {
     if (!['markdown', 'text', 'code', 'notebook'].includes(viewer) || !url) return
-    const controller = new AbortController()
-    setLoading(true); setError('')
-    fetch(url, { signal: controller.signal }).then(async response => { if (!response.ok) throw new Error(`Resource returned ${response.status}`); const value = await response.text(); if (value.length > 8_000_000) throw new Error('This file is too large for the inline reader. Use Open in new tab.'); return value }).then(setText).catch(cause => { if (cause.name !== 'AbortError') setError(cause.message) }).finally(() => setLoading(false))
-    return () => controller.abort()
+    const controller = new AbortController(); let cancelled = false
+    setText(''); setLoading(true); setError('')
+    fetch(url, { signal: controller.signal }).then(async response => { if (!response.ok) throw new Error(`Resource returned ${response.status}`); const value = await response.text(); if (value.length > 8_000_000) throw new Error('This file is too large for the inline reader. Use Open in new tab.'); return value }).then(value => { if (!cancelled) setText(value) }).catch(cause => { if (!cancelled && cause.name !== 'AbortError') setError(cause.message) }).finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true; controller.abort() }
   }, [url, viewer])
-  return <StudyDialog wide title={titleOf(material)} onClose={onClose}>
-    <div className="study-actions study-reader-actions">{url && <a href={url} target="_blank" rel="noreferrer">Open in new tab</a>}{viewer === 'frame' && <button type="button" onClick={() => { try { frame.current.contentWindow.focus(); frame.current.contentWindow.print() } catch { window.open(url, '_blank', 'noopener') } }}>Print / open</button>}</div>
-    {!url ? <p className="study-error" role="alert">This material has no usable file or web link.</p> : <div className="study-reader-body">
+  return !url ? <p className="study-error" role="alert">This material has no usable file or web link.</p> : <div className="study-reader-body">
       {loading ? <p>Loading material…</p> : error ? <p className="study-error" role="alert">{error} Use the original link to open the file.</p> : embed ? <iframe title={titleOf(material)} src={embed} allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
         : viewer === 'image' ? <img src={url} alt={titleOf(material)} />
         : viewer === 'video' ? <video src={url} controls preload="metadata" />
@@ -37,12 +35,28 @@ export function StudyReader({ material, onClose }) {
         : ['text', 'code'].includes(viewer) ? <pre>{text}</pre>
         : viewer === 'frame' || viewer === 'html' ? <iframe ref={frame} title={titleOf(material)} src={url} {...(/\.pdf(\?|$)/i.test(url) ? {} : { sandbox: 'allow-scripts allow-forms allow-popups' })} />
         : <p>This file opens in its own application. Use Open in new tab.</p>}
-    </div>}
+    </div>
+}
+export function StudyReader({ material, onClose }) {
+  const data = dataOf(material), url = safeMaterialUrl(data.url), viewer = materialViewer(material), frame = useRef(null)
+  return <StudyDialog wide title={titleOf(material)} onClose={onClose}>
+    <div className="study-actions study-reader-actions">{url && <a href={url} target="_blank" rel="noreferrer">Open in new tab</a>}{viewer === 'frame' && <button type="button" onClick={() => { try { frame.current.contentWindow.focus(); frame.current.contentWindow.print() } catch { window.open(url, '_blank', 'noopener') } }}>Print / open</button>}</div>
+    <MaterialPreview key={material.id} material={material} frameRef={frame} />
     {data.description && <p className="study-muted">{data.description}</p>}
   </StudyDialog>
 }
 
-export default function StudyMaterials({ materials, workspace, semesterId, moduleId, onOpen, onEdit, onReviewed, onUploaded }) {
+export function MaterialCard({ material, onOpen, onEdit, onReviewed, compact = false }) {
+  const data = dataOf(material)
+  return <article className={`study-material-card${compact ? ' study-material-compact' : ''}`}>
+    <span className="study-badge">{data.type || data.viewer || 'Material'}</span>{data.priority === 'high' && <span className="study-badge">Start here</span>}
+    <h3><button type="button" onClick={() => onOpen(material)}>{titleOf(material)}</button></h3>
+    <p>{data.description}</p><small>{data.group}</small>
+    <div className="study-actions"><button type="button" onClick={() => onOpen(material)}>Read</button>{onEdit && <button type="button" onClick={() => onEdit('materials', material)}>Edit</button>}{onReviewed && <label className="study-check-label"><input type="checkbox" checked={Boolean(data.reviewed)} onChange={event => onReviewed(material, event.target.checked)} />Reviewed</label>}</div>
+  </article>
+}
+
+export default function StudyMaterials({ materials, workspace, semesterId, moduleId, discovery, onOpen, onEdit, onReviewed, onUploaded }) {
   const [search, setSearch] = useState(''), [group, setGroup] = useState(''), [scope, setScope] = useState('all'), [uploadOpen, setUploadOpen] = useState(false)
   const [file, setFile] = useState(null), [title, setTitle] = useState(''), [uploadGroup, setUploadGroup] = useState('Uploaded'), [description, setDescription] = useState(''), [tags, setTags] = useState('')
   const [uploadSemester, setUploadSemester] = useState(semesterId), [uploadModule, setUploadModule] = useState(moduleId)
@@ -52,8 +66,13 @@ export default function StudyMaterials({ materials, workspace, semesterId, modul
   const filtered = materials.filter(row => {
     const data = dataOf(row)
     return (!group || data.group === group) && (!search || [titleOf(row), data.group, data.description, data.path, ...(data.tags ?? [])].join(' ').toLowerCase().includes(search.toLowerCase()))
-      && (scope !== 'reviewed' || data.reviewed) && (scope !== 'unreviewed' || !data.reviewed) && (scope !== 'pinned' || data.priority === 'high') && (scope !== 'recent' || data.lastOpenedAt)
+      && (scope !== 'reviewed' || data.reviewed) && (scope !== 'unreviewed' || !data.reviewed) && (scope !== 'pinned' || data.priority === 'high') && (scope !== 'recent' || data.lastOpenedAt || data.recent)
   }).sort((a, b) => scope === 'recent' ? String(dataOf(b).lastOpenedAt || '').localeCompare(String(dataOf(a).lastOpenedAt || '')) : titleOf(a).localeCompare(titleOf(b)))
+  const pinned = filtered.filter(row => dataOf(row).priority === 'high').slice(0, 10)
+  const recent = filtered.filter(row => dataOf(row).lastOpenedAt || dataOf(row).recent).sort((a, b) => String(dataOf(b).lastOpenedAt || '').localeCompare(String(dataOf(a).lastOpenedAt || ''))).slice(0, 6)
+  const shelves = materialShelves(filtered)
+  const watched = (discovery?.mappings || []).filter(row => row.enabled && (!moduleId || row.module_id === moduleId) && (!semesterId || workspace.modules.find(module => module.id === row.module_id)?.semester_id === semesterId))
+  const cards = rows => <div className="study-material-grid">{rows.map(material => <MaterialCard key={material.id} material={material} onOpen={onOpen} onEdit={onEdit} onReviewed={onReviewed} />)}</div>
   async function upload(event) {
     event.preventDefault(); if (!file) return
     setBusy(true); setError('')
@@ -69,7 +88,10 @@ export default function StudyMaterials({ materials, workspace, semesterId, modul
   return <section><div className="study-section-heading"><div><p className="study-eyebrow">Keep everything close</p><h2>Materials</h2></div><button type="button" onClick={() => setUploadOpen(true)}>Upload file</button></div>
     <div className="study-filter-row"><label>Find materials<input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Title, group or tag" /></label><label>Group<select value={group} onChange={e => setGroup(e.target.value)}><option value="">All groups</option>{groups.map(value => <option key={value}>{value}</option>)}</select></label><label>Show<select value={scope} onChange={e => setScope(e.target.value)}>{[['all', 'All materials'], ['pinned', 'Start here'], ['recent', 'Recently opened'], ['unreviewed', 'Not reviewed'], ['reviewed', 'Reviewed']].map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label></div>
     <p className="study-muted">{filtered.length} of {materials.length} materials · {materials.filter(row => dataOf(row).reviewed).length} reviewed</p>
-    <div className="study-material-grid">{filtered.map(row => <article className="study-material-card" key={row.id}><span className="study-badge">{dataOf(row).type || dataOf(row).viewer || 'Material'}</span>{dataOf(row).priority === 'high' && <span className="study-badge">Start here</span>}<h3><button type="button" onClick={() => onOpen(row)}>{titleOf(row)}</button></h3><p>{dataOf(row).description}</p><small>{dataOf(row).group}</small><div className="study-actions"><button type="button" onClick={() => onOpen(row)}>Read</button><button type="button" onClick={() => onEdit('materials', row)}>Edit</button><label className="study-check-label"><input type="checkbox" checked={Boolean(dataOf(row).reviewed)} onChange={e => onReviewed(row, e.target.checked)} />Reviewed</label></div></article>)}</div>
+    {watched.length > 0 && <p className="study-muted" role="status">Watching {watched.length} module folder{watched.length === 1 ? '' : 's'} · {watched.reduce((total, row) => total + (row.pending || 0), 0)} pending files. New materials appear automatically while this page is open.</p>}
+    {!group && scope === 'all' && pinned.length > 0 && <section className="study-material-featured"><div className="study-section-heading"><h3>Start here</h3><span className="study-muted">Pinned references</span></div>{cards(pinned)}</section>}
+    {!group && scope === 'all' && recent.length > 0 && <section className="study-material-featured"><div className="study-section-heading"><h3>Recently opened</h3><span className="study-muted">Pick up where you left off</span></div>{cards(recent)}</section>}
+    <div className="study-material-shelves">{shelves.map(shelf => <details className="study-material-shelf" key={shelf.group} open={Boolean(search || group || scope !== 'all' || shelf.materials.length <= 8)}><summary><span>{shelf.group}</span><span>{shelf.reviewed} / {shelf.materials.length} reviewed</span></summary>{cards(shelf.materials)}</details>)}</div>
     {!filtered.length && <p className="study-empty">{materials.length ? 'No materials match these filters.' : 'No materials yet. Add a link or upload a file.'}</p>}
     {uploadOpen && <StudyDialog title="Upload study material" onClose={() => setUploadOpen(false)}><form className="study-form" onSubmit={upload}><label>File<input type="file" required onChange={e => { const chosen = e.target.files?.[0]; setFile(chosen); setTitle(chosen?.name || '') }} /></label><label>Title<input value={title} onChange={e => setTitle(e.target.value)} required /></label><label>Semester<select value={uploadSemester} onChange={e => { setUploadSemester(e.target.value); setUploadModule('') }}><option value="">No semester</option>{workspace.semesters.map(row => <option value={row.id} key={row.id}>{titleOf(row)}</option>)}</select></label><label>Module<select value={uploadModule} onChange={e => setUploadModule(e.target.value)}><option value="">No module</option>{modules.map(row => <option value={row.id} key={row.id}>{titleOf(row)}</option>)}</select></label><label>Group<input value={uploadGroup} onChange={e => setUploadGroup(e.target.value)} /></label><label>Description<textarea value={description} onChange={e => setDescription(e.target.value)} /></label><label>Tags, comma separated<input value={tags} onChange={e => setTags(e.target.value)} /></label><p className="study-muted">Files stay in your Life OS data folder. Maximum size: 25 MB.</p>{error && <p className="study-error" role="alert">{error}</p>}<button type="submit" className="study-primary" disabled={busy || !file}>{busy ? 'Uploading…' : 'Upload'}</button></form></StudyDialog>}
   </section>

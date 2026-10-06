@@ -129,8 +129,8 @@ function AppRoutes() {
           <Route path="/calendar" element={<CalendarView />} />
           <Route path="/today" element={<TodayView />} />
           <Route path="/ledger" element={<LedgerView />} />
-          <Route path="/study" element={<StudyHub />} />
         </Route>
+        <Route path="/study" element={<StudyHub />} />
         <Route path="/study-legacy" element={<StudyRoute />} />
         <Route path="/cardiff-life" element={<CardiffLifeRoute />} />
         <Route path="/budget" element={<BudgetRoute />} />
