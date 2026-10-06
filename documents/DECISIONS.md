@@ -4,6 +4,17 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 6 October 2026 (evening) — Study is a general study app; one frame for the whole app (Xar with Claude Code)
+
+Xar's correction after using native Study:
+
+- **Study is not her autumn-2026 data-science tracker.** It is a full study app anyone can use; her example is an arts student with his own modules.
+- **Semesters are defined by the user and chosen on entering Study.** No import wording in the chooser.
+- **Nothing that isn't studying lives in Study.** Health and Admin were removed. Tasks unrelated to study get a home elsewhere later.
+- **Study does not plan the study by itself.** It offers tools (tasks, checklists, notes, focus) and module detail (classes, exams, coursework, projects, group projects, timetable). Nothing is designed around her modules. Every item can be added, read, edited and removed. Feeds (JSON and others) come after, so items need not be typed by hand.
+- **Study must feel part of Life OS** through base-level UI work (one frame, shared building blocks), not a recolour. *Supersedes* "Keep Summer Rescue's design" (6 October, with Codex) for the frame and the look. Reusing working code still stands.
+- She does not want large parts deleted or rewritten without discussing it first. The proposal and open questions are in `sessions/2026-10-06-claude-code-stage-3-study-feedback.md`.
+
 ## 6 October 2026 — Four styles for the whole app; backend first (Xar with Claude Code)
 
 - **A fourth, modern style.** Xar: the three existing styles are traditional; she wants a fourth, modern one for the whole app, close to Summer Rescue, JobMap, Cardiff Life and Budget, but one unified style and not a different look in each area. Built as `modern`: warm paper, near-white cards, deep teal-green accent, a terracotta spark, sans text with serif headings, soft rounded cards.
