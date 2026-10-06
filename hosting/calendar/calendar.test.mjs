@@ -12,6 +12,15 @@ import { mapEntries, mapPeople, mapStudy, mapCareer, mapBudget, mapHome, mapEven
 const october = { from: '2026-10-01', to: '2026-10-31' }
 const emptyLoaders = () => ({ ...Object.fromEntries(['loadEntries', 'loadPeople', 'loadCareer', 'loadEvents'].map(key => [key, async () => []])), loadStudy: async () => null, loadBudget: async () => ({ state: null }) })
 
+test('the shared service accepts native Study and maps it once without a legacy fallback', async () => {
+  const nativeWorkspace = { semesters: [], modules: [], cards: [], assessments: [], sessions: [{ id: 'fixture-session', title: 'Reading', status: 'planned', start_at: '2026-10-05T09:00:00Z', end_at: '2026-10-05T10:00:00Z', data: { category: 'reading' } }] }
+  const result = await createCalendarService({ ...emptyLoaders(), loadStudy: async () => ({ nativeWorkspace }) })({ from: '2026-10-01', to: '2026-10-31' })
+  assert.equal(result.sources.find(row => row.id === 'study').status, 'ready')
+  assert.equal(result.items.length, 1)
+  assert.equal(result.items[0].id, 'study:native:sessions:fixture-session')
+  assert.equal(result.items[0].href, '/study?session=fixture-session')
+})
+
 test('core reads every dated type and inclusive multi-day spans, preserving source identity', () => {
   const rows = [
     { id: 'trip', type: 'trip', title: 'Travel', start_at: '2026-09-29', end_at: '2026-10-02', details: {} },

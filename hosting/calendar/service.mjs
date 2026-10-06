@@ -19,6 +19,7 @@ function validateSource(id, value) {
   if (id === 'events' && (Array.isArray(value) || Array.isArray(value?.events))) return
   if (id === 'study') {
     if (value === null) return // Summer Rescue's 204 means no saved state yet.
+    if (object(value?.nativeWorkspace) && ['semesters', 'modules', 'cards', 'assessments', 'sessions'].every(entity => Array.isArray(value.nativeWorkspace[entity]))) return
     const state = value?.state ?? value
     if (object(state) && (object(state.cards) || Array.isArray(state.cards) || Array.isArray(state.addedCards) || object(state.settings))) return
   }

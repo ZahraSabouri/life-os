@@ -14,7 +14,7 @@ AGENTS, STATUS, ROADMAP Stage 3, Architecture sections 3–6, 9–10 and 15; `20
 ## Scope and transition
 Native semesters, modules, cards, checklists, notes/evidence, logged hours/focus sessions, assessments, timetable sessions, materials/readers, overview/board/list/week/progress views, rescue, search, preferences and safe import/export. Timetable imports preserve dates, London times, recurrence and exclusions; unsupported input must be explained rather than guessed. Existing Summer Rescue stays at `/study-legacy` and its original document URLs stay available. Keep the source untouched until acceptance.
 
-PostgreSQL is already running, with only the default database/role observed. Create fresh `lifeos` and `lifeos_test`, an owner role for schema work and a restricted app role for writes. Study owns schema `study`. Existing core SQLite data is not migrated in this stage; shared Calendar asks both core and Study. Broader Stage 1 core/import-worker/backup scheduling, account OAuth, university sign-in and actual new-semester content not supplied by Xar stay separate.
+PostgreSQL 18.6 is running. Fresh `lifeos`/`lifeos_test` and owner/app roles are configured outside git. Study owns schema `study`; existing core SQLite remains during transition. Shared Calendar asks both core and native Study. Broader Stage 1 core/import-worker/backup scheduling and external-account connections stay separate. Existing newer autumn records were preserved alongside the legacy import; no current-semester content was invented.
 
 ## Data/API contract
 - Tables: `study.semesters`, `modules`, `cards`, `assessments`, `sessions`, `materials`, `progress`, `settings`, plus module history/import batches.
@@ -35,11 +35,11 @@ PostgreSQL is already running, with only the default database/role observed. Cre
 - **Commit:** `[3-cp1] Build native Study workspace on PostgreSQL`.
 
 ### CP2: Preserve and import the real Study data
-- [ ] Back up source JSON, SQLite via its backup API, assets/uploads/logs; `pg_dump` target before migration/import.
-- [ ] Assemble actual client cards: baseCards → AML video-plan transformation → implicit resource links → saved overlays/added cards. Preserve hidden links and saved checklist/notes/evidence/hours.
-- [ ] Preview/apply original semester modules/cards/materials/history/settings/notifications/snapshots, with source counts and field/content spot checks. Copy materials into native storage with integrity checks and preserved source URLs.
-- [ ] Provide export/recovery; restore a dump into a fresh test target and compare counts/content.
-- [ ] Native Study calendar provider replaces the old adapter when imported; no double counting, correct source links/date/time/completion rules.
+- [x] Back up source JSON, SQLite via its backup API, assets/uploads/logs; `pg_dump` before migration/import. Native material snapshots now precede new imports too.
+- [x] Actual client cards/links plus saved overlays assembled; removed resource links, stable checks and rich saved work retained.
+- [x] Reviewed API import: 352 original records, 128 cards, 503 checks, 211 materials, 949 material links; repeat adds zero. All material ownership retained. Existing autumn data preserved.
+- [x] Full export and actual fresh-target dump/file restore: all database content and 289 file hashes match.
+- [x] Native Study replaces the old Calendar adapter; service validates its shape. 25 targeted tests/live seven-source checks pass; IDs/links have no duplicates.
 - **Done when:** source records/materials are preserved and visible natively; repeat import is idempotent, edits survive, backup restore matches, source is unchanged.
 - **Commit:** `[3-cp2] Import Study history and connect the shared calendar`.
 
@@ -85,4 +85,4 @@ Do not import the legacy normalizer that resets on version/planResetId mismatch.
 6. Check phone width/all grounds; report edits before accepting or retiring Summer Rescue.
 
 ## Risks
-Actual current-semester timetable/module content still needs user input/import; no dates are invented. Existing core remains SQLite temporarily and its broader PostgreSQL migration stays visible in STATUS. Browser visual QA remains pending if CUA has no browser. Importing a newer private seed is a separate decision, never an automatic source upgrade.
+Existing autumn timetable/module content is preserved; further content must come from supplied sources, never guessed dates. Existing core remains SQLite temporarily and its broader PostgreSQL migration stays visible in STATUS. Browser visual QA remains pending if CUA has no browser. Importing a newer private seed is a separate decision, never an automatic source upgrade.

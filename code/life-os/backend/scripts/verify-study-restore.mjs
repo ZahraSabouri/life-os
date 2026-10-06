@@ -6,6 +6,7 @@ import { spawn } from 'node:child_process'
 import { createHash, randomUUID } from 'node:crypto'
 import pg from 'pg'
 import { postgresConfig, postgresBackup } from '../src/postgres.js'
+import { backupStudyMaterials, verifyStudyMaterialRestore } from '../../../../hosting/study/storage.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..')
 const config = postgresConfig(root)
@@ -30,6 +31,8 @@ async function snapshot(database) {
 
 const before = await snapshot(config.database)
 const dump = await postgresBackup(config, root, 'restore-verification')
+const materialBackup = await backupStudyMaterials(root)
+const materialRestore = await verifyStudyMaterialRestore(materialBackup.directory)
 const target = `lifeos_restore_${Date.now()}_${randomUUID().replaceAll('-', '').slice(0, 8)}`
 if (!/^lifeos_restore_\d+_[a-f0-9]{8}$/.test(target)) throw new Error('Unsafe restore target')
 const admin = new pg.Client({ host: config.host, port: config.port, user: 'postgres', database: 'postgres', connectionTimeoutMillis: 3000 })
@@ -52,4 +55,4 @@ const restored = await snapshot(target)
 const after = await snapshot(config.database)
 if (JSON.stringify(before) !== JSON.stringify(after)) throw new Error('Study changed during restore verification; target preserved, rerun against a stable source')
 if (JSON.stringify(before) !== JSON.stringify(restored)) throw new Error('Restored Study content differs; both databases and dump are preserved for review')
-console.log(JSON.stringify({ database: config.database, restoreTarget: target, dump, tables: Object.fromEntries(Object.entries(restored).map(([name, value]) => [name, value.count])), fullContentHashesMatch: true, sourceUnchanged: true, targetPreserved: true }))
+console.log(JSON.stringify({ database: config.database, restoreTarget: target, dump, tables: Object.fromEntries(Object.entries(restored).map(([name, value]) => [name, value.count])), fullContentHashesMatch: true, sourceUnchanged: true, targetPreserved: true, materialBackup, materialRestore }))

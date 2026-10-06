@@ -1,7 +1,7 @@
 import { postgresConfig, createPostgresPool, postgresBackup } from '../../code/life-os/backend/src/postgres.js'
 import { createStudyRepository } from '../../code/life-os/backend/src/modules/study/repository.js'
 import { createStudyImports } from './imports.mjs'
-import { backupStudySources, preserveStudyFiles } from './storage.mjs'
+import { backupStudySources, backupStudyMaterials, preserveStudyFiles } from './storage.mjs'
 import { readLegacyStudy } from './legacy.mjs'
 import { StudyError } from '../../code/life-os/backend/src/modules/study/schema.js'
 
@@ -14,6 +14,7 @@ export function createStudyRuntime(projectRoot) {
   }
   const repository = createStudyRepository({ pool, beforeImport: async ({ batch }) => {
     await postgresBackup(config, projectRoot, 'before-import')
+    await backupStudyMaterials(projectRoot)
     if (batch.source === 'summer-rescue-original') {
       await backupStudySources(projectRoot)
       await preserveStudyFiles(projectRoot)

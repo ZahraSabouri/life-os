@@ -45,6 +45,36 @@ async function walk(directory, prefix = '') {
   return result
 }
 
+async function materialManifest(directory) {
+  const files = (await walk(directory)).sort()
+  return Promise.all(files.map(async relative => {
+    const data = await fs.readFile(path.join(directory, relative))
+    return { path: relative.split(path.sep).join('/'), bytes: data.byteLength, sha256: sha256(data) }
+  }))
+}
+
+export async function backupStudyMaterials(projectRoot) {
+  const source = studyFilesRoot(projectRoot)
+  await fs.mkdir(source, { recursive: true })
+  const before = await materialManifest(source)
+  const directory = path.resolve(projectRoot, `../Life_OS_backups/study-${new Date().toISOString().slice(0, 10)}/materials-${Date.now()}-${randomUUID().slice(0, 8)}`)
+  const filesDirectory = path.join(directory, 'files')
+  await fs.mkdir(directory, { recursive: true })
+  await fs.cp(source, filesDirectory, { recursive: true, errorOnExist: true, force: false })
+  const copied = await materialManifest(filesDirectory), after = await materialManifest(source)
+  if (JSON.stringify(before) !== JSON.stringify(copied) || JSON.stringify(before) !== JSON.stringify(after)) throw new Error('Study materials changed during backup; retry before importing')
+  await fs.writeFile(path.join(directory, 'manifest.json'), JSON.stringify(before, null, 2), { flag: 'wx' })
+  return { directory, files: before.length, bytes: before.reduce((sum, row) => sum + row.bytes, 0) }
+}
+
+export async function verifyStudyMaterialRestore(backupDirectory) {
+  const manifest = JSON.parse(await fs.readFile(path.join(backupDirectory, 'manifest.json'), 'utf8'))
+  const destination = path.join(backupDirectory, `restore-${randomUUID()}`)
+  await fs.cp(path.join(backupDirectory, 'files'), destination, { recursive: true, errorOnExist: true, force: false })
+  if (JSON.stringify(await materialManifest(destination)) !== JSON.stringify(manifest)) throw new Error('Restored material content differs; backup and restore preserved for review')
+  return { files: manifest.length, contentHashesMatch: true, destination }
+}
+
 export async function preserveStudyFiles(projectRoot) {
   const source = path.join(projectRoot, 'summer-rescue-plan-app')
   const destination = studyFilesRoot(projectRoot)

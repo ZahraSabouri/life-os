@@ -25,7 +25,7 @@ These come from the Vision, the Blueprint and the July architecture, and still j
 
 | Area | What it holds | Status | Roadmap | Notes |
 |---|---|---|---|---|
-| **Study** | semesters, modules, timetable, assessments and exams, materials, study cards, sessions, progress, focus timer, rescue mode | Attached (Summer Rescue) | Stage 3 | Renamed from "Summer Rescue" to Study, for the whole degree. Keeps Summer Rescue's behaviour; manuscript visuals later |
+| **Study** | semesters, modules, timetable, assessments and exams, materials, study cards, sessions, progress, focus timer, rescue mode | Native Study CP1/CP2 built; richness/acceptance pending | Stage 3 | Renamed from "Summer Rescue" to Study, for the whole degree. Keeps Summer Rescue's behaviour; manuscript visuals later |
 | **Career & Professional** | jobs, shortlist, applications, follow-ups, CV, professional skills | Attached (JobMap) | Stage 4 | The job hunt is a workstream that retires; the room is professional life |
 | **Money** | monthly allowance, spending, adjustments, saving goals, renewals, category targets | Attached (Budget) | Stage 5 | New since July (the Taxonomy had left finance out) |
 | **Home & Living** | kitchen (stock, usual buys, shopping lists, receipts, meals, recipes), errands, house-hunting, furniture, home projects, home documents | Kitchen part attached (Budget); the rest Later | Stage 5, then later | Recipes become their own collection |

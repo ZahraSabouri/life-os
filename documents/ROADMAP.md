@@ -51,6 +51,8 @@ The five stores remain separate during the transition. Stage 2 adds read-only ca
 
 ## 3. The order
 
+**6 October implementation update:** native Study CP1 and original-data import/recovery are built on stage/3-study-hub. New PostgreSQL project roles/databases exist; current core remains SQLite. Original stays at /study-legacy. CP3 restores the richer planning/focus/progress/material workflows before acceptance; no source retirement or main merge.
+
 **Latest instruction, 5 October:** Xar asked to finish anything left in Calendar and then build Study Hub. This authorises starting native Study after the Calendar audit while visual acceptance remains pending. PostgreSQL 18.6 is already running on localhost and has no Life OS databases yet; Study will use new isolated PostgreSQL tables. The existing core migration and the rest of Stage 1 remain separate, documented work. Attached Summer Rescue remains available until native parity and acceptance are complete.
 
 **5 October update from the later Claude Code conversation:** Xar asked to finish Calendar and Today first, and authorised starting the work with a documented brief and review afterward. The active brief is `briefs/stage-2-calendar-today.md`, branch `stage/2-calendar-today`. PostgreSQL is postponed until after this calendar checkpoint; Xar intends to install it herself. Next: accept Calendar/Today, finish the Stage 1a foundation, then build native Study (Stage 3). Stage numbers remain stable. The PostgreSQL design decision still holds; there is no database migration in Stage 2.
