@@ -1,7 +1,8 @@
 /* Skins: one shared palette per style, and the style menu.
    Every surface reads the same --m-* values for the chosen style: Life OS boards
    (through --g-*), Study (through its Summer Rescue variables) and the framed
-   apps (copied into each frame by lib/frameSkins.js). Change a style here only. */
+   apps (published to them by lib/frameSkins.js; JobMap follows, the others keep
+   their own look for now). Change a style here only. */
 
 /* ---- Shared palette: the three manuscript grounds ---- */
 .app-shell {

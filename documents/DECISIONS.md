@@ -4,6 +4,14 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 7 October 2026 (night) — JobMap: one workspace, the Study hub's look (Xar with Claude Code)
+
+- **Xar:** bring in the newest JobMap (it shows when each job was added and advertised), and make it look like part of the Study hub, following the other styles too.
+- **The newest JobMap is the standalone one** in `Documents\JobMap\Career Agent\JobMap App`; another agent keeps updating it there. The Life OS copy takes its code and keeps one difference: addresses relative to where the app is served.
+- **The look is a second stylesheet** (`jobmap/app/skin.css`) on top of the standalone one, which stays untouched so a newer JobMap can be dropped in again.
+- **Life OS publishes the chosen style** for the apps it frames (`lib/frameSkins.js`, colours defined only in `styles/skins.css`). JobMap is the first to follow. Modern there means the Study hub's exact look.
+- **Two JobMaps had two sets of data.** They were merged once into the Life OS one: each vacancy once, the earlier "added" date, nothing personal dropped, a disagreement stops the merge. Which JobMap the scheduled search feeds is still open and is Xar's decision.
+
 ## 7 October 2026 — How the Study hub keeps its data (Claude Code, following Xar's direction)
 
 - **One workspace per semester.** The app saves its whole state for the open semester, as it always did; the server keeps that state in the Study database (`study.hub_workspaces`). *Replaces* the plan in the stage brief to turn the state into records and back: a two-way translation of an app this large was the riskiest way to lose something of hers.

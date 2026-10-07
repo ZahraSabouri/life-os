@@ -120,6 +120,7 @@ Each stage is cut into sessions small enough to finish and verify. Every stage g
 **Done when:** this semester's modules, timetable and assessments are in without code changes and show on the calendar; Summer Rescue's history is visible; counts match; Xar accepts it and Summer Rescue leaves the navigation.
 
 ### Stage 4 — Career, rebuilt natively (JobMap retires)
+*Stage 4a, 7 October 2026: the attached JobMap was brought up to its newest version (job dates), its two sets of data were merged into one, and it took the Study hub's look and the Style menu (`briefs/stage-4a-jobmap-refresh.md`). The native rebuild below is unchanged.*
 - Jobs, shortlist, applications and their stages, follow-ups and next steps, notes and priority, preferences and explainable matching, the discovery inbox and import history.
 - Companies become shared Organisations; deadlines and follow-ups feed the calendar.
 - Scheduled searches point at the Life OS inbox: Claude's "Cardiff job search to JobMap" and Codex's "UK Tech Job Shortlist".

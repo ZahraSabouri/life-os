@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import CalendarView from './components/CalendarView.jsx'
 import CourtLayout from './components/CourtLayout.jsx'
@@ -9,6 +9,7 @@ import LedgerView from './components/LedgerView.jsx'
 import StudyHub from './components/study/StudyHub.jsx'
 import StyleSwitch from './components/StyleSwitch.jsx'
 import { GroundProvider, useGround } from './lib/groundContext.jsx'
+import { publishSkin } from './lib/frameSkins.js'
 
 const SKIP_INTRO_KEY = 'life-os.skip-intro'
 
@@ -104,9 +105,12 @@ function DivanRoute() {
 
 function AppRoutes() {
   const { ground } = useGround()
+  const shellRef = useRef(null)
+  // The framed apps read the chosen style from the browser's storage (lib/frameSkins.js).
+  useLayoutEffect(() => { publishSkin(ground, shellRef.current) }, [ground])
 
   return (
-    <div className="app-shell" data-ground={ground}>
+    <div className="app-shell" data-ground={ground} ref={shellRef}>
       <Routes>
         <Route path="/" element={<DivanRoute />} />
         <Route element={<CourtLayout />}>

@@ -1,0 +1,238 @@
+/* JobMap's look inside Life OS.
+   globals.css is the standalone app's stylesheet and is left as it is, so a newer JobMap
+   can be dropped in. This file comes after it and changes only colour, type and shape:
+   by default the Study hub's look (same colours, fonts, corners and shadows), and the
+   Madder, Indigo and Paper styles when Life OS says one of them is chosen. */
+@import './skin-fonts.css';
+
+:root {
+  /* The Study hub's values (summer-rescue/src/index.css). */
+  --bg: #f1ede4;
+  --surface: #faf7f0;
+  --panel: #fffdf8;
+  --panel-2: #efe9dd;
+  --ink: #23201a;
+  --muted: #7b7365;
+  --line: #e6dfd1;
+  --line-strong: #cec5b3;
+  --accent: #17756a;
+  --accent-strong: #115c53;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+  --on-accent: #fff;
+  --spark: #cf7a4d;
+  --red: #b0483b;
+  --amber: #a9781c;
+  --green: #17756a;
+  --blue-ink: #3a6ea5;
+  --header-grad: linear-gradient(118deg, #17756a 0%, #2a9d8f 52%, #cf7a4d 116%);
+  --focus-ring: color-mix(in srgb, var(--accent) 32%, transparent);
+  --overlay: color-mix(in srgb, var(--ink) 32%, transparent);
+  --shadow-1: 0 1px 2px rgba(35, 32, 26, 0.05), 0 4px 14px rgba(35, 32, 26, 0.05);
+  --shadow-2: 0 14px 38px rgba(35, 32, 26, 0.13);
+  --font-sans: 'Manrope', 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-serif: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-num: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+  --radius-sm: 9px;
+  --radius: 13px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* The names globals.css uses, so its own rules follow. */
+  --paper: var(--bg);
+  --white: var(--panel);
+  --blue: var(--accent);
+  --nav: var(--surface);
+}
+
+/* Madder, Indigo and Paper: the colours Life OS publishes for the chosen style
+   (public/skin-boot.js puts them on the page as --m-*). Modern keeps the Study hub's look. */
+html[data-life-os-ground]:not([data-life-os-ground='modern']) {
+  --bg: var(--m-bg);
+  --surface: var(--m-surface);
+  --panel: var(--m-card);
+  --panel-2: var(--m-sunken);
+  --ink: var(--m-ink);
+  --muted: var(--m-muted);
+  --line: var(--m-line);
+  --line-strong: var(--m-line-strong);
+  --accent: var(--m-accent);
+  --accent-strong: var(--m-accent-strong);
+  --accent-soft: var(--m-accent-soft);
+  --on-accent: var(--m-on-accent);
+  --spark: var(--m-spark);
+  --red: var(--m-red);
+  --amber: var(--m-amber);
+  --green: var(--m-green);
+  --blue-ink: var(--m-blue);
+  --header-grad: var(--m-accent);
+  --shadow-1: var(--m-shadow);
+  --shadow-2: var(--m-shadow-lift);
+  --font-serif: var(--m-display), 'Fraunces', Georgia, serif;
+  color-scheme: var(--m-scheme, light);
+}
+@font-face {
+  /* The heading font of those three styles lives with Life OS itself. */
+  font-family: 'Cormorant Garamond';
+  src: url('/fonts/CormorantGaramond-Variable.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+/* ---- Page ---- */
+body { font-family: var(--font-sans); color: var(--ink); background: var(--bg); -webkit-font-smoothing: antialiased; font-synthesis: none; }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--focus-ring); }
+button { background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+button:hover { background: var(--panel-2); }
+.button { border-radius: var(--radius-sm); }
+
+/* ---- Menu: the Study hub's light sidebar ---- */
+.sidebar { background: color-mix(in srgb, var(--surface) 86%, var(--bg)); color: var(--muted); border-right: 1px solid var(--line); }
+.brand { font-family: var(--font-serif); font-size: 21px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); gap: 11px; }
+.brand span { width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--accent); box-shadow: var(--shadow-1); font-size: 20px; }
+.workspace-label { color: var(--muted); font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; }
+.nav { color: var(--muted); border: 1px solid transparent; border-radius: 11px; font-weight: 600; font-size: 0.86rem; }
+.nav:hover { background: var(--accent-soft); color: var(--ink); }
+.nav.active { background: color-mix(in srgb, var(--accent) 14%, var(--panel)); border-color: color-mix(in srgb, var(--accent) 30%, transparent); color: var(--ink); box-shadow: var(--shadow-1); }
+.nav.active svg { color: var(--accent); opacity: 1; }
+.nav small { color: var(--muted); font-family: var(--font-num); }
+.nav.active small { color: var(--accent-strong); }
+.sidebar-tools { border-top-color: var(--line); }
+.sidebar-bottom { color: var(--ink); }
+.sidebar-bottom small { color: var(--muted); }
+.avatar { background: var(--accent-soft); color: var(--accent-strong); font-weight: 700; }
+/* Life OS keeps its own two buttons in the bottom-left corner of the frame. */
+html[data-life-os-ground] .sidebar-bottom { padding-bottom: 46px; }
+
+/* ---- Heading row ---- */
+.eyebrow { color: var(--accent); font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+h1 { font-family: var(--font-serif); font-weight: 600; letter-spacing: -0.015em; }
+.primary { background: var(--header-grad); color: var(--on-accent); border: 0; box-shadow: var(--shadow-1); font-weight: 700; }
+.primary:hover { background: var(--header-grad); filter: brightness(1.07); }
+.save-state { color: var(--muted); }
+
+/* ---- Search and filters ---- */
+.search-box { border-color: var(--line-strong); border-radius: var(--radius-sm); background: var(--panel); color: var(--muted); }
+.search-box:focus-within { outline: 3px solid var(--focus-ring); }
+.search-box kbd { font-family: var(--font-num); background: var(--panel-2); border-color: var(--line); color: var(--muted); }
+.toolbar > select { background-color: var(--panel); }
+.toolbar input, input, select, textarea { background: var(--panel); border-color: var(--line-strong); border-radius: var(--radius-sm); color: var(--ink); }
+.toolbar .search-box input { background: transparent; border: 0; }
+input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+::placeholder { color: color-mix(in srgb, var(--muted) 80%, transparent); }
+.scope-tabs { background: var(--panel-2); border-radius: var(--radius-sm); }
+.scope-tabs button { background: transparent; border: 0; color: var(--muted); border-radius: 7px; }
+.scope-tabs button.selected { color: var(--accent-strong); background: var(--panel); box-shadow: var(--shadow-1); }
+.results-count { color: var(--muted); font-family: var(--font-num); }
+.filter-note { color: var(--muted); }
+
+/* ---- The list of jobs ---- */
+.job-list { border-color: var(--line); border-radius: var(--radius-lg); background: var(--panel); box-shadow: var(--shadow-1); }
+.job-row { border-bottom-color: var(--line); }
+.job-row:hover { background: color-mix(in srgb, var(--accent) 5%, var(--panel)); }
+.job-row.selected { background: color-mix(in srgb, var(--accent) 10%, var(--panel)); box-shadow: inset 3px 0 var(--accent); }
+.job-open, .job-open:hover { background: transparent; border: 0; border-radius: 0; }
+.company-mark { border-radius: 12px; background: var(--panel-2); color: var(--muted); }
+.tone-1 { background: color-mix(in srgb, var(--blue-ink) 14%, var(--panel)); color: var(--blue-ink); }
+.tone-2 { background: color-mix(in srgb, var(--spark) 16%, var(--panel)); color: color-mix(in srgb, var(--spark) 78%, var(--ink)); }
+.tone-3 { background: color-mix(in srgb, var(--accent) 13%, var(--panel)); color: var(--accent); }
+.job-copy h3 { font-weight: 700; color: var(--ink); }
+.job-copy p, .job-meta, .match-reason, .hours-pill { color: var(--muted); }
+.match-label { background: var(--panel-2); color: var(--muted); border-radius: var(--radius-pill); padding: 3px 9px; font-weight: 600; }
+.level-strong { background: color-mix(in srgb, var(--accent) 18%, var(--panel)); color: var(--accent-strong); }
+.level-good { background: color-mix(in srgb, var(--green) 10%, var(--panel)); color: var(--green); }
+.deadline { color: var(--muted); }
+.deadline.unknown { color: color-mix(in srgb, var(--muted) 82%, transparent); }
+.urgent { color: color-mix(in srgb, var(--spark) 82%, var(--ink)) !important; }
+.closed { color: var(--red); }
+.icon-button { background: transparent; border: 0; color: var(--muted); }
+.icon-button:hover { color: var(--accent); background: var(--accent-soft); }
+.is-saved { color: var(--amber) !important; }
+.is-saved svg { fill: color-mix(in srgb, var(--amber) 26%, transparent); }
+.status-pill { border-radius: var(--radius-pill); padding: 1px 9px; background: color-mix(in srgb, var(--blue-ink) 13%, var(--panel)); color: var(--blue-ink); }
+.status-interview { background: color-mix(in srgb, var(--amber) 16%, var(--panel)); color: var(--amber); }
+.status-offer { background: color-mix(in srgb, var(--green) 14%, var(--panel)); color: var(--green); }
+.status-rejected, .status-archived { background: var(--panel-2); color: var(--muted); }
+.job-copy p.next-step { color: var(--accent-strong); }
+.job-dates { border-color: var(--line); }
+.job-dates dt, .job-dates.compact dt { color: var(--muted); }
+.job-dates dd { color: var(--ink); font-family: var(--font-num); }
+.job-dates.compact dd { color: color-mix(in srgb, var(--ink) 78%, var(--muted)); }
+.load-more { background: transparent; color: var(--accent); }
+.load-more span { color: var(--muted); }
+footer { color: var(--muted); }
+footer a { color: var(--accent); }
+
+/* ---- One job, opened ---- */
+.detail { background: var(--panel); border-left-color: var(--line); }
+.source-label { color: var(--muted); background: var(--panel-2); border-radius: var(--radius-pill); padding: 5px 10px; }
+.detail h2, .modal h2, .empty-state h2 { font-family: var(--font-serif); font-weight: 600; letter-spacing: -0.01em; }
+.detail-title > p, .location { color: var(--muted); }
+.text-button, .text-button:hover { background: transparent; border: 0; }
+.text-button { color: var(--accent); }
+.text-button:hover { color: var(--accent-strong); }
+label { color: var(--muted); }
+label input:focus, label textarea:focus { outline: 3px solid var(--focus-ring); }
+details { border-top-color: var(--line); }
+summary { color: var(--ink); }
+summary:after { color: var(--muted); }
+.skill-tags span { background: var(--accent-soft); color: var(--accent-strong); border-radius: var(--radius-pill); padding: 4px 10px; }
+.match-facts dt, .facts dt, .caption { color: var(--muted); }
+.match-facts dd, .facts dd { color: color-mix(in srgb, var(--ink) 84%, var(--muted)); }
+.cautions { background: color-mix(in srgb, var(--amber) 11%, var(--panel)); border: 1px solid color-mix(in srgb, var(--amber) 30%, var(--line)); color: color-mix(in srgb, var(--amber) 70%, var(--ink)); border-radius: var(--radius-sm); }
+.source-note { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--muted); }
+.advert { color: color-mix(in srgb, var(--ink) 86%, var(--muted)); }
+.advert-links a { color: var(--accent); }
+.history { color: var(--muted); }
+.history li { border-left-color: var(--line-strong); }
+.history small { color: var(--muted); }
+.archive-action, .archive-action:hover { background: transparent; border: 0; }
+.archive-action { color: var(--muted); }
+.archive-action:hover { color: var(--ink); }
+.missing-link { background: var(--panel-2); color: var(--muted); border-radius: var(--radius-sm); }
+
+/* ---- Dates ---- */
+.date-entry { border-color: var(--line-strong); border-radius: var(--radius-sm); background: var(--panel); }
+.date-entry:focus-within { outline: 3px solid var(--focus-ring); }
+.date-entry input { background: transparent; }
+.date-toggle, .date-toggle:hover { background: transparent; border: 0; }
+.date-toggle { color: var(--muted); }
+.date-toggle:hover { color: var(--accent); }
+.date-popover { background: var(--panel); border-color: var(--line); border-radius: var(--radius); box-shadow: var(--shadow-2); }
+.calendar-header { color: var(--ink); }
+.calendar-header button, .calendar-footer button { background: transparent; border: 0; }
+.calendar-header button { color: var(--muted); }
+.calendar-grid > span { color: var(--muted); }
+.calendar-grid button { background: transparent; border: 0; color: var(--ink); }
+.calendar-grid button:hover { background: var(--accent-soft); }
+.calendar-grid .chosen, .calendar-grid .chosen:hover { background: var(--accent); color: var(--on-accent); }
+.calendar-footer { border-top-color: var(--line); }
+.calendar-footer button { color: var(--accent); }
+.date-error { color: var(--red); }
+
+/* ---- Messages, empty pages, dialogs ---- */
+.empty-state { background: var(--panel); border-color: var(--line-strong); border-radius: var(--radius-lg); }
+.empty-state p { color: var(--muted); }
+.empty-icon { background: var(--accent-soft); color: var(--accent); }
+.subtle { border-color: var(--line-strong); background: var(--panel); color: var(--ink); }
+.due-banner, .due-banner:hover { background: color-mix(in srgb, var(--amber) 12%, var(--panel)); }
+.due-banner { border-color: color-mix(in srgb, var(--amber) 35%, var(--line)); color: color-mix(in srgb, var(--amber) 74%, var(--ink)); border-radius: var(--radius); }
+.error-banner { background: color-mix(in srgb, var(--red) 9%, var(--panel)); border-color: color-mix(in srgb, var(--red) 35%, var(--line)); color: var(--red); border-radius: var(--radius-sm); }
+.toast { background: var(--ink); color: var(--bg); border: 0; border-radius: var(--radius); box-shadow: var(--shadow-2); }
+.toast > button:not(.icon-button) { background: color-mix(in srgb, var(--bg) 20%, transparent); color: inherit; border: 0; }
+.toast > .icon-button { color: inherit; opacity: 0.75; }
+.modal { color: var(--ink); background: var(--panel); border-color: var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-2); }
+.modal::backdrop { background: var(--overlay); }
+.modal-intro, .modal > p { color: var(--muted); }
+.backup-section { border-top-color: var(--line); }
+.form-error { color: var(--red); background: color-mix(in srgb, var(--red) 10%, var(--panel)); }
+.loading-spinner { border-color: var(--line); border-top-color: var(--accent); }
+
+@media (max-width: 1179px) {
+  .detail { box-shadow: -26px 0 64px color-mix(in srgb, var(--ink) 18%, transparent); }
+  .detail-backdrop, .detail-backdrop:hover { background: var(--overlay); border: 0; }
+}
+@media (max-width: 720px) {
+  .sidebar { border-right: 0; border-bottom: 1px solid var(--line); }
+  html[data-life-os-ground] .main { padding-bottom: 64px; }
+}
