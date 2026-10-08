@@ -1,0 +1,52 @@
+/* What every framed app takes from the chosen Life OS style, whatever its own CSS says.
+   The values (--m-*) are in palettes.css; each app's own layer (apps/<id>.css) ties the
+   app's named parts (menu, cards, buttons) to them. */
+
+html { color-scheme: var(--m-scheme, light); background: var(--m-bg); }
+html[data-life-os-ground] body {
+  background: var(--m-bg);
+  color: var(--m-ink);
+  font-family: var(--m-font);
+  font-weight: var(--m-text-weight);
+  font-size-adjust: var(--m-font-adjust);
+  -webkit-font-smoothing: antialiased;
+}
+/* Small capitals may be drawn from the capitals when a face has none of its own. */
+html[data-life-os-ground], html[data-life-os-ground] * { font-synthesis: small-caps; }
+html[data-life-os-ground] :is(button, input, select, textarea) { font-family: inherit; }
+html[data-life-os-ground] :is(h1, h2, h3, h4) {
+  font-family: var(--m-display);
+  font-weight: var(--m-heading-weight);
+  letter-spacing: var(--m-heading-tracking);
+}
+html[data-life-os-ground] :is(input, select, textarea) { border-radius: var(--m-radius-control); }
+html[data-life-os-ground] :is(time, kbd) { font-family: var(--m-num); }
+html[data-life-os-ground] ::selection { background: color-mix(in srgb, var(--m-accent) 28%, transparent); }
+html[data-life-os-ground] * { scrollbar-color: var(--m-line-strong) transparent; }
+html[data-life-os-ground] :focus-visible { outline-color: var(--m-accent); }
+
+/* ---- Corners ----
+   Each style has its own corners (round in Modern and Madder, small in Indigo, none in
+   Paper). Box-like things take them in every app; what must stay round (people, dots,
+   switches, progress) is left out, and each app's layer names its buttons and tags. */
+html[data-life-os-ground] :is(
+  dialog, details, table,
+  [class*='card'], [class*='panel'], [class*='tile'], [class*='box'], [class*='banner'], [class*='notice'],
+  [class*='modal'], [class*='dialog'], [class*='popover'], [class*='-list'], [class*='state'], [class*='tabs'], [class*='note']
+):not([class*='avatar'], [class*='dot'], [class*='round'], [class*='circle'], [class*='switch'], [class*='toggle'],
+  [class*='track'], [class*='thumb'], [class*='spinner'], [class*='ring'], [class*='orb'], [class*='progress'],
+  [class*='bar'], [class*='mark'], [role='switch'], [type='checkbox'], [type='radio'], [type='range']) {
+  border-radius: var(--m-radius) !important;
+}
+/* Tags and status marks; buttons and fields. */
+html[data-life-os-ground] :is([class*='chip'], [class*='pill'], [class*='badge'], [class*='tag']):not([class*='dot'], [class*='select'], [class*='toggle']) {
+  border-radius: var(--m-radius-chip) !important;
+}
+html[data-life-os-ground] :is(button, [class~='button'], input:not([type='checkbox'], [type='radio'], [type='range']), select, textarea):not(
+  [class*='avatar'], [class*='dot'], [class*='round'], [class*='circle'], [class*='switch'], [class*='toggle'], [class*='icon'],
+  [class*='thumb'], [class*='star'], [class*='close'], [class*='chip'], [class*='pill'], [class*='tab'], [role='switch'], [role='tab']) {
+  border-radius: var(--m-radius-control);
+}
+
+/* Under the Life OS top bar the app is a part of Life OS: no second logo. */
+html[data-life-os-frame] [data-life-os-hide] { display: none !important; }

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import CalendarView from './components/CalendarView.jsx'
 import CourtLayout from './components/CourtLayout.jsx'
@@ -7,16 +7,14 @@ import TheCourt from './components/TheCourt.jsx'
 import TodayView from './components/TodayView.jsx'
 import LedgerView from './components/LedgerView.jsx'
 import StudyHub from './components/study/StudyHub.jsx'
-import StyleSwitch from './components/StyleSwitch.jsx'
 import { GroundProvider, useGround } from './lib/groundContext.jsx'
-import { publishSkin } from './lib/frameSkins.js'
 
 const SKIP_INTRO_KEY = 'life-os.skip-intro'
 
-// Each standalone app keeps its own document, CSS and runtime inside a
-// same-origin frame, so nothing about its appearance or behaviour changes.
+// Each attached app keeps its own document and runtime inside a same-origin frame, under
+// the Life OS top bar like every other page. Its look comes from the chosen style: the
+// host adds the shared skin files to its page (hosting/skins).
 function SubAppFrame({ route, documentPath, title }) {
-  const navigate = useNavigate()
   const frameRef = useRef(null)
   const initialUrl = useRef(`${documentPath}${window.location.hash}`)
   const childRef = useRef(null)
@@ -44,27 +42,17 @@ function SubAppFrame({ route, documentPath, title }) {
     }
   }, [route])
   return (
-    <>
-      <iframe
-        ref={frameRef}
-        onLoad={onLoad}
-        src={initialUrl.current}
-        title={title}
-        allow="fullscreen; autoplay"
-        style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', border: 0, display: 'block', zIndex: 100 }}
-      />
-      {/* Life OS-owned controls sit above the frame, bottom-left, clear of each app's own header. */}
-      <div className="subapp-bar">
-        <button type="button" className="subapp-pill" onClick={() => navigate('/court')} aria-label="Back to Life OS">
-          ← Life OS
-        </button>
-        <StyleSwitch className="subapp-pill" placement="above" compact />
-      </div>
-    </>
+    <iframe
+      ref={frameRef}
+      onLoad={onLoad}
+      src={initialUrl.current}
+      title={title}
+      className="subapp-frame"
+      allow="fullscreen; autoplay"
+    />
   )
 }
 
-// The Study hub is the Summer Rescue app itself (the real one, with its own screens and data).
 function StudyRoute() {
   return <SubAppFrame route="/study" documentPath="/apps/summer-rescue/" title="Study hub" />
 }
@@ -105,12 +93,8 @@ function DivanRoute() {
 
 function AppRoutes() {
   const { ground } = useGround()
-  const shellRef = useRef(null)
-  // The framed apps read the chosen style from the browser's storage (lib/frameSkins.js).
-  useLayoutEffect(() => { publishSkin(ground, shellRef.current) }, [ground])
-
   return (
-    <div className="app-shell" data-ground={ground} ref={shellRef}>
+    <div className="app-shell" data-ground={ground}>
       <Routes>
         <Route path="/" element={<DivanRoute />} />
         <Route element={<CourtLayout />}>
@@ -118,14 +102,14 @@ function AppRoutes() {
           <Route path="/calendar" element={<CalendarView />} />
           <Route path="/today" element={<TodayView />} />
           <Route path="/ledger" element={<LedgerView />} />
+          <Route path="/study" element={<StudyRoute />} />
+          <Route path="/cardiff-life" element={<CardiffLifeRoute />} />
+          <Route path="/budget" element={<BudgetRoute />} />
+          <Route path="/jobmap" element={<JobMapRoute />} />
         </Route>
-        <Route path="/study" element={<StudyRoute />} />
         {/* The database-backed Study records (this semester's timetable, assessments and materials) until the Study hub reads them itself. */}
         <Route path="/study-native" element={<StudyHub />} />
         <Route path="/study-legacy" element={<Navigate to="/study" replace />} />
-        <Route path="/cardiff-life" element={<CardiffLifeRoute />} />
-        <Route path="/budget" element={<BudgetRoute />} />
-        <Route path="/jobmap" element={<JobMapRoute />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

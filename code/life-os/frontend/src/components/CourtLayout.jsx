@@ -11,6 +11,8 @@ export default function CourtLayout() {
   // The modern skin gives the Court the same header and page frame as every other page.
   const isManuscriptCourt = location.pathname === '/court' && ground !== 'modern'
   const isBoardRoute = !isManuscriptCourt
+  // A framed app fills the rest of the window under the top bar.
+  const isSubApp = ['/study', '/cardiff-life', '/budget', '/jobmap'].includes(location.pathname)
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat(undefined, {
     timeZone: 'Europe/London',
@@ -30,7 +32,7 @@ export default function CourtLayout() {
   }
 
   return (
-    <main className={`court-screen${isBoardRoute ? ' board-screen' : ''}${isManuscriptCourt ? ' court-redesign-screen' : ''}`}>
+    <main className={`court-screen${isBoardRoute ? ' board-screen' : ''}${isManuscriptCourt ? ' court-redesign-screen' : ''}${isSubApp ? ' subapp-screen' : ''}`}>
       {!isManuscriptCourt ? (
         <header className="court-topbar">
           <div className="wordmark">Life OS</div>

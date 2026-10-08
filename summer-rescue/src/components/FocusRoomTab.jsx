@@ -1,3 +1,4 @@
+import { followStyle, styleScheme } from '../utils/lifeOsStyle'
 import { Suspense, lazy, useEffect, useRef, useState } from 'react'
 import { StudyTimer } from './StudyTimer'
 import { FloatingVideoPlayer } from './FloatingVideoPlayer'
@@ -64,7 +65,9 @@ export function FocusRoomTab() {
   const [theme, setTheme] = useState('light')
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme
+    const applyTheme = () => { document.documentElement.dataset.theme = styleScheme() || theme }
+    applyTheme()
+    return followStyle(applyTheme)
   }, [theme])
 
   useEffect(

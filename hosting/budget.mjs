@@ -2,6 +2,7 @@
 // private port. Life OS forwards /apps/budget/* to it, so the app keeps its
 // own saving rules (revisions, automatic backups, validation) exactly as before.
 import { createSubAppProxy } from './proxy.mjs'
+import { skinHtml } from './skins/index.mjs'
 import http from 'node:http'
 import path from 'node:path'
 import { spawn } from 'node:child_process'
@@ -76,5 +77,5 @@ async function stopBudget(port) {
 }
 
 export function budgetProxy(getPort) {
-  return createSubAppProxy({ mountPath: BUDGET_PATH, getPort, label: 'Budget Management' })
+  return createSubAppProxy({ mountPath: BUDGET_PATH, getPort, label: 'Budget Management', rewriteHtml: (html) => skinHtml(html, 'budget') })
 }

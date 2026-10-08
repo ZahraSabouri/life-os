@@ -1,0 +1,238 @@
+/* The four styles: one shared palette each. This is the only place their colours are written.
+   The Life OS pages read them on .app-shell; the apps shown in a frame (Study hub, JobMap,
+   Budget, Cardiff Life) read the same file, served as /skins/palettes.css, on their <html>. */
+
+/* Madder (also the fallback for a style name that is not known) */
+.app-shell[data-ground],
+html[data-life-os-ground] {
+  --m-bg: #6f241b;
+  --m-surface: #76281f;
+  --m-card: #7e2e24;
+  --m-sunken: #641f17;
+  --m-ink: #efe3c8;
+  --m-muted: #d8b9a2;
+  --m-faint: #c8a690;
+  --m-line: color-mix(in srgb, #efe3c8 13%, #6f241b);
+  --m-line-strong: color-mix(in srgb, #efe3c8 26%, #6f241b);
+  --m-accent: #dfae4f;
+  --m-accent-strong: #ecc375;
+  --m-accent-soft: color-mix(in srgb, #dfae4f 20%, #6f241b);
+  --m-on-accent: #43130c;
+  --m-spark: #e0916f;
+  --m-blue: #93a8bf;
+  --m-red: #ffd0c4;
+  --m-amber: #e6c07f;
+  --m-green: #a3ab7d;
+  --m-sidebar: #641f17;
+  --m-shadow-lift: 0 16px 42px rgba(39, 9, 6, 0.45);
+  --m-scheme: dark;
+}
+
+/* Indigo */
+.app-shell[data-ground='indigo'],
+html[data-life-os-ground='indigo'] {
+  --m-bg: #171b2c;
+  --m-surface: #1b2034;
+  --m-card: #21273d;
+  --m-sunken: #121625;
+  --m-ink: #e9dcc0;
+  --m-muted: #aeb0bf;
+  --m-faint: #9a9daf;
+  --m-line: color-mix(in srgb, #e9dcc0 11%, #171b2c);
+  --m-line-strong: color-mix(in srgb, #e9dcc0 24%, #171b2c);
+  --m-accent: #d7a445;
+  --m-accent-strong: #e6bc6c;
+  --m-accent-soft: color-mix(in srgb, #d7a445 18%, #171b2c);
+  --m-on-accent: #0b0e19;
+  --m-spark: #cf7a63;
+  --m-blue: #7f9ab8;
+  --m-red: #ffc8bc;
+  --m-amber: #e0b264;
+  --m-green: #97a878;
+  --m-sidebar: #121625;
+  --m-shadow-lift: 0 16px 42px rgba(5, 8, 18, 0.55);
+}
+
+/* Paper */
+.app-shell[data-ground='paper'],
+html[data-life-os-ground='paper'] {
+  --m-bg: #eee1c6;
+  --m-surface: #f1e6cf;
+  --m-card: #f6edda;
+  --m-sunken: #e5d5b4;
+  --m-ink: #332b30;
+  --m-muted: #6f6255;
+  --m-faint: #7d6f61;
+  --m-line: color-mix(in srgb, #332b30 12%, #eee1c6);
+  --m-line-strong: color-mix(in srgb, #332b30 26%, #eee1c6);
+  --m-accent: #a5432f;
+  --m-accent-strong: #8a3524;
+  --m-accent-soft: color-mix(in srgb, #a5432f 14%, #eee1c6);
+  --m-on-accent: #fbf3e2;
+  --m-spark: #b95f4c;
+  --m-blue: #536d8c;
+  --m-red: #7c1f18;
+  --m-amber: #8a5a12;
+  --m-green: #697642;
+  --m-sidebar: #e8dbbd;
+  --m-shadow-lift: 0 14px 38px rgba(83, 55, 38, 0.2);
+  --m-scheme: light;
+}
+
+/* Modern (also what a framed app shows before it knows the style) */
+.app-shell[data-ground='modern'],
+html[data-life-os-ground='modern'],
+html:not([data-life-os-ground]) {
+  --m-bg: #f4f2ea;
+  --m-surface: #faf8f1;
+  --m-card: #fffdf8;
+  --m-sunken: #eeebe0;
+  --m-ink: #22302b;
+  --m-muted: #5f6b65;
+  --m-faint: #6f7972;
+  --m-line: #e2dfd2;
+  --m-line-strong: #cbc8b8;
+  --m-accent: #1f6f5e;
+  --m-accent-strong: #185748;
+  --m-accent-soft: #e1ece5;
+  --m-on-accent: #ffffff;
+  --m-green: #1f6f5e;
+  --m-scheme: light;
+  --m-spark: #c96f45;
+  --m-blue: #3a6ea5;
+  --m-red: #a8402f;
+  --m-amber: #a9781c;
+  --m-sidebar: #f7f5ed;
+  --m-shadow-lift: 0 14px 38px rgba(34, 48, 43, 0.13);
+}
+
+/* ============================ The design of each style ============================
+   Colour is only part of a style. Each one also has its own type, its own way of drawing
+   a box, a button, a label and the chosen item of a menu. These follow the Court page of
+   each style, and every other page and every framed app draws with them.
+
+     --m-font / --m-display / --m-title-font / --m-num / --m-label-font    which typeface where
+     --m-font-adjust        draws a small-bodied serif at the letter height of a sans
+     --m-radius*            corners of boxes, fields and buttons, tags, menu items
+     --m-card-fill, --m-card-outline, --m-card-outline-top                 how a box is drawn
+     --m-control-*          buttons;  --m-primary-*  the main button
+     --m-nav-active-*       the chosen item of a menu
+     --m-shadow, --m-shadow-strength                                       soft depth, or none */
+
+/* Madder: soft translucent tiles on the red ground, serif text, small sans capitals. */
+.app-shell[data-ground],
+html[data-life-os-ground] {
+  --m-font: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --m-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --m-title-font: 'Cormorant Garamond', Georgia, serif;
+  --m-num: 'Spline Sans Mono', ui-monospace, Menlo, Consolas, monospace;
+  --m-label-font: 'Space Grotesk', system-ui, sans-serif;
+  --m-font-adjust: 0.49;
+  --m-text-weight: 500;
+  --m-heading-weight: 500;
+  --m-heading-tracking: 0;
+  --m-title-weight: 600;
+  --m-label-tracking: 0.22em;
+  --m-radius-sm: 8px;
+  --m-radius: 12px;
+  --m-radius-lg: 14px;
+  --m-radius-control: 999px;
+  --m-radius-chip: 999px;
+  --m-radius-nav: 999px;
+  --m-card-fill: color-mix(in srgb, var(--m-ink) 6%, var(--m-bg));
+  --m-card-outline: 1px solid transparent;
+  --m-card-outline-top: 1px solid transparent;
+  --m-control-font: var(--m-label-font);
+  --m-control-caps: all-small-caps;
+  --m-control-tracking: 0.12em;
+  --m-control-weight: 600;
+  --m-primary-bg: var(--m-accent);
+  --m-primary-ink: var(--m-on-accent);
+  --m-primary-outline: 1px solid var(--m-accent);
+  --m-nav-active-bg: var(--m-accent);
+  --m-nav-active-ink: var(--m-on-accent);
+  --m-nav-active-mark: none;
+  --m-shadow: none;
+  --m-shadow-strength: 0;
+  --m-rule: 1px solid var(--m-line-strong);
+}
+
+/* Indigo: a night desk. Sans text, serif headings, figures in mono; outlined boxes and ruled sections. */
+.app-shell[data-ground='indigo'],
+html[data-life-os-ground='indigo'] {
+  --m-font: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+  --m-title-font: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+  --m-font-adjust: none;
+  --m-text-weight: 400;
+  --m-radius-sm: 6px;
+  --m-radius: 8px;
+  --m-radius-lg: 10px;
+  --m-radius-control: 6px;
+  --m-radius-chip: 4px;
+  --m-radius-nav: 6px;
+  --m-card-fill: var(--m-bg);
+  --m-card-outline: 1px solid var(--m-line-strong);
+  --m-card-outline-top: 1px solid var(--m-line-strong);
+}
+
+/* Paper: a manuscript page. Everything in the serif, no boxes: ruled lines, capitals with wide spacing. */
+.app-shell[data-ground='paper'],
+html[data-life-os-ground='paper'] {
+  --m-label-font: 'Cormorant Garamond', Georgia, serif;
+  --m-label-tracking: 0.3em;
+  --m-radius-sm: 0px;
+  --m-radius: 0px;
+  --m-radius-lg: 0px;
+  --m-radius-control: 0px;
+  --m-radius-chip: 0px;
+  --m-radius-nav: 0px;
+  --m-card-fill: var(--m-bg);
+  --m-card-outline: 1px solid transparent;
+  --m-card-outline-top: 1px solid var(--m-line-strong);
+  --m-control-tracking: 0.16em;
+  --m-primary-bg: transparent;
+  --m-primary-ink: var(--m-ink);
+  --m-primary-outline: 1px solid var(--m-ink);
+  --m-nav-active-bg: transparent;
+  --m-nav-active-ink: var(--m-accent);
+  --m-nav-active-mark: inset 0 -1px 0 var(--m-accent);
+}
+
+/* Modern: rounded cards with soft shadows, sans text, serif headings. */
+.app-shell[data-ground='modern'],
+html[data-life-os-ground='modern'],
+html:not([data-life-os-ground]) {
+  --m-font: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+  --m-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --m-title-font: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+  --m-num: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+  --m-label-font: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+  --m-font-adjust: none;
+  --m-text-weight: 400;
+  --m-heading-weight: 600;
+  --m-heading-tracking: -0.015em;
+  --m-title-weight: 700;
+  --m-label-tracking: 0.16em;
+  --m-radius-sm: 9px;
+  --m-radius: 13px;
+  --m-radius-lg: 20px;
+  --m-radius-control: 9px;
+  --m-radius-chip: 999px;
+  --m-radius-nav: 11px;
+  --m-card-fill: var(--m-card);
+  --m-card-outline: 1px solid var(--m-line);
+  --m-card-outline-top: 1px solid var(--m-line);
+  --m-control-font: var(--m-font);
+  --m-control-caps: normal;
+  --m-control-tracking: 0;
+  --m-control-weight: 700;
+  --m-primary-bg: var(--m-accent);
+  --m-primary-ink: var(--m-on-accent);
+  --m-primary-outline: 1px solid var(--m-accent);
+  --m-nav-active-bg: var(--m-accent-soft);
+  --m-nav-active-ink: var(--m-accent-strong);
+  --m-nav-active-mark: none;
+  --m-shadow: 0 1px 2px rgba(34, 48, 43, 0.05), 0 4px 14px rgba(34, 48, 43, 0.05);
+  --m-shadow-strength: 1;
+  --m-rule: 1px solid var(--m-line);
+}

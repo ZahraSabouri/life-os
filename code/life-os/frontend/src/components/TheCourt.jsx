@@ -1006,25 +1006,36 @@ function ModernCourt(props) {
   )
 }
 
+// The three ancient Court pages are drawn on a 1512 x 982 sheet. The sheet grows to the
+// full width of the window (so the text is as large as the window allows) and the page
+// scrolls if the window is not tall enough. On a narrow window it stops shrinking at a
+// size that can still be read, and scrolls sideways.
+const COURT_SHEET = { width: 1512, height: 982 }
+const SMALLEST_COURT_SCALE = 0.62
+
+function courtScale() {
+  const fill = document.documentElement.clientWidth / COURT_SHEET.width
+  // When the whole sheet fits with only a sliver to spare, fit it exactly: no scrolling.
+  const fit = window.innerHeight / COURT_SHEET.height
+  const scale = fit < fill && fit > fill * 0.94 ? fit : fill
+  return Math.max(SMALLEST_COURT_SCALE, scale)
+}
+
 function CourtStage({ children }) {
-  const [scale, setScale] = useState(() => Math.min(
-    window.innerWidth / 1512,
-    window.innerHeight / 982
-  ))
+  const [scale, setScale] = useState(courtScale)
 
   useEffect(() => {
-    function fitCourt() {
-      setScale(Math.min(window.innerWidth / 1512, window.innerHeight / 982))
-    }
-
+    const fitCourt = () => setScale(courtScale())
     window.addEventListener('resize', fitCourt)
     return () => window.removeEventListener('resize', fitCourt)
   }, [])
 
   return (
     <div className="court-design-stage">
-      <div className="court-design-canvas" style={{ transform: `scale(${scale})` }}>
-        {children}
+      <div className="court-design-sheet" style={{ width: COURT_SHEET.width * scale, height: COURT_SHEET.height * scale }}>
+        <div className="court-design-canvas" style={{ transform: `scale(${scale})` }}>
+          {children}
+        </div>
       </div>
     </div>
   )

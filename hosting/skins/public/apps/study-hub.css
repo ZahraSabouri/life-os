@@ -1,0 +1,98 @@
+/* Study hub inside Life OS. The app draws everything from its own variables
+   (summer-rescue/src/index.css), so they are fed from the chosen style here.
+   (:root is repeated to outrank the app's own light and dark sets.) */
+html[data-life-os-ground]:root:root {
+  --bg: var(--m-bg);
+  --surface: var(--m-surface);
+  --panel: var(--m-card-fill);
+  --panel-2: var(--m-sunken);
+  --input-bg: var(--m-card);
+  --input-ink: var(--m-ink);
+  --chip-bg: var(--m-card);
+  --track: var(--m-line-strong);
+  --done-bg: color-mix(in srgb, var(--m-green) 13%, var(--m-card));
+
+  --toast-bg: color-mix(in srgb, var(--m-amber) 15%, var(--m-card));
+  --toast-ink: var(--m-ink);
+  --success-bg: color-mix(in srgb, var(--m-green) 13%, var(--m-card));
+  --success-ink: color-mix(in srgb, var(--m-green) 70%, var(--m-ink));
+  --success-line: color-mix(in srgb, var(--m-green) 45%, var(--m-line));
+  --warning-bg: color-mix(in srgb, var(--m-amber) 15%, var(--m-card));
+  --warning-ink: color-mix(in srgb, var(--m-amber) 70%, var(--m-ink));
+  --warning-line: color-mix(in srgb, var(--m-amber) 50%, var(--m-line));
+
+  --overlay: rgba(18, 14, 10, 0.5);
+  --drawer-shadow: -26px 0 64px rgba(18, 14, 10, 0.3);
+  --focus-ring: color-mix(in srgb, var(--m-accent) 36%, transparent);
+
+  --ink: var(--m-ink);
+  --muted: var(--m-muted);
+  --line: var(--m-line);
+  --line-strong: var(--m-line-strong);
+
+  --red: var(--m-red);
+  --green: var(--m-green);
+  --amber: var(--m-amber);
+  --blue: var(--m-blue);
+
+  --accent: var(--m-accent);
+  --accent-2: var(--m-spark);
+  --accent-soft: var(--m-accent-soft);
+  --header-grad: var(--m-accent);
+
+  --shadow-1: var(--m-shadow);
+  --shadow-2: var(--m-shadow-lift);
+
+  --chart-1: var(--m-accent);
+  --chart-2: var(--m-spark);
+  --chart-ideal: var(--m-faint);
+  --chart-aml: var(--m-blue);
+  --chart-ts: var(--m-green);
+  --chart-mat700: var(--m-red);
+  --chart-project: color-mix(in srgb, var(--m-blue) 55%, var(--m-red));
+  --chart-interview: color-mix(in srgb, var(--m-green) 70%, var(--m-blue));
+  --chart-admin: var(--m-amber);
+  --chart-health: var(--m-spark);
+  --heat-0: var(--m-sunken);
+  --heat-1: color-mix(in srgb, var(--m-accent) 22%, var(--m-card));
+  --heat-2: color-mix(in srgb, var(--m-accent) 45%, var(--m-card));
+  --heat-3: color-mix(in srgb, var(--m-accent) 72%, var(--m-card));
+  --heat-4: var(--m-accent);
+
+  --font-sans: var(--m-font);
+  --font-serif: var(--m-display);
+  --font-num: var(--m-num);
+  --radius-sm: var(--m-radius-control);
+  --radius: var(--m-radius);
+  --radius-lg: var(--m-radius-lg);
+  --radius-pill: var(--m-radius-chip);
+}
+
+/* The Style menu in the Life OS top bar decides light or dark. */
+html[data-life-os-ground] .theme-switch { display: none !important; }
+
+/* Text on a filled shape. */
+html[data-life-os-ground] :is(.primary-button, .hub-primary, .brand-mark) { color: var(--m-on-accent); }
+html[data-life-os-ground] .brand-mark-plain { color: var(--m-accent); }
+
+/* Menu. */
+html[data-life-os-ground] .app-sidebar { background: var(--m-sidebar); border-right: var(--m-rule); backdrop-filter: none; }
+html[data-life-os-ground] .nav-item { border-radius: var(--m-radius-nav) !important; }
+html[data-life-os-ground] .nav-item.active { background: var(--m-nav-active-bg); border-color: transparent; color: var(--m-nav-active-ink); box-shadow: var(--m-nav-active-mark); }
+html[data-life-os-ground] .nav-item.active .nav-ico { color: inherit; }
+html[data-life-os-ground] .nav-group-label, html[data-life-os-ground] .eyebrow, html[data-life-os-ground] .hub-eyebrow { letter-spacing: var(--m-label-tracking); }
+html[data-life-os-frame] .sidebar-brand .brand-mark { display: none; }
+
+/* Buttons. */
+html[data-life-os-ground] :is(.primary-button, .secondary-button, .ghost-button, .import-button, .hub-primary, .hub-secondary) {
+  border-radius: var(--m-radius-control);
+  font-family: var(--m-control-font);
+  font-variant-caps: var(--m-control-caps);
+  letter-spacing: var(--m-control-tracking);
+  font-weight: var(--m-control-weight);
+}
+html[data-life-os-ground] :is(.primary-button, .hub-primary) { background: var(--m-primary-bg); color: var(--m-primary-ink); border: var(--m-primary-outline); box-shadow: var(--m-shadow); }
+
+/* Cards and panels. */
+html[data-life-os-ground] :is(.panel, .hub-semester, .hub-add, .hub-queue, .today-hero, .super-hero, .module-command-card, .module-hero, .settings-section) { background: var(--m-card-fill); border-radius: var(--m-radius); border: var(--m-card-outline); border-top: var(--m-card-outline-top); box-shadow: var(--m-shadow); }
+html[data-life-os-ground] :is(.nav-group-label, .eyebrow, .hub-eyebrow) { font-family: var(--m-label-font); }

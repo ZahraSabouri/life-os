@@ -4,6 +4,7 @@
 import path from 'node:path'
 import { spawn } from 'node:child_process'
 import { createSubAppProxy, localRequest } from './proxy.mjs'
+import { skinHtml } from './skins/index.mjs'
 
 export const JOBMAP_PATH = '/apps/jobmap/'
 export const JOBMAP_INTERNAL_PORT = Number(process.env.LIFE_OS_JOBMAP_PORT || 47852)
@@ -49,6 +50,7 @@ export async function startJobMap({ root, port = JOBMAP_INTERNAL_PORT } = {}) {
 export function jobMapProxy(getPort) {
   return createSubAppProxy({
     mountPath: JOBMAP_PATH, getPort, label: 'JobMap',
+    rewriteHtml: (html) => skinHtml(html, 'jobmap'),
     // JobMap forbids all framing; allow Life OS (same origin) only.
     rewriteResponseHeaders(headers) {
       const csp = headers['content-security-policy']

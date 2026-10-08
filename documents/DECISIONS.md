@@ -4,6 +4,22 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 8 October 2026 — One look: sub-apps are parts of Life OS; a style is a whole design (Xar with Claude Code)
+
+- **Xar:** the sub-apps must look like big parts of the main app, not separate apps. A style must change the design, not only the colours: "a skin like Indigo had a different style and design". The ancient Court pages are well designed but sit as fixed boxes with small text, and the other pages in those styles do not follow them.
+- **The frame (her choice):** the Life OS top bar on every page; each part keeps its own side menu, drawn the same way everywhere. Logos inside the parts are removed and the names kept as headings; to be rolled back if it looks wrong.
+- **One file holds the styles** (`frontend/src/styles/palettes.css`): colours, then the design of each style, taken from that style's Court page. Madder: soft tiles. Indigo: outlined boxes, sans with serif headings, mono figures. Paper: ruled lines, no boxes. Modern: rounded cards, soft shadows. *Supersedes* the 7 October entry's "Life OS publishes the chosen style" and "Modern means the Study hub's exact look": Modern is the main app's palette everywhere.
+- **The sub-apps' own files stay untouched.** Life OS adds the shared skin files to their pages as they are served (`hosting/skins/`), and rewrites colours written straight into Budget's and Cardiff Life's CSS as blends of the shared palette. JobMap's folder is again the standalone app plus relative addresses, which also suits keeping both JobMap copies alike (entry below).
+- **The Court (her answer):** responsive and beautiful, scrolling allowed. Done now: it fills the window's width. Still to do: rebuild it as a flowing page at reading size.
+
+## 8 October 2026 - Maintain both JobMap copies (Xar with Codex)
+
+- Xar: "i want you to update both apps when running the scheduled task or doing further development". The targets are `C:\Users\ctrlz\Documents\JobMap\Career Agent\JobMap App` and `C:\Users\ctrlz\Documents\Personal\Projects\Life_OS\jobmap`.
+- Supersedes the pending choice to redirect the scheduled search to Life OS alone. The existing automation keeps its times and now compares, saves, validates, queues and checks imports in both copies. Findings use the same runId; vacancy identity is resolved against each target because custom IDs can differ.
+- Shared fixes and features are carried to both, preserving Life OS relative paths, hosting, style integration and existing work. Each receives appropriate verification.
+- Neither progress.json nor whole data folders are copied over the other workspace. Imports preserve personal edits and dates; personal-data reconciliation remains a conflict-aware, backed-up operation.
+- This is a maintenance instruction, not acceptance of the JobMap UI or the current style stage. No application code or vacancy data changed in this session.
+
 ## 7 October 2026 (night) — JobMap: one workspace, the Study hub's look (Xar with Claude Code)
 
 - **Xar:** bring in the newest JobMap (it shows when each job was added and advertised), and make it look like part of the Study hub, following the other styles too.

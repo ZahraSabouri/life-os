@@ -1,0 +1,44 @@
+/* Budget ("Everyday") inside Life OS. Its hundreds of written-in colours are already
+   rewritten as blends of the shared palette when the page is served (skins/recolor.mjs);
+   this layer ties its type and its named parts to the chosen style. */
+html[data-life-os-ground]:root {
+  --text-face: var(--m-font);
+  --display-face: var(--m-display);
+}
+html[data-life-os-ground] body, html[data-life-os-ground] .v2-shell, html[data-life-os-ground] .v2-work, html[data-life-os-ground] .v2-main { background: var(--m-bg); color: var(--m-ink); }
+
+/* Menu: the same light side menu as the other parts of Life OS. */
+html[data-life-os-ground] .v2-sidebar { background: var(--m-sidebar); color: var(--m-muted); border-right: var(--m-rule); }
+html[data-life-os-ground] .v2-brand, html[data-life-os-ground] .v2-brand * { color: var(--m-ink); font-family: var(--m-display); font-weight: var(--m-heading-weight); }
+html[data-life-os-ground] .v2-brand .brand-leaf { background: var(--m-card); border: 1px solid var(--m-line); color: var(--m-accent); }
+html[data-life-os-ground] .v2-brand .brand-leaf * { color: var(--m-accent); }
+html[data-life-os-frame] .v2-brand .brand-leaf { display: none; }
+html[data-life-os-ground] .v2-sidebar :is(nav button, .settings-link) {
+  background: transparent; color: var(--m-muted); border: 1px solid transparent;
+  border-radius: var(--m-radius-nav) !important; font-weight: 600; box-shadow: none;
+}
+html[data-life-os-ground] .v2-sidebar :is(nav button, .settings-link):hover { background: var(--m-accent-soft); color: var(--m-ink); }
+html[data-life-os-ground] .v2-sidebar nav button.active { background: var(--m-nav-active-bg); color: var(--m-nav-active-ink); box-shadow: var(--m-nav-active-mark); }
+html[data-life-os-ground] .v2-sidebar :is(nav button, .settings-link) svg { color: inherit; stroke: currentColor; }
+html[data-life-os-ground] .v2-sidebar .local-status { color: var(--m-muted); }
+html[data-life-os-ground] .v2-sidebar .local-status .ok { background: var(--m-green); }
+html[data-life-os-ground] .v2-sidebar :is(hr, .divider) { border-color: var(--m-line); }
+
+/* The bar above the page. */
+html[data-life-os-ground] .v2-topbar { background: color-mix(in srgb, var(--m-card) 88%, var(--m-bg)); border-bottom: var(--m-rule); color: var(--m-muted); }
+
+/* Headings, labels, buttons. */
+html[data-life-os-ground] :is(.page-heading, .home-heading, .section-heading, .dialog-heading, .card-title, .week-title) :is(h1, h2, h3) { font-family: var(--m-display); font-weight: var(--m-heading-weight); letter-spacing: var(--m-heading-tracking); color: var(--m-ink); }
+html[data-life-os-ground] .eyebrow { font-family: var(--m-label-font); letter-spacing: var(--m-label-tracking); color: var(--m-accent); }
+html[data-life-os-ground] :is(.budget-rule, .balance-card, .home-overview > *, .action-cards > *, .art-card, .goal-card, .stock-card, .shop-card, .recipe-card, .ledger-panel, .calendar-panel, .forecast-card, .resource-card, .type-card, .catalogue-card) { background-color: var(--m-card-fill); border: var(--m-card-outline); border-top: var(--m-card-outline-top); box-shadow: var(--m-shadow); }
+html[data-life-os-ground] .button {
+  border-radius: var(--m-radius-control);
+  font-family: var(--m-control-font);
+  font-variant-caps: var(--m-control-caps);
+  letter-spacing: var(--m-control-tracking);
+  font-weight: var(--m-control-weight);
+}
+html[data-life-os-ground] .button.primary { background: var(--m-primary-bg); border: var(--m-primary-outline); color: var(--m-primary-ink); }
+html[data-life-os-ground] .button.primary * { color: inherit; }
+html[data-life-os-ground] :is(.badge, .chip) { border-radius: var(--m-radius-chip); }
+html[data-life-os-ground] .app-dialog { background: var(--m-card); color: var(--m-ink); border: 1px solid var(--m-line-strong); border-radius: var(--m-radius-lg); }

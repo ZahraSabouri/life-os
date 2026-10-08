@@ -1,87 +1,10 @@
-/* Skins: one shared palette per style, and the style menu.
+@import './palettes.css';
+
+/* Skins: the style menu and what each style changes on the Life OS pages.
    Every surface reads the same --m-* values for the chosen style: Life OS boards
    (through --g-*), Study (through its Summer Rescue variables) and the framed
-   apps (published to them by lib/frameSkins.js; JobMap follows, the others keep
-   their own look for now). Change a style here only. */
-
-/* ---- Shared palette: the three manuscript grounds ---- */
-.app-shell {
-  --m-bg: #6f241b;
-  --m-surface: #76281f;
-  --m-card: #7e2e24;
-  --m-sunken: #641f17;
-  --m-ink: #efe3c8;
-  --m-muted: #d8b9a2;
-  --m-faint: #c8a690;
-  --m-line: color-mix(in srgb, #efe3c8 13%, #6f241b);
-  --m-line-strong: color-mix(in srgb, #efe3c8 26%, #6f241b);
-  --m-accent: #dfae4f;
-  --m-accent-strong: #ecc375;
-  --m-accent-soft: color-mix(in srgb, #dfae4f 20%, #6f241b);
-  --m-on-accent: #43130c;
-  --m-spark: #e0916f;
-  --m-blue: #93a8bf;
-  --m-red: #ffd0c4;
-  --m-amber: #e6c07f;
-  --m-green: #a3ab7d;
-  --m-sidebar: #641f17;
-  --m-radius-sm: 9px;
-  --m-radius: 13px;
-  --m-radius-lg: 20px;
-  --m-shadow: 0 1px 2px rgba(39, 9, 6, 0.3);
-  --m-shadow-lift: 0 16px 42px rgba(39, 9, 6, 0.45);
-  --m-font: 'Manrope', 'Segoe UI', system-ui, sans-serif;
-  --m-display: 'Cormorant Garamond', Georgia, serif;
-  --m-num: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
-  --m-scheme: dark;
-}
-.app-shell[data-ground='indigo'] {
-  --m-bg: #171b2c;
-  --m-surface: #1b2034;
-  --m-card: #21273d;
-  --m-sunken: #121625;
-  --m-ink: #e9dcc0;
-  --m-muted: #aeb0bf;
-  --m-faint: #9a9daf;
-  --m-line: color-mix(in srgb, #e9dcc0 11%, #171b2c);
-  --m-line-strong: color-mix(in srgb, #e9dcc0 24%, #171b2c);
-  --m-accent: #d7a445;
-  --m-accent-strong: #e6bc6c;
-  --m-accent-soft: color-mix(in srgb, #d7a445 18%, #171b2c);
-  --m-on-accent: #0b0e19;
-  --m-spark: #cf7a63;
-  --m-blue: #7f9ab8;
-  --m-red: #ffc8bc;
-  --m-amber: #e0b264;
-  --m-green: #97a878;
-  --m-sidebar: #121625;
-  --m-shadow: 0 1px 2px rgba(5, 8, 18, 0.4);
-  --m-shadow-lift: 0 16px 42px rgba(5, 8, 18, 0.55);
-}
-.app-shell[data-ground='paper'] {
-  --m-bg: #eee1c6;
-  --m-surface: #f1e6cf;
-  --m-card: #f6edda;
-  --m-sunken: #e5d5b4;
-  --m-ink: #332b30;
-  --m-muted: #6f6255;
-  --m-faint: #7d6f61;
-  --m-line: color-mix(in srgb, #332b30 12%, #eee1c6);
-  --m-line-strong: color-mix(in srgb, #332b30 26%, #eee1c6);
-  --m-accent: #a5432f;
-  --m-accent-strong: #8a3524;
-  --m-accent-soft: color-mix(in srgb, #a5432f 14%, #eee1c6);
-  --m-on-accent: #fbf3e2;
-  --m-spark: #b95f4c;
-  --m-blue: #536d8c;
-  --m-red: #7c1f18;
-  --m-amber: #8a5a12;
-  --m-green: #697642;
-  --m-sidebar: #e8dbbd;
-  --m-shadow: 0 1px 2px rgba(83, 55, 38, 0.08), 0 4px 14px rgba(83, 55, 38, 0.06);
-  --m-shadow-lift: 0 14px 38px rgba(83, 55, 38, 0.2);
-  --m-scheme: light;
-}
+   apps (which are served the same palette file, see hosting/skins). The colours and the
+   design of each style are written once, in palettes.css. */
 
 /* ---- Style menu (all four styles) ---- */
 .style-switch { position: relative; display: inline-flex; }
@@ -113,51 +36,49 @@
 .app-shell .style-switch .style-switch-option:focus-visible,
 .app-shell .style-switch .style-switch-trigger:focus-visible { outline: 2px solid var(--g-acc); outline-offset: 2px; }
 
-/* ---- Life OS controls over a framed app ---- */
-.subapp-bar {
-  position: fixed; z-index: 101;
-  left: calc(12px + env(safe-area-inset-left, 0px)); bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  display: flex; gap: 6px; align-items: center;
+/* ---- A framed app sits under the same top bar as every other page ---- */
+.app-shell .court-screen.subapp-screen {
+  display: grid; grid-template-rows: auto minmax(0, 1fr);
+  height: calc(100vh - 1rem); min-height: 0; overflow: hidden;
+  padding-left: 0; padding-right: 0; padding-bottom: 0;
 }
-.app-shell .subapp-bar .subapp-pill {
-  min-height: 0; padding: 6px 12px; border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 999px;
-  background: rgba(28, 30, 33, 0.72); color: #f6f1e7;
-  font: 600 12px/1.2 'Manrope', system-ui, sans-serif; letter-spacing: 0.02em; text-transform: none;
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18); cursor: pointer; opacity: 0.9;
-}
-.app-shell .subapp-bar .subapp-pill:hover, .app-shell .subapp-bar .is-open .subapp-pill { opacity: 1; }
+.app-shell .subapp-screen > .court-topbar { width: 100%; padding-inline: clamp(1.5rem, 4vw, 4.4rem); margin-bottom: 0; }
+.subapp-frame { display: block; width: 100%; height: 100%; border: 0; background: var(--m-bg); }
+.app-shell .court-screen.board-screen.subapp-screen { padding-top: 2.4rem; }
+.app-shell[data-ground='modern'] .court-screen.board-screen.subapp-screen { height: 100vh; padding: 0; }
+.app-shell[data-ground='modern'] .subapp-screen > .court-topbar { margin: 0; }
 
-/* ---- Shared palette: the modern skin (the look of the four attached apps, unified) ---- */
+/* ---- The ancient Court: its sheet fills the window's width and scrolls if it must ---- */
+.app-shell .court-design-stage { display: block; overflow: auto; }
+.app-shell .court-design-sheet { position: relative; margin: 0 auto; overflow: hidden; }
+.app-shell .court-design-sheet > .court-design-canvas { position: absolute; top: 0; left: 0; transform-origin: top left; }
+
+/* ---- The ancient styles: every page carries the header of its Court ----
+   Small spaced capitals for the name and the menu, no capsule; the chosen page is marked
+   in the accent with a fine line under it. The label face and spacing come from the style. */
+.app-shell:not([data-ground='modern']) .court-topbar { grid-template-columns: auto auto 1fr; max-width: none; gap: 1.4rem; padding-bottom: 0.95rem; border-bottom: 1px solid var(--g-line); }
+.app-shell:not([data-ground='modern']) .wordmark { font: 600 0.8rem/1 var(--m-label-font); letter-spacing: 0.34em; text-transform: uppercase; white-space: nowrap; }
+.app-shell:not([data-ground='modern']) .date-line { text-align: left; font: 500 1rem/1.2 var(--m-display); color: var(--g-sub); white-space: nowrap; }
+.app-shell:not([data-ground='modern']) .court-nav { justify-self: end; flex-wrap: wrap; justify-content: flex-end; gap: 0.1rem 0.25rem; padding: 0; border: 0; border-radius: 0; background: transparent; }
+.app-shell:not([data-ground='modern']) .court-nav button {
+  min-height: 2rem; padding: 0.45rem 0.6rem; border: 0; border-radius: 0; background: transparent; box-shadow: none;
+  color: var(--g-sub); font: 500 0.7rem/1 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase;
+}
+.app-shell:not([data-ground='modern']) .court-nav button:hover { color: var(--g-ink); background: transparent; }
+.app-shell:not([data-ground='modern']) .court-nav .active { color: var(--g-acc); background: transparent; box-shadow: inset 0 -1px 0 var(--g-acc); }
+.app-shell:not([data-ground='modern']) .court-nav .style-switch-trigger { color: var(--g-ink); }
+@media (max-width: 1100px) {
+  .app-shell:not([data-ground='modern']) .court-topbar { grid-template-columns: 1fr auto; }
+  .app-shell:not([data-ground='modern']) .court-nav { grid-column: 1 / -1; justify-self: start; justify-content: flex-start; }
+}
+
+/* Indigo is set in a sans with serif headings and mono figures, as on its Court. */
+.app-shell[data-ground='indigo'] .court-screen.board-screen { --font-ui: var(--m-font); font-family: var(--m-font); }
+.app-shell[data-ground='indigo'] .court-screen.board-screen :is(h1, h2, h3) { font-family: var(--m-display); }
+.app-shell[data-ground='indigo'] .court-screen.board-screen :is(time, .calendar-time, .item-time) { font-family: var(--m-num); }
+
+/* ---- The modern skin on the Life OS pages (its colours are in palettes.css) ---- */
 .app-shell[data-ground='modern'] {
-  --m-bg: #f4f2ea;
-  --m-surface: #faf8f1;
-  --m-card: #fffdf8;
-  --m-sunken: #eeebe0;
-  --m-ink: #22302b;
-  --m-muted: #5f6b65;
-  --m-faint: #6f7972;
-  --m-line: #e2dfd2;
-  --m-line-strong: #cbc8b8;
-  --m-accent: #1f6f5e;
-  --m-accent-strong: #185748;
-  --m-accent-soft: #e1ece5;
-  --m-on-accent: #ffffff;
-  --m-green: #1f6f5e;
-  --m-scheme: light;
-  --m-spark: #c96f45;
-  --m-blue: #3a6ea5;
-  --m-red: #a8402f;
-  --m-amber: #a9781c;
-  --m-sidebar: #f7f5ed;
-  --m-radius-sm: 9px;
-  --m-radius: 13px;
-  --m-radius-lg: 20px;
-  --m-shadow: 0 1px 2px rgba(34, 48, 43, 0.05), 0 4px 14px rgba(34, 48, 43, 0.05);
-  --m-shadow-lift: 0 14px 38px rgba(34, 48, 43, 0.13);
-  --m-font: 'Manrope', 'Segoe UI', system-ui, sans-serif;
-  --m-display: 'Fraunces', Georgia, 'Times New Roman', serif;
-  --m-num: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
 
   --g-bg: var(--m-bg);
   --g-bg2: var(--m-card);

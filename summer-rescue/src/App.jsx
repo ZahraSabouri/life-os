@@ -65,6 +65,7 @@ import { FILTER_DEFAULTS, MODULE_OPTIONS, MODULE_VIEWS, PHASE_OPTIONS, TAG_OPTIO
 import { STUDY_MODULES } from './data/studyModules'
 import { KNOWLEDGE_SEEDS } from './data/knowledgeSeeds'
 import { askForSemesterOnNextLoad, session } from './hub/session'
+import { followStyle, styleScheme } from './utils/lifeOsStyle'
 import { relatedNotesForCard, resolveModuleNotes } from './utils/knowledge'
 import { onFocusMessage, postFocusMessage } from './utils/focusSession'
 import { EVENT_COVERAGE, coverageSummary } from './state/eventCoverage'
@@ -664,12 +665,13 @@ export default function App() {
       : 'Choose file once'
 
   useEffect(() => {
-    if (typeof document !== 'undefined') {
-      document.documentElement.dataset.theme = theme
-    }
+    const applyTheme = () => { document.documentElement.dataset.theme = styleScheme() || theme }
+    applyTheme()
+    const stopFollowing = followStyle(applyTheme)
     // The Focus Room is a separate browser tab/document, so it never sees this
     // dataset assignment above — broadcast the change to any open room too.
     postFocusMessage('theme', { theme })
+    return stopFollowing
   }, [theme])
 
   useEffect(() => {

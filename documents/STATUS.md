@@ -1,9 +1,16 @@
 # Life OS: status
 
-**Updated 7 October 2026 (night) by Claude Code.** Branch: `stage/4a-jobmap-refresh` (cut from `stage/3-study-hub`), neither pushed; main untouched. Calendar is complete. Study hub: live on the database; Xar wants nothing more on it for now. JobMap: newest version, one workspace, new look; waiting for her check.
+**Updated 8 October 2026 by Claude Code.** Branch: `stage/4b-one-look` (cut from `stage/4a-jobmap-refresh`, which was cut from `stage/3-study-hub`); none pushed; main untouched. Calendar is complete. Study hub and JobMap are live. The current work is the look: the sub-apps as parts of Life OS, and every style a whole design.
 
 ## Now
-Active brief: `briefs/stage-4a-jobmap-refresh.md` (CP1 and CP2 done, CP3 waits for Xar). Latest note: `sessions/2026-10-07-claude-code-stage-4a-jobmap-refresh.md`. The Study hub brief (`briefs/stage-3-study-hub.md`) still has its clean-up list open.
+Active brief: `briefs/stage-4b-one-look.md` (CP1 done and live; CP2 and CP3 open). Latest note: `sessions/2026-10-08-claude-code-stage-4b-one-look.md`.
+
+**The look, what works right now**
+- Budget, JobMap, Cardiff Life and the Study hub open under the Life OS top bar; the chosen part is marked there. The two floating buttons are gone.
+- All four take their colours, typefaces, corners, boxes, buttons and menu from the chosen style. Changing the style from the top bar changes the open part at once.
+- A style is a whole design: Madder (soft tiles, serif, small sans capitals), Indigo (outlined boxes, sans with serif headings, mono figures), Paper (ruled lines, no boxes, all serif), Modern (rounded cards, soft shadows).
+- In the ancient styles every page's top bar is the Court's header. The ancient Court fills the window's width and scrolls if needed.
+- Not done yet: a page-by-page pass inside each part (CP2), and the Court as a flowing page at reading size (CP3).
 
 **JobMap, what works right now**
 - Life OS → **JobMap** is the newest version: 1,013 jobs, each showing when it was added to JobMap, when it was advertised and when it closes; sorting by newest added and recently advertised.
@@ -21,7 +28,8 @@ Active brief: `briefs/stage-4a-jobmap-refresh.md` (CP1 and CP2 done, CP3 waits f
 - The name is Study hub everywhere she sees it. Life & Admin, Admin & Dates, Job Hunt, the interview hub and Shopping are gone from the menus; their data is kept aside in the database.
 
 ## Exact next step
-0. JobMap: her answer on the scheduled search (see "Waiting on Xar"), then CP3 of `briefs/stage-4a-jobmap-refresh.md`.
+00. The look: CP2 of `briefs/stage-4b-one-look.md` (page by page, starting with what Xar reports), then CP3 (the flowing Court).
+0. JobMap: CP3 configuration is complete; the next scheduled run must verify delivery in both copies. Her UI acceptance checks remain outstanding.
 1. Study hub: ask Xar to try the acceptance list at the end of the 7 October Study hub session note and collect what is wrong.
 2. Add automated tests for `hosting/study/hub/` (store, card records, router, duplicate).
 3. Clean-up listed under "Known problems and limits".
@@ -31,10 +39,10 @@ Active brief: `briefs/stage-4a-jobmap-refresh.md` (CP1 and CP2 done, CP3 waits f
 ## How to see it
 `Start Life OS.cmd`, then http://127.0.0.1:47850 → Study hub. After changing `summer-rescue/` or the frontend: `Build Life OS.cmd`. After changing `hosting/`: stop and start.
 
-To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-test.mjs` (makes `lifeos_test` a copy of the live Study data), build with `--outDir dist-hub`, then `node .runtime/hub-dev/dev-server.mjs` (port 47860, test database).
+To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-test.mjs` (makes `lifeos_test` a copy of the live Study data); build the Study hub with `--outDir dist-hub`, the main app with `--outDir dist-next`, JobMap with `--outDir dist/client-next`; then `node .runtime/hub-dev/dev-server.mjs` (port 47860: the whole app on the test database, with JobMap and Budget on fresh copies of their data). Skin files (`hosting/skins/public`, `palettes.css`) are read on every page load, so a change there needs only a refresh.
 
 ## Waiting on Xar
-- **JobMap's scheduled search** ("UK Tech Job Shortlist — JobMap", Tuesday, Thursday, Saturday and Sunday at 3 pm) still delivers to the standalone JobMap in `Documents\JobMap`. Say whether it should deliver to the Life OS JobMap instead. Until then the two drift apart after each run; `scripts/merge-jobmap-workspaces.mjs` brings them together again.
+- JobMap scheduled-search destination decided on 8 October: update both copies. The existing automation now requires delivery and separate import checks for both; its cadence is unchanged. No answer on its destination is pending.
 - Whether the Study hub stage can be merged into main ("nothing more on the Study Hub" on 7 October was not yet a formal acceptance).
 - Her check of the Study hub (acceptance list in the session note).
 - Where the set-aside life data should live later (133 cards, 13 shopping items, the interview hub).
@@ -42,6 +50,7 @@ To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-t
 - Moving `code\life-os\.git` out herself (an earlier automatic move was refused; it is her step).
 
 ## Known problems and limits
+- **The look:** each part's layer names its main boxes and buttons; inner pieces not yet named are recoloured but keep their own shapes. Today, Calendar and Ledger in the ancient styles have the Court's header but their content does not yet follow each style's box drawing. On a phone the top bar wraps to three rows. The ancient Court is still a scaled fixed sheet. Most inner pages were not looked at in every style.
 - **JobMap:** the standalone app in `Documents\JobMap` was not changed: it keeps its blue look and lacks the 12 jobs only Life OS had. In Madder, Indigo and Paper the Study hub keeps its own look, so JobMap and the Study hub match each other only in Modern. Saving an edit in JobMap's new look was not tried by me (my pictures block saves).
 - **A browser tab opened before the switch cannot save.** Refresh it.
 - **Renaming a module** changes its title and menu name; cards keep the name it was created with in their Module field.
@@ -65,8 +74,8 @@ To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-t
 - Original app, untouched: `Documents\Apply\…\Summer_Rescue_Campaign_2026\summer-rescue-plan-app`.
 
 ## Last five sessions
+- 2026-10-08 One look: `sessions/2026-10-08-claude-code-stage-4b-one-look.md`
+- 2026-10-08 JobMap maintenance: `sessions/2026-10-08-codex-jobmap-both-copies.md`
 - 2026-10-07 JobMap refresh: `sessions/2026-10-07-claude-code-stage-4a-jobmap-refresh.md`
 - 2026-10-07 Study hub live on the database: `sessions/2026-10-07-claude-code-stage-3-study-hub-live.md`
 - 2026-10-06 CP4, the real Summer Rescue: `sessions/2026-10-06-claude-code-stage-3-real-summer-rescue.md`
-- 2026-10-06 Study feedback and a rejected proposal: `sessions/2026-10-06-claude-code-stage-3-study-feedback.md`
-- 2026-10-06 CP3 styles and backend: `sessions/2026-10-06-claude-code-stage-3-skins-backend.md`

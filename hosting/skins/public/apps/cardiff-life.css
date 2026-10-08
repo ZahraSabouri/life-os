@@ -1,0 +1,26 @@
+/* Cardiff Life inside Life OS. Its written-in colours are rewritten as blends of the shared
+   palette when the page is served (skins/recolor.mjs); this layer ties its type and its
+   named parts to the chosen style. */
+html[data-life-os-ground] body { background: var(--m-bg); color: var(--m-ink); font-family: var(--m-font); }
+
+/* Its own bar becomes the page's sub-menu under the Life OS top bar. */
+html[data-life-os-ground] .topbar { background: color-mix(in srgb, var(--m-card) 88%, var(--m-bg)); border-bottom: var(--m-rule); box-shadow: none; }
+html[data-life-os-ground] .brand { font-family: var(--m-display); font-weight: var(--m-heading-weight); color: var(--m-ink); }
+html[data-life-os-ground] .brand span { background: var(--m-accent); color: var(--m-on-accent); }
+html[data-life-os-frame] .brand span { display: none; }
+html[data-life-os-ground] .nav button { background: transparent; border: 1px solid transparent; color: var(--m-muted); border-radius: var(--m-radius-nav) !important; font-weight: 600; }
+html[data-life-os-ground] .nav button:hover { background: var(--m-accent-soft); color: var(--m-ink); }
+html[data-life-os-ground] .nav button[aria-current='page'] { background: var(--m-nav-active-bg); color: var(--m-nav-active-ink); box-shadow: var(--m-nav-active-mark); }
+
+/* Headings, labels, buttons. */
+html[data-life-os-ground] .eyebrow { font-family: var(--m-label-font); letter-spacing: var(--m-label-tracking); color: var(--m-accent); }
+html[data-life-os-ground] :is(.event-card, .community-card, .panel, .calendar-wrap) { background: var(--m-card-fill); border: var(--m-card-outline); border-top: var(--m-card-outline-top); box-shadow: var(--m-shadow); }
+html[data-life-os-ground] :is(.primary, .source-button, .choice, .week-nav button) {
+  border-radius: var(--m-radius-control);
+  font-family: var(--m-control-font);
+  font-variant-caps: var(--m-control-caps);
+  letter-spacing: var(--m-control-tracking);
+  font-weight: var(--m-control-weight);
+}
+html[data-life-os-ground] .primary { background: var(--m-primary-bg); border: var(--m-primary-outline); color: var(--m-primary-ink); }
+html[data-life-os-ground] :is(.day.today) > :first-child { color: var(--m-on-accent); }
