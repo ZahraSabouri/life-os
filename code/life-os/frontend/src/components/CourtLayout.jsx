@@ -7,6 +7,8 @@ export default function CourtLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const [now, setNow] = useState(() => new Date())
+  // On a narrow window the menu folds behind one button; choosing a page closes it.
+  const [menuOpen, setMenuOpen] = useState(false)
   const { ground } = useGround()
   // The modern skin gives the Court the same header and page frame as every other page.
   const isManuscriptCourt = location.pathname === '/court' && ground !== 'modern'
@@ -21,6 +23,8 @@ export default function CourtLayout() {
     month: 'long',
     year: 'numeric'
   }).format(now), [now])
+
+  useEffect(() => { setMenuOpen(false) }, [location.pathname])
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 60_000)
@@ -37,7 +41,10 @@ export default function CourtLayout() {
         <header className="court-topbar">
           <div className="wordmark">Life OS</div>
           <div className="date-line">{dateLabel}</div>
-          <nav className="court-nav" aria-label="Primary">
+          <button type="button" className="court-menu-toggle" aria-expanded={menuOpen} aria-controls="court-menu" onClick={() => setMenuOpen((open) => !open)}>
+            {menuOpen ? 'Close' : 'Menu'}
+          </button>
+          <nav className={`court-nav${menuOpen ? ' is-open' : ''}`} id="court-menu" aria-label="Primary">
             <button
               className={location.pathname === '/court' ? 'active' : undefined}
               type="button"

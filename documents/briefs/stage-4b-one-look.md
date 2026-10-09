@@ -1,6 +1,6 @@
 # Stage 4b: One look (the sub-apps as parts of Life OS; every style a whole design)
 
-**Status:** asked for by Xar on 8 October 2026; first pass built and live the same day · her check and the next passes are open
+**Status:** asked for by Xar on 8 October 2026; CP1 live that day, CP2 and CP3 live on 9 October · waiting for her detailed check
 **Branch:** `stage/4b-one-look` (cut from `stage/4a-jobmap-refresh`)
 
 ## Goal
@@ -28,13 +28,13 @@ Study hub, JobMap, Budget and Cardiff Life look like big parts of one app, not l
 - [x] The ancient Court fills the window's width and scrolls if needed, instead of a fixed box.
 - **Verify:** done on a private try-out of the whole app (test database, copies of JobMap and Budget data): moving between parts from the top bar, a dialog in each part, a save in JobMap, changing style while inside a part, phone width; then pictures of the live app.
 
-### CP2: Page by page (open)
-- [ ] Go through every page of every part in each style. The layers name each part's main boxes and buttons; inner pieces not yet named still draw the app's own way (recoloured, but with their own shapes).
-- [ ] Today, Calendar and Ledger in the ancient styles: they have the Court's header and (Indigo) its type; their content does not yet follow each style's box drawing.
-- [ ] Phone: the top bar wraps to three rows; decide a compact form.
+### CP2: Page by page (done 9 October)
+- [x] Every view of every part in each style (152 pages) checked on the try-out for text that is hard to read and for bright boxes left in a dark style; five findings fixed in the layers. *Shapes are not measured by that check: an inner box may still have the app's own corners in some style.*
+- [x] Today, Calendar and Ledger in the ancient styles: tags and buttons take the style's corners and faces; Madder draws items as soft tiles, Indigo outlines panels, Paper keeps ruled lines. *Looked at: Today in Madder and Indigo.*
+- [x] Phone: the menu folds behind one button.
 
-### CP3: The ancient Court as a flowing page (open; Xar: "responsive and beautiful")
-- [ ] Rebuild the three Court designs so text is at reading size and the layout adapts to any window, keeping each design. Today they are drawn on a fixed 1512 by 982 sheet that is scaled.
+### CP3: The ancient Court as a flowing page (done 9 October; Xar: "responsive and beautiful")
+- [x] The three Court designs flow: the fixed 1512 by 982 sheet is gone (the pages underneath were already responsive), the frame grows with the content, the page is enlarged on screens bigger than a laptop's, and it folds to one column on a phone.
 
 ## Data safety
 No data is changed by this stage. The try-out server (`.runtime/hub-dev/dev-server.mjs`) uses the test database and fresh copies of JobMap's and Budget's data, deleted afterwards.

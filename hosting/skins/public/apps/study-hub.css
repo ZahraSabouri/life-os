@@ -96,3 +96,8 @@ html[data-life-os-ground] :is(.primary-button, .hub-primary) { background: var(-
 /* Cards and panels. */
 html[data-life-os-ground] :is(.panel, .hub-semester, .hub-add, .hub-queue, .today-hero, .super-hero, .module-command-card, .module-hero, .settings-section) { background: var(--m-card-fill); border-radius: var(--m-radius); border: var(--m-card-outline); border-top: var(--m-card-outline-top); box-shadow: var(--m-shadow); }
 html[data-life-os-ground] :is(.nav-group-label, .eyebrow, .hub-eyebrow) { font-family: var(--m-label-font); }
+
+/* Found by the page-by-page check. */
+html[data-life-os-ground] .priority-bar .target { background: var(--m-ink); }
+html[data-life-os-ground] .yesterday-strip-copy span { color: color-mix(in srgb, var(--m-amber) 62%, var(--m-ink)); }
+html[data-life-os-ground] .bar-row span { color: var(--m-muted); }

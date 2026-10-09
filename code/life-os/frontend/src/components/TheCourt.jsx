@@ -1006,39 +1006,31 @@ function ModernCourt(props) {
   )
 }
 
-// The three ancient Court pages are drawn on a 1512 x 982 sheet. The sheet grows to the
-// full width of the window (so the text is as large as the window allows) and the page
-// scrolls if the window is not tall enough. On a narrow window it stops shrinking at a
-// size that can still be read, and scrolls sideways.
-const COURT_SHEET = { width: 1512, height: 982 }
-const SMALLEST_COURT_SCALE = 0.62
+// The three ancient Court pages flow like any other page: they fill the window, their
+// columns fold on a narrow one, and the page scrolls when it must. (They were once pinned
+// to a fixed 1512 x 982 sheet and scaled, which made a small box with small text.)
+// On a window larger than a laptop's the whole page is enlarged to match, so the text
+// grows with the screen and the page still fits without scrolling.
+const COURT_COMFORT = { width: 1360, height: 940 }
+const LARGEST_COURT_ZOOM = 1.6
 
-function courtScale() {
-  const fill = document.documentElement.clientWidth / COURT_SHEET.width
-  // When the whole sheet fits with only a sliver to spare, fit it exactly: no scrolling.
-  const fit = window.innerHeight / COURT_SHEET.height
-  const scale = fit < fill && fit > fill * 0.94 ? fit : fill
-  return Math.max(SMALLEST_COURT_SCALE, scale)
+function courtZoom() {
+  const width = document.documentElement.clientWidth
+  if (width <= 1100) return 1
+  const zoom = Math.min(width / COURT_COMFORT.width, window.innerHeight / COURT_COMFORT.height)
+  return Math.min(LARGEST_COURT_ZOOM, Math.max(1, Math.round(zoom * 100) / 100))
 }
 
 function CourtStage({ children }) {
-  const [scale, setScale] = useState(courtScale)
+  const [zoom, setZoom] = useState(courtZoom)
 
   useEffect(() => {
-    const fitCourt = () => setScale(courtScale())
-    window.addEventListener('resize', fitCourt)
-    return () => window.removeEventListener('resize', fitCourt)
+    const fit = () => setZoom(courtZoom())
+    window.addEventListener('resize', fit)
+    return () => window.removeEventListener('resize', fit)
   }, [])
 
-  return (
-    <div className="court-design-stage">
-      <div className="court-design-sheet" style={{ width: COURT_SHEET.width * scale, height: COURT_SHEET.height * scale }}>
-        <div className="court-design-canvas" style={{ transform: `scale(${scale})` }}>
-          {children}
-        </div>
-      </div>
-    </div>
-  )
+  return <div className="court-flow" style={{ '--court-zoom': zoom, zoom }}>{children}</div>
 }
 
 export default function TheCourt() {

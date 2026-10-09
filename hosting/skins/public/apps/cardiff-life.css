@@ -24,3 +24,7 @@ html[data-life-os-ground] :is(.primary, .source-button, .choice, .week-nav butto
 }
 html[data-life-os-ground] .primary { background: var(--m-primary-bg); border: var(--m-primary-outline); color: var(--m-primary-ink); }
 html[data-life-os-ground] :is(.day.today) > :first-child { color: var(--m-on-accent); }
+
+/* Found by the page-by-page check: the notice must be readable in the dark styles too. */
+html[data-life-os-ground] .notice { background: color-mix(in srgb, var(--m-amber) 14%, var(--m-card)); border-color: color-mix(in srgb, var(--m-amber) 40%, var(--m-line)); color: var(--m-ink); }
+html[data-life-os-ground] .notice * { color: inherit; }

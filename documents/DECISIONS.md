@@ -4,6 +4,12 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 9 October 2026 — The ancient Court flows (Xar with Claude Code)
+
+- **Xar:** "make it responsive and beautiful … it's okay if I have to scroll and also it'd be nice if I don't have to."
+- The three Court pages are no longer drawn on a fixed sheet and scaled. They fill the window, fold on a narrow one, and grow with their content. On a screen larger than a laptop's the whole page is enlarged to fill it, so text grows with the screen; on a laptop the page is at its designed size and may scroll a little.
+- On a phone the top bar's menu folds behind one button.
+
 ## 8 October 2026 — One look: sub-apps are parts of Life OS; a style is a whole design (Xar with Claude Code)
 
 - **Xar:** the sub-apps must look like big parts of the main app, not separate apps. A style must change the design, not only the colours: "a skin like Indigo had a different style and design". The ancient Court pages are well designed but sit as fixed boxes with small text, and the other pages in those styles do not follow them.

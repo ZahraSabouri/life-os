@@ -1,19 +1,19 @@
 # Life OS: status
 
-**Updated 8 October 2026 by Claude Code.** Branch: `stage/4b-one-look` (cut from `stage/4a-jobmap-refresh`, which was cut from `stage/3-study-hub`); none pushed; main untouched. Calendar is complete. Study hub and JobMap are live. The current work is the look: the sub-apps as parts of Life OS, and every style a whole design.
+**Updated 9 October 2026 by Claude Code** (the look) and by Codex (JobMap search, see its note). Branch: `stage/4b-one-look` (cut from `stage/4a-jobmap-refresh`, which was cut from `stage/3-study-hub`); none pushed; main untouched. Calendar is complete. Study hub and JobMap are live. The look (sub-apps as parts of Life OS, every style a whole design) has had two passes and waits for Xar's detailed check.
 
 ## Now
-Active brief: `briefs/stage-4b-one-look.md` (CP1 done and live; CP2 and CP3 open). Latest note: `sessions/2026-10-08-claude-code-stage-4b-one-look.md`.
+Active brief: `briefs/stage-4b-one-look.md` (CP1 to CP3 done and live; her detailed check is next). Latest note on the look: `sessions/2026-10-09-claude-code-stage-4b-pages-and-court.md`.
 
 **The look, what works right now**
 - Budget, JobMap, Cardiff Life and the Study hub open under the Life OS top bar; the chosen part is marked there. The two floating buttons are gone.
 - All four take their colours, typefaces, corners, boxes, buttons and menu from the chosen style. Changing the style from the top bar changes the open part at once.
 - A style is a whole design: Madder (soft tiles, serif, small sans capitals), Indigo (outlined boxes, sans with serif headings, mono figures), Paper (ruled lines, no boxes, all serif), Modern (rounded cards, soft shadows).
 - In the ancient styles every page's top bar is the Court's header. The ancient Court fills the window's width and scrolls if needed.
-- Not done yet: a page-by-page pass inside each part (CP2), and the Court as a flowing page at reading size (CP3).
+- The ancient Court flows: it fills any window, folds to one column on a phone, grows with its content, and is enlarged on screens bigger than a laptop's. On a phone the top bar folds behind a Menu button. Today, Calendar and Ledger draw their items, tags and panels with each ancient style's design. A check of 152 pages (every view, four styles) found five legibility problems, all fixed.
 
 **JobMap, what works right now**
-- Life OS → **JobMap** is the newest version: 1,013 jobs, each showing when it was added to JobMap, when it was advertised and when it closes; sorting by newest added and recently advertised.
+- Life OS → **JobMap** is the newest version: 1,020 currently imported jobs (checked 9 October), each showing when it was added to JobMap, when it was advertised and when it closes; sorting by newest added and recently advertised.
 - It holds the jobs and choices from both places JobMap was used (the standalone app and Life OS), each vacancy once.
 - It looks like the Study hub, and changes with the Style menu (Madder, Indigo, Paper, Modern) at once.
 
@@ -28,8 +28,8 @@ Active brief: `briefs/stage-4b-one-look.md` (CP1 done and live; CP2 and CP3 open
 - The name is Study hub everywhere she sees it. Life & Admin, Admin & Dates, Job Hunt, the interview hub and Shopping are gone from the menus; their data is kept aside in the database.
 
 ## Exact next step
-00. The look: CP2 of `briefs/stage-4b-one-look.md` (page by page, starting with what Xar reports), then CP3 (the flowing Court).
-0. JobMap: CP3 configuration is complete; the next scheduled run must verify delivery in both copies. Her UI acceptance checks remain outstanding.
+00. The look: Xar's detailed check (she announced one), then what it lists.
+0. JobMap: 9 October search queued five jobs in both copies and one missing Six by Nico job in Life OS. Both hosts are closed; open each normal launcher and verify import logs and processed folders. Delivery is queued, not yet imported. Her UI acceptance checks remain outstanding.
 1. Study hub: ask Xar to try the acceptance list at the end of the 7 October Study hub session note and collect what is wrong.
 2. Add automated tests for `hosting/study/hub/` (store, card records, router, duplicate).
 3. Clean-up listed under "Known problems and limits".
@@ -50,7 +50,7 @@ To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-t
 - Moving `code\life-os\.git` out herself (an earlier automatic move was refused; it is her step).
 
 ## Known problems and limits
-- **The look:** each part's layer names its main boxes and buttons; inner pieces not yet named are recoloured but keep their own shapes. Today, Calendar and Ledger in the ancient styles have the Court's header but their content does not yet follow each style's box drawing. On a phone the top bar wraps to three rows. The ancient Court is still a scaled fixed sheet. Most inner pages were not looked at in every style.
+- **The look:** the page-by-page check measures legibility, not shapes; a box deep inside a part may still have the app's own corners or border in some style. Calendar and Ledger were not looked at by eye in each ancient style. On a laptop the ancient Court may scroll a little. Its own header has no links to the parts (they are reached through the room tiles).
 - **JobMap:** the standalone app in `Documents\JobMap` was not changed: it keeps its blue look and lacks the 12 jobs only Life OS had. In Madder, Indigo and Paper the Study hub keeps its own look, so JobMap and the Study hub match each other only in Modern. Saving an edit in JobMap's new look was not tried by me (my pictures block saves).
 - **A browser tab opened before the switch cannot save.** Refresh it.
 - **Renaming a module** changes its title and menu name; cards keep the name it was created with in their Module field.
@@ -66,7 +66,7 @@ To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-t
 - Separate, later work: sign-in, a backup copy off this laptop, the core's move to PostgreSQL, the import worker, PWA.
 
 ## Data
-- JobMap (`jobmap/data`, plain files): 980 jobs of the original collection and 33 added ones, 34 personal records, workspace revision 19. Copy from before the merge: `../Life_OS_backups/jobmap-before-merge-2026-10-06T23-57-18-031Z/`.
+- JobMap (`jobmap/data`, plain files): 980 jobs of the original collection and 40 added ones, 41 personal records, workspace revision 21 (verified 9 October). Six additions queued, not imported. Standalone: 1,002 jobs, revision 18, five additions queued. Existing personal data unchanged; search recovery snapshots in each app data/recovery/2026-10-09-current-jobs-735ca802/. Copy from before the merge: `../Life_OS_backups/jobmap-before-merge-2026-10-06T23-57-18-031Z/`.
 - PostgreSQL (`lifeos`, schema `study`), live records: 2 semesters, 7 modules, 42 cards, 6 assessments, 81 sessions, 76 materials; 2 hub workspaces, 426 hub events. Removed and restorable: 132 cards, 7 modules, 219 materials (the stale July import and the 4 autumn cards that moved into the hub).
 - Summer 2026's workspace also keeps what is not study (`set_aside`): 133 cards, 100 schedule rules, the interview module, 6 notes, 13 shopping items.
 - The app's old saved file (`summer-rescue/local-data/summer-rescue-tracker-state.json`) is no longer read or written. Copy: `../Life_OS_backups/study-hub-switch-2026-10-07/`.
@@ -74,8 +74,8 @@ To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-t
 - Original app, untouched: `Documents\Apply\…\Summer_Rescue_Campaign_2026\summer-rescue-plan-app`.
 
 ## Last five sessions
+- 2026-10-09 The look, second pass: `sessions/2026-10-09-claude-code-stage-4b-pages-and-court.md`
+- 2026-10-09 JobMap search (queued in both): `sessions/2026-10-09-codex-jobmap-search.md`
 - 2026-10-08 One look: `sessions/2026-10-08-claude-code-stage-4b-one-look.md`
 - 2026-10-08 JobMap maintenance: `sessions/2026-10-08-codex-jobmap-both-copies.md`
 - 2026-10-07 JobMap refresh: `sessions/2026-10-07-claude-code-stage-4a-jobmap-refresh.md`
-- 2026-10-07 Study hub live on the database: `sessions/2026-10-07-claude-code-stage-3-study-hub-live.md`
-- 2026-10-06 CP4, the real Summer Rescue: `sessions/2026-10-06-claude-code-stage-3-real-summer-rescue.md`

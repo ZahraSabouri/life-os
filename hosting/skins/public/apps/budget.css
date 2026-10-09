@@ -42,3 +42,6 @@ html[data-life-os-ground] .button.primary { background: var(--m-primary-bg); bor
 html[data-life-os-ground] .button.primary * { color: inherit; }
 html[data-life-os-ground] :is(.badge, .chip) { border-radius: var(--m-radius-chip); }
 html[data-life-os-ground] .app-dialog { background: var(--m-card); color: var(--m-ink); border: 1px solid var(--m-line-strong); border-radius: var(--m-radius-lg); }
+
+/* Found by the page-by-page check: small labels that were too faint. */
+html[data-life-os-ground] .meal-slot .slot-head small { color: var(--m-muted); }
