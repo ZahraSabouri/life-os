@@ -48,3 +48,13 @@ The active local search is **UK Tech Job Shortlist — JobMap**, running Tuesday
 Each job shows Added to JobMap, Advertised and Closing date in the list and detail panel. Use Newest added or Recently advertised to sort; unknown dates sort last. Advertised and Closing date can be corrected under Edit details. Added dates are automatic and stay unchanged when a job is refreshed.
 
 The original collection uses its documented saved date, 13 September 2026. Dates for 19 previously imported jobs were recovered from consecutive progress snapshots and completed import runs (see lib/legacy-dates.json); the London calendar date is used. Other missing dates remain unknown. Existing workbook dates are retained separately unless verified as publication dates. Backups preserve dates alongside application progress.
+
+## My priority
+
+My priority is the default sort. It ranks jobs still worth pursuing before applications already sent and closed adverts. Within current paid part-time possibilities, saved deadlines today, tomorrow and the next 7 days lead, earliest first. For equal urgency, your High/Normal/Low/Later setting comes next, followed by match, shortlist and the next known deadline. Jobs with full-time or excessive hours needing agreement, and graduate/unpaid/freelance leads, sit lower. Unknown deadlines do not acquire invented urgency. Follow-ups retain their own due-date order.
+
+Each row explains its priority; an opened job explains the assessment and your personal setting. The order updates on a new London calendar day and when the window regains focus. Closing soon also puts closed adverts after open ones.
+
+Both app copies use identical feature code and relative API/asset paths. Run `npm run check:parity -- "<other JobMap folder>"` after shared changes or source reconciliation. It checks implementation and underlying vacancy evidence by canonical URL, leaving personal notes, stages, priorities and preferences separate. Source differences require deliberate, backed-up reconciliation; never overwrite a workspace with the other copy.
+
+To reconcile older source differences, start each normal host, then preview `node reconcile-sources.mjs http://127.0.0.1:47841/api http://127.0.0.1:47850/apps/jobmap/api`. After reviewing the plan, add `--apply`. It uses the two local APIs, snapshots both proposed workspaces, keeps each server's recovery backup, rejects equally dated conflicting evidence and preserves all existing personal fields. It carries over saved historical closed records for collection parity; routine searches still skip new closed adverts. A repeat preview should contain no additions or updates.

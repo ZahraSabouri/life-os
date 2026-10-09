@@ -28,7 +28,7 @@ export function assess(job,profile=DEFAULT_PROFILE,today=dayNow()){
  const parttime=/(?:part[ -]time|job[ -]share)/i.test([title,job.employment,job.hours].join(' '))||/working patterns[^\n]{0,160}part[ -]time|offer[^\n.]{0,100}part[ -]time|part[ -]time (?:hours|position|role|contract)|consider[^\n.]{0,100}part[ -]time/i.test(context);
  const numberHours=[...context.matchAll(/\b(\d{1,2}(?:\.\d)?)\s*(?:hours?|hrs?)\s*(?:per\s*week|a\s*week|weekly|\/\s*week)/g)].map(m=>Number(m[1])).filter(h=>h>0&&h<=60);
  const preferred=numberHours.length?Math.min(...numberHours):null;
- const overHours=preferred!==null&&preferred>profile.maxHours&&!parttime;
+ const overHours=preferred!==null&&preferred>profile.maxHours;
  const fulltime=/full[ -]time/i.test([job.employment,job.hours].join(' '))&&!parttime;
  const hours=preferred!==null&&preferred<=profile.maxHours?'Hours may fit':parttime?'Part-time mentioned':overHours||fulltime?'Hours need agreement':'Hours not confirmed';
  const remote=/\bremote\b|home[ -]based|work from home/i.test(location);
@@ -52,11 +52,36 @@ export function assess(job,profile=DEFAULT_PROFILE,today=dayNow()){
  const cautions=[];if(unpaid)cautions.push('Unpaid or voluntary work is mentioned.');if(early)cautions.push('Graduate, placement or training role; outside your main part-time search.');if(contractor)cautions.push('Freelance or self-employed work is advertised; check the employment arrangement before proceeding.');if(missingCore.length)cautions.push(`The job title requires ${missingCore.join(', ')}, which is not in your saved CV skills.`);if(closed)cautions.push(job.availability==='closed'?'The advert was confirmed closed at its last check.':'The saved closing date has passed.');if(overHours)cautions.push(`The advert mentions ${preferred} hours a week, above your ${profile.maxHours}-hour preference.`);if(fulltime)cautions.push('Full-time is advertised. A part-time arrangement would need agreement.');if(senior)cautions.push('Check the specialist experience and leadership requirements carefully.');if(!job.description)cautions.push('Full advert was not included in the imported workbook.');
  if(closing&&closing!==job.deadline)cautions.unshift(`Closing-date conflict: the advert says ${dateLabel(closing)}, while the board says ${dateLabel(job.deadline)}. The earlier date is used here.`);
  const label=score>=72?'Strong match':score>=52?'Promising':score>=32?'Worth checking':'Lower fit';
- return {score,label,matched,software,data,early,unpaid,contractor,closed,hours,parttime,loc,locLabel,effort,effortLabel,cvOnly,assessments,cover,cautions,reasons,preferred,coreCount:core.length};
+ return {score,label,matched,software,data,early,unpaid,contractor,closed,hours,parttime,overHours,fulltime,loc,locLabel,effort,effortLabel,cvOnly,assessments,cover,cautions,reasons,preferred,coreCount:core.length};
 }
-export function selectJobs(jobs,{view='all',scope='parttime',source='',search='',sort='match',status=''},profile=DEFAULT_PROFILE,today=dayNow()){
+// Priority is an order of actions, independent of the match score.
+// Exact imminent dates lead; personal priority breaks ties, rather than hiding deadlines.
+/** @param {ReturnType<typeof assess> | undefined} [match] */
+export function assessPriority(job,match=undefined,today=dayNow()){
+ match??=assess(job,DEFAULT_PROFILE,today);
+ const days=daysUntil(reviewDeadline(job),today);
+ const personal={P1:0,P2:1,P3:2,P4:3}[job.priority]??1;
+ const personalLabel=['High','Normal','Low','Later'][personal];
+ const submitted=['Applied','Interview','Offer'].includes(job.status)||!!job.applied;
+ const outside=match.early||match.unpaid||match.contractor;
+ const agreement=match.overHours||match.fulltime;
+ const group=match.closed?4:submitted?3:outside?2:agreement?1:0;
+ const urgency=days!==null&&Number.isFinite(days)&&days>=0&&days<=7?days:8;
+ let label=urgency===0?'Closes today':urgency===1?'Closes tomorrow':urgency<8?'Closes in '+days+' days':'Review next';
+ let reason=urgency<8?'This saved deadline is imminent; it takes precedence over your personal priority.':days===null?'No saved deadline; ordered by your personal priority and match.':'No deadline in the next 7 days; ordered by your personal priority and match.';
+ if(group===4){label='Closed';reason='The advert is closed or its saved deadline has passed; it is below jobs you can still pursue.';}
+ else if(group===3){label='Application already sent';reason='An application is recorded as sent; it stays below unsent applications. Use Follow-ups for your next action.';}
+ else if(group===2){label='Outside current search';reason='Graduate, unpaid or freelance evidence puts this below current paid employee leads, even with a near deadline.';}
+ else if(group===1){label='Hours need agreement';reason='Advertised hours exceed your preference or are full-time; current part-time possibilities come first.';}
+ if(group<2&&job.availability==='uncertain')reason+=' Availability needs checking on the original advert.';
+ return {group,urgency,days,personal,personalLabel,label,reason};
+}
+function comparePriority(a,b){
+ return a.priority.group-b.priority.group||a.priority.urgency-b.priority.urgency||a.priority.personal-b.priority.personal||b.match.score-a.match.score||Number(!!b.job.saved)-Number(!!a.job.saved)||(reviewDeadline(a.job)||'9999').localeCompare(reviewDeadline(b.job)||'9999');
+}
+export function selectJobs(jobs,{view='all',scope='parttime',source='',search='',sort='priority',status=''},profile=DEFAULT_PROFILE,today=dayNow()){
  const q=search.toLowerCase().trim();
- let rows=jobs.map(job=>({job,match:assess(job,profile,today)})).filter(({job,match})=>{
+ let rows=jobs.map(job=>{const match=assess(job,profile,today);return {job,match,priority:assessPriority(job,match,today)};}).filter(({job,match})=>{
   if(view==='archive'&&!['Archived','Rejected'].includes(job.status))return false;
   if(view!=='archive'&&['Archived','Rejected'].includes(job.status))return false;
   if(view==='shortlist'&&!job.saved)return false;
@@ -72,9 +97,9 @@ export function selectJobs(jobs,{view='all',scope='parttime',source='',search=''
   if(view==='followups'){const due=(a.job.followUp||'9999').localeCompare(b.job.followUp||'9999');if(due)return due;}
   if(sort==='location'&&a.match.loc!==b.match.loc)return b.match.loc-a.match.loc;
   if(sort==='effort'&&a.match.effort!==b.match.effort)return b.match.effort-a.match.effort;
-  if(sort==='deadline'){const deadline=(reviewDeadline(a.job)||'9999').localeCompare(reviewDeadline(b.job)||'9999');if(deadline)return deadline;}
-  if(sort==='priority'){const p=(a.job.priority||'P4').localeCompare(b.job.priority||'P4');if(p)return p;}
+  if(sort==='deadline'){if(a.match.closed!==b.match.closed)return Number(a.match.closed)-Number(b.match.closed);const deadline=(reviewDeadline(a.job)||'9999').localeCompare(reviewDeadline(b.job)||'9999');if(deadline)return deadline;}
+  if(sort==='priority'){const priority=comparePriority(a,b);if(priority)return priority;}
   if(sort==='added'||sort==='advertised'){const key=sort==='added'?'addedOn':'advertisedOn';const date=(b.job[key]||'').localeCompare(a.job[key]||'');if(date)return date;}
-  return b.match.score-a.match.score||(a.job.rank||9999)-(b.job.rank||9999);
+  return b.match.score-a.match.score||(a.job.rank||9999)-(b.job.rank||9999)||a.job.id.localeCompare(b.job.id);
  });return rows;
 }
