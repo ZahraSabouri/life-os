@@ -18,6 +18,16 @@ export function useDay(date) {
     return () => controller.abort()
   }, [date, refresh])
 
+  // A part that could not be read is asked for again, twice at most, before the page says so for good.
+  const [tries, setTries] = useState({ date, count: 0 })
+  useEffect(() => {
+    const failed = state.data?.date === date && (state.data.sources ?? []).some((source) => source.status === 'unavailable')
+    const count = tries.date === date ? tries.count : 0
+    if (!failed || count >= 2) return undefined
+    const timer = window.setTimeout(() => { setTries({ date, count: count + 1 }); refetch() }, 2500)
+    return () => window.clearTimeout(timer)
+  }, [state.data, date, tries, refetch])
+
   useEffect(() => {
     const onVisible = () => { if (document.visibilityState === 'visible') refetch() }
     window.addEventListener('focus', refetch)

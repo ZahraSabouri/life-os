@@ -148,23 +148,27 @@ export function StudyPanel({ study, label = 'Today', compact = false }) {
 }
 
 export function JobsPanel({ jobs, compact = false }) {
-  const toApply = jobs.dueToday || jobs.due.filter((job) => !job.applied).length
-  const due = compact ? jobs.due.slice(0, 3) : jobs.due
+  // JobMap's own first screen decides what is "to apply for": the same list, order, groups and words.
+  const next = compact ? jobs.next.slice(0, 3) : jobs.next
+  const others = jobs.due.filter((job) => !job.applied && !job.listed)
+  const first = jobs.groups[0]
+  const later = jobs.groups.slice(1)
   return <>
     <div className="day-figure">
-      <strong>{toApply}</strong>
-      <p><b>{jobs.dueToday ? 'to apply for today' : 'to apply for this week'}</b><span>{count(jobs.counts.toApply, 'saved job')} still to apply for · {jobs.appliedThisWeek} sent this week</span></p>
+      <strong>{first?.count ?? 0}</strong>
+      <p><b>{first?.name ? `under “${first.name}” in JobMap` : 'to apply for in JobMap'}</b><span>{count(jobs.leads, 'job')} on its first screen{jobs.closingToday ? `, ${jobs.closingToday} closing today` : jobs.closingThisWeek ? `, ${jobs.closingThisWeek} closing this week` : ''} · {jobs.appliedThisWeek} sent this week</span></p>
     </div>
     {jobs.time.length ? <p className="day-job-time">{jobs.minutesToday ? `${hours(Math.round(jobs.minutesToday / 6) / 10)} set aside today` : 'Time set aside today'}: {jobs.time.map((block) => `${block.start ? `${block.start}${block.end ? ` to ${block.end}` : ''}` : 'any time'}${block.done ? ' (done)' : ''}`).join(', ')}</p>
       : <p className="day-quiet">No time set aside for applications today. Add “job applications 17:00-20:00” as a plan, or see the calendar.</p>}
-    <h3>Closing in the next seven days</h3>
-    {due.length ? <ul className="day-list">
-      {due.map((job) => <li key={job.id} className={job.applied ? 'is-done' : undefined}>
+    <h3>Next to apply for, in JobMap’s order</h3>
+    {next.length ? <ul className="day-list">
+      {next.map((job) => <li key={job.id} title={job.reason}>
         <Link to={job.href}>{job.role}<em> · {job.company}</em></Link>
-        <small className={job.days === 0 && !job.applied ? 'day-warn' : undefined}>{job.applied ? 'Applied' : job.days === 0 ? 'Closes today' : formatCalendarDay(job.deadline, { weekday: 'short' })}{job.uncertain ? ' · check it is still open' : ''}</small>
+        <small className={job.days === 0 ? 'day-warn' : undefined}>{job.label}{job.deadline ? ` · ${formatCalendarDay(job.deadline, { weekday: 'short' })}` : ''}</small>
       </li>)}
-    </ul> : <p className="day-quiet">No saved job closes in the next seven days.</p>}
-    {compact && jobs.due.length > due.length ? <p className="day-more">and {jobs.due.length - due.length} more this week</p> : null}
+    </ul> : <p className="day-quiet">JobMap lists nothing to apply for right now.</p>}
+    {jobs.leads > next.length ? <p className="day-more">and {jobs.leads - next.length} more on JobMap’s first screen{later.length ? `: ${later.map((group) => `${group.name} ${group.count}`).join(' · ')}` : ''}</p> : null}
+    {others.length ? <p className="day-quiet">{count(others.length, 'other job')} on the shortlist {others.length === 1 ? 'closes' : 'close'} this week ({others.slice(0, 2).map((job) => job.role).join('; ')}{others.length > 2 ? '…' : ''}). A search shortlisted {others.length === 1 ? 'it' : 'them'}; JobMap has not seen {others.length === 1 ? 'it' : 'them'} open, or {others.length === 1 ? 'it is' : 'they are'} outside your search. Look under JobMap → Shortlist.</p> : null}
     {jobs.interviews.length ? <><h3>Interviews</h3><ul className="day-list">{jobs.interviews.map((job) => <li key={job.id}><Link to={job.href}>{job.role}<em> · {job.company}</em></Link>{job.nextStep ? <small>{job.nextStep}</small> : null}</li>)}</ul></> : null}
     {compact ? null : <>
       {jobs.followUps.length ? <><h3>Follow up</h3><ul className="day-list">{jobs.followUps.map((job) => <li key={job.id}><Link to={job.href}>{job.role}<em> · {job.company}</em></Link><small>{daysAway(job.days)}</small></li>)}</ul></> : null}

@@ -89,14 +89,16 @@ test('Study merges user date edits, excludes completed and disabled-module plans
 
 test('Career deadlines respect shortlist/application state and follow-ups must be explicit', () => {
   const jobs = [
-    { id: 'saved', role: 'Role', company: 'Org', saved: true, status: 'Preparing', deadline: '2026-10-09', followUp: '2026-10-12' },
+    { id: 'saved', role: 'Role', company: 'Org', saved: true, status: 'Preparing', hours: '15 hours per week', availability: 'open', deadline: '2026-10-09', followUp: '2026-10-12' },
+    // Shortlisted by a search and never checked: not one of the jobs JobMap's first screen lists, so its closing date stays off the calendar.
+    { id: 'unchecked', role: 'Data Manager', company: 'Uni', saved: true, status: 'To review', hours: 'Full time', deadline: '2026-10-09' },
     { id: 'applied', status: 'Applied', deadline: '2026-10-10' },
     { id: 'noise', status: 'To review', deadline: '2026-10-11' },
     { id: 'archived', saved: true, status: 'Archived', deadline: '2026-10-12', followUp: '2026-10-14' },
     { id: 'closed', saved: true, status: 'Applied', availability: 'closed', deadline: '2026-10-12', followUp: '2026-10-14' },
     { id: 'invalid', status: 'Applied', deadline: 'TBC', followUp: '2026-02-30' },
   ]
-  assert.deepEqual(mapCareer({ jobs }, october).map(row => row.id), ['career:deadline:saved', 'career:follow-up:saved', 'career:deadline:applied', 'career:follow-up:closed'])
+  assert.deepEqual(mapCareer({ jobs }, october, october.from).map(row => row.id), ['career:deadline:saved', 'career:follow-up:saved', 'career:deadline:applied', 'career:follow-up:closed'])
 })
 
 test('subscription recurrence keeps the month-end anchor and advances from nextDue only', () => {

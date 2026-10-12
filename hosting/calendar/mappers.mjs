@@ -1,5 +1,6 @@
 import { dateKey, isDateKey, addDays, inRange, itemOverlaps, londonDateTime } from '../../code/life-os/shared/calendar.js'
 import { mapNativeStudy } from '../study/calendar.mjs'
+import { firstScreen } from '../career/first-screen.mjs'
 
 const inactive = new Set(['archived', 'cancelled', 'canceled', 'deleted', 'inactive', 'rejected', 'closed'])
 const finished = new Set(['done', 'completed', 'complete', 'bought', 'given', 'skipped'])
@@ -144,15 +145,20 @@ export function mapStudy(value, range) {
   return output
 }
 
-export function mapCareer(value, range) {
+export function mapCareer(value, range, today = dateKey(new Date())) {
   const output = []
+  // The jobs JobMap's first screen lists. A closing date goes on the calendar for the shortlisted
+  // ones among these and for jobs already applied for; the scheduled searches shortlist everything
+  // they find, so the shortlist alone would fill the calendar with jobs she never chose.
+  let current = null
+  try { current = new Set(firstScreen(value, today).map((entry) => entry.job.id)) } catch { current = null }
   for (const job of array(value?.jobs ?? value)) {
     if (!id(job?.id) || !available(job)) continue
     const status = stateOf(job.status)
     const applied = ['applied', 'interview', 'offer'].includes(status) || Boolean(temporal(job.applied))
     const title = `${text(job.role, 'Job')} · ${text(job.company, 'Company')}`
     const base = { area: 'career', href: '/jobmap', meta: { source: 'jobmap', readonly: true, jobId: job.id, status: job.status, saved: Boolean(job.saved) } }
-    if ((job.saved || applied) && job.availability !== 'closed') {
+    if ((applied || (job.saved && (!current || current.has(job.id)))) && job.availability !== 'closed') {
       const mapped = item({ ...base, id: `career:deadline:${job.id}`, kind: 'deadline', title, start: job.deadline, meta: { ...base.meta, type: 'deadline' } }, range)
       if (mapped) output.push(mapped)
     }

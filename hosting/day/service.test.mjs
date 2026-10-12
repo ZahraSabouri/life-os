@@ -145,3 +145,19 @@ test('the day reads Life OS entries once for notes and job time, and says so whe
   assert.equal(broken.jobs.minutesToday, 0)
   assert.equal(broken.sources.find(source => source.id === 'notes').status, 'unavailable')
 })
+
+test('what to apply for is JobMap\'s own first screen, in its order and groups, not everything a search shortlisted', () => {
+  const jobs = jobsDay({ jobs: [
+    { id: 'lead-late', role: 'Tutor', company: 'A', saved: true, status: 'To review', hours: '10 hours per week', availability: 'open', checked: '2026-10-10', deadline: '2026-11-20' },
+    { id: 'lead-soon', role: 'Analyst', company: 'B', saved: true, status: 'To review', hours: '15 hours per week', availability: 'open', checked: '2026-10-10', deadline: '2026-10-14' },
+    { id: 'fulltime', role: 'Data Manager', company: 'C', saved: true, status: 'To review', hours: 'Full time', availability: 'open', checked: '2026-10-10', deadline: DATE },
+    { id: 'unchecked', role: 'Officer', company: 'D', saved: true, status: 'To review', hours: '12 hours per week', deadline: '2026-10-15' },
+  ] }, DATE)
+  // JobMap's groups come first (apply now, then full-time), and inside a group the nearest closing date.
+  assert.deepEqual(jobs.next.map(job => job.id), ['lead-soon', 'lead-late', 'fulltime'])
+  assert.match(jobs.next[0].label, /^Apply now · closes tomorrow/)
+  assert.deepEqual(jobs.groups, [{ name: 'Apply now', count: 2 }, { name: 'Full-time or over your hours', count: 1 }])
+  assert.deepEqual([jobs.leads, jobs.closingToday, jobs.closingThisWeek], [3, 1, 2])
+  // A job a search shortlisted that nobody has checked still closes this week, but JobMap's first screen does not list it.
+  assert.deepEqual(jobs.due.map(job => [job.id, job.listed]), [['fulltime', true], ['lead-soon', true], ['unchecked', false]])
+})

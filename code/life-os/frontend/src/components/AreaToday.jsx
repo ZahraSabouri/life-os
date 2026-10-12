@@ -26,11 +26,12 @@ function studyLine(day, clock) {
 function jobsLine(day) {
   const jobs = day.jobs
   if (!jobs) return ['JobMap could not be read.']
-  const closing = jobs.due.filter((job) => job.days === 0 && !job.applied)
-  const soon = jobs.due.filter((job) => job.days > 0 && !job.applied)
+  // JobMap's own first screen, in its order.
+  const first = jobs.next[0]
   return [
-    closing.length ? `Closes today: ${closing.slice(0, 2).map((job) => `${job.role} · ${job.company}`).join('; ')}${closing.length > 2 ? ` and ${closing.length - 2} more` : ''}` : 'Nothing closes today',
-    soon.length ? `${soon.length} more this week` : '',
+    first ? `Next: ${first.role} · ${first.company} (${first.label.toLowerCase()})` : 'Nothing to apply for right now',
+    jobs.groups[0] ? `${jobs.groups[0].count} under “${jobs.groups[0].name}”` : '',
+    jobs.closingThisWeek ? `${jobs.closingThisWeek} on its first screen close this week` : '',
     jobs.time.length ? `${jobs.minutesToday ? `${hours(Math.round(jobs.minutesToday / 6) / 10)} set aside` : 'time set aside'}${jobs.time[0].start ? ` from ${jobs.time[0].start}` : ''}` : 'no time set aside today',
     `${jobs.appliedThisWeek} sent this week`,
   ]

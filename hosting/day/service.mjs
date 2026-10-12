@@ -3,6 +3,8 @@
 // already carries the dated items, so they are not repeated here.
 import { addDays, dateKey, isDateKey } from '../../code/life-os/shared/calendar.js'
 import { expandScheduleForDate } from '../../summer-rescue/src/utils/schedule.js'
+// The list JobMap's own first screen shows, by JobMap's own rule.
+import { firstScreen, sectionName } from '../career/first-screen.mjs'
 
 const array = (value) => (Array.isArray(value) ? value : [])
 const plain = (value) => (value !== null && typeof value === 'object' && !Array.isArray(value) ? value : {})
@@ -132,13 +134,30 @@ export function jobsDay(value, date, entries = []) {
       uncertain: job.availability === 'uncertain', href: '/jobmap',
     }
   }
+  // What to apply for is JobMap's own answer: the list its first screen shows, in its order and
+  // its groups, with JobMap's own words for each. The scheduled searches put everything they
+  // find on the shortlist, so "on the shortlist" alone does not mean she chose it.
+  let ranked = []
+  try { ranked = firstScreen(value, date) } catch { ranked = [] }
+  const listed = new Set(ranked.map((entry) => entry.job.id))
+  const next = ranked.slice(0, 6).map((entry) => ({ ...row(entry.job), label: text(entry.priority.label, 120), reason: text(entry.priority.reason, 400) }))
+  const closingSoon = ranked.filter((entry) => entry.priority.urgency < 8)
+  const groups = new Map()
+  for (const entry of ranked) groups.set(entry.priority.section ?? 0, (groups.get(entry.priority.section ?? 0) ?? 0) + 1)
   const live = jobs.filter((job) => !JOB_OVER.has(lower(job.status)) && job.availability !== 'closed')
   const mine = live.map((job) => ({ job, view: row(job) })).filter(({ job, view }) => job.saved || view.applied)
-  const due = mine.filter(({ view }) => view.deadline && view.deadline >= date && view.deadline <= horizon).map(({ view }) => view)
+  const due = mine.filter(({ view }) => view.deadline && view.deadline >= date && view.deadline <= horizon).map(({ view }) => ({ ...view, listed: listed.has(view.id) }))
     .sort((a, b) => a.deadline.localeCompare(b.deadline) || Number(a.applied) - Number(b.applied) || a.role.localeCompare(b.role))
   const followUps = live.filter((job) => day(job.followUp) && day(job.followUp) <= horizon)
     .map((job) => ({ ...row(job), followUp: day(job.followUp), days: daysBetween(date, day(job.followUp)) })).sort((a, b) => a.followUp.localeCompare(b.followUp))
   return {
+    // In JobMap's order: what to apply for next, its groups, and how many close today or this week.
+    next,
+    leads: ranked.length,
+    groups: [...groups].sort((a, b) => a[0] - b[0]).map(([section, count]) => ({ name: sectionName(section), count })),
+    closingToday: closingSoon.filter((entry) => entry.priority.urgency === 0).length,
+    closingThisWeek: closingSoon.length,
+    // Everything on the shortlist that closes within a week, whatever its hours (JobMap: Shortlist).
     due,
     dueToday: due.filter((job) => job.deadline === date && !job.applied).length,
     followUps: followUps.slice(0, 6),
@@ -207,7 +226,7 @@ export function notesDay(value, date) {
 }
 
 // ---- The day ----------------------------------------------------------------------------
-export function createDayService({ loadStudy, loadPlans, loadCareer, loadBudget, loadEntries, timeoutMs = 2500 } = {}) {
+export function createDayService({ loadStudy, loadPlans, loadCareer, loadBudget, loadEntries, timeoutMs = 6000 } = {}) {
   return async function dayOf({ date } = {}) {
     if (!isDateKey(date)) throw Object.assign(new Error('Use a valid date (YYYY-MM-DD)'), { status: 400 })
     const sources = []

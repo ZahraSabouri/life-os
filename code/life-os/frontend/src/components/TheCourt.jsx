@@ -229,8 +229,8 @@ function roomFacts(data) {
     meta: study.next ? `${study.next.title} · ${study.next.days === 0 ? 'today' : `in ${study.next.days} ${study.next.days === 1 ? 'day' : 'days'}`}` : `${study.progress.done} of ${count(study.progress.total, 'card')} done`,
   }
   if (jobs) facts.career = {
-    latest: jobs.dueToday ? `${count(jobs.dueToday, 'job')} to apply for today` : jobs.due.length ? `${count(jobs.due.length, 'saved job')} closing this week` : 'Nothing closes this week',
-    meta: `${jobs.counts.toApply} to apply for · ${jobs.appliedThisWeek} sent this week`,
+    latest: jobs.groups[0] ? `${jobs.groups[0].count} under “${jobs.groups[0].name}”${jobs.closingToday ? `, ${jobs.closingToday} closing today` : jobs.closingThisWeek ? `, ${jobs.closingThisWeek} closing this week` : ''}` : 'Nothing to apply for right now',
+    meta: `${jobs.leads} on JobMap’s first screen · ${jobs.appliedThisWeek} sent this week`,
   }
   if (home) {
     const toBuy = home.lists.reduce((sum, list) => sum + list.items.length, 0)
