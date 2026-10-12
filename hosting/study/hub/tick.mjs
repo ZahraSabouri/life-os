@@ -75,7 +75,7 @@ export function focusState(state, plan, { card: cardId, minutes } = {}, now = ne
   return {
     state: nextState, changed: true, card: hubCards(plan, nextState).find((row) => row.id === cardId), hours: after,
     event: { id: `event-${randomUUID()}`, occurredAt: now, entityType: 'card', entityId: cardId, eventType: 'focus_session.completed',
-      payload: { cardTitle: card.title ?? '', moduleGroup: card.moduleGroup ?? '', minutes: elapsed, hours, previousHours: before, hoursAfter: after } },
+      payload: { cardTitle: card.title ?? '', moduleGroup: card.moduleGroup ?? '', minutes: elapsed, hours, previousHours: before, hoursAfter: after, from: 'life-os' } },
   }
 }
 

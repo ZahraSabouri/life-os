@@ -325,6 +325,7 @@ function CourtNav({ navigate, quiet = false }) {
     <nav className={quiet ? 'redesign-nav redesign-nav-quiet' : 'redesign-nav'} aria-label="Primary">
       <button type="button" onClick={() => navigate('/today')}>Today</button>
       <button type="button" onClick={() => navigate('/calendar')}>Calendar</button>
+      <button type="button" onClick={() => navigate('/review')}>Review</button>
       <button className="redesign-search-button" type="button">Search <kbd>⌘K</kbd></button>
       <FocusButton className="redesign-focus-button" />
       <StyleSwitch className="redesign-ground-button" compact />

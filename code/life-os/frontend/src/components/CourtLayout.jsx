@@ -70,6 +70,13 @@ export default function CourtLayout() {
             >
               Calendar
             </button>
+            <button
+              className={location.pathname === '/review' ? 'active' : undefined}
+              type="button"
+              onClick={() => navigate('/review')}
+            >
+              Review
+            </button>
             <button type="button" onClick={() => navigate('/ledger')} className={location.pathname === '/ledger' ? 'active' : undefined}>
               Ledger
             </button>

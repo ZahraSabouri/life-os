@@ -14,7 +14,8 @@ import { createCalendarLoaders } from './calendar/loaders.mjs'
 import { createCalendarRouter } from './calendar-route.mjs'
 import { createDayRouter, createDayService } from './day/service.mjs'
 import { createStudyFocus, createStudyTick, createStudyTickHandler } from './study/hub/tick.mjs'
-import { createShopping, createShoppingRouter } from './home/shopping.mjs'
+import { createReviewRouter, createReviewService } from './review/service.mjs'
+import { createShopping, createShoppingRouter, loadBudgetRules } from './home/shopping.mjs'
 import { dateKey } from '../code/life-os/shared/calendar.js'
 import { createStudyRuntime } from './study/runtime.mjs'
 import { createStudyRouter } from '../code/life-os/backend/src/modules/study/router.js'
@@ -171,6 +172,21 @@ export function createLifeOsApp(options = {}) {
     loadBudget: calendarLoaders.loadBudget,
     loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('note', 'time-block')").all(),
     ...options.dayLoaders,
+  }) }))
+  // A week looked back on across every part. Read only. "Spent" is Budget's own month rule.
+  let budgetRules
+  app.use('/api/review', createReviewRouter({ express, service: createReviewService({
+    loadStudy: async () => {
+      if (!study.configured) throw new Error('Study state is unavailable')
+      return study.repository.workspace()
+    },
+    loadPlans: async (semesterId) => (study.hub ? study.hub.plan(semesterId) : {}),
+    loadEvents: async (semesterId) => (study.hub ? study.hub.recentEvents(semesterId, 1000) : []),
+    loadCareer: calendarLoaders.loadCareer,
+    loadBudget: calendarLoaders.loadBudget,
+    loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('note', 'task', 'event', 'time-block')").all(),
+    budgetFigures: (state, month) => { budgetRules ??= loadBudgetRules(budgetRoot); return budgetRules.forecast(state, month) },
+    ...options.reviewLoaders,
   }) }))
   // Things to buy, added from anywhere in Life OS, go into Budget's own shopping list.
   app.use('/api/home/shopping', createShoppingRouter({ express, shopping: options.shopping ?? createShopping({ budgetRoot, getBudgetPort, today: () => dateKey(new Date()) }) }))

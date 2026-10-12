@@ -69,12 +69,15 @@
 .app-shell:not([data-ground='modern']) .court-topbar { grid-template-columns: auto auto 1fr; max-width: none; gap: 1.4rem; padding-bottom: 0.95rem; border-bottom: 1px solid var(--g-line); }
 .app-shell:not([data-ground='modern']) .wordmark { font: 600 0.8rem/1 var(--m-label-font); letter-spacing: 0.34em; text-transform: uppercase; white-space: nowrap; }
 .app-shell:not([data-ground='modern']) .date-line { text-align: left; font: 500 1rem/1.2 var(--m-display); color: var(--g-sub); white-space: nowrap; }
-.app-shell:not([data-ground='modern']) .court-nav { justify-self: end; flex-wrap: wrap; justify-content: flex-end; gap: 0.1rem 0.25rem; padding: 0; border: 0; border-radius: 0; background: transparent; }
+.app-shell:not([data-ground='modern']) .court-nav { justify-self: end; flex-wrap: wrap; justify-content: flex-end; gap: 0.1rem 0.12rem; padding: 0; border: 0; border-radius: 0; background: transparent; }
 .app-shell:not([data-ground='modern']) .court-nav button {
-  min-height: 2rem; padding: 0.45rem 0.6rem; border: 0; border-radius: 0; background: transparent; box-shadow: none;
+  min-height: 2rem; padding: 0.45rem 0.46rem; border: 0; border-radius: 0; background: transparent; box-shadow: none;
   color: var(--g-sub); font: 500 0.7rem/1 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase;
 }
 .app-shell:not([data-ground='modern']) .court-nav button:hover { color: var(--g-ink); background: transparent; }
+/* Paper spaces its capitals widest; a little less in the menu keeps its twelve entries on one line at a laptop's width. */
+.app-shell[data-ground='paper'] .court-nav button { letter-spacing: calc(var(--m-label-tracking) - 0.1em); }
+@media (min-width: 1101px) and (max-width: 1560px) { .app-shell:not([data-ground='modern']) .court-nav button { padding-inline: 0.34rem; } }
 .app-shell:not([data-ground='modern']) .court-nav .active { color: var(--g-acc); background: transparent; box-shadow: inset 0 -1px 0 var(--g-acc); }
 .app-shell:not([data-ground='modern']) .court-nav .style-switch-trigger { color: var(--g-ink); }
 @media (max-width: 1100px) {

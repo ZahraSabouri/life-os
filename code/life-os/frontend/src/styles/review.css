@@ -1,0 +1,45 @@
+/* The week looked back on. Cards, type and colour come from the chosen style (the day's panels and
+   the palette's tokens). One accent colour carries every measure; text never wears it. */
+
+.review-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr)); gap: 1rem; }
+.review-tile { display: flex; flex-direction: column; gap: 0.35rem; }
+.review-tile > header { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; margin: 0; }
+.review-tile h2 { margin: 0; color: var(--m-muted); font: 600 0.82rem/1.3 var(--m-font); letter-spacing: 0; text-transform: none; }
+.review-tile > header a { color: var(--m-accent-strong); font-size: 0.78rem; white-space: nowrap; }
+/* The figure wears the same face as the text around it, in its proportional digits. */
+.review-value { margin: 0.1rem 0 0.2rem; color: var(--m-ink); font: 650 2.1rem/1.1 var(--m-font); letter-spacing: -0.02em; font-variant-numeric: normal; }
+.review-value small { color: var(--m-muted); font: 500 0.9rem/1 var(--m-font); letter-spacing: 0; }
+.review-note { margin: 0; color: var(--m-muted); font-size: 0.82rem; line-height: 1.45; }
+.review-delta { margin: auto 0 0; padding-top: 0.5rem; color: var(--m-muted); font-size: 0.78rem; display: flex; align-items: baseline; gap: 0.35rem; }
+.review-delta span { font-size: 0.6rem; color: var(--m-faint, var(--m-muted)); }
+
+/* A meter: the fill on a lighter step of the same colour. Over the whole, the fill turns to the warning colour and the words say so. */
+.review-meter { height: 0.4rem; border-radius: 999px; background: var(--m-accent-soft); overflow: hidden; margin: 0.15rem 0 0.25rem; }
+.review-meter span { display: block; height: 100%; min-width: 0.4rem; border-radius: 999px; background: var(--m-accent); }
+.review-meter.is-over { background: color-mix(in srgb, var(--m-red) 22%, transparent); }
+.review-meter.is-over span { background: var(--m-red); }
+
+.review-days > header h2, .review-slipped > header h2 { margin: 0 0 0.7rem; color: var(--m-ink); font: var(--m-title-weight, 600) 1.2rem/1.2 var(--m-title-font, var(--m-font)); }
+.review-scroll { overflow-x: auto; }
+.review-days table { width: 100%; min-width: 46rem; border-collapse: collapse; font-size: 0.86rem; font-variant-numeric: tabular-nums; }
+.review-days th, .review-days td { padding: 0.55rem 0.6rem; text-align: right; white-space: nowrap; border-top: 1px solid var(--m-line); color: var(--m-ink); }
+.review-days thead th { border-top: 0; color: var(--m-muted); font: 600 0.72rem/1.25 var(--m-font); white-space: normal; vertical-align: bottom; }
+.review-days th:first-child { text-align: left; font-weight: 600; }
+.review-days tbody th a { color: var(--m-ink); text-decoration: none; }
+.review-days tbody th a:hover { color: var(--m-accent-strong); text-decoration: underline; text-underline-offset: 3px; }
+.review-days tbody th small { color: var(--m-accent-strong); font-weight: 600; }
+.review-days tr.is-today th, .review-days tr.is-today td { background: var(--m-accent-soft); }
+.review-days tr.is-ahead td { color: var(--m-muted); }
+.review-days .review-wide { text-align: left; width: 26%; min-width: 9rem; }
+.review-none { color: var(--m-faint, var(--m-muted)); }
+/* Focus time: one thin bar from the left, its value at the tip in text colour. */
+.review-bar { display: flex; align-items: center; gap: 0.5rem; }
+.review-bar i { display: block; height: 0.45rem; flex: none; max-width: calc(100% - 4.2rem); background: var(--m-accent); border-radius: 0 4px 4px 0; }
+.review-bar b { font-weight: 500; color: var(--m-ink); }
+
+.review-slipped-lists { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1.4rem; }
+.review-slipped h3 { margin: 0 0 0.3rem; color: var(--m-red); font: 600 0.86rem/1.3 var(--m-font); letter-spacing: 0; text-transform: none; }
+
+@media (max-width: 760px) {
+  .review-value { font-size: 1.8rem; }
+}

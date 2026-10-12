@@ -101,7 +101,7 @@ test('a focus session is added to its card as the hub\'s own timer adds one: qua
   assert.deepEqual([overlay.actualHours, overlay.focusSessions.length, overlay.focusSessions[0].minutes, overlay.focusSessions[0].hours, overlay.focusSessions[0].from], [0.75, 1, 50, 0.75, 'life-os'])
   assert.deepEqual(overlay.checklist, { s1: true })                       // her ticks are untouched
   assert.equal(overlay.activity[0].action, 'Focus session')
-  assert.deepEqual(result.event.payload, { cardTitle: 'Bayes table', moduleGroup: 'MAT022', minutes: 50, hours: 0.75, previousHours: 0, hoursAfter: 0.75 })
+  assert.deepEqual(result.event.payload, { cardTitle: 'Bayes table', moduleGroup: 'MAT022', minutes: 50, hours: 0.75, previousHours: 0, hoursAfter: 0.75, from: 'life-os' })
   // A second, short session: at least a quarter of an hour is counted, as in the hub.
   const again = focusState(result.state, plan, { card: 'bayes', minutes: 5 }, NOW)
   assert.deepEqual([again.state.cards.bayes.actualHours, again.state.cards.bayes.focusSessions.length], [1, 2])

@@ -21,7 +21,7 @@ export function loadBudgetRules(budgetRoot) {
   const context = vm.createContext({ React: { createElement: () => null } })
   for (const name of ['core', 'seed', 'domain']) vm.runInContext(fs.readFileSync(path.join(budgetRoot, 'app/src', `${name}.js`), 'utf8'), context)
   const pick = (name) => vm.runInContext(name, context)
-  return { validate: pick('validateV4'), addListLine: pick('addListLine'), tickListLine: pick('tickListLine'), ensureShop: pick('ensureShop'), findShop: pick('findShop'), uid: pick('uid') }
+  return { validate: pick('validateV4'), addListLine: pick('addListLine'), tickListLine: pick('tickListLine'), forecast: pick('forecast'), ensureShop: pick('ensureShop'), findShop: pick('findShop'), uid: pick('uid') }
 }
 
 // "eggs", "6 eggs", "eggs x6", "2 kg rice": a quantity when one is typed, otherwise one.
