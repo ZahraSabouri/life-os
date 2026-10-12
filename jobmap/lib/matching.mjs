@@ -104,7 +104,9 @@ export function assessPriority(job,match=undefined,today=dayNow()){
 function comparePriority(a,b){
  return a.priority.section-b.priority.section||a.priority.group-b.priority.group||a.priority.availability-b.priority.availability||a.priority.urgency-b.priority.urgency||a.priority.personal-b.priority.personal||b.match.score-a.match.score||Number(!!b.job.saved)-Number(!!a.job.saved)||(reviewDeadline(a.job)||'9999').localeCompare(reviewDeadline(b.job)||'9999');
 }
-export function selectJobs(jobs,{view='all',scope='parttime',source='',search='',sort='priority',status=''},profile=DEFAULT_PROFILE,today=dayNow()){
+// Her own categories on a job: written with commas between, read as a list without repeats.
+export function tagsOf(job){const seen=new Set(),out=[];for(const raw of String(job?.tags||'').split(/[,;\n]/)){const tag=raw.trim().replace(/\s+/g,' ');if(tag&&!seen.has(tag.toLowerCase())){seen.add(tag.toLowerCase());out.push(tag);}}return out;}
+export function selectJobs(jobs,{view='all',scope='parttime',source='',search='',sort='priority',status='',tag=''},profile=DEFAULT_PROFILE,today=dayNow()){
  const q=search.toLowerCase().trim();
  let rows=jobs.map(job=>{const match=assess(job,profile,today);return {job,match,priority:assessPriority(job,match,today)};}).filter(({job,match,priority})=>{
   if(view==='archive'&&!['Archived','Rejected'].includes(job.status))return false;
@@ -117,7 +119,8 @@ export function selectJobs(jobs,{view='all',scope='parttime',source='',search=''
   if(view==='all'&&scope==='apply'&&priority.section>3)return false;
   if(view==='all'&&scope==='tech'&&(!match.software&&!match.data))return false;
   if(source&&job.source!==source)return false;if(status&&job.status!==status)return false;
-  if(q&&!q.split(/\s+/).every(word=>[job.role,job.company,job.location,job.stack,job.notes,job.nextStep].join(' ').toLowerCase().includes(word)))return false;
+  if(tag&&!tagsOf(job).some(t=>t.toLowerCase()===tag.toLowerCase()))return false;
+  if(q&&!q.split(/\s+/).every(word=>[job.role,job.company,job.location,job.stack,job.notes,job.nextStep,job.tags].join(' ').toLowerCase().includes(word)))return false;
   return true;
  });
  rows.sort((a,b)=>{

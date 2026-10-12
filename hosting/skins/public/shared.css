@@ -47,6 +47,8 @@ html[data-life-os-ground] :is(button, [class~='button'], input:not([type='checkb
   [class*='thumb'], [class*='star'], [class*='close'], [class*='chip'], [class*='pill'], [class*='tab'], [role='switch'], [role='tab']) {
   border-radius: var(--m-radius-control);
 }
+/* A box of several lines is never a pill: a round end would cut into its first and last lines. */
+html[data-life-os-ground] textarea { border-radius: min(var(--m-radius-control), 14px) !important; }
 
 /* Under the Life OS top bar the app is a part of Life OS: no second logo. */
 html[data-life-os-frame] [data-life-os-hide] { display: none !important; }

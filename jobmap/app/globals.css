@@ -10,3 +10,10 @@
 @media(min-width:1180px){.shell:not(.has-detail) .inline-deadline{display:none}}
 
 .job-dates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0;padding:15px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.job-dates dt{font-size:.75rem;color:#536580;line-height:1.5}.job-dates dd{margin:3px 0 0;font-size:.8125rem;color:#293f60;font-variant-numeric:tabular-nums}.job-dates.compact{display:flex;flex-wrap:wrap;gap:8px 22px;margin:10px 0 0;padding:0;border:0}.job-dates.compact>div{display:flex;gap:5px;align-items:baseline}.job-dates.compact dt,.job-dates.compact dd{font-size:.75rem;margin:0}.job-dates.compact dt{color:#64748b}.job-dates.compact dd{color:#465b79}@media(max-width:480px){.list-section{padding:11px 12px 10px}.filter-row{flex-wrap:wrap}.scope-tabs{max-width:100%;overflow-x:auto}.results-count{margin-left:auto}.job-dates.compact{gap:4px 14px}.job-dates{gap:8px}.job-dates dd{font-size:.75rem}}
+
+/* Her own categories on a job, and the folder and links kept with it. */
+.my-tag{display:inline-flex;align-items:center;padding:1px 9px;border:1px solid var(--line);border-radius:999px;background:var(--white);color:var(--ink);font-size:12px;font-weight:600;line-height:1.6}
+button.my-tag{cursor:pointer;color:var(--blue)}button.my-tag:hover{border-color:var(--blue)}
+.tag-suggest{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:-4px 0 4px;font-size:13px;color:var(--muted)}
+.kept-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:-4px 0 12px}
+.kept-list{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:6px}.kept-list li{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;min-width:0;overflow-wrap:anywhere}.kept-list a{color:var(--blue);font-weight:600}

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { Store } from './lib/store.mjs';
 import { createInbox } from './lib/inbox.mjs';
 import { workspaceConnection, ensureWorkspaceService } from './lib/workspace.mjs';
+import { openFolder } from './lib/folders.mjs';
 const root=path.dirname(fileURLToPath(import.meta.url));
 const port=Number(process.env.JOBMAP_PORT||47841);
 const origin=`http://127.0.0.1:${port}`;
@@ -50,6 +51,7 @@ const server=http.createServer(async(req,res)=>{
   if(url.pathname.startsWith('/api/jobs/')&&req.method==='PATCH'){const b=await body(req);json(res,await store.patch(decodeURIComponent(url.pathname.slice(10)),b.patch,b.revision));return;}
   if(url.pathname==='/api/backup'&&req.method==='GET'){res.setHeader('Content-Disposition',`attachment; filename="JobMap-backup-${new Date().toISOString().slice(0,10)}.json"`);json(res,store.export());return;}
   if(url.pathname==='/api/restore'&&req.method==='POST'){const b=await body(req);json(res,await store.restore(b.backup,b.revision));return;}
+  if(url.pathname==='/api/open-folder'&&req.method==='POST'){const b=await body(req);json(res,await openFolder(b.path));return;}
   if(url.pathname.startsWith('/api/')){json(res,{error:'Not found.'},404);return;}
   if(!['GET','HEAD'].includes(req.method)){json(res,{error:'Method not allowed.'},405);return;}
   let decoded;try{decoded=decodeURIComponent(url.pathname)}catch{json(res,{error:'Invalid path.'},400);return;}

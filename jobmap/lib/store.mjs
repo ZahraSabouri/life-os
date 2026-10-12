@@ -7,7 +7,7 @@ import {calendarDay,isDate} from './job-dates.mjs';
 import legacyDates from './legacy-dates.json' with {type:'json'};
 
 export const STATUSES = ['To review','Check details','Preparing','Applied','Interview','Offer','Rejected','Archived'];
-const strings = {notes:30000,nextStep:1000,followUp:10,applied:10,cv:2000,coverLetter:2000,hours:500,role:500,company:300,location:1000,salary:3000,url:4000,deadline:10,advertisedOn:10};
+const strings = {notes:30000,nextStep:1000,followUp:10,applied:10,cv:2000,coverLetter:2000,tags:500,folder:1000,attachments:6000,hours:500,role:500,company:300,location:1000,salary:3000,url:4000,deadline:10,advertisedOn:10};
 const dateKeys = new Set(['followUp','applied','deadline','advertisedOn']);
 const empty = () => ({schemaVersion:1,revision:0,updatedAt:null,overrides:{},customJobs:[],preferences:{...DEFAULT_PROFILE}});
 function validateProfile(p){if(!object(p)||typeof p.skills!=='string'||p.skills.length>3000||!['balanced','software','data'].includes(p.focus)||!Number.isInteger(p.maxHours)||p.maxHours<1||p.maxHours>40)throw new Error('Check the matching preferences.');return {skills:p.skills,focus:p.focus,maxHours:p.maxHours};}
@@ -47,7 +47,7 @@ export class Store {
   for(const j of result.customJobs)if(!j.addedOn&&legacyDates.customJobs[j.id])j.addedOn=legacyDates.customJobs[j.id].addedOn;
   return result;
  }
- jobs(){const baseIds=new Set(this.base.map(j=>j.id));return [...this.base,...this.state.customJobs].map(j=>({...j,addedOn:j.addedOn||(baseIds.has(j.id)&&this.fingerprint===legacyDates.sourceFingerprint?legacyDates.sourceAddedOn:''),advertisedOn:j.advertisedOn||'',status:j.status==='Open'?'To review':j.status,saved:false,nextStep:'',followUp:'',cv:'',coverLetter:'',hours:j.hours||'',notes:j.notes||'',applied:j.applied?.slice(0,10)||'',deadline:j.deadline?.slice(0,10)||'',...this.state.observations?.[j.id],...this.state.overrides[j.id],userEditedDeadline:Object.hasOwn(this.state.overrides[j.id]||{},'deadline')}));}
+ jobs(){const baseIds=new Set(this.base.map(j=>j.id));return [...this.base,...this.state.customJobs].map(j=>({...j,addedOn:j.addedOn||(baseIds.has(j.id)&&this.fingerprint===legacyDates.sourceFingerprint?legacyDates.sourceAddedOn:''),advertisedOn:j.advertisedOn||'',status:j.status==='Open'?'To review':j.status,saved:false,nextStep:'',followUp:'',cv:'',coverLetter:'',tags:'',folder:'',attachments:'',hours:j.hours||'',notes:j.notes||'',applied:j.applied?.slice(0,10)||'',deadline:j.deadline?.slice(0,10)||'',...this.state.observations?.[j.id],...this.state.overrides[j.id],userEditedDeadline:Object.hasOwn(this.state.overrides[j.id]||{},'deadline')}));}
  ingest(raw,revision,dryRun=false){return this.run(async()=>{this.check(revision);const {state,...result}=planImport(this.state,this.base,raw,validatePatch);if(!dryRun&&!result.repeated)await this.persist(state,'search');return {...result,dryRun,revision:this.state.revision};});}
  run(action){const next=this.queue.then(action);this.queue=next.catch(()=>{});return next;}
  preferences(raw,revision){return this.run(async()=>{this.check(revision);const preferences=validateProfile(raw);const next=structuredClone(this.state);next.preferences=preferences;await this.persist(next);return {preferences,revision:this.state.revision};});}
