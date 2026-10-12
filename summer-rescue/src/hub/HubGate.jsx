@@ -8,6 +8,7 @@ import {
   setOpensLastSemester,
   staysInSemester,
   tabSemesterId,
+  wantsToChoose,
 } from './session.js'
 
 function todayKey() {
@@ -187,6 +188,11 @@ export function HubGate() {
         if (has(named)) return open(named)
         if (staysInSemester() && has(tabSemesterId())) return open(tabSemesterId())
         if (opensLastSemester() && has(lastSemesterId())) return open(lastSemesterId())
+        // By default the semester that is running now opens by itself (Xar, 12 October: "go to
+        // … the current semester by default"). The list shows when she asked for it with
+        // "Change semester", or when no single semester is current.
+        const current = list.filter((semester) => semesterStanding(semester).id === 'current')
+        if (!wantsToChoose() && current.length === 1) return open(current[0].id)
         setStage('choose')
         return undefined
       })
@@ -222,6 +228,7 @@ export function HubGate() {
           <h1>Which semester?</h1>
           <p className="hub-lede">
             Each semester has its own modules, cards, timetable and notes. Open one to work in it, or add a new one.
+            The semester that is running now opens by itself; “Change semester”, at the top of the hub’s menu, brings you back here.
           </p>
         </header>
 

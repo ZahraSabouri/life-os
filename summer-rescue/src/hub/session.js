@@ -48,6 +48,10 @@ export function opensLastSemester() {
 export function setOpensLastSemester(value) {
   write(window.localStorage, OPEN_LAST_KEY, value ? '1' : null)
 }
+// True after "Change semester": she asked for the list, so nothing is opened for her.
+export function wantsToChoose() {
+  return read(window.sessionStorage, PICK_KEY) === '1'
+}
 // Used by "Change semester": the next load shows the list instead of reopening the last one.
 export function askForSemesterOnNextLoad() {
   write(window.sessionStorage, PICK_KEY, '1')

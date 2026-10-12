@@ -1982,6 +1982,7 @@ export default function App() {
       {navOpen && <button type="button" className="nav-scrim" aria-label="Close menu" onClick={() => setNavOpen(false)} />}
 
       <aside className="app-sidebar" aria-label="Primary navigation">
+        <div className="sidebar-head">
         <a href={navHref('today')} className="sidebar-brand" onClick={(event) => handleNavClick(event, 'today')} title="Open Today">
           <span className="brand-mark brand-mark-plain">
             <Icon name="brand" />
@@ -1991,6 +1992,19 @@ export default function App() {
             <small>{session.semester?.title ?? ''}</small>
           </span>
         </a>
+        {/* The way back to the list of semesters, where she looks for it: under the semester's name. */}
+        <button
+          type="button"
+          className="sidebar-semester-switch"
+          title="Choose another semester, or add one"
+          onClick={() => {
+            askForSemesterOnNextLoad()
+            window.location.reload()
+          }}
+        >
+          <span>Change semester</span>
+        </button>
+        </div>
 
         <nav className="sidebar-nav" aria-label="Views">
           {NAV_GROUPS.map((group) => (

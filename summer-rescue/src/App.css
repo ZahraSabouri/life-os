@@ -10571,3 +10571,12 @@ button.countdown-chip:hover {
 /* The words "Life OS" on the save button lead to the Life OS first page. */
 .save-button .save-home { text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 .save-button .save-home:hover { text-decoration-thickness: 2px; }
+
+/* "Change semester", under the semester's name at the top of the menu. */
+/* The semester's name and the way back to the list are one block, so the menu below cannot sit over it. */
+.sidebar-head { display: grid; justify-items: start; gap: 4px; min-width: 0; }
+.sidebar-head > .sidebar-brand { width: 100%; min-width: 0; }
+.sidebar-semester-switch { margin: 0 0 10px 14px; padding: 3px 10px; border: 1px solid var(--line, rgba(0, 0, 0, 0.14)); border-radius: 999px; background: transparent; color: inherit; opacity: 0.8; cursor: pointer; font: inherit; font-size: 0.72rem; font-weight: 600; }
+.sidebar-semester-switch:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
+.sidebar-semester-switch:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.app-shell.nav-collapsed .sidebar-semester-switch { display: none; }
