@@ -2,7 +2,7 @@
 import {Fragment,useState,useEffect,useMemo,useRef,useCallback} from 'react';
 import DateInput from './DateInput';
 import type {Job,Profile,Match,PriorityAssessment} from '../lib/types';
-import {DEFAULT_PROFILE,OPEN_CHECK_DAYS,PRIORITY_SECTIONS,assess,assessPriority,selectJobs,daysUntil,dateLabel,dayNow,reviewDeadline} from '../lib/matching.mjs';
+import {DEFAULT_PROFILE,FIRST_SCREEN,OPEN_CHECK_DAYS,PRIORITY_SECTIONS,assess,assessPriority,selectJobs,daysUntil,dateLabel,dayNow,reviewDeadline} from '../lib/matching.mjs';
 type ApiResult={jobs:Job[];preferences:Profile;revision:number;job:Job;previous:Partial<Job>;error?:string};
 const statuses=['To review','Check details','Preparing','Applied','Interview','Offer','Rejected','Archived'];
 const activeStatuses=['Check details','Preparing','Applied','Interview','Offer'];
@@ -28,7 +28,7 @@ function Details({job,match,today,onClose,save,schedule,onEdit,onRelated}:{job:J
 }
 export default function Home(){
  const [jobs,setJobs]=useState<Job[]>([]),[profile,setProfile]=useState<Profile>(DEFAULT_PROFILE),[loading,setLoading]=useState(true),[error,setError]=useState(''),[saving,setSaving]=useState(0),[drafts,setDrafts]=useState(0);
- const [view,setView]=useState('all'),[scope,setScope]=useState('apply'),[search,setSearch]=useState(''),[source,setSource]=useState(''),[sort,setSort]=useState('priority'),[status,setStatus]=useState(''),[selected,setSelected]=useState<string|null>(null),[limit,setLimit]=useState(40),[modal,setModal]=useState<'add'|'edit'|'preferences'|'restore'|null>(null),[toast,setToast]=useState<{text:string;undo?:()=>void}|null>(null),[backup,setBackup]=useState<unknown>(null);
+ const [view,setView]=useState<string>(FIRST_SCREEN.view),[scope,setScope]=useState<string>(FIRST_SCREEN.scope),[search,setSearch]=useState(''),[source,setSource]=useState(''),[sort,setSort]=useState<string>(FIRST_SCREEN.sort),[status,setStatus]=useState(''),[selected,setSelected]=useState<string|null>(null),[limit,setLimit]=useState(40),[modal,setModal]=useState<'add'|'edit'|'preferences'|'restore'|null>(null),[toast,setToast]=useState<{text:string;undo?:()=>void}|null>(null),[backup,setBackup]=useState<unknown>(null);
  const [today,setToday]=useState(dayNow);
  useEffect(()=>{const update=()=>setToday(dayNow());const timer=setInterval(update,30000);window.addEventListener('focus',update);document.addEventListener('visibilitychange',update);return()=>{clearInterval(timer);window.removeEventListener('focus',update);document.removeEventListener('visibilitychange',update)}},[]);
  const revision=useRef(0),queue=useRef<Promise<unknown>>(Promise.resolve()),timers=useRef<Record<string,ReturnType<typeof setTimeout>>>({}),searchRef=useRef<HTMLInputElement>(null),fileRef=useRef<HTMLInputElement>(null),saveRef=useRef<(id:string,p:Partial<Job>,undo?:boolean)=>Promise<unknown>>(async()=>{});
@@ -36,6 +36,9 @@ export default function Home(){
  useEffect(()=>{if(toast){const t=setTimeout(()=>setToast(null),7000);return()=>clearTimeout(t)}},[toast]);
  async function load(){setLoading(true);try{const r=await fetch('api/jobs');const d=await r.json() as ApiResult;if(!r.ok)throw new Error(d.error||'Could not load your workspace.');setJobs(d.jobs);setProfile(d.preferences||DEFAULT_PROFILE);revision.current=d.revision;setError('');for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key?.startsWith('jobmap-draft:')){const [,id,field]=key.split(':');const value=localStorage.getItem(key);if(value!==null&&d.jobs.some(j=>j.id===id))schedule(id,field,value)}}}catch(e){setError((e as Error).message)}finally{setLoading(false)}}
  useEffect(()=>{load()},[]);
+ // A link from elsewhere can name one job: "#job=<id>" opens its details, whatever tab is showing.
+ // The fragment is used once and removed, so the same link works again after the details are closed.
+ useEffect(()=>{if(loading)return;const open=()=>{const found=/^#job=(.+)$/.exec(window.location.hash);if(!found)return;let id='';try{id=decodeURIComponent(found[1])}catch{}window.history.replaceState(window.history.state,'',window.location.pathname+window.location.search);if(jobs.some(j=>j.id===id))setSelected(id);else showToast('That job is no longer in JobMap.')};open();window.addEventListener('hashchange',open);return()=>window.removeEventListener('hashchange',open)},[loading,jobs,showToast]);
  const refreshBusy=useRef(false);refreshBusy.current=!!(loading||saving||drafts||modal||error);
  useEffect(()=>{
   let stopped=false,inFlight=false;

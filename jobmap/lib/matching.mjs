@@ -64,6 +64,8 @@ export function assess(job,profile=DEFAULT_PROFILE,today=dayNow()){
 // another look at the advert. Inside each, exact imminent dates lead and personal priority breaks ties.
 // An "open" result is only true on the day of the check, so an old one asks for another look.
 export const OPEN_CHECK_DAYS=14;
+// What the page opens on. Life OS reads the same list for its day (hosting/career/first-screen.mjs), so the two always agree.
+export const FIRST_SCREEN={view:'all',scope:'apply',sort:'priority'};
 export const PRIORITY_SECTIONS=['Apply now','Ask about hours first','Full-time or over your hours','Check it is still open','Not checked since saved','Outside current search','Application sent','Closed'];
 /** @param {ReturnType<typeof assess> | undefined} [match] */
 export function assessPriority(job,match=undefined,today=dayNow()){
