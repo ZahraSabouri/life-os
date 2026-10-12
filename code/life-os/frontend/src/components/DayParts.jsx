@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 // The pieces a day is drawn with, shared by the Court, Today and the strip inside each part:
 // the line that adds to the day, the day's path, and the Study, Jobs, Home and Notes panels.
 import { Link } from 'react-router-dom'
@@ -226,26 +227,25 @@ export function NotesPanel({ notes }) {
   return <ul className="day-notes">{notes.map((note) => <li key={note.id}><time>{note.at}</time><p>{note.body || note.title}</p></li>)}</ul>
 }
 
-// The four panels of a day, each drawn when its part could be read.
-export function DayPanels({ page, compact = false }) {
+// The four panels of a day, each drawn when its part could be read. `layout` says which panel
+// stands in which column: two columns beside the day's path (Today), three on the Court.
+export const PANELS_BESIDE_PATH = [['study', 'home'], ['jobs', 'notes']]
+export const PANELS_ALONE = [['study', 'notes'], ['jobs'], ['home']]
+export function DayPanels({ page, compact = false, layout = PANELS_BESIDE_PATH }) {
   const { data, isToday } = page
   const waiting = (empty) => <p className="day-quiet">{page.loading ? 'Loading…' : empty}</p>
-  return <>
-    <div className="day-panel-column">
-      <Panel title="Study" href="/study" open="Open Study hub" unavailable={page.unavailable('study')}>
-        {data?.study ? <StudyPanel study={data.study} label={isToday ? 'Today' : 'That day'} compact={compact} onStudy={page.tickStudy} savingId={page.savingId} /> : waiting('No semester is open.')}
-      </Panel>
-      <Panel title="Home" href="/budget" open="Open Budget" unavailable={page.unavailable('home')}>
-        {data?.home ? <HomePanel home={data.home} today={isToday} compact={compact} onTick={page.tickShopping} savingId={page.savingId} /> : waiting('Nothing to show.')}
-      </Panel>
-    </div>
-    <div className="day-panel-column">
-      <Panel title="Jobs" href="/jobmap" open="Open JobMap" unavailable={page.unavailable('jobs')}>
-        {data?.jobs ? <JobsPanel jobs={data.jobs} compact={compact} /> : waiting('Nothing to show.')}
-      </Panel>
-      <Panel title="Notes" href="/ledger" open="Open Ledger" unavailable={page.unavailable('notes')}>
-        {data?.notes ? <NotesPanel notes={data.notes} /> : waiting('Nothing to show.')}
-      </Panel>
-    </div>
-  </>
+  const study = <Panel title="Study" href="/study" open="Open Study hub" unavailable={page.unavailable('study')}>
+    {data?.study ? <StudyPanel study={data.study} label={isToday ? 'Today' : 'That day'} compact={compact} onStudy={page.tickStudy} savingId={page.savingId} /> : waiting('No semester is open.')}
+  </Panel>
+  const home = <Panel title="Home" href="/budget" open="Open Budget" unavailable={page.unavailable('home')}>
+    {data?.home ? <HomePanel home={data.home} today={isToday} compact={compact} onTick={page.tickShopping} savingId={page.savingId} /> : waiting('Nothing to show.')}
+  </Panel>
+  const jobs = <Panel title="Jobs" href="/jobmap" open="Open JobMap" unavailable={page.unavailable('jobs')}>
+    {data?.jobs ? <JobsPanel jobs={data.jobs} compact={compact} /> : waiting('Nothing to show.')}
+  </Panel>
+  const notes = <Panel title="Notes" href="/ledger" open="Open Ledger" unavailable={page.unavailable('notes')}>
+    {data?.notes ? <NotesPanel notes={data.notes} /> : waiting('Nothing to show.')}
+  </Panel>
+  const panels = { study, home, jobs, notes }
+  return <>{layout.map((column) => <div className="day-panel-column" key={column.join('-')}>{column.map((name) => <Fragment key={name}>{panels[name]}</Fragment>)}</div>)}</>
 }

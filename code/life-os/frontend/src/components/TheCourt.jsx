@@ -8,7 +8,7 @@ import { useEntries } from '../lib/useEntries.js'
 import { useGround } from '../lib/groundContext.jsx'
 import StyleSwitch from './StyleSwitch.jsx'
 import { FocusButton } from './FocusDock.jsx'
-import { AddLine, DayPanels, DayPath, count, hours, pounds } from './DayParts.jsx'
+import { AddLine, DayPanels, PANELS_ALONE, count, hours, pounds } from './DayParts.jsx'
 import { useDayPage } from '../lib/useDayPage.js'
 import { clockOf } from '../lib/day.js'
 import { calendarArea, calendarDisplay, calendarKind, dateKey, filterCalendarItems, formatCalendarDay, itemTime, todayGroups } from '../lib/calendar.js'
@@ -838,10 +838,7 @@ function IndigoCourt(props) {
             </section>
 
             <div className="court-day day-page">
-              <section className="day-path" aria-labelledby="court-day-heading">
-                <header><h2 id="court-day-heading">Today</h2><Link to="/today">The whole day</Link></header>
-                <DayPath page={props.page} compact />
-              </section>
+              <div className="day-panels is-rail"><DayPanels page={props.page} compact layout={[['notes']]} /></div>
             </div>
 
             <section className="indigo-streak">
@@ -858,7 +855,7 @@ function IndigoCourt(props) {
           <section className="indigo-register" aria-label="Today and the rooms">
             <div className="court-day day-page">
               <AddLine page={props.page} id="court-add-input" />
-              <div className="day-panels"><DayPanels page={props.page} compact /></div>
+              <div className="day-panels"><DayPanels page={props.page} compact layout={[['study', 'home'], ['jobs']]} /></div>
             </div>
             <div className="indigo-register-head">
               <div>
@@ -903,17 +900,13 @@ function IndigoCourt(props) {
 
 // The day, as every style's Court carries it: the line that adds to it, its path in short
 // form, and what Study, Jobs, Home and Notes hold today. Drawn with the style's own tokens.
+// What the Court carries of the day: the line that adds to it, and Study, Jobs, Home and Notes.
+// The day hour by hour is on the Today page only (her choice, 12 October).
 function CourtDay({ page }) {
   return (
-    <section className="court-day day-page" aria-label="Today">
+    <section className="court-day day-page" aria-label="Study, jobs, home and notes today">
       <AddLine page={page} id="court-add-input" />
-      <div className="day-grid">
-        <section className="day-path" aria-labelledby="court-day-heading">
-          <header><h2 id="court-day-heading">Today</h2><Link to="/today">The whole day</Link></header>
-          <DayPath page={page} compact />
-        </section>
-        <div className="day-panels"><DayPanels page={page} compact /></div>
-      </div>
+      <div className="day-panels is-three"><DayPanels page={page} compact layout={PANELS_ALONE} /></div>
     </section>
   )
 }

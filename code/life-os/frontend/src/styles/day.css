@@ -57,6 +57,10 @@
 .day-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 1.15rem; align-items: start; }
 .day-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.15rem; align-items: start; }
 .day-panel-column { display: grid; gap: 1.15rem; min-width: 0; }
+/* On the Court the panels stand alone, three across: Study and Notes, Jobs, Home. */
+.day-panels.is-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.day-panels.is-rail { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 1180px) { .day-panels.is-three { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .day-later { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; margin-top: 1rem; align-items: start; }
 
 .day-path, .day-panel { min-width: 0; padding: 1.2rem 1.35rem 1.3rem; }
