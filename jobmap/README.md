@@ -27,9 +27,9 @@ Batches are ignored a second time, so re-running a search or re-copying a file c
 
 ## Local files
 
-`data/jobs.json` is the unchanged source collection. `data/workspace/progress.json` holds your edits, added jobs and preferences. Recent recovery copies are in `data/workspace/backups/`. The app also retains unsaved text drafts in this browser if a save fails. These drafts are removed after a successful save.
+`data/jobs.json` is the unchanged source collection. Read `data/workspace-connection.json` to locate the owning workspace: its `data/workspace/progress.json` holds the current edits, added jobs and preferences for both interfaces. The connected Life OS app retains its old local progress file as a historical snapshot. Recent recovery copies are in the owner's `data/workspace/backups/`. The app also retains unsaved text drafts in this browser if a save fails. These drafts are removed after a successful save.
 
-Use Download backup for a separate copy containing the original jobs and your progress. Moving the entire app folder preserves the source, progress and recent recovery files. Keep backups somewhere you can recover if this computer is lost.
+Use Download backup for a separate copy containing the original jobs and your progress. Moving the entire owning app folder preserves its source, progress and recent recovery files; update the connected interface's connection to that new location. Keep backups somewhere you can recover if this computer is lost.
 
 Use **Stop JobMap.cmd** to stop the background service. Starting again reuses an existing JobMap service safely. The service listens only on this computer's loopback address.
 
@@ -55,6 +55,18 @@ My priority is the default sort. It ranks jobs still worth pursuing before appli
 
 Each row explains its priority; an opened job explains the assessment and your personal setting. The order updates on a new London calendar day and when the window regains focus. Closing soon also puts closed adverts after open ones.
 
-Both app copies use identical feature code and relative API/asset paths. Run `npm run check:parity -- "<other JobMap folder>"` after shared changes or source reconciliation. It checks implementation and underlying vacancy evidence by canonical URL, leaving personal notes, stages, priorities and preferences separate. Source differences require deliberate, backed-up reconciliation; never overwrite a workspace with the other copy.
+Both app copies use identical feature code and relative API/asset paths. Run `npm run check:parity -- "<other JobMap folder>"` after shared changes or source reconciliation. It checks implementation, the shared workspace connection, vacancy evidence and personal choices. Source differences require deliberate, backed-up reconciliation; never overwrite a workspace with the other copy.
 
 To reconcile older source differences, start each normal host, then preview `node reconcile-sources.mjs http://127.0.0.1:47841/api http://127.0.0.1:47850/apps/jobmap/api`. After reviewing the plan, add `--apply`. It uses the two local APIs, snapshots both proposed workspaces, keeps each server's recovery backup, rejects equally dated conflicting evidence and preserves all existing personal fields. It carries over saved historical closed records for collection parity; routine searches still skip new closed adverts. A repeat preview should contain no additions or updates.
+
+## One workspace in both apps (12 October 2026)
+
+Standalone JobMap and JobMap inside Life OS now use one saved workspace. Stars, notes, archive choices, application stages, dates, added jobs and matching preferences saved in either interface appear in both. Each tab can still use its own search, view and sort. Life OS retains its shared styles.
+
+`data/workspace-connection.json` in each app identifies the owning app folder and local API. The standalone server is the only writer to that workspace; Life OS forwards its API requests and starts the owner automatically when necessary. Revision checks protect simultaneous edits. Existing open tabs refresh their records on the usual idle/focus poll. Stopping the Life OS JobMap interface leaves the owner's workspace available.
+
+The owning workspace is `data/workspace/progress.json` under the standalone app. The Life OS copy's old progress file is retained as a pre-connection snapshot and is no longer active. Read the connection before reading saved progress; queue-jobs and import-jobs resolve it automatically. Back up from either interface to export the same current workspace. Moving a connected app requires updating its connection or restoring its exported backup into a reviewed independent installation.
+
+Search findings and inbox receipts stay in each app's own folders. The owner polls both inboxes; duplicate runIds change the workspace once, and each queued file gets its own processed/failed receipt and import log entry. Scheduled searches must continue saving and validating findings for both copies. A repeated batch reported as unchanged is already in their shared workspace.
+
+The initial merge used `reconcile-workspace.mjs` through revision-protected APIs, with recovery snapshots of both originals and the proposed merge. It combines compatible explicit choices, preserves notes and activity, uses the first known Added date across the apps, and refuses conflicting explicit values. It does not copy either progress file over the other. Original per-copy dates remain in the recovery snapshots.

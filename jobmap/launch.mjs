@@ -14,7 +14,7 @@ try{
   if(!existsSync(path.join(root,'dist/client/index.html')))throw new Error('The app build is missing. Open the README in the JobMap App folder.');
   let running=await health();
   // A service started before data/inbox existed cannot see scheduled searches, so replace it.
-  if(running&&((running.inboxVersion||0)<expectedInbox||(running.dateVersion||0)<1)){
+  if(running&&((running.inboxVersion||0)<expectedInbox||(running.dateVersion||0)<1||(running.workspaceVersion||0)<1)){
    console.log('Updating the JobMap service for the current app...');
    if(!await stop())throw new Error('The running JobMap service did not stop. Run Stop JobMap.cmd, or restart the computer, then try again.');
    running=null;

@@ -4,12 +4,15 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {Store,validatePatch} from './lib/store.mjs';
 import {planImport} from './lib/discovery.mjs';
+import {workspaceConnection} from './lib/workspace.mjs';
 const args=process.argv.slice(2),file=args.find(a=>!a.startsWith('--'));
 if(!file){console.error('Usage: node queue-jobs.mjs <batch.json> [--dry-run]');process.exit(1);}
 const root=fileURLToPath(new URL('.',import.meta.url));
 const batch=JSON.parse((await readFile(file,'utf8')).replace(/^\uFEFF/,''));
-const base=JSON.parse(await readFile(path.join(root,'data/jobs.json'),'utf8'));
-const store=await new Store(base,path.join(root,'data/workspace')).init();
+const connection=await workspaceConnection(root);
+const base=JSON.parse(await readFile(path.join(connection.workspaceRoot,'data/jobs.json'),'utf8'));
+const store=new Store(base,path.join(connection.workspaceRoot,'data/workspace'));
+try{store.state=store.validateState(JSON.parse(await readFile(store.file,'utf8')));}catch(error){if(error.code!=='ENOENT')throw error;}
 const {state,...preview}=planImport(store.state,base,batch,validatePatch);
 if(args.includes('--dry-run')||preview.repeated){console.log(JSON.stringify({...preview,dryRun:args.includes('--dry-run')},null,2));}
 else{

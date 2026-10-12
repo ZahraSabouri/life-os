@@ -1,14 +1,16 @@
 import {readFile} from 'node:fs/promises';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {workspaceConnection,ensureWorkspaceService} from './lib/workspace.mjs';
 
 const args=process.argv.slice(2),file=args.find(a=>!a.startsWith('--'));
 if(!file){console.error('Usage: node import-jobs.mjs <batch.json> [--dry-run]');process.exit(1);}
 const root=fileURLToPath(new URL('.',import.meta.url));
 const batch=JSON.parse((await readFile(file,'utf8')).replace(/^\uFEFF/,''));
-const started=spawnSync(process.execPath,['launch.mjs','--no-browser'],{cwd:root,encoding:'utf8',windowsHide:true});
-if(started.status!==0)throw new Error(started.stderr||started.stdout||'JobMap did not start.');
-const origin='http://127.0.0.1:47841';
+const connection=await workspaceConnection(root);
+if(connection.shared)await ensureWorkspaceService(connection);
+else{const started=spawnSync(process.execPath,['launch.mjs','--no-browser'],{cwd:root,encoding:'utf8',windowsHide:true});if(started.status!==0)throw new Error(started.stderr||started.stdout||'JobMap did not start.');}
+const origin=connection.apiOrigin||'http://127.0.0.1:47841';
 let done=false;
 for(let attempt=0;attempt<3;attempt++){
  const health=await(await fetch(origin+'/api/health')).json();
