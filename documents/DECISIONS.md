@@ -4,6 +4,15 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 12 October 2026 (late night) — The Court without the day; notices; plans that repeat (Xar with Claude Code)
+
+- **Xar:** "remove today from court and keep in the today tab." **Decided:** the day hour by hour lives on Today only. *This changes the afternoon's decision* ("the Court itself is the working first page", which put the path on it): the Court keeps the add line and the Study, Jobs, Home and Notes panels. Read narrowly on purpose: she said "today", and the block on the Court was titled "Today".
+- **Xar:** "we also need a sorta notification for the whole app, not just study." **Decided:** one bell for every part, worked out fresh from each part's own records each time (nothing is stored but what she has seen). The computer's own notifications are her choice and off by default.
+- **Decided:** a repeating plan is one entry; its days are worked out, never stored in advance. A day becomes an entry only when she acts on it. So nothing has to be "generated" ahead, and stopping a plan cannot leave strays.
+- **Decided:** what the app remembers for itself (her aims, notices seen, sound links) is a row in a small `settings` table in the core, one per key.
+- **Decided:** the host reads each part once for requests that arrive together. A page now asks for five things at once; reading Study, JobMap and Budget five times over made parts time out.
+- **Not decided:** the kinds of notice she finds useful; whether the parts should be gathered under one entry in the top bar.
+
 ## 12 October 2026 (night) — Focus, sound and review belong to Life OS; the Study hub keeps its own (Xar with Claude Code)
 
 - **Xar:** "I need all those … features inside the whole LifeOS app, not necessarily inside the study hub"; "maybe we need the focus room … to be part of the LifeOS app, or live music, or … YouTube player." After a proposal to write a design first: "go on."

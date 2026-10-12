@@ -40,18 +40,37 @@ What the Study hub has for study cards only (a focus room with music and video, 
 - [x] Drawn by the charting rules in use (one accent colour, text in text colours, one bar per row and only for focus time, a meter for a part of a whole, words beside every colour).
 - **Commit:** `aea2f5c` `[2c-cp2]`
 
-### CP3: Progress over longer than a week (open)
-- [ ] A month and a semester: applications sent per week against a target she sets; focus time per week; cards done against cards due; spending per month. Needs her target numbers.
-- [ ] A day looked back on from Today (yesterday's page already shows what was done; it has no summary line).
+### CP3: The Court without the day's path (done 12 October night)
+- [x] Xar: "remove today from court and keep in the today tab." The path (the day hour by hour) is off the Court in all four styles. The add line and the Study, Jobs, Home and Notes panels stay, three across (Indigo keeps Notes in its rail).
+- **Commit:** `44b9817` `[2c-cp3]`
 
-### CP4: A planner for the week (open)
-- [ ] The week's study blocks, job time and her own plans together, movable. The calendar's week is the natural place.
-- [ ] Repeating plans (job time after 25 October; "every Sunday, laundry"): a pattern with exceptions, as the hub's schedule rules are.
+### CP4: Notices for the whole app (done 12 October night)
+- [x] Xar: "we also need a sorta notification for the whole app, not just study."
+- [x] `hosting/notices/service.mjs`, `GET /api/notices` (read only): on now, within the hour, today, slipped, coming up; from the day, the calendar, her plans and Budget's month.
+- [x] The bell and its list in every page's top bar (`components/NoticeBell.jsx`, `lib/notices.jsx`); seen marks kept.
+- [x] "Also tell me on this computer": a notification before a timed thing starts (5 to 30 minutes, her choice), once a day for what today asks for, and when a focus session ends. Off until she switches it on; Life OS must be open in a tab.
+- [x] A settings table in the core (`settings`, one row per key; `GET`/`PUT /api/settings/:key`; `shared/settings.js`). Kept there: `notices` (seen, her choice), `sound` (saved links), `targets` (her aims).
+- **Commit:** `43b19f1` `[2c-cp4]`
 
-### CP5: The rest of the focus room (open)
-- [ ] The hub's forest, levels and "strict guard" for sessions outside study, if she wants them there.
-- [ ] Sound settings kept in the database instead of the browser, so they follow her to another browser or the phone.
-- [ ] A notification when a session ends while the window is in the background (the sound and the tab's title are there now).
+### CP5: Repeating plans and the week planner (done 12 October night)
+- [x] `shared/routines.js`: an entry of kind `repeat` (title, weekdays, clock time or any time, first day, last day). Its days are worked out for the calendar, the day, the review and the notices; a day becomes a real entry (carrying `details.routine`) only when she acts on it. ("routine" was already the body room's care routine, so the kind is `repeat`.)
+- [x] The add line has "repeat": once, every day, weekdays, one weekday, chosen days; an optional last day.
+- [x] `/planner` (`components/PlannerView.jsx`, `lib/plans.js`): seven days side by side; add to a day, tick, take off, move by dragging or from a menu; one day of a repeating plan handled by itself; the list of repeating plans with Stop and Remove.
+- [x] `scripts/job-time-as-repeating-plans.mjs`: the study plan's reserved job hours from 26 October to 27 December as eight repeating plans.
+- [x] The host shares one read of Study, JobMap and Budget among requests that arrive together; the calendar gives a part eight seconds and the page asks again when a part is missing.
+- **Commit:** `d9e8c25` `[2c-cp5]`
+
+### CP6: Eight weeks and her aims (done 12 October night)
+- [x] Review: four small charts over eight weeks, the semester's cards as a meter, and aims (applications a week, hours of focus a day) she sets there.
+- **Commit:** `fef0ecf` `[2c-cp6]`
+
+### Open after CP6
+- [ ] Marking a job "applied" from the day (JobMap owns the record; needs JobMap's own save).
+- [ ] The hub's forest, levels and strict guard for sessions outside study, if she wants them there.
+- [ ] Notices when Life OS is not open in any tab (needs something running in the background: an installed page or a small helper).
+- [ ] The Study hub's own unread reminders shown in the Life OS bell.
+- [ ] Editing a repeating plan (its days or time) instead of stopping it and making another.
+- [ ] The top bar holds thirteen entries; gather the parts under one.
 
 ## Data safety
 - CP0 and CP1 write to the Study hub only through the hub's store and revision check. Tried for real on the try-out (test database) with a hub page open beside the Court, both ways, before going live. On live the addresses were tried only in ways that change nothing.

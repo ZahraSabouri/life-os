@@ -7,12 +7,12 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 ## The order of work
 1. ~~E. Dark mode across the app~~ done 12 October (Modern, as she asked).
 2. ~~A. The study plan's leftovers~~ checked and recorded 12 October; two small items left.
-3. **B. The day reaches everything:** done 12 October except job time as a repeating routine (it is single blocks to 25 October).
+3. **B. The day reaches everything:** done 12 October. Job time is a repeating plan through to 27 December.
 4. **C. Shopping, meals and money on the day:** the list is added to and ticked from anywhere, and Budget arranges it by list, category, shop or day (12 October). Next: recipes and tonight's meal, "left to spend".
 5. **D. The first pages:** all four Courts carry the day (12 October). Next: her style-by-style review of the Court's own design.
 6. **F, G, H** as they come up; none blocks her this month except backups.
 7. **I. Applying now:** the first list shows every open role in the order to act on it (12 October). Next: re-check the 32 uncertain adverts; her three answers.
-8. **K. Progress, review and focus for the whole of Life OS** (12 October evening): the focus timer, the sound player and the week's review are live. Next: progress over a month and a semester (needs her targets), the week planner, repeating plans. Brief: `briefs/stage-2c-focus-and-review.md`.
+8. **K. Progress, review and focus for the whole of Life OS:** done 12 October night: focus timer, sound, notices, the week's review with eight weeks and her aims, the week planner, repeating plans. What is left is small (brief `stage-2c-focus-and-review.md`, "Open after CP6").
 9. **L. Everything leads somewhere:** the five links she named work (12 October evening). Continue as she finds dead spots.
 
 ---
@@ -47,7 +47,7 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 - [ ] Moving a plan to another time or day from Today (now: take it off and add it again, or edit it in the Ledger).
 - [x] The Court and Today add things with the same line (12 October).
 - [x] **Job-application time on the day, both ways** (her answer, 12 October): as time blocks on the calendar and in the day's path (she can tick each off or take it off the day), and as the day's target in the Jobs panel ("3 h set aside today", "sent this week"). Blocks exist for 12 to 25 October, from the windows the study plan reserved.
-- [ ] Job time is 14 single blocks. Make it a repeating routine (a weekly pattern with exceptions), so it need not be added again after 25 October and one change moves every week.
+- [x] **Job time repeats** (12 October night): the fourteen single blocks to 25 October stay; from 26 October to 27 December it is eight repeating plans at the hours the study plan reserved (the Friday hour moves on 20 November, as the plan has it). Every one of the plan's 77 days has its one block.
 - [~] **Jobs panel as a work list** (12 October evening): what closes today is said first, whatever its group; then the next jobs in JobMap's own order with JobMap's words ("Apply now · closes in 6 days"); "9 jobs to apply for now"; the other groups counted. Each job opens that job in JobMap. Still open: marking "applied" from the day; this week's count against a target.
 - [x] **The day reads JobMap's own first list, from one place** (`hosting/career/first-screen.mjs`, JobMap's `FIRST_SCREEN`). Her words: "Data Manager (Neurological Data Platform) · Swansea University doesnt exist in the job app. where is it … not only that one!" The panel had listed everything the scheduled searches shortlisted (80 jobs she never chose); it now lists what JobMap lists, and the calendar shows a closing date only for those.
 - [x] The Study panel no longer says "could not be read" on some loads: ranking 1,067 jobs on every request took half a second and timed the day out; it is now worked out once per JobMap save, and the page asks again by itself when a part fails.
@@ -93,7 +93,7 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
   - [x] Every style: the Court carries the day itself, with "The whole day" leading to Today.
   - [x] Every area opens: Study, Career and Home open their parts; every other area opens its own page (`/room/<name>`) with what is coming up, what has no day yet, and what is done. Still: no door for Money or Events (Roadmap 1b).
   - [ ] One file fails to load on the Court (a 404 in the browser).
-- [x] The Court opens first, with today in it (her answer, 12 October).
+- [x] The Court opens first (her answer, 12 October). **12 October night, her words: "remove today from court and keep in the today tab."** The day hour by hour is off the Court in all four styles; the add line and the Study, Jobs, Home and Notes panels stay. **(Xar)** If she meant those panels too, say so: it is one line to take them off.
 - [ ] The greeting's name ("Xar") is written in the page code. It belongs in settings (code rule: no personal content in code).
 - [ ] A core entry can now be deleted (`DELETE /api/entries/:id`). The Ledger page itself has no remove or edit yet.
 - [ ] Today designed for Madder, Indigo and Paper, each from its own Court (now they only draw it with their own boxes and type).
@@ -159,7 +159,7 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 - [x] **A page for every area**, and a new area, "Life admin".
 - [x] Done things stay on the calendar, marked done.
 - [ ] A person as more than an area: "see Ben" tied to Ben's own page (people exist in the core; the add line does not link to them yet).
-- [ ] Repeating plans ("every Sunday, laundry"): the same need as job time (B).
+- [x] **Repeating plans** (12 October night): on the add line choose Plan, then "repeat" (every day, weekdays, one weekday, or the days you choose), with an optional last day. Each day can be ticked or taken off by itself. They are listed, with Stop and Remove, under "Plan the week".
 - [ ] Editing a plan after it is made (its time, day, area, words) without the Ledger.
 
 ## K. Progress, review and focus for the whole of Life OS
@@ -170,11 +170,20 @@ The Study hub has all of these for study cards only: Review (a day looked back o
 
 - [x] A brief with her words and the order of work (`briefs/stage-2c-focus-and-review.md`). She said "go on", so the first two parts were built rather than only described.
 - [x] **Review of a week** (12 October evening): top bar → Review. Five figures (study cards done, time focused, applications sent, her plans done, spent this month), each compared with the week before up to the same weekday; the week day by day; what slipped (late cards, plans left unticked, shortlisted jobs that closed), each line leading to the thing; links to the hub's own Review, Progress and Analytics. Read only (`/api/review`).
-- [~] **Progress and analytics across parts:** a week is done (above). Open: a month and a semester; applications per week against a target; focus time per week; cards done against cards due. **(Xar)** her targets: how many applications a week, how many hours of focus a day?
-- [ ] **A planner for the week** in Life OS: the week's study blocks, job time and her own plans together, movable. The calendar's week view is the natural place.
+- [x] **Progress across parts** (12 October night): Review shows eight weeks of applications sent, time focused, study cards done and her plans done, and the semester's cards. She sets what she aims at there (applications a week, hours of focus a day); with an aim a figure is measured against it.
+- [x] **A planner for the week** (12 October night): Today → "Plan the week", or Calendar → Week. Seven days side by side with classes, study blocks, job time, her plans and deadlines. Her own plans: add to a day, tick, take off, move by dragging or from the ⋯ menu.
 - [x] **Focus as part of Life OS** (12 October evening): a Focus button in every page's top bar, in every style. A timer for anything (today's study cards and job applications are offered); the countdown shows in the top bar and the tab's title and goes on across pages, a reload, and inside the Study hub, Budget and JobMap. When it ends, the time worked is a done block on the calendar and, for a study card, a focus session on the card in the hub. Sound: saved YouTube and Spotify links (her hub playlist is the first), played in a small player in the corner that keeps playing from page to page; hidden, it goes on.
-- [ ] Left of the focus room: the hub's forest, levels and strict guard outside study; a notification when a session ends in a background window; the saved sound links kept in the database, not only in this browser.
-- [ ] The top bar now holds twelve entries. The next addition needs the parts (Study hub, Cardiff Life, Budget, JobMap) gathered under one entry.
+- [ ] Left of the focus room: the hub's forest, levels and strict guard outside study. (The notification when a session ends, and the sound links kept in the database, are done.)
+- [ ] The top bar holds thirteen entries. It stays on one line down to a 1280-wide window; the next addition needs the parts gathered under one entry.
+
+## M. Notices for the whole app
+> "we also need a sorta notification for the whole app, not just study" (12 October night)
+
+- [x] **A bell in the top bar of every page.** What is on now, what starts within the hour, what today asks for (study cards due, jobs closing, things to buy, her plans, birthdays and renewals), what slipped (late cards, follow-ups, over budget, plans left unticked), and what is close (a test within a week, jobs closing tomorrow). Each line leads to the thing; "seen" is remembered.
+- [x] **"Also tell me on this computer"** (in the bell's list; off until she switches it on): a notification 5 to 30 minutes before a class, a study block or a plan starts, once a day for what today asks for, and when a focus session ends.
+- [ ] It only works while Life OS is open in a tab. Notices with the browser closed need something running in the background.
+- [ ] The Study hub's own reminders (its bell shows 7) are not in the Life OS bell yet.
+- [ ] **(Xar)** Which notices are noise? Each kind can be switched off once she has lived with them for a few days.
 
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."

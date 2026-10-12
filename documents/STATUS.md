@@ -5,8 +5,8 @@
 ## Now
 **Today, 12 October (Claude Code):** the Court and Today are the pages to work from and are live. Brief: `briefs/stage-2b-my-day.md` (CP1 to CP9 done). Notes: the five `sessions/2026-10-12-claude-code-stage-2b-*.md`. Codex entered the autumn study plan the same afternoon; a second Claude Code session reworked JobMap's first list; the three were coordinated in `COORDINATION_2026-10-12.md` and by messages.
 
-**The first page (Court), what works right now** (12 October evening; note `sessions/2026-10-12-claude-code-stage-2b-links-and-shopping.md`)
-- The Court opens with the day on it, in all four styles: a line that adds a plan, a note or something to buy, for any day and under any area; the day in clock order; and Study, Jobs, Home and Notes with today's content. "The whole day" opens Today.
+**What works right now** (12 October night; notes `sessions/2026-10-12-claude-code-stage-2c-focus-and-review.md` and `…-stage-2c-notices-planner-progress.md`)
+- **The Court** (all four styles): a line that adds a plan, a note or something to buy, for any day and under any area, once or repeating; and Study, Jobs, Home and Notes with today's content. The day hour by hour is on Today only (her choice, 12 October night).
 - **Jobs** shows what JobMap's own first list shows: what closes today first, then the next in JobMap's order, "9 jobs to apply for now". Clicking a job opens that job in JobMap.
 - **Shopping:** the squares are ticks, on the Court, on Today and in Budget. A tick asks for no price and does not touch the budget. Budget → Shopping arranges the same items by list, category, shop, day or all together; typing an item and pressing Enter adds it; a list can have a spending limit.
 - **Study:** clicking a study item opens its card in the Study hub, in the right semester, without the "Which semester?" page.
@@ -17,7 +17,11 @@
 - **Study steps:** the squares beside a card's steps are ticks on the Court and on Today; a study stop has "Card done". Saved in the Study hub by its own rule; an open hub tab follows.
 - **Focus** (top bar, every page and style): a timer for anything, counting in the top bar and the tab's title across pages and parts; when it ends the time is on the calendar as done and, for a study card, on the card. **Sound:** saved YouTube and Spotify links in a small corner player that keeps playing from page to page. Brief: `briefs/stage-2c-focus-and-review.md`.
 - **Review** (top bar): the week's five figures against the week before, the week day by day, what slipped.
-- **Not yet:** job time after 25 October (single blocks, not a routine); progress over a month or a semester and targets; the week planner; marking a job "applied" from the day.
+- **Notices** (the bell, every page): what is on now, soon, asked of today, slipped and close ahead, from every part; optional notifications on the computer.
+- **Repeating plans:** the add line has "repeat"; job time runs to 27 December as repeating plans.
+- **Plan the week** (Today → Plan the week, or Calendar → Week): seven days side by side; her own plans can be added, ticked, taken off and moved.
+- **Review:** also eight weeks of charts and what she aims at.
+- **Not yet:** marking a job "applied" from the day; notices with the browser closed; editing a repeating plan in place.
 - **Known fault of the evening:** the Study hub page was blank for about four minutes (17:13 to 17:17, by the build files' own times) after a rebuild without its address setting. Rebuilt correctly; an open hub tab was not affected. The right command is in `Build Life OS.cmd`.
 
 **Today, what works right now**
