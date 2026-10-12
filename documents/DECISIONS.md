@@ -4,6 +4,20 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 12 October 2026 (afternoon) — The Court itself is the working first page; no borders between the parts (Xar with Claude Code)
+
+- **Xar:** "i still cannot see any meaningful changes for what i asked you initially in case of unifying all apps and making it genuinely functioning as a life os." And, to my question of which page opens first: "court. but today can be also shortly or minorly [embedded] in the court! why are you stuck to these questions and this specific way of implementation and design and sorta borders?"
+- **What that corrects:** in the morning I had asked her to choose between pages and then built everything on Today, one click away from the page she lands on. From now: integrate instead of asking her to pick one of two; the first page must itself show and do the work.
+- **Her answers, and what was done with each:**
+  1. "delete the test entries but keep the section if useful and make it better ux wise": the seven July test entries are deleted (copy of the core database first); "Recently filed" stays, its rows open and can be removed.
+  2. Job time: "both": time blocks on the calendar and a target in the Jobs panel.
+  3. The 13 shopping items: "yes. and … remove them from the summer app. summer app integrated into the life os has nothing to do with anything other than studying and uni modules": moved to a Budget list and taken out of the study data. The rest of what the summer workspace keeps aside (life cards, schedule rules, the interview module, notes) is still there and still needs a home.
+  4. The invented lines: "do what's best": replaced by what is true today.
+  5. The Court opens first, with today in it.
+  6. "it's good to have today in all sub apps. cuz study is not all we got for today but sometimes one only wants to see what to study for today": every part shows its own today; the Study hub keeps its own Today page.
+- **How the parts are joined without rebuilding them:** Life OS draws the day from each part's own data and writes back through each part's own rules. Budget's list is changed with Budget's own functions and saved through Budget's own address; the Study hub and JobMap are read. Nothing inside JobMap's two copies or Budget's files was changed.
+- **A new kind of entry, "Time block":** hours set aside for one area (job applications are the first). It is hers to tick off or remove like any plan.
+
 ## 12 October 2026 — Today is the page to work from; the Court stays (Xar with Claude Code)
 
 - **Xar:** "I want a connection so I can access all of these from my day." "I'm not happy with any of the design versions' first pages." "We had some features like adding notes on the first pages that are now left alone."

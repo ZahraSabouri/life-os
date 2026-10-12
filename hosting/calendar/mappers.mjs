@@ -44,6 +44,8 @@ function annualDates(value, range) {
   return dates
 }
 
+// A time block belongs to the area it names; other entries to the area of their type.
+const blockAreas = new Set(['study', 'career', 'money', 'home', 'relationships', 'events'])
 const entryAreas = {
   module: 'study', 'module-session': 'study', assignment: 'study',
   'job-application': 'career', 'academic-application': 'career',
@@ -60,7 +62,7 @@ export function mapEntries(value, range) {
     if (inactive.has(stateOf(details.status)) || finished.has(stateOf(details.status))) continue
     const type = entry.type
     const base = {
-      id: `core:entry:${entry.id}`, area: entryAreas[type] ?? 'core',
+      id: `core:entry:${entry.id}`, area: type === 'time-block' && blockAreas.has(details.area) ? details.area : entryAreas[type] ?? 'core',
       kind: ['event', 'appointment', 'performance', 'interaction'].includes(type) ? 'fixed'
         : type === 'important-date' || type === 'message' ? 'reminder'
           : ['assignment', 'academic-application'].includes(type) ? 'deadline' : 'plan',

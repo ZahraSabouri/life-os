@@ -13,6 +13,8 @@ import { createCalendarService } from './calendar/service.mjs'
 import { createCalendarLoaders } from './calendar/loaders.mjs'
 import { createCalendarRouter } from './calendar-route.mjs'
 import { createDayRouter, createDayService } from './day/service.mjs'
+import { createShopping, createShoppingRouter } from './home/shopping.mjs'
+import { dateKey } from '../code/life-os/shared/calendar.js'
 import { createStudyRuntime } from './study/runtime.mjs'
 import { createStudyRouter } from '../code/life-os/backend/src/modules/study/router.js'
 import { saveStudyUpload, studyFilesRoot } from './study/storage.mjs'
@@ -162,9 +164,11 @@ export function createLifeOsApp(options = {}) {
     loadPlans: async (semesterId) => (study.hub ? study.hub.plan(semesterId) : {}),
     loadCareer: calendarLoaders.loadCareer,
     loadBudget: calendarLoaders.loadBudget,
-    loadNotes: () => db.prepare("SELECT * FROM entries WHERE type = 'note'").all(),
+    loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('note', 'time-block')").all(),
     ...options.dayLoaders,
   }) }))
+  // Things to buy, added from anywhere in Life OS, go into Budget's own shopping list.
+  app.use('/api/home/shopping', createShoppingRouter({ express, shopping: options.shopping ?? createShopping({ budgetRoot, getBudgetPort, today: () => dateKey(new Date()) }) }))
   app.use('/api', (_req, res) => res.status(404).json({ error: 'not found' }))
 
   app.use(express.static(mainDist))

@@ -7,8 +7,11 @@ import { apiFetch } from '../lib/api.js'
 import { useEntries } from '../lib/useEntries.js'
 import { useGround } from '../lib/groundContext.jsx'
 import StyleSwitch from './StyleSwitch.jsx'
-import { calendarArea, calendarDisplay, calendarKind, filterCalendarItems, itemTime, todayGroups } from '../lib/calendar.js'
-import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
+import { AddLine, DayPanels, DayPath, count, hours, pounds } from './DayParts.jsx'
+import { useDayPage } from '../lib/useDayPage.js'
+import { clockOf } from '../lib/day.js'
+import { calendarArea, calendarDisplay, calendarKind, dateKey, filterCalendarItems, formatCalendarDay, itemTime, todayGroups } from '../lib/calendar.js'
+import { useLondonToday } from '../lib/useCalendar.js'
 import { clockLabelFor, dateLabelFor, greetingFor, jalaliDateLabelFor, shortDateLabelFor, weekdayLabelFor } from '../lib/courtClock.js'
 
 const ROOM_NAME_OVERRIDES = {
@@ -27,18 +30,18 @@ const ROOM_NAME_OVERRIDES = {
 }
 
 const ROOM_PRESENTATION = {
-  study: { motif: 'book', wing: 'desk', latest: 'FIN301 - three revision blocks left this week' },
-  academia: { motif: 'academy', wing: 'desk', latest: 'PhD scholarships - Cardiff shortlist drafted' },
-  career: { motif: 'case', wing: 'desk', latest: 'Admiral / Data Analyst - applied Tuesday' },
-  growth: { motif: 'sprout', wing: 'self', latest: 'SQL course - window functions, lesson 9' },
-  body: { motif: 'workout', wing: 'self', latest: 'Push day - five PRs / Bute Park 5k Sunday' },
-  style: { motif: 'shirt', wing: 'self', latest: 'Eighteen pieces photographed / two outfits' },
-  relationships: { motif: 'heart', wing: 'world', latest: "Sara's birthday - 12 Aug / gift idea saved" },
-  travel: { motif: 'compass', wing: 'world', latest: 'London - 19 Jul / 09:12 train booked' },
-  home: { motif: 'home', wing: 'world', latest: 'Groceries Saturday / fix the desk lamp' },
-  culture: { motif: 'film', wing: 'soul', latest: 'The Blind Owl - chapter four' },
-  memories: { motif: 'photo', wing: 'soul', latest: 'Penarth pier at low tide - fourteen photos' },
-  mind: { motif: 'quill', wing: 'soul', latest: 'Morning pages / idea - poem-a-day widget' }
+  study: { motif: 'book', wing: 'desk' },
+  academia: { motif: 'academy', wing: 'desk' },
+  career: { motif: 'case', wing: 'desk' },
+  growth: { motif: 'sprout', wing: 'self' },
+  body: { motif: 'workout', wing: 'self' },
+  style: { motif: 'shirt', wing: 'self' },
+  relationships: { motif: 'heart', wing: 'world' },
+  travel: { motif: 'compass', wing: 'world' },
+  home: { motif: 'home', wing: 'world' },
+  culture: { motif: 'film', wing: 'soul' },
+  memories: { motif: 'photo', wing: 'soul' },
+  mind: { motif: 'quill', wing: 'soul' }
 }
 
 const ROOM_ACCENTS = {
@@ -213,11 +216,33 @@ function roomSlugsForType(type) {
   return TYPE_ROOM_FALLBACKS[type] || ['mind']
 }
 
-function buildRoomModel(entries, scheme) {
+// What is true today of the rooms that have a part of Life OS behind them, from the same day
+// the Court shows. A room without one says what it is for.
+function roomFacts(data) {
+  const facts = {}
+  const { study, jobs, home } = data ?? {}
+  if (study) facts.study = {
+    latest: study.today.length ? `${count(study.today.length, 'card')} today${study.hoursToday ? `, ${hours(study.hoursToday)}` : ''}` : 'No study card is due today',
+    meta: study.next ? `${study.next.title} · ${study.next.days === 0 ? 'today' : `in ${study.next.days} ${study.next.days === 1 ? 'day' : 'days'}`}` : `${study.progress.done} of ${count(study.progress.total, 'card')} done`,
+  }
+  if (jobs) facts.career = {
+    latest: jobs.dueToday ? `${count(jobs.dueToday, 'job')} to apply for today` : jobs.due.length ? `${count(jobs.due.length, 'saved job')} closing this week` : 'Nothing closes this week',
+    meta: `${jobs.counts.toApply} to apply for · ${jobs.appliedThisWeek} sent this week`,
+  }
+  if (home) {
+    const toBuy = home.lists.reduce((sum, list) => sum + list.items.length, 0)
+    facts.home = { latest: toBuy ? `${count(toBuy, 'thing')} to buy` : 'Nothing on a shopping list', meta: home.budget ? `${pounds(home.budget.totalPence)} this month` : '' }
+  }
+  return facts
+}
+
+function buildRoomModel(entries, scheme, facts = {}) {
   const counts = new Map(ROOMS.map((room) => [room.slug, 0]))
   const latest = new Map()
 
   entries.forEach((entry) => {
+    // A time block is hours on the calendar for an area, not something filed in a room.
+    if (entry.type === 'time-block') return
     roomSlugsForType(entry.type).forEach((slug) => {
       counts.set(slug, (counts.get(slug) || 0) + 1)
       if (!latest.has(slug)) {
@@ -233,7 +258,9 @@ function buildRoomModel(entries, scheme) {
       ...room,
       displayName: displayRoomName(room),
       count: counts.get(room.slug) || 0,
-      latest: latestEntry ? entryTitle(latestEntry) : ROOM_PRESENTATION[room.slug]?.latest || room.blurb,
+      latest: facts[room.slug]?.latest ?? (latestEntry ? entryTitle(latestEntry) : room.blurb),
+      meta: facts[room.slug]?.meta ?? '',
+      live: Boolean(facts[room.slug]),
       motif: ROOM_PRESENTATION[room.slug]?.motif || 'note',
       wing: ROOM_PRESENTATION[room.slug]?.wing || 'soul',
       accent: ROOM_ACCENTS[room.slug]?.[scheme === 'light' ? 'paper' : 'dark'] || room.accent,
@@ -587,11 +614,6 @@ function PaperCourt(props) {
 }
 
 function MadderDoor({ room, onOpen, streakDays }) {
-  const metaLine = {
-    study: '4 open · exam 14 Jul',
-    career: '6 open · 2 interviews ahead',
-    body: '2 open · 5k Sunday'
-  }
 
   return (
     <button className="madder-door" style={room.style} type="button" onClick={() => onOpen(room)}>
@@ -601,7 +623,7 @@ function MadderDoor({ room, onOpen, streakDays }) {
           <h2>{room.displayName}</h2>
         </div>
         <p>{room.latest}</p>
-        <small>{metaLine[room.slug]}</small>
+        <small>{room.meta}</small>
       </div>
       {room.slug === 'study'
         ? <StreakRing days={streakDays} of={14} />
@@ -698,7 +720,7 @@ function MadderCourt(props) {
 
         <section className="madder-greeting" aria-label="Court greeting">
           <h1>{greeting}, Xar.</h1>
-          <p>Eleven days of study kept · two rooms saw work today</p>
+          <p>{props.dayLine}</p>
         </section>
 
         <form className="madder-capture-pool" onSubmit={captureProps.handleSubmit}>
@@ -836,7 +858,7 @@ function IndigoCourt(props) {
           <aside className="indigo-rail">
             <section className="indigo-rail-greeting">
               <p>{greeting}, Xar.</p>
-              <span>{weekdayLabel} · {clockLabel} · FIN301 in 11 days</span>
+              <span>{weekdayLabel} · {clockLabel}{props.nextLine ? ` · ${props.nextLine}` : ''}</span>
             </section>
 
             <IndigoCapture captureProps={captureProps} />
@@ -864,7 +886,7 @@ function IndigoCourt(props) {
               <StreakRing days={streakDays} of={14} />
               <div>
                 <strong>{streakDays}-day study streak</strong>
-                <span>FIN301 · 14 Jul · in 11 days</span>
+                <span>{props.nextLine || 'No dated test ahead'}</span>
               </div>
             </section>
           </aside>
@@ -923,51 +945,42 @@ function ModernRoom({ room, onOpen }) {
       <span className="modern-room-icon" aria-hidden="true"><Glyph name={room.motif} size={18} /></span>
       <span className="modern-room-copy">
         <strong>{room.displayName}</strong>
-        <small>{destination ? `Open ${destination}` : room.count ? room.latest : room.blurb}</small>
+        <small>{room.live ? room.latest : destination ? `Open ${destination}` : room.count ? room.latest : room.blurb}</small>
       </span>
-      <span className="modern-room-count" aria-label={`${room.count} filed`}>{room.count}</span>
+      {room.count ? <span className="modern-room-count" aria-label={`${room.count} filed`}>{room.count}</span> : null}
     </>
   )
   return destination
-    ? <button className="modern-room is-linked" style={room.style} type="button" onClick={() => onOpen(room)}>{body}</button>
+    ? <button className={`modern-room is-linked${room.live ? ' is-live' : ''}`} style={room.style} type="button" onClick={() => onOpen(room)}>{body}</button>
     : <div className="modern-room" style={room.style}>{body}</div>
 }
 
+// The first page. The day is here, not a click away: the line that adds to it, its path, and
+// what Study, Jobs, Home and Notes hold today. Under it, what was filed lately and the areas.
 function ModernCourt(props) {
-  const { captureProps, calendarState, dailyPoem, greeting, jalaliDateLabel, onOpenRoom, recentEntries, rooms, todayItems, weekdayLabel } = props
+  const { captureProps, dailyPoem, greeting, jalaliDateLabel, onOpenRoom, onRemoveEntry, page, recentEntries, rooms, weekdayLabel } = props
+  // Removing is for good, so it takes a second press on the same row.
+  const [removing, setRemoving] = useState('')
 
   return (
-    <section className="modern-court" aria-label="Home">
+    <section className="modern-court day-page" aria-label="Home">
       <header className="modern-court-heading">
         <p className="modern-eyebrow">{weekdayLabel} · {jalaliDateLabel}</p>
         <h1>{greeting}, Xar.</h1>
+        {props.dayLine ? <p className="modern-day-line">{props.dayLine}</p> : null}
       </header>
 
-      <form className="modern-card modern-capture" onSubmit={captureProps.handleSubmit}>
-        <CaptureFields {...captureProps} variant="modern" />
-      </form>
+      <AddLine page={page} id="court-add-input" />
+
+      <div className="day-grid">
+        <section className="day-path" aria-labelledby="court-day-heading">
+          <header><h2 id="court-day-heading">Today</h2><Link to="/today">The whole day</Link></header>
+          <DayPath page={page} compact />
+        </section>
+        <div className="day-panels"><DayPanels page={page} compact /></div>
+      </div>
 
       <div className="modern-court-grid">
-        <section className="modern-card" aria-labelledby="modern-today">
-          <div className="modern-card-heading">
-            <h2 id="modern-today">Today</h2>
-            <Link to="/today">Open Today</Link>
-          </div>
-          <CourtCalendarNote calendar={calendarState} />
-          {todayItems.length ? (
-            <ol className="modern-today-list">
-              {todayItems.map((entry) => (
-                <li key={entry.id} style={{ '--room-accent': entry.room.accent }}>
-                  <time>{entry.time}</time>
-                  <p><Link to={entry.href}>{entry.title}</Link><small>{entry.room.displayName} · {entry.type}</small></p>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            !calendarState.loading && !calendarState.error ? <p className="modern-empty">{calendarDisplay(calendarState, { empty: 'No dated items today.' }).emptyMessage}</p> : null
-          )}
-        </section>
-
         <section className="modern-card" aria-labelledby="modern-filed">
           <div className="modern-card-heading">
             <h2 id="modern-filed">Recently filed</h2>
@@ -978,13 +991,23 @@ function ModernCourt(props) {
               {recentEntries.slice(0, 5).map((entry) => (
                 <li key={entry.id} style={{ '--room-accent': entry.room.accent }}>
                   <span aria-hidden="true"><Glyph name={entry.glyph} size={15} /></span>
-                  <p>{entry.title}<small>{entry.type}</small></p>
+                  <p><Link to={`/ledger#entry-${encodeURIComponent(entry.id)}`}>{entry.title}</Link><small>{entry.type}{entry.when ? ` · ${entry.when}` : ''}</small></p>
                   <time>{entry.ago}</time>
+                  {removing === entry.id
+                    ? <button type="button" className="modern-filed-remove is-sure" onClick={() => { setRemoving(''); onRemoveEntry(entry) }} onBlur={() => setRemoving('')}>Remove for good</button>
+                    : <button type="button" className="modern-filed-remove" onClick={() => setRemoving(entry.id)} aria-label={`Remove ${entry.title}`}>Remove</button>}
                 </li>
               ))}
             </ol>
-          ) : <p className="modern-empty">No entries filed yet.</p>}
+          ) : <p className="modern-empty">Nothing filed yet. Plans and notes you add above are kept here, newest first; each opens in the Ledger.</p>}
         </section>
+
+        <details className="modern-card modern-capture-more">
+          <summary>File something else<small>a book, a workout, a person, a place and 40 more kinds</small></summary>
+          <form className="modern-capture" onSubmit={captureProps.handleSubmit}>
+            <CaptureFields {...captureProps} variant="modern" />
+          </form>
+        </details>
       </div>
 
       <section aria-labelledby="modern-areas">
@@ -1042,17 +1065,21 @@ export default function TheCourt() {
   const [submitError, setSubmitError] = useState('')
   const { entries, refetch } = useEntries('?limit=80')
   const todayKey = useLondonToday()
-  const calendarState = useCalendar(todayKey, todayKey)
+  // One reading of the day for the whole page: its dated items, study blocks and panels.
+  const page = useDayPage()
+  const calendarState = page.calendar
+  const facts = useMemo(() => roomFacts(page.data), [page.data])
 
   const [now, setNow] = useState(() => new Date())
   const entryTypeOptions = useMemo(() => Object.entries(ENTRY_TYPES), [])
-  const rooms = useMemo(() => buildRoomModel(entries, scheme), [entries, scheme])
+  const rooms = useMemo(() => buildRoomModel(entries, scheme, facts), [entries, scheme, facts])
   const studyCount = useMemo(() => {
     return entries.filter((entry) => roomSlugsForType(entry.type).includes('study')).length
   }, [entries])
   const streakDays = Math.min(12, studyCount)
   const recentEntries = useMemo(() => {
-    return entries.slice(0, 6).map((entry) => {
+    // Time blocks are plans laid on the calendar (two weeks of job time at once), not things she filed.
+    return entries.filter((entry) => entry.type !== 'time-block').slice(0, 6).map((entry) => {
       const room = roomForEntry(entry, rooms)
 
       return {
@@ -1063,6 +1090,9 @@ export default function TheCourt() {
         excerpt: entryExcerpt(entry),
         type: entryTypeLabel(entry),
         ago: relativeTime(entry.created_at),
+        // A plan shows the day and time it is for.
+        when: !entry.start_at ? '' : entry.start_at.length > 10 ? `${formatCalendarDay(dateKey(entry.start_at))}, ${clockOf(entry.start_at)}`
+          : entry.start_at.slice(0, 10) === dateKey(entry.created_at) ? '' : `for ${formatCalendarDay(entry.start_at.slice(0, 10))}`,
         room
       }
     })
@@ -1140,6 +1170,18 @@ export default function TheCourt() {
     }
   }
 
+  // Removes an entry for good (the Court asks twice). What it was on the calendar goes with it.
+  async function onRemoveEntry(entry) {
+    setSubmitError('')
+    try {
+      await apiFetch(`/api/entries/${encodeURIComponent(entry.id)}`, { method: 'DELETE' })
+      await refetch()
+      page.refetch()
+    } catch (error) {
+      setSubmitError(`“${entry.title}” was not removed: ${error.message}`)
+    }
+  }
+
   function onOpenRoom(room) {
     if (room.slug === 'study') {
       navigate('/study')
@@ -1185,6 +1227,11 @@ export default function TheCourt() {
     jalaliDateLabel: jalaliDateLabelFor(now),
     navigate,
     onOpenRoom,
+    onRemoveEntry,
+    page,
+    // What the day holds, in a line, for the greeting; and the next dated test.
+    dayLine: [facts.study?.meta, facts.career?.latest, facts.home?.latest].filter(Boolean).join(' · '),
+    nextLine: facts.study?.meta ?? '',
     recentEntries,
     rooms,
     shortDateLabel: shortDateLabelFor(now),

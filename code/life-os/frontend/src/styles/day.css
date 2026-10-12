@@ -180,3 +180,47 @@
 
 /* The ancient styles' display serif draws 1 like the letter I; their figures are in the number face. */
 .app-shell:not([data-ground='modern']) .day-figure strong { font: 600 2.05rem/1 var(--m-num); }
+
+/* ---- The Court (Modern): the day sits on the first page ---- */
+.modern-court.day-page { width: min(94rem, 100%); margin-top: 0; }
+.modern-day-line { margin: 0.55rem 0 0; color: var(--m-muted); font-size: 0.98rem; line-height: 1.45; }
+.day-path > header a { color: var(--m-accent-strong); font: 600 0.8rem/1.2 var(--m-font); text-decoration: none; white-space: nowrap; }
+.day-path > header a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.day-page .day-add-done { color: var(--m-accent-strong); }
+.day-job-time { margin: 0.75rem 0 0; padding: 0.5rem 0.7rem; border-radius: var(--m-radius-sm); background: var(--m-accent-soft); color: var(--m-ink); font-size: 0.86rem; line-height: 1.4; }
+.day-also .day-also-more { border-style: dashed; }
+.day-also .day-also-more::before { content: none; }
+.modern-filed-list a { color: inherit; text-decoration: none; }
+.modern-filed-list a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.modern-capture-more > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.8rem; cursor: pointer; color: var(--m-ink); font: var(--m-heading-weight) 1.3rem/1.2 var(--m-display); }
+.modern-capture-more > summary small { color: var(--m-muted); font: var(--m-text-weight) 0.85rem/1.4 var(--m-font); }
+.modern-capture-more[open] > summary { margin-bottom: 0.9rem; }
+.modern-capture-more .modern-capture { padding: 0; border: 0; background: transparent; box-shadow: none; }
+.modern-room.is-live .modern-room-copy small { color: var(--m-ink); font-weight: 600; }
+
+/* ---- Today as it concerns one part: the strip under the top bar inside each part ---- */
+.area-today {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: baseline; gap: 0.9rem;
+  padding: 0.5rem clamp(1rem, 3vw, 2.25rem); border-bottom: 1px solid var(--m-line); background: var(--m-surface); color: var(--m-ink);
+  font: var(--m-text-weight) 0.85rem/1.45 var(--m-font);
+}
+.area-today-name { color: var(--m-accent-strong); font: 700 0.68rem/1.2 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase; text-decoration: none; }
+.area-today p { margin: 0; min-width: 0; display: flex; flex-wrap: wrap; gap: 0.1rem 0; overflow: hidden; }
+.area-today p span:not(:last-child)::after { content: '·'; margin: 0 0.6rem; color: var(--m-faint); }
+.area-today p span:first-child { font-weight: 600; }
+.area-today-all { color: var(--m-accent-strong); font-weight: 600; font-size: 0.8rem; text-decoration: none; white-space: nowrap; }
+.area-today-all:hover, .area-today-name:hover { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 720px) {
+  .area-today { grid-template-columns: minmax(0, 1fr) auto; }
+  .area-today-name { display: none; }
+  .area-today p span:not(:first-child) { display: none; }
+  .area-today p span:first-child::after { content: none; }
+}
+
+/* Recently filed and "file something else" keep their own heights; a row can be removed. */
+.modern-court.day-page .modern-court-grid { align-items: start; }
+.modern-court.day-page .modern-filed-list li { grid-template-columns: auto minmax(0, 1fr) auto auto; }
+.modern-filed-remove { border: 0; padding: 0.2rem 0.1rem; background: transparent; color: var(--m-faint); cursor: pointer; font: 600 0.74rem/1.2 var(--m-font); opacity: 0; }
+.modern-filed-list li:hover .modern-filed-remove, .modern-filed-remove:focus-visible, .modern-filed-remove.is-sure { opacity: 1; }
+.modern-filed-remove.is-sure { color: var(--m-red); }
+@media (hover: none) { .modern-filed-remove { opacity: 1; } }

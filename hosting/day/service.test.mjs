@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { createDayService, homeDay, jobsDay, notesDay, studyDay } from './service.mjs'
+import { createDayService, homeDay, jobsDay, jobTime, notesDay, studyDay } from './service.mjs'
 
 const DATE = '2026-10-13'
 const workspace = {
@@ -101,7 +101,7 @@ test('a source that cannot be read is named and the rest still answers', async (
     loadStudy: async () => workspace, loadPlans: async (id) => plans.find(entry => entry.semesterId === id)?.plan,
     loadCareer: async () => { throw new Error('ECONNREFUSED 127.0.0.1:47852') },
     loadBudget: async () => ({ revision: 0, state: null }),
-    loadNotes: () => [],
+    loadEntries: () => [],
   })
   const result = await service({ date: DATE })
   assert.equal(result.blocks.length, 2)
@@ -110,4 +110,38 @@ test('a source that cannot be read is named and the rest still answers', async (
   assert.deepEqual(result.sources.find(source => source.id === 'jobs'), { id: 'jobs', label: 'JobMap', status: 'unavailable', error: 'JobMap could not be read. Open it to check.' })
   assert.equal(JSON.stringify(result).includes('ECONNREFUSED'), false)
   await assert.rejects(service({ date: 'tomorrow' }), { status: 400 })
+})
+
+test('job time is the hours set aside for the career area that day, and the week counts what was sent', () => {
+  const entries = [
+    { id: 'b1', type: 'time-block', title: 'Job applications', details: '{"area":"career"}', start_at: '2026-10-13T14:45:00.000Z', end_at: '2026-10-13T17:45:00.000Z', status: null },
+    { id: 'b2', type: 'time-block', title: 'Job applications', details: { area: 'career' }, start_at: '2026-10-13', all_day: true, status: 'done' },
+    { id: 'b3', type: 'time-block', title: 'Gym', details: { area: 'core' }, start_at: '2026-10-13T08:00:00.000Z', end_at: '2026-10-13T09:00:00.000Z' },
+    { id: 'b4', type: 'time-block', title: 'Cancelled', details: { area: 'career' }, start_at: '2026-10-13T08:00:00.000Z', end_at: '2026-10-13T09:00:00.000Z', status: 'cancelled' },
+    { id: 'b5', type: 'time-block', title: 'Tomorrow', details: { area: 'career' }, start_at: '2026-10-14T16:00:00.000Z', end_at: '2026-10-14T19:00:00.000Z' },
+    { id: 'n1', type: 'note', title: 'A note', created_at: '2026-10-13T08:00:00.000Z' },
+  ]
+  assert.deepEqual(jobTime(entries, DATE).map(block => [block.id, block.start, block.end, block.minutes, block.done]), [['b2', '', '', 0, true], ['b1', '15:45', '18:45', 180, false]])
+  const jobs = jobsDay({ jobs: [
+    { id: 'a', role: 'A', company: 'A', saved: true, status: 'Applied', applied: '2026-10-12' },   // Monday of this week
+    { id: 'b', role: 'B', company: 'B', saved: true, status: 'Applied', applied: '2026-10-11' },   // the Sunday before
+    { id: 'c', role: 'C', company: 'C', saved: true, status: 'To review', deadline: DATE },
+  ] }, DATE, entries)
+  assert.equal(jobs.minutesToday, 180)
+  assert.equal(jobs.appliedThisWeek, 1)
+  assert.equal(jobs.time.length, 2)
+})
+
+test('the day reads Life OS entries once for notes and job time, and says so when it cannot', async () => {
+  let reads = 0
+  const entries = [{ id: 'n1', type: 'note', title: 'Morning', details: { body: 'Hello' }, created_at: '2026-10-13T08:00:00.000Z' }, { id: 'b1', type: 'time-block', title: 'Job applications', details: { area: 'career' }, start_at: '2026-10-13T14:45:00.000Z', end_at: '2026-10-13T17:45:00.000Z' }]
+  const base = { loadStudy: async () => workspace, loadPlans: async () => ({}), loadCareer: async () => ({ jobs: [] }), loadBudget: async () => ({ state: {} }) }
+  const day = await createDayService({ ...base, loadEntries: () => { reads += 1; return entries } })({ date: DATE })
+  assert.equal(reads, 1)
+  assert.deepEqual(day.notes.map(note => note.body), ['Hello'])
+  assert.equal(day.jobs.minutesToday, 180)
+  const broken = await createDayService({ ...base, loadEntries: () => { throw new Error('locked') } })({ date: DATE })
+  assert.equal(broken.notes, null)
+  assert.equal(broken.jobs.minutesToday, 0)
+  assert.equal(broken.sources.find(source => source.id === 'notes').status, 'unavailable')
 })

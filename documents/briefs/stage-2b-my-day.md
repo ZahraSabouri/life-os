@@ -60,6 +60,12 @@ One page from which Xar runs her day. It shows the day in time order and lets he
 - [x] Today for any day (`/today?date=…`), with the day before and after, and "Open this day" on the calendar.
 - [x] Study blocks on the Life OS calendar at their clock times (`hosting/study/calendar.mjs`).
 - **Commit:** `[2b-cp3] Plan the day from Today, any day, and study blocks on the calendar`
+- [x] **The Court is the working first page (Modern), 12 October afternoon.** Xar: "I still cannot see any meaningful changes for what I asked you initially in case of unifying all apps"; "court [opens first] but today can be also shortly … in the court! why are you stuck to these … borders?" The day's pieces were pulled out of Today into shared parts (`components/DayParts.jsx`, `lib/useDayPage.js`) and the Court now carries them: the add line, the day's path (short form), and Study, Jobs, Home and Notes. "Recently filed" rows open their entry and can be removed; the full capture form is kept under "File something else". The area tiles and the other styles' Courts say what is true today instead of invented lines.
+- [x] **Today in every part:** `components/AreaToday.jsx`, a strip under the top bar inside the Study hub, JobMap, Budget and Cardiff Life.
+- [x] **Things to buy from anywhere:** `POST /api/home/shopping` (`hosting/home/shopping.mjs`) changes Budget's list with Budget's own functions and saves through Budget's own address with its revision check. The 13 summer items moved with `scripts/move-summer-shopping-to-budget.mjs`.
+- [x] **Job time:** a new entry kind, "Time block" (`time-block`, with an area), drawn in its area's colour on the calendar and in the day; the Jobs panel shows the hours set aside and what was sent this week.
+- [x] **Deleting an entry:** `DELETE /api/entries/:id`.
+- **Commit:** `[2b-cp5] The Court is the working first page; today in every part; shopping and job time reach the day`
 - [ ] "Open in Study hub" from Today opens the semester and the card straight away (the hub's entry screen accepts the semester from the address). Needs a Study hub rebuild.
 - [ ] Tick a card's step and mark a card done from Today (through the Study hub's saved state, with its revision check; an open Study hub tab must not lose work).
 - [ ] Tick a shopping item as bought, and add an item, from Today (through Budget's own save).

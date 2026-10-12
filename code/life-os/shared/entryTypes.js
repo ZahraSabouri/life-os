@@ -31,6 +31,16 @@ export const ENTRY_TYPES = {
       priority: { type: 'enum', enum: ['low', 'med', 'high'], default: 'med' }
     }
   },
+  'time-block': {
+    archetype: 'commitment',
+    label: 'Time block',
+    icon: 'Tb',
+    rooms: [],
+    desc: 'Hours set aside for one area of life. Dated via entry start_at and end_at.',
+    fields: {
+      area: { type: 'enum', enum: ['core', 'study', 'career', 'money', 'home', 'relationships', 'events'], default: 'core' }
+    }
+  },
   workout: {
     archetype: 'moment',
     label: 'Workout',

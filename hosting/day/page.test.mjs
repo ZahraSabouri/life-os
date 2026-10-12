@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { buildDay, daysAway, noteTitle, parsePlan, shortPlace } from '../../code/life-os/frontend/src/lib/day.js'
+import { buildDay, daysAway, noteTitle, parsePlan, shortPlace, splitThings } from '../../code/life-os/frontend/src/lib/day.js'
 
 const DATE = '2026-10-12'
 const items = [
@@ -11,7 +11,7 @@ const items = [
   { id: 'study:native:cards:other:start', area: 'study', kind: 'plan', title: 'Start · Optional reading', start: DATE, all_day: true, href: '/study', meta: { entity: 'cards', recordId: 'other' } },
   { id: 'renewal', area: 'money', kind: 'reminder', title: 'SIM card', start: DATE, all_day: true, href: '/budget' },
   { id: 'job', area: 'career', kind: 'deadline', title: 'Data Manager · Swansea', start: DATE, all_day: true, href: '/jobmap' },
-  { id: 'task', area: 'core', kind: 'plan', title: 'Return library book', start: DATE, all_day: true },
+  { id: 'task', area: 'core', kind: 'plan', title: 'Return library book', start: DATE, all_day: true, meta: { source: 'core', entryId: 'task', type: 'task' } },
   { id: 'list', area: 'home', kind: 'plan', title: 'Lidl', start: DATE, all_day: true, href: '/budget' },
   { id: 'tomorrow', area: 'study', kind: 'fixed', title: 'Tomorrow', start: '2026-10-13T12:10:00.000Z', end: '2026-10-13T14:00:00.000Z', all_day: false },
 ]
@@ -75,12 +75,20 @@ test('a plan typed in one line: a clock time places it, no time means any time t
 
 test('her own plans can be ticked off or taken off the day; a study block from the calendar is not drawn twice', () => {
   const mine = [
-    { id: 'core:entry:t1', area: 'core', kind: 'plan', title: 'Lidl', start: DATE, all_day: true, href: '/ledger#entry-t1', meta: { entryId: 't1', type: 'task' } },
-    { id: 'core:entry:e1', area: 'core', kind: 'fixed', title: 'Library', start: '2026-10-12T16:15:00.000Z', all_day: false, meta: { entryId: 'e1', type: 'event' } },
+    { id: 'core:entry:t1', area: 'core', kind: 'plan', title: 'Lidl', start: DATE, all_day: true, href: '/ledger#entry-t1', meta: { source: 'core', entryId: 't1', type: 'task' } },
+    { id: 'core:entry:e1', area: 'core', kind: 'fixed', title: 'Library', start: '2026-10-12T16:15:00.000Z', all_day: false, meta: { source: 'core', entryId: 'e1', type: 'event' } },
+    { id: 'core:entry:j1', area: 'career', kind: 'plan', title: 'Job applications', start: '2026-10-12T16:45:00.000Z', end: '2026-10-12T19:45:00.000Z', all_day: false, meta: { source: 'core', entryId: 'j1', type: 'time-block' } },
     { id: 'study:block:autumn:b1:2026-10-12', area: 'study', kind: 'deadline', title: 'Library block', start: '2026-10-12T16:30:00.000Z', end: '2026-10-12T17:30:00.000Z', all_day: false, meta: { type: 'study-block', cardId: 'c1' } },
   ]
   const { stops, anytime } = buildDay({ items: mine, day, date: DATE, now: '14:00' })
-  assert.deepEqual(stops.map(stop => [stop.start, stop.title, stop.entry?.id ?? null]), [['17:15', 'Library', 'e1'], ['17:30', 'Library', null]])
+  assert.deepEqual(stops.map(stop => [stop.start, stop.title, stop.entry?.id ?? null]), [['17:15', 'Library', 'e1'], ['17:30', 'Library', null], ['17:45', 'Job applications', 'j1']])
+  assert.deepEqual([stops[2].area, stops[2].entry.task], ['career', true])   // her job time: in the Career colour, and it can be ticked off
   assert.deepEqual(stops[0].entry, { id: 'e1', task: false, revision: undefined })
   assert.deepEqual(anytime.find(entry => entry.title === 'Lidl').entry, { id: 't1', task: true, revision: undefined })
+})
+
+test('several things to buy in one line', () => {
+  assert.deepEqual(splitThings('eggs, rice, 2 kg onions'), ['eggs', 'rice', '2 kg onions'])
+  assert.deepEqual(splitThings('buy milk'), ['milk'])
+  assert.deepEqual(splitThings(' , ;'), [])
 })

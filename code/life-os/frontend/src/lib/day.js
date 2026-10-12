@@ -73,10 +73,15 @@ export function parsePlan(text) {
   return { title, start, end: finish > start ? finish : '' }
 }
 
-// Something she added to the day herself (a core entry) can be ticked off or taken off the day there.
+// Something she added to the day herself (a Life OS entry) can be ticked off or taken off the day there.
 function ownEntry(item) {
-  if (item.area !== 'core' || !item.meta?.entryId) return null
-  return { id: item.meta.entryId, task: item.meta.type === 'task', revision: item.meta.revision }
+  if (item.meta?.source !== 'core' || !item.meta?.entryId) return null
+  return { id: item.meta.entryId, task: ['task', 'time-block'].includes(item.meta.type), revision: item.meta.revision }
+}
+
+// "eggs, rice, 2 kg onions": commas (or new lines) separate the things to buy.
+export function splitThings(text) {
+  return String(text ?? '').split(/[,\n;]+/).map((thing) => thing.trim().replace(/^(?:buy|get)\s+/i, '').replace(/\s+/g, ' ')).filter(Boolean).slice(0, 40)
 }
 
 export function buildDay({ items = [], day = null, date, now = '' }) {
@@ -117,7 +122,7 @@ export function buildDay({ items = [], day = null, date, now = '' }) {
     // Today's study cards are drawn with their steps, so their bare calendar rows are left out.
     if (isCardItem(item) && shown.has(item.meta.recordId)) continue
     const entry = { key: item.id, type: 'item', title: item.title, area: item.area, kind: item.kind, href: item.href || '/calendar', entry: ownEntry(item) }
-    if (item.area === 'core' || item.area === 'home') anytime.push(entry)
+    if (item.meta?.source === 'core' || item.area === 'home') anytime.push(entry)
     else also.push(entry)
   }
   // Where "now" falls in the path: the first stop that is not over. -1 when every stop is over; -2 when there is nothing to place it in.

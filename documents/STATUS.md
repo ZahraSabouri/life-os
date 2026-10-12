@@ -5,6 +5,15 @@
 ## Now
 **Today, 12 October (Claude Code):** Today is rebuilt as the page to work from and is live. Brief: `briefs/stage-2b-my-day.md` (CP1 and CP2 done; CP3 next). Note: `sessions/2026-10-12-claude-code-stage-2b-my-day.md`. Codex entered the autumn study plan the same afternoon; the two were coordinated in `COORDINATION_2026-10-12.md`.
 
+**The first page (Court, Modern), what works right now** (12 October afternoon; note `sessions/2026-10-12-claude-code-stage-2b-the-court-unified.md`)
+- The Court opens with the day on it: a line that adds a plan, a note or something to buy; the day in clock order (classes, study blocks, job time, her own plans); and Study, Jobs, Home and Notes with today's content. "The whole day" opens Today.
+- "To buy" puts things on Budget's shopping list from the Court or Today. The 13 items from the summer list are on a Budget list and gone from the study data.
+- Job-application time is on the calendar and in the day as blocks for 12 to 25 October; the Jobs panel shows the hours set aside and what was sent this week.
+- Inside the Study hub, JobMap, Budget and Cardiff Life, a strip under the top bar says what today holds for that part.
+- "Recently filed" is empty of tests (the seven July entries are deleted); its rows open their entry and can be removed.
+- Madder and Paper Courts say what is true today in place of invented lines. Indigo's capture box is still a mock-up.
+- **Not yet:** the Court in Madder, Indigo and Paper does not carry the day the way Modern does; ticking a study step or a shopping item from the day; job time after 25 October; "Open in Study hub" opening the card.
+
 **Today, what works right now**
 - Top bar → Today. The day is a path in clock order with a "now" marker: classes, and the Study hub's study blocks, each opened to its card, steps and "done when". Under it: "Any time today", and one slim row for renewals and deadlines.
 - Beside it, four panels with real content: Study (days to the next test, cards done before it, today's cards), Jobs (saved jobs closing in the next seven days, interviews, follow-ups), Home (shopping list, today's meals, what is at home, the month's budget), Notes.
@@ -84,6 +93,7 @@ To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-t
 
 ## Data
 - University sources refreshed 11 October: 18 new material files and 8 caption TXT files in the existing Cardiff Autumn folder. New MAT022 test date (23 October) is saved in `.runtime/university-imports/2026-10-11/calendar-updates.json`; app import remains pending because Life OS was not running. Details: `sessions/2026-10-11-codex-university-materials-refresh.md`.
+- 12 October afternoon: the seven July test entries deleted from the core (copy: `../Life_OS_backups/core-2026-10-12/`; the Ledger then held nothing, then 14 job time blocks for 12 to 25 October). Budget revision 92 to 93: one list, "To buy (from the summer list)", 13 items (Budget's own copy: `budget-management/data/backups/state-r92-…json`). Summer 2026 workspace: `set_aside.shoppingList` removed after a dump (`../Life_OS_backups/study-2026-10-12/before-moving-summer-shopping-…dump`); it still keeps aside 131 cards, 100 schedule rules, the interview module and 6 notes.
 - JobMap: one active standalone owning workspace, connected from both app data/workspace-connection.json files. Shared revision 30, 980 original + 86 added = 1,066 records. All original personal values preserved; Life OS historical progress (revision 41) untouched. Both inboxes empty and parity passes. Recovery snapshots and verification in each app data/recovery/shared-workspace-2026-10-12T11-07-20-272Z/. Details: sessions/2026-10-12-codex-jobmap-shared-workspace.md.
 - PostgreSQL (`lifeos`, schema `study`), live records: 2 semesters, 7 modules, 42 cards, 6 assessments, 81 sessions, 76 materials; 2 hub workspaces, 426 hub events. Removed and restorable: 132 cards, 7 modules, 219 materials (the stale July import and the 4 autumn cards that moved into the hub).
 - Summer 2026's workspace also keeps what is not study (`set_aside`): 133 cards, 100 schedule rules, the interview module, 6 notes, 13 shopping items.
@@ -92,6 +102,7 @@ To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-t
 - Original app, untouched: `Documents\Apply\…\Summer_Rescue_Campaign_2026\summer-rescue-plan-app`.
 
 ## Last five sessions
+- 2026-10-12 The Court as the working first page; today in every part; shopping and job time (2b CP5): `sessions/2026-10-12-claude-code-stage-2b-the-court-unified.md`
 - 2026-10-12 Light and dark, the to-do list, the day's connections (2b CP3, CP4): `sessions/2026-10-12-claude-code-stage-2b-dark-and-connections.md`
 - 2026-10-12 Check of Codex's autumn study plan: `sessions/2026-10-12-claude-code-study-plan-check.md`
 - 2026-10-12 Today as the page to work from (2b CP1, CP2): `sessions/2026-10-12-claude-code-stage-2b-my-day.md`

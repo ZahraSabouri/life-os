@@ -229,4 +229,29 @@ router.patch('/:id', (req, res) => {
   }
 })
 
+// Removes an entry for good, with the ties that exist only because of it (its tags, people,
+// places and links). An entry with files is refused: the files would be left without an owner.
+router.delete('/:id', (req, res) => {
+  try {
+    const existing = selectEntryById.get(req.params.id)
+    if (!existing) return res.status(404).json({ error: 'not found' })
+    if (db.prepare('SELECT 1 FROM files WHERE entry_id = ? LIMIT 1').get(req.params.id)) {
+      return res.status(409).json({ error: 'This entry has files. Remove them first.' })
+    }
+    db.exec('BEGIN')
+    try {
+      for (const table of ['entry_tags', 'entry_people', 'entry_places']) db.prepare(`DELETE FROM ${table} WHERE entry_id = ?`).run(req.params.id)
+      db.prepare('DELETE FROM entry_links WHERE from_entry_id = ? OR to_entry_id = ?').run(req.params.id, req.params.id)
+      db.prepare('DELETE FROM entries WHERE id = ?').run(req.params.id)
+      db.exec('COMMIT')
+    } catch (error) {
+      db.exec('ROLLBACK')
+      throw error
+    }
+    res.json({ ok: true, deleted: serializeEntry(existing) })
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+})
+
 export default router

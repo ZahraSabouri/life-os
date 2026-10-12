@@ -104,8 +104,24 @@ export function studyDay(workspace, plans, date) {
 }
 
 // ---- Jobs -------------------------------------------------------------------------------
-export function jobsDay(value, date) {
+// Hours she has set aside for job applications: time blocks whose area is career.
+export function jobTime(entries, date) {
+  return array(Array.isArray(entries) ? entries : entries?.entries).flatMap((entry) => {
+    if (!entry || entry.type !== 'time-block' || ['cancelled', 'archived'].includes(lower(entry.status))) return []
+    let details = entry.details ?? {}
+    if (typeof details === 'string') { try { details = JSON.parse(details) } catch { details = {} } }
+    if (plain(details).area !== 'career') return []
+    const timed = typeof entry.start_at === 'string' && entry.start_at.length > 10
+    if ((timed ? dateKey(entry.start_at) : day(entry.start_at)) !== date) return []
+    const minutes = timed && entry.end_at ? Math.max(0, Math.round((Date.parse(entry.end_at) - Date.parse(entry.start_at)) / 60_000)) : 0
+    return [{ id: entry.id, title: text(entry.title, 200) || 'Job applications', start: timed ? LONDON_CLOCK.format(new Date(entry.start_at)) : '', end: timed && entry.end_at ? LONDON_CLOCK.format(new Date(entry.end_at)) : '', minutes, done: lower(entry.status) === 'done' }]
+  }).sort((a, b) => a.start.localeCompare(b.start))
+}
+
+export function jobsDay(value, date, entries = []) {
   const horizon = addDays(date, 7)
+  const weekStart = addDays(date, -((new Date(`${date}T12:00:00Z`).getUTCDay() + 6) % 7))
+  const time = jobTime(entries, date)
   const jobs = array(value?.jobs ?? value).filter((job) => job && typeof job.id === 'string')
   const row = (job) => {
     const deadline = day(job.deadline)
@@ -127,6 +143,10 @@ export function jobsDay(value, date) {
     dueToday: due.filter((job) => job.deadline === date && !job.applied).length,
     followUps: followUps.slice(0, 6),
     interviews: mine.filter(({ job }) => lower(job.status) === 'interview').map(({ view }) => view).slice(0, 6),
+    // The day's own target: the hours set aside, and what has been sent this week (Monday on).
+    time,
+    minutesToday: time.reduce((sum, block) => sum + block.minutes, 0),
+    appliedThisWeek: jobs.filter((job) => day(job.applied) && day(job.applied) >= weekStart && day(job.applied) <= date).length,
     counts: {
       saved: mine.length,
       toApply: mine.filter(({ view }) => !view.applied).length,
@@ -187,13 +207,13 @@ export function notesDay(value, date) {
 }
 
 // ---- The day ----------------------------------------------------------------------------
-export function createDayService({ loadStudy, loadPlans, loadCareer, loadBudget, loadNotes, timeoutMs = 2500 } = {}) {
+export function createDayService({ loadStudy, loadPlans, loadCareer, loadBudget, loadEntries, timeoutMs = 2500 } = {}) {
   return async function dayOf({ date } = {}) {
     if (!isDateKey(date)) throw Object.assign(new Error('Use a valid date (YYYY-MM-DD)'), { status: 400 })
     const sources = []
     async function read(id, label, load, shape, empty) {
       try {
-        const result = shape(await bounded(load, timeoutMs))
+        const result = await shape(await bounded(load, timeoutMs))
         sources.push({ id, label, status: 'ready' })
         return result
       } catch {
@@ -208,16 +228,18 @@ export function createDayService({ loadStudy, loadPlans, loadCareer, loadBudget,
       const plans = await Promise.all(semesters.map(async (row) => ({ semesterId: row.id, plan: await Promise.resolve(loadPlans?.(row.id)).catch(() => ({})) })))
       return { workspace, plans }
     }, ({ workspace, plans }) => studyDay(workspace, plans, date), { blocks: [], panel: null })
-    const jobs = read('jobs', 'JobMap', loadCareer, (value) => {
+    // Life OS's own entries are read once: the day's notes, and the hours set aside for jobs.
+    const entries = Promise.resolve().then(() => loadEntries()).catch(() => null)
+    const jobs = read('jobs', 'JobMap', loadCareer, async (value) => {
       if (!Array.isArray(value) && !Array.isArray(value?.jobs)) throw new Error('unsupported')
-      return jobsDay(value, date)
+      return jobsDay(value, date, (await entries) ?? [])
     }, null)
     const home = read('home', 'Budget', loadBudget, (value) => {
       if (plain(value).state === null) return homeDay({}, date) // A fresh planner with nothing saved yet.
       if (!value || typeof value !== 'object') throw new Error('unsupported')
       return homeDay(value, date)
     }, null)
-    const notes = read('notes', 'Notes', loadNotes, (value) => notesDay(value, date), null)
+    const notes = read('notes', 'Notes', async () => { const value = await entries; if (value === null) throw new Error('unavailable'); return value }, (value) => notesDay(value, date), null)
     const [studyResult, jobsResult, homeResult, notesResult] = await Promise.all([study, jobs, home, notes])
     return { date, blocks: studyResult.blocks, study: studyResult.panel, jobs: jobsResult, home: homeResult, notes: notesResult, sources }
   }

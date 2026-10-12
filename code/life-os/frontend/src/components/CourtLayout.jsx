@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useGround } from '../lib/groundContext.jsx'
+import AreaToday from './AreaToday.jsx'
 import ModeSwitch from './ModeSwitch.jsx'
 import StyleSwitch from './StyleSwitch.jsx'
 
@@ -14,8 +15,9 @@ export default function CourtLayout() {
   // The modern skin gives the Court the same header and page frame as every other page.
   const isManuscriptCourt = location.pathname === '/court' && ground !== 'modern'
   const isBoardRoute = !isManuscriptCourt
-  // A framed app fills the rest of the window under the top bar.
-  const isSubApp = ['/study', '/cardiff-life', '/budget', '/jobmap'].includes(location.pathname)
+  // A framed app fills the rest of the window under the top bar, with today's strip for that part.
+  const subAppArea = { '/study': 'study', '/jobmap': 'career', '/budget': 'home', '/cardiff-life': 'events' }[location.pathname]
+  const isSubApp = Boolean(subAppArea)
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat(undefined, {
     timeZone: 'Europe/London',
@@ -105,6 +107,7 @@ export default function CourtLayout() {
         </header>
       ) : null}
 
+      {isSubApp ? <AreaToday area={subAppArea} /> : null}
       <Outlet />
     </main>
   )
