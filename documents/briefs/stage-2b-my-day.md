@@ -109,9 +109,9 @@ One page from which Xar runs her day. It shows the day in time order and lets he
 - **Commit:** `0b3d58e` `[2b-cp9]`
 
 ### Open after CP9
-- [ ] Tick a card's step and mark a card done from the day.
+- [x] Tick a card's step and mark a card done from the day (`[2b-cp10]`, `6787f9e`).
 - [ ] Job time as a repeating routine.
-- [ ] Progress, review, planner and focus for the whole of Life OS (TODO section K): needs its own brief.
+- [~] Progress, review, planner and focus for the whole of Life OS: `briefs/stage-2c-focus-and-review.md` (focus, sound and the week's review done; progress over longer, the planner and repeating plans open).
 
 ## Data safety
 - CP1 and CP2 only read. The one write is a note, through the existing `/api/entries`, as the Court already does.

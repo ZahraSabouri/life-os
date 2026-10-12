@@ -4,6 +4,16 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 12 October 2026 (night) — Focus, sound and review belong to Life OS; the Study hub keeps its own (Xar with Claude Code)
+
+- **Xar:** "I need all those … features inside the whole LifeOS app, not necessarily inside the study hub"; "maybe we need the focus room … to be part of the LifeOS app, or live music, or … YouTube player." After a proposal to write a design first: "go on."
+- **Decided:** these are built one level up and nothing is taken out of the hub. The Life OS timer is for anything; the hub's Focus Room stays for study. A session on a study card run with either ends on the card.
+- **Decided:** something Life OS changes in the Study hub (a ticked step, a card done, a focus session) is changed by the hub's own rule, saved through the hub's store with its revision check, logged in the hub's event log, and announced on the hub's own channel so an open hub tab reloads. Life OS never writes the hub's state its own way.
+- **Decided:** the timer and the player live in the layout above the pages, and the running session in the browser, so moving between pages and parts or reloading does not stop them.
+- **Decided:** a look back counts each thing once and only reads. A week in progress is compared with the same days of the week before.
+- **Decided (drawing numbers):** one accent colour for every measure, text always in text colours, a bar only where a length means one thing (focus time), a meter for a part of a whole, and words beside every use of the warning colour.
+- **Not decided:** her targets (applications a week, focus hours a day); whether the hub's forest and levels should exist outside study; how the top bar is thinned (it holds twelve entries).
+
 ## 12 October 2026 (evening) — One part owns each answer; a tick is not a purchase; links name the thing (Xar with Claude Code)
 
 - **Xar:** "Data Manager (Neurological Data Platform) · Swansea University doesnt exist in the job app. where is it … not only that one!" The day had its own idea of which jobs mattered (everything on the shortlist, which the scheduled searches fill by themselves). **Decided:** the day does not rank jobs. It shows JobMap's own first list, in JobMap's order and words, read from one place (`hosting/career/first-screen.mjs`, JobMap's exported `FIRST_SCREEN`). The one thing the day adds is what a day page is for: a job that closes today is said first.

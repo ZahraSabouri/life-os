@@ -7,12 +7,12 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 ## The order of work
 1. ~~E. Dark mode across the app~~ done 12 October (Modern, as she asked).
 2. ~~A. The study plan's leftovers~~ checked and recorded 12 October; two small items left.
-3. **B. The day reaches everything:** done 12 October except two things: ticking a study step from the day, and job time as a repeating routine.
+3. **B. The day reaches everything:** done 12 October except job time as a repeating routine (it is single blocks to 25 October).
 4. **C. Shopping, meals and money on the day:** the list is added to and ticked from anywhere, and Budget arranges it by list, category, shop or day (12 October). Next: recipes and tonight's meal, "left to spend".
 5. **D. The first pages:** all four Courts carry the day (12 October). Next: her style-by-style review of the Court's own design.
 6. **F, G, H** as they come up; none blocks her this month except backups.
 7. **I. Applying now:** the first list shows every open role in the order to act on it (12 October). Next: re-check the 32 uncertain adverts; her three answers.
-8. **K. Progress, review and focus for the whole of Life OS** (new, 12 October evening): not started. The largest open piece; needs a short design with her before code.
+8. **K. Progress, review and focus for the whole of Life OS** (12 October evening): the focus timer, the sound player and the week's review are live. Next: progress over a month and a semester (needs her targets), the week planner, repeating plans. Brief: `briefs/stage-2c-focus-and-review.md`.
 9. **L. Everything leads somewhere:** the five links she named work (12 October evening). Continue as she finds dead spots.
 
 ---
@@ -51,7 +51,7 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 - [~] **Jobs panel as a work list** (12 October evening): what closes today is said first, whatever its group; then the next jobs in JobMap's own order with JobMap's words ("Apply now · closes in 6 days"); "9 jobs to apply for now"; the other groups counted. Each job opens that job in JobMap. Still open: marking "applied" from the day; this week's count against a target.
 - [x] **The day reads JobMap's own first list, from one place** (`hosting/career/first-screen.mjs`, JobMap's `FIRST_SCREEN`). Her words: "Data Manager (Neurological Data Platform) · Swansea University doesnt exist in the job app. where is it … not only that one!" The panel had listed everything the scheduled searches shortlisted (80 jobs she never chose); it now lists what JobMap lists, and the calendar shows a closing date only for those.
 - [x] The Study panel no longer says "could not be read" on some loads: ranking 1,067 jobs on every request took half a second and timed the day out; it is now worked out once per JobMap save, and the page asks again by itself when a part fails.
-- [ ] Tick a step and mark a card done from Today, saved through the Study hub's own rules so an open hub tab loses nothing.
+- [x] **Tick a step and mark a card done from the day** (12 October evening): the squares beside a card's steps are ticks on the Court (Study panel) and on Today (the path); a study stop has "Card done" and "Not done after all". Saved by the Study hub's own rule and revision check and logged in its own event log. A hub tab that is open is told and reloads, so it loses nothing; tried for real on the try-out with a hub page open beside the Court.
 - [x] **Today in every part** (her answer, 12 October: "good to have today in all sub apps"): a strip under the top bar inside the Study hub, JobMap, Budget and Cardiff Life says what today holds for that part and leads back to the whole day.
 - [x] The Study hub keeps its own Today (her answer: "sometimes one only wants to see what to study for today"); Life OS's day is the whole day.
 
@@ -166,13 +166,15 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 > "it had amazing features, like kind of like tracking the progress and stuff in the study hub. We would call those … analytics or progress or planner, review and stuff. I need all those perfect … features inside the whole LifeOS app, not necessarily inside the study hub."
 > "maybe we need the focus room or study room to be part of the LifeOS app, or live music, or … YouTube player."
 
-Not started. The Study hub has all of these for study cards only: Review (a day looked back on), Planner (a week laid out), Progress, Analytics, the Focus Room with its timer, and the music and video players. Nothing is removed from the hub; the same things are wanted one level up.
+The Study hub has all of these for study cards only: Review (a day looked back on), Planner (a week laid out), Progress, Analytics, the Focus Room with its timer, and the music and video players. Nothing is removed from the hub; the same things are wanted one level up. Brief: `briefs/stage-2c-focus-and-review.md`.
 
-- [ ] **A short design with her first** (one page, in `briefs/`): what "progress" counts outside study (jobs sent, plans kept, things ticked, money against budget), and what a week's review asks.
-- [ ] **Review for the whole day and week:** what was planned and what happened, across study blocks, job time, her own plans, shopping and notes. The day page already holds every piece; it needs the look back.
-- [ ] **Progress and analytics across parts:** study (from the hub), applications sent per week against a target (JobMap), plans done against plans made (core), spending against the month (Budget).
+- [x] A brief with her words and the order of work (`briefs/stage-2c-focus-and-review.md`). She said "go on", so the first two parts were built rather than only described.
+- [x] **Review of a week** (12 October evening): top bar → Review. Five figures (study cards done, time focused, applications sent, her plans done, spent this month), each compared with the week before up to the same weekday; the week day by day; what slipped (late cards, plans left unticked, shortlisted jobs that closed), each line leading to the thing; links to the hub's own Review, Progress and Analytics. Read only (`/api/review`).
+- [~] **Progress and analytics across parts:** a week is done (above). Open: a month and a semester; applications per week against a target; focus time per week; cards done against cards due. **(Xar)** her targets: how many applications a week, how many hours of focus a day?
 - [ ] **A planner for the week** in Life OS: the week's study blocks, job time and her own plans together, movable. The calendar's week view is the natural place.
-- [ ] **Focus as part of Life OS:** a timer that can be started on anything (a study card, a job application, a plan), with the hub's music and video player in the top bar so it keeps playing from page to page. The hub's player lives inside its frame today and stops when she leaves the hub.
+- [x] **Focus as part of Life OS** (12 October evening): a Focus button in every page's top bar, in every style. A timer for anything (today's study cards and job applications are offered); the countdown shows in the top bar and the tab's title and goes on across pages, a reload, and inside the Study hub, Budget and JobMap. When it ends, the time worked is a done block on the calendar and, for a study card, a focus session on the card in the hub. Sound: saved YouTube and Spotify links (her hub playlist is the first), played in a small player in the corner that keeps playing from page to page; hidden, it goes on.
+- [ ] Left of the focus room: the hub's forest, levels and strict guard outside study; a notification when a session ends in a background window; the saved sound links kept in the database, not only in this browser.
+- [ ] The top bar now holds twelve entries. The next addition needs the parts (Study hub, Cardiff Life, Budget, JobMap) gathered under one entry.
 
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
@@ -195,5 +197,5 @@ Not started. The Study hub has all of these for study cards only: Review (a day 
 5. JobMap, three questions in section I: the doubled vacancy, the September workbook's settings, the never-checked September leads.
 6. "Use common sense": which change did she mean (section C)?
 7. "When I click on a schedule": where (section L)?
-8. Section K needs twenty minutes of her time for the design before any code.
+8. Section K: her targets (applications a week, focus hours a day), so the review can say "on track" instead of only counting.
 
