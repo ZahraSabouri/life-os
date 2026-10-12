@@ -104,7 +104,7 @@ function ConfirmDialog({dialog:d,state,commit,exportData,setCanSave,setSaveError
   function apply(){
     if(reset||importing){try{localStorage.setItem(APP_KEY+'_before_replace',JSON.stringify(state));}catch(err){setError('Could not preserve a safety copy. Download a backup before clearing browser storage, then try again.');return;}}
     if(importing){setCanSave(true);setSaveError('');commit(d.data,'Backup restored');}
-    else if(reset){setCanSave(true);setSaveError('');commit(defaultState(),'Original plan restored');}
+    else if(reset){setCanSave(true);setSaveError('');commit(newBudgetState(),'Empty plan ready');}
     else commit(s=>withDeletedExpense(s,d.expense.id),'Purchase removed');
   }
   return e(Modal,{title:reset?'Start again with your original plan?':importing?'Restore this backup?':'Remove this purchase?',onClose},e('div',{className:'dialog-body form-stack'},

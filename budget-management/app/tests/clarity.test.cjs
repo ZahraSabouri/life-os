@@ -14,6 +14,10 @@ test('missing receipt references stay visible as individual payments',()=>{
  assert.equal(out.length,1);assert.equal(out[0].amount,9);assert.equal(transactionDialog(out[0]).type,'expense-detail');
 });
 test('old catalogue references are reversible and an item bought again rejoins the current plan',()=>{
- const s={items:[{id:'old',observations:[{date:'2026-07-06'}]},{id:'new',observations:[]},{id:'again',observations:[{date:'2026-07-06'}]},{id:'boundary',observations:[{date:'2026-09-08'}]}],lots:[],receipts:[{date:'2026-09-08',lines:[{itemId:'again'}]}]};
+ const s={trackingStart:'2026-09-08',items:[{id:'old',observations:[{date:'2026-07-06'}]},{id:'new',observations:[]},{id:'again',observations:[{date:'2026-07-06'}]},{id:'boundary',observations:[{date:'2026-09-08'}]}],lots:[],receipts:[{date:'2026-09-08',lines:[{itemId:'again'}]}]};
  const before=JSON.stringify(s);assert.equal(catalogueScope(s).items.length,3);assert.equal(catalogueScope(s,'history').items[0].id,'old');assert.equal(catalogueScope(s,'all'),s);assert.equal(JSON.stringify(s),before);
+});
+test('a plan without a tracking cutoff does not inherit another plan\'s history date',()=>{
+ const s={items:[{id:'mine',observations:[{date:'2022-03-01'}]}],lots:[],receipts:[]};
+ assert.equal(catalogueScope(s).items.length,1);assert.equal(catalogueScope(s,'history').items.length,0);
 });

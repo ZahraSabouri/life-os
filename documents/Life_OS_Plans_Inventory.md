@@ -46,6 +46,8 @@ New areas are welcome at any time (finance details, faith, volunteering, pets, a
 
 ## 2. Entry types (live registry: 49 types, six archetypes)
 
+**Budget correction, 13 October 2026:** the attached app supports undated, weekly and dated lists. Wishlist items stay out of current Home shopping and monthly shopping forecasts. Imported food-use advice cards were removed; plan settings remain editable. New plans start empty rather than from the personal legacy template. Current interface checks passed; student signup/account storage remains separate future work. See `briefs/budget-fix-meal-workflow.md`, CP2.
+
 **Attached Budget update, 12 October 2026:** receipt pasting/review and replacing a simple estimated payment; pending-payment review; recipes linked to stock; planned preparation batches and their later meals; fridge/freezer portions; ingredients used once at preparation, portions reduced when eaten; preparation and eating shown separately in history. Built in the attached app and checked in the browser with an isolated data copy; user review and actual stock/payment details remain open. See `briefs/budget-fix-meal-workflow.md`. This does not change the native Stage 5 migration status.
 
 Archetypes: **moment**, **commitment**, **workstream**, **collection**, **practice**, **anchor**. Source: `code/life-os/shared/entryTypes.js`.

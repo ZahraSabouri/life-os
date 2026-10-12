@@ -8,7 +8,7 @@ import fs from 'node:fs'
 import http from 'node:http'
 import path from 'node:path'
 import vm from 'node:vm'
-import { isDateKey } from '../../code/life-os/shared/calendar.js'
+import { isDateKey, addDays } from '../../code/life-os/shared/calendar.js'
 
 export class ShoppingError extends Error {
   constructor(status, message) { super(message); this.name = 'ShoppingError'; this.status = status }
@@ -51,9 +51,9 @@ export function addToList(rules, state, items, { list: listName = '', date, shop
   const named = text(listName, 120)
   // A named list is used or made. Otherwise: the list with something still to buy that is
   // planned soonest from this day on, then any list with something still to buy.
-  const waiting = lists.filter((list) => open(list) && list.lines.some((line) => line.status === 'planned')).sort((a, b) => String(a.date).localeCompare(String(b.date)))
+  const waiting = lists.filter((list) => open(list) && (isDateKey(list.date) || isDateKey(list.weekOf) && date <= addDays(list.weekOf, 6)) && list.lines.some((line) => line.status === 'planned')).sort((a, b) => String(a.date || a.weekOf).localeCompare(String(b.date || b.weekOf)))
   let target = named ? lists.find((list) => open(list) && list.name.toLowerCase() === named.toLowerCase())
-    : waiting.find((list) => list.date >= date) ?? waiting.at(-1)
+    : waiting.find((list) => (list.weekOf && date >= list.weekOf && date <= addDays(list.weekOf, 6)) || list.date >= date) ?? waiting.at(-1)
   let created = false
   if (!target) {
     const placed = rules.ensureShop(next, shop)

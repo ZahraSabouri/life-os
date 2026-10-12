@@ -90,7 +90,7 @@ function upgradeState(input){
   const ids=new Set();
   for(const r of input.resources){
     if(!r||typeof r.id!=="string"||ids.has(r.id)||typeof r.name!=="string"||typeof r.unit!=="string"||!Number.isFinite(Number(r.qty))||Number(r.qty)<=0)throw new Error("Invalid resource in backup.");
-    if(r.allocatedMonth&&!MONTHS.some(m=>m.key===r.allocatedMonth))throw new Error("Unknown allocation month.");
+    if(r.allocatedMonth&&!/^\d{4}-(0[1-9]|1[0-2])$/.test(r.allocatedMonth))throw new Error("Unknown allocation month.");
     ids.add(r.id);
   }
   for(const exp of input.expenses)if(!exp||typeof exp.id!=="string"||typeof exp.date!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(exp.date)||!Number.isFinite(Number(exp.amount))||Number(exp.amount)<0||!["grocery","other"].includes(exp.type))throw new Error("Invalid expense in backup.");

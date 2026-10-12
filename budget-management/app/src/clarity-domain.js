@@ -1,10 +1,9 @@
 /* Presentation rules: keep the original records intact. */
-const PLAN_START = '2026-09-08';
 function historicalItem(s, item) {
   const observations = item.observations || [];
-  const bought = s.receipts.some(r => r.date >= PLAN_START && r.lines.some(l => l.itemId === item.id));
-  const stocked = s.lots.some(l => l.itemId === item.id && l.purchased >= PLAN_START);
-  return !bought && !stocked && (item.referenceOnly || observations.length > 0 && observations.every(o => o.date < PLAN_START));
+  const bought = s.receipts.some(r => (!s.trackingStart||r.date>=s.trackingStart) && r.lines.some(l => l.itemId === item.id));
+  const stocked = s.lots.some(l => l.itemId === item.id && (!s.trackingStart||l.purchased>=s.trackingStart));
+  return !bought && !stocked && (item.referenceOnly || observations.length > 0 && observations.every(o => s.trackingStart&&o.date<s.trackingStart));
 }
 function catalogueScope(s, mode = 'current') {
   if (mode === 'all') return s;

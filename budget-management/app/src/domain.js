@@ -23,7 +23,7 @@ function validateV4(s){
   for(const x of s.expenses)need(validDate(x.date),'Invalid spending date.');
   for(const x of s.expenses)need((x.place==null||typeof x.place==='string')&&(x.details==null||typeof x.details==='string'),'Invalid purchase details.');
   for(const x of s.lots)need(typeof x.name==='string'&&typeof x.unit==='string'&&['count','measured','level','durable'].includes(x.tracking)&&Number.isFinite(x.remaining)&&x.remaining>=0&&Number.isFinite(x.quantity)&&x.quantity>0&&x.remaining<=x.quantity,'Invalid stock lot.');
-  for(const x of s.lists){need(typeof x.name==='string'&&validDate(x.date)&&Array.isArray(x.lines),'Invalid shopping list.');for(const l of x.lines)need(typeof l.name==='string'&&Number.isFinite(l.quantity)&&l.quantity>0&&(l.estimatePence==null||Number.isSafeInteger(l.estimatePence)&&l.estimatePence>=0),'Invalid shopping line.');}
+  for(const x of s.lists){need(typeof x.name==='string'&&(!x.date||validDate(x.date))&&(!x.weekOf||validDate(x.weekOf)&&weekStart(x.weekOf)===x.weekOf)&&!(x.date&&x.weekOf)&&Array.isArray(x.lines),'Invalid shopping list.');for(const l of x.lines)need(typeof l.name==='string'&&Number.isFinite(l.quantity)&&l.quantity>0&&(l.estimatePence==null||Number.isSafeInteger(l.estimatePence)&&l.estimatePence>=0),'Invalid shopping line.');}
   for(const x of s.receipts){need(validDate(x.date)&&Array.isArray(x.lines)&&Number.isSafeInteger(x.paidPence)&&x.paidPence>=0,'Invalid receipt.');need(x.spreadMonths==null||Number.isInteger(x.spreadMonths)&&x.spreadMonths>=1&&x.spreadMonths<=60,'Spread a shop over 1 to 60 months.');need(x.lines.every(l=>Number.isSafeInteger(l.netPence)&&l.netPence>=0)&&x.lines.reduce((n,l)=>n+l.netPence,0)+(x.feePence||0)===x.paidPence,'Receipt totals do not reconcile.');}
   for(const x of s.adjustments)need(Number.isSafeInteger(x.pence)&&x.pence<0&&validDate(x.date)&&s.expenses.some(e=>e.id===x.expenseId),'Invalid refund.');
   for(const x of s.subscriptions)need(typeof x.name==='string'&&validDate(x.nextDue)&&Number.isSafeInteger(x.costPence)&&x.costPence>=0&&['monthly','yearly','weekly'].includes(x.interval),'Invalid subscription.');
@@ -67,7 +67,7 @@ function advanceDue(date,interval,anchor=Number(date.slice(8))){
   return isoDate(d);
 }
 function forecast(s,month){
-  const f=budgetFigures(s,month),lines=s.lists.filter(l=>dateMonth(l.date)===month).flatMap(l=>l.lines.filter(x=>x.status==='planned'));
+  const f=budgetFigures(s,month),lines=s.lists.filter(l=>shoppingPlanMonth(l)===month).flatMap(l=>l.lines.filter(x=>x.status==='planned'));
   const planned=lines.reduce((n,l)=>n+(l.estimatePence||0),0),unknown=lines.filter(l=>l.estimatePence==null).length;
   const subscriptions=s.subscriptions.reduce((n,x)=>n+subscriptionDates(x,month).length*x.costPence,0),intention=s.savingIntentions[month]||0;
   return {...f,plannedPence:planned,unknown,subscriptionPence:subscriptions,intentionPence:intention,projectedPence:Math.round(f.totalRemaining*100)-planned-subscriptions-intention};
@@ -90,13 +90,13 @@ function tickListLine(s,listId,lineId,got=true,today=isoDate(new Date())){
   return {...s,lists:s.lists.map(l=>l.id!==listId?l:{...l,lines:l.lines.map(x=>{if(x.id!==lineId)return x;if(got)return {...x,status:'bought',ticked:true,gotOn:today};const {ticked,gotOn,...rest}=x;return {...rest,status:'planned'};})})};
 }
 // Every line with its list, and the shop and day it is meant for: its own when it has one, else its list's.
-function shoppingRows(s){return s.lists.flatMap(l=>l.lines.map(x=>({line:x,list:l,category:category(s,x.categoryId),shop:shopName(s,x)||shopName(s,l),date:validDate(x.date)?x.date:l.date})));}
+function shoppingRows(s){return s.lists.flatMap(l=>l.lines.map(x=>({line:x,list:l,category:category(s,x.categoryId),shop:shopName(s,x)||shopName(s,l),date:validDate(x.date)?x.date:(l.date||''),weekOf:validDate(x.date)?'':(l.weekOf||'')})));}
 // The same items arranged another way: by category, by shop, by day, or all together.
 function groupShopping(rows,by){
   if(by==='all')return rows.length?[{key:'all',label:'Everything',rows:rows.slice().sort((a,b)=>a.line.name.localeCompare(b.line.name))}]:[];
-  const key=r=>by==='category'?r.category.id:by==='shop'?r.shop.toLowerCase():r.date,label=r=>by==='category'?r.category.name:by==='shop'?(r.shop||'Any shop'):r.date,groups=[];
+  const key=r=>by==='category'?r.category.id:by==='shop'?r.shop.toLowerCase():(r.date||(r.weekOf?'week:'+r.weekOf:'')),label=r=>by==='category'?r.category.name:by==='shop'?(r.shop||'Any shop'):(r.date||(r.weekOf?'week:'+r.weekOf:'')),groups=[];
   for(const r of rows){const k=key(r);let g=groups.find(x=>x.key===k);if(!g){g={key:k,label:label(r),rows:[]};groups.push(g);}g.rows.push(r);}
-  return groups.sort((a,b)=>by==='date'?a.key.localeCompare(b.key):!a.key-!b.key||a.label.localeCompare(b.label));
+  return groups.sort((a,b)=>by==='date'?(!a.key-!b.key||a.key.replace(/^week:/,'').localeCompare(b.key.replace(/^week:/,''))):!a.key-!b.key||a.label.localeCompare(b.label));
 }
 function apportion(total,weights){
   const sum=weights.reduce((n,x)=>n+x,0);need(Number.isSafeInteger(total)&&total>=0&&total<=sum,'Discount exceeds the item total.');
@@ -951,3 +951,13 @@ function retiredInfo(s,row){
   const ev=[...s.stockEvents].reverse().find(e=>e.sourceId===row.id&&e.action==='retire');
   return ev?{reason:ev.reason,date:ev.date}:null;
 }
+
+// Shopping timing belongs to each saved list. Unscheduled items are not forecasts.
+function shoppingPlanMonth(list){return dateMonth(list.date||list.weekOf||'');}
+function shoppingTimingLabel(list){return list.weekOf?'Week of '+prettyDate(list.weekOf):validDate(list.date)?prettyDate(list.date):'Someday · no date';}
+function orderedShoppingLists(s){return s.lists.filter(l=>!l.archived&&!l.deleted).slice().sort((a,b)=>Number(!a.lines.some(x=>x.status==='planned'))-Number(!b.lines.some(x=>x.status==='planned'))||(a.date||a.weekOf||'9999').localeCompare(b.date||b.weekOf||'9999')||a.name.localeCompare(b.name));}
+function newBudgetState(){
+ return validateV4({version:4,resources:[],expenses:[],meals:{},budgets:{},categories:clone(SEED.categories),items:[],lists:[],receipts:[],lots:[],stockEvents:[],mealEntries:[],recipes:[],subscriptions:[],goals:[],adjustments:[],resourceMeta:{},savingIntentions:{},categoryTargets:{},shops:[]});
+}
+
+function budgetMonthChoices(s,selected=dateMonth(isoDate(new Date()))){const now=dateMonth(isoDate(new Date())),future=Array.from({length:13},(_,i)=>{const d=new Date(now+'-01T12:00:00');d.setMonth(d.getMonth()+i);return dateMonth(isoDate(d));});return [...new Set([...future,...Object.keys(s.budgets),...s.resources.map(r=>r.allocatedMonth).filter(Boolean),selected])].sort();}

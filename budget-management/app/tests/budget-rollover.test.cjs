@@ -127,7 +127,7 @@ test('order, reload and backup import do not duplicate deductions or mutate the 
   assert.equal(JSON.stringify(restored),before);
 });
 
-test('new plans use £225 monthly with a single assumed pre-10 September record',()=>{
+test('the legacy allocation template preserves its original monthly allowance and opening record',()=>{
   const state=api.defaultState();
   assert.ok(Object.values(state.budgets).every(b=>b.total===225));
   assert.equal(state.expenses.length,1);

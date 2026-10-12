@@ -3,6 +3,23 @@ import assert from 'node:assert/strict'
 import path from 'node:path'
 import { addToList, loadBudgetRules, parseItem, ShoppingError, tickLine } from './shopping.mjs'
 
+test('adding from Today uses a weekly list instead of an undated wish list', () => {
+  const s = state({ lists: [
+    { id: 'wish', name: 'Someday', date: '', lines: [{ id: 'w1', name: 'Desk', status: 'planned', quantity: 1 }] },
+    { id: 'week', name: 'This week', date: '', weekOf: '2032-07-12', lines: [{ id: 'w2', name: 'Soap', status: 'planned', quantity: 1 }] },
+  ] })
+  const result = addToList(rules, s, ['Milk'], { date: '2032-07-13' })
+  assert.equal(result.result.list.id, 'week')
+  assert.equal(result.state.lists.find(l => l.id === 'wish').lines.length, 1)
+  rules.validate(result.state)
+})
+test('an expired weekly list is not used for a later shopping request', () => {
+  const s = state({ lists: [{ id: 'old-week', name: 'Last week', date: '', weekOf: '2032-07-12', lines: [{ id: 'w1', name: 'Soap', status: 'planned', quantity: 1 }] }] })
+  const result = addToList(rules, s, ['Milk'], { date: '2032-07-20' })
+  assert.notEqual(result.result.list.id, 'old-week')
+  assert.equal(result.result.list.date, '2032-07-20')
+})
+
 // Budget's own rules, from Budget's own files: a change that passes here is one Budget accepts.
 const rules = loadBudgetRules(path.join(import.meta.dirname, '../../budget-management'))
 const DATE = '2026-10-12'

@@ -38,7 +38,7 @@ const server=http.createServer(async(req,res)=>{
     }
   }
   if(pathname==='/api/migration-candidate'&&req.method==='GET'){
-    const folder=path.join(project,'backups');try{const files=fs.existsSync(folder)?fs.readdirSync(folder).filter(x=>x.endsWith('.json')).sort().reverse():[];const file=files[0];send(res,200,file?{filename:file,state:JSON.parse(fs.readFileSync(path.join(folder,file),'utf8'))}:{state:null});}catch{send(res,200,{state:null});}return;
+    const folder=path.join(path.dirname(dataDir),'backups');try{const files=fs.existsSync(folder)?fs.readdirSync(folder).filter(x=>x.endsWith('.json')).sort().reverse():[];const file=files[0];send(res,200,file?{filename:file,state:JSON.parse(fs.readFileSync(path.join(folder,file),'utf8'))}:{state:null});}catch{send(res,200,{state:null});}return;
   }
   if(pathname==='/api/art'&&req.method==='GET'){
     function scan(dir,prefix=''){if(!fs.existsSync(dir))return [];return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?scan(path.join(dir,e.name),prefix+e.name+'/'):/\.(png|jpe?g|webp)$/i.test(e.name)?[prefix+e.name]:[]);}

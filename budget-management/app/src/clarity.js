@@ -3,15 +3,14 @@ function BudgetRule({state:s, month:m}) {
   const base = s.budgets[m]?.total;
   return e('div',{className:'budget-rule'},
     e('span',null,'Your monthly plan'),
-    base === 225 ? e('strong',null,'£250 budget − £25 for long-lasting supplies = £225 to spend')
-      : e('strong',null,base == null ? 'Set a monthly allowance to start' : money(base) + ' spending allowance'),
-    e('small',null,'Tracking from 8 September 2026. '+(base===225?'The £25 is reserved, not an extra bill. ':'')+'Receipt cost allocations are shown separately from cash paid. Using stock does not charge you again.'));
+    e('strong',null,base == null ? 'Set a monthly allowance to start' : money(base) + ' spending allowance'),
+    e('small',null,(s.trackingStart?'Tracking from '+prettyDate(s.trackingStart,{day:'numeric',month:'long',year:'numeric'})+'. ':'')+'Receipt cost allocations are shown separately from cash paid. Using stock does not charge you again.'));
 }
 const FullMoneyView = MoneyV2;
 MoneyV2 = function MoneyClarity(p) {
   const {state:s, selectedMonth:m, setDialog} = p;
   if (['goals','subscriptions'].includes(p.route?.view)) return e(FullMoneyView,p);
-  const f = forecast(s,m), entries = ledger(s).filter(x => x.date >= PLAN_START && dateMonth(x.date) === m).sort((a,b) => b.date.localeCompare(a.date));
+  const f = forecast(s,m), entries = ledger(s).filter(x => (!s.trackingStart||x.date>=s.trackingStart) && dateMonth(x.date) === m).sort((a,b) => b.date.localeCompare(a.date));
   const rows = transactionRows(s,entries), paid = entries.filter(x=>!x.refund).reduce((n,x)=>n+Math.round(x.amount*100),0), returned = -entries.filter(x=>x.refund).reduce((n,x)=>n+Math.round(x.amount*100),0), shares=spreadNote(s,m);
   const groups = [...new Set(entries.map(x=>x.categoryId||x.category))].map(id=>({id,name:s.categories.find(c=>c.id===id)?.name||id,amount:entries.filter(x=>(x.categoryId||x.category)===id).reduce((n,x)=>n+Math.round(x.amount*100),0)})).sort((a,b)=>b.amount-a.amount);
   return e(React.Fragment,null,
@@ -23,7 +22,7 @@ MoneyV2 = function MoneyClarity(p) {
       e('section',{className:'surface payment-summary'},e('h2',null,'What actually happened'),
         [['Payments',pounds(paid)],['Money back',pounds(returned)],['Net cash paid',pounds(paid-returned)]].map(([label,value])=>e('div',{className:'summary-line',key:label},e('span',null,label),e('b',null,value))),
         e('small',null,rows.filter(x=>!x.refund).length+' payments · '+rows.filter(x=>x.receiptTotal&&s.receipts.find(r=>r.id===x.receiptId)?.lines.some(l=>l.tracking!=='none')).length+' receipts with stock details'))),
-    e('section',{className:'surface ledger-panel'},e(SectionTitle,{title:'Bills & receipts',note:'Recorded spending since 8 September. Entries without itemised receipts are labelled.',action:e('div',{className:'ledger-actions'},e(Btn,{icon:'back',onClick:()=>setDialog({type:'money-back'})},'Money back'),e(Btn,{kind:'primary',icon:'plus',onClick:()=>setDialog({type:'receipt'})},'Add payment'))}),
+    e('section',{className:'surface ledger-panel'},e(SectionTitle,{title:'Bills & receipts',note:'Saved payments and receipts. Open a payment to see its details.',action:e('div',{className:'ledger-actions'},e(Btn,{icon:'back',onClick:()=>setDialog({type:'money-back'})},'Money back'),e(Btn,{kind:'primary',icon:'plus',onClick:()=>setDialog({type:'receipt'})},'Add payment'))}),
       rows.map(x=>e(LedgerRow,{key:x.id,state:s,x,onOpen:x=>setDialog(transactionDialog(x))})),!rows.length&&e('p',{className:'empty-copy'},'No payments recorded this month.')),
     e('details',{className:'surface quiet-details'},e('summary',null,'Spending calendar'),e(SpendingCalendar,{state:s,month:m,onAdd:date=>setDialog({type:'receipt',date}),onOpen:x=>setDialog(transactionDialog(x))})),
     e('details',{className:'surface quiet-details'},e('summary',null,'Spending by category'),e('div',{className:'details-content'},e(Btn,{small:true,onClick:()=>setDialog({type:'targets'})},'Edit category targets'),groups.map(c=>e('div',{className:'summary-line',key:c.id},e('span',null,c.name),e('b',null,pounds(c.amount)))))),

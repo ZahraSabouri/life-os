@@ -2,6 +2,15 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createDayService, homeDay, jobsDay, jobTime, notesDay, studyDay } from './service.mjs'
 
+test('Home shows the current weekly list without turning undated wishes into today tasks', () => {
+  const value = { state: { lists: [
+    { id: 'wish', name: 'Someday', date: '', lines: [{ id: 'w1', name: 'Desk', status: 'planned' }] },
+    { id: 'week', name: 'This week', date: '', weekOf: '2032-07-12', lines: [{ id: 'w2', name: 'Soap', status: 'planned' }] },
+  ] } }
+  assert.deepEqual(homeDay(value, '2032-07-13').lists.map(x => x.id), ['week'])
+  assert.deepEqual(homeDay(value, '2032-07-20').lists.map(x => x.id), [])
+})
+
 const DATE = '2026-10-13'
 const workspace = {
   semesters: [

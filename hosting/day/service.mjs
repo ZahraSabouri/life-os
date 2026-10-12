@@ -192,7 +192,7 @@ export function homeDay(value, date) {
     const lines = array(list.lines)
     return {
       id: list.id, name: text(list.name, 200) || 'Shopping list', date: day(list.date), shop: text(list.merchant, 120),
-      items: lines.filter((line) => line?.status === 'planned').map((line) => ({
+      items: lines.filter((line) => line?.status === 'planned' && (day(line.date) || day(list.date) || (day(list.weekOf) && date >= list.weekOf && date <= addDays(list.weekOf, 6)))).map((line) => ({
         id: text(line.id, 80), name: text(line.name, 200), quantity: Number(line.quantity) || null, unit: text(line.unit, 30), optional: line.priority === 'optional', note: text(line.note ?? line.notes, 200),
       })),
       bought: lines.filter((line) => line?.status === 'bought').length,
