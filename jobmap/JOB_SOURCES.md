@@ -103,6 +103,7 @@ Where the client is undisclosed, keep the recruiter identity accurate and flag p
 - Learn4Good.
 - SimplyHired.
 - BeBee.
+- Soften.dev.
 - Other secondary examples surfaced in searches: Candidate Jobs, Jobs Go Public, Devex, StudySmarter Talents, Jobstore, IT Jobs and EU Remote Jobs.
 
 Use these to discover leads and verify the original employer/recruiter advert. Part-time tags, crawl dates, salary estimates and town names can conflict with the actual role.
@@ -119,4 +120,4 @@ Private account reviews remain separately authorised work. Do not claim a signed
 
 ## Employer recruitment platforms
 
-Trac, Eploy, Workable, Lever, Teamtailor, iCIMS, IRIS/current-vacancies, Employment Hero, Workday and other employer-linked systems provide the underlying adverts. Inspect publicly exposed vacancy descriptions and location lists where the page loads them dynamically. Respect access controls and record blocked pages rather than bypassing them.
+Trac, Eploy, Workable, Lever, Teamtailor, iCIMS, IRIS/current-vacancies, Employment Hero, Workday, Ashby, BambooHR and Changeworknow provide the underlying adverts. Inspect publicly exposed vacancy descriptions and location lists where the page loads them dynamically. Respect access controls and record blocked pages rather than bypassing them.
