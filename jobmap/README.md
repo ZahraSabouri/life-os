@@ -2,7 +2,7 @@
 
 JobMap now runs inside Life OS: double-click **Start Life OS.cmd** in the Life_OS folder and open **JobMap** (or go to http://127.0.0.1:47850/jobmap). Life OS starts and stops JobMap's own server for you; the old Start JobMap.cmd is no longer used.
 
-- **All jobs:** review potential part-time leads, tech and data roles, or the complete collection. Sort by match, location, application effort, deadline or your own priority.
+- **All jobs:** opens on To apply, the roles a check has seen open, in the order to act on them. Also review potential part-time leads, tech and data roles, or the complete collection. Sort by match, location, application effort, deadline or your own priority.
 - **Shortlist:** star the jobs you want to keep close.
 - **Applications:** manage enquiries, preparation, submitted applications, interviews and offers.
 - **Follow-ups:** add a follow-up date and a next step inside any job.
@@ -45,15 +45,17 @@ The active local search is **UK Tech Job Shortlist — JobMap**, running Tuesday
 
 ## Job dates
 
-Each job shows Added to JobMap, Advertised and Closing date in the list and detail panel. Use Newest added or Recently advertised to sort; unknown dates sort last. Advertised and Closing date can be corrected under Edit details. Added dates are automatic and stay unchanged when a job is refreshed.
+In the list each job shows Added to JobMap, Last checked, and Advertised when it is known; its closing date is at the right of the row. The opened job shows Added to JobMap, Advertised and Closing date. Use Newest added or Recently advertised to sort; unknown dates sort last. Advertised and Closing date can be corrected under Edit details. Added dates are automatic and stay unchanged when a job is refreshed.
 
 The original collection uses its documented saved date, 13 September 2026. Dates for 19 previously imported jobs were recovered from consecutive progress snapshots and completed import runs (see lib/legacy-dates.json); the London calendar date is used. Other missing dates remain unknown. Existing workbook dates are retained separately unless verified as publication dates. Backups preserve dates alongside application progress.
 
 ## My priority
 
-My priority is the default sort. It ranks jobs still worth pursuing before applications already sent and closed adverts. Within current paid part-time possibilities, roles confirmed open at a check in the last 14 days come first (**Apply now**), then roles to check are still open (an uncertain check, or an open one older than 14 days), then roles not checked since they were saved. Inside each of these, saved deadlines today, tomorrow and the next 7 days lead, earliest first. For equal urgency, your High/Normal/Low/Later setting comes next, followed by match, shortlist and the next known deadline. Jobs with full-time or excessive hours needing agreement, and graduate/unpaid/freelance leads, sit lower. Unknown deadlines do not acquire invented urgency. Follow-ups retain their own due-date order.
+My priority is the default sort. It puts the list in the order to act on it, under headings: **Apply now** (open at a check in the last 14 days, and the stated hours fit your preference or it is a single shift), **Ask about hours first** (open, but part-time is only mentioned or no hours are stated), **Full-time or over your hours** (open, advertised full-time or above your preferred hours), **Check it is still open** (an uncertain check, or an open one older than 14 days), **Not checked since saved**, then graduate/unpaid/freelance leads, applications already sent and closed adverts. Inside each heading, saved deadlines today, tomorrow and the next 7 days lead, earliest first. For equal urgency, the High/Normal/Low/Later setting comes next, followed by match, shortlist and the next known deadline. Among roles to check or not yet checked, part-time possibilities stay above hours needing agreement. Unknown deadlines do not acquire invented urgency. Follow-ups retain their own due-date order.
 
-Each row explains its priority; an opened job explains the assessment and your personal setting. The line above the list counts the roles that are confirmed open and ready to apply for. The High/Low/Later settings on the original 980 records come from the September workbook; set your own inside a job. The order updates on a new London calendar day and when the window regains focus. Closing soon also puts closed adverts after open ones.
+**To apply** is the first tab of All jobs: every role a check has seen open or possibly open, whatever its hours, so an open full-time role is listed under its own heading instead of being left out. Part-time leads, Tech & data and Everything remain. A denial such as "no job-share wording" is not read as part-time, and a single paid shift counts as hours that fit.
+
+Each heading counts its roles and says what it asks of you; an opened job explains the assessment and the priority setting. A row adds a line only when its heading and dates do not say it, for example that the last check could not confirm the advert is open. The High/Low/Later settings on the original 980 records come from the September workbook; set your own inside a job. The order updates on a new London calendar day and when the window regains focus. Closing soon also puts closed adverts after open ones.
 
 Both app copies use identical feature code and relative API/asset paths. Run `npm run check:parity -- "<other JobMap folder>"` after shared changes or source reconciliation. It checks implementation, the shared workspace connection, vacancy evidence and personal choices. Source differences require deliberate, backed-up reconciliation; never overwrite a workspace with the other copy.
 

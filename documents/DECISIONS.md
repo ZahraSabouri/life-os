@@ -4,6 +4,15 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 12 October 2026 (evening) — JobMap: one first list, nothing open left out, in her own groups (Xar with Claude Code)
+
+- **Xar:** "why arent they present in the job app? i feel dates and roles and priorities and all are so messed up" (about open roles the first list left out for being full-time).
+- **Decided by that:** a role that is open is shown. The first tab is "To apply": every role a check has seen open, whatever its hours.
+- **The groups are hers:** her career instructions sort leads as Apply now / Email first / Save for later / Exclude and say a full-time advert may justify an enquiry but is not a confirmed match. My priority now reads Apply now · Ask about hours first · Full-time or over your hours · Check it is still open · Not checked since saved. This replaces the late-afternoon entry's single "Apply now", which had counted "part-time mentioned" as hours that fit.
+- **Rows show what is known:** Added, Last checked, Advertised only when known; the closing date once.
+- **Mine, to be confirmed:** the names of the groups; "Apply now" meaning hours stated within her preference or a single shift.
+- **Not done, hers:** archiving the doubled vacancy; clearing the September workbook's High/Low/Later.
+
 ## 12 October 2026 (late afternoon) — JobMap: roles confirmed open come first (Xar with Claude Code)
 
 - **Xar:** "I feel like the priorities are a bit messed up in the job app. I need to immidiately apply for the roles available soooo#" (cut off there).

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {assess,assessPriority,selectJobs,dateLabel,DEFAULT_PROFILE,dayNow} from '../lib/matching.mjs';
+import {assess,assessPriority,selectJobs,PRIORITY_SECTIONS,DEFAULT_PROFILE,dayNow} from '../lib/matching.mjs';
 const today='2026-10-09';
 const base={role:'Python Developer',company:'Test employer',location:'Cardiff',employment:'Part-time',hours:'16 hours per week',description:'Paid employee role using Python, SQL and Django. Send your CV.',stack:'Python, SQL, Django',source:'Employer careers',fields:{},priority:'P2',status:'To review',saved:false,deadline:'',rank:1};
 const job=(id,patch={})=>({...base,id,...patch});
@@ -23,22 +23,25 @@ assert.equal(selectJobs([conflict],{scope:'all'},DEFAULT_PROFILE,today)[0].prior
 assert.equal(selectJobs([{...conflict,userEditedDeadline:true}],{scope:'all'},DEFAULT_PROFILE,today)[0].priority.urgency,3);
 // Unknown availability remains urgent but the explanation asks for source verification.
 const uncertain=job('uncertain',{availability:'uncertain',deadline:today});assert.match(selectJobs([uncertain],{scope:'all'},DEFAULT_PROFILE,today)[0].priority.reason,/Availability needs checking/);
-// Roles confirmed open come before ones to check and ones never checked, whatever their dates and settings.
-const open=job('open',{availability:'open',checked:'2026-10-07'}),unsure=job('unsure',{availability:'uncertain',checked:'2026-10-07',priority:'P1'}),stale=job('stale',{availability:'open',checked:'2026-09-16'}),unchecked=job('unchecked',{checked:'2026-09-13',deadline:today,priority:'P1'});
-assert.deepEqual(ids([unchecked,stale,unsure,open]),['open','unsure','stale','unchecked']);
-// Among confirmed-open roles the imminent deadline still leads.
-assert.deepEqual(ids([job('open-later',{availability:'open',checked:today,priority:'P1'}),job('open-soon',{availability:'open',checked:today,deadline:'2026-10-10',priority:'P3'})]),['open-soon','open-later']);
-// Hours needing agreement stay below part-time possibilities even when confirmed open; among themselves open leads.
-const fulltime={employment:'Full-time',hours:'40 hours per week',description:'Full-time employee role, 40 hours per week.'};
-assert.deepEqual(ids([job('fulltime-unchecked',fulltime),job('fulltime-open',{...fulltime,availability:'open',checked:today}),unchecked]),['unchecked','fulltime-open','fulltime-unchecked']);
-const rated=j=>assessPriority(j,assess(j,DEFAULT_PROFILE,today),today),short=d=>dateLabel(d).slice(0,-5);
-assert.equal(rated(open).label,'Apply now');assert.equal(rated(open).availability,0);
-assert.equal(rated(job('open-today',{availability:'open',checked:today,deadline:today})).label,'Apply now · closes today');
-assert.equal(rated(stale).availability,1);assert.equal(rated(stale).label,'Open on '+short('2026-09-16')+'; check again');
-assert.equal(rated(unsure).label,'Check it is still open');
-assert.equal(rated(unchecked).availability,2);assert.equal(rated(unchecked).label,'Not checked since '+short('2026-09-13')+' · closes today');
-assert.equal(rated(job('never')).label,'Not checked yet');
-assert.match(rated(job('fulltime-open',{...fulltime,availability:'open',checked:today})).label,/^Hours need agreement · open when checked on /);
+// The order to act in: apply now, ask about hours, full-time, check it is still open, never checked.
+const seen={availability:'open',checked:'2026-10-07'},fulltime={employment:'Full-time',hours:'40 hours per week',description:'Full-time employee role, 40 hours per week.'},vague={employment:'Permanent',hours:'Reed lists full-time or part-time',description:'Paid employee role using Python and SQL.'};
+const open=job('open',seen),ask=job('ask',{...seen,...vague,priority:'P1'}),full=job('full',{...seen,...fulltime,deadline:today,priority:'P1'}),unsure=job('unsure',{availability:'uncertain',checked:'2026-10-07',priority:'P1'}),stale=job('stale',{availability:'open',checked:'2026-09-16'}),unchecked=job('unchecked',{checked:'2026-09-13',deadline:today,priority:'P1'});
+assert.deepEqual(ids([unchecked,stale,unsure,full,ask,open]),['open','ask','full','unsure','stale','unchecked']);
+const rated=j=>assessPriority(j,assess(j,DEFAULT_PROFILE,today),today);
+assert.deepEqual([open,ask,full,unsure,stale,unchecked,job('never')].map(j=>rated(j).section),[0,1,2,3,3,4,4]);
+assert.equal(rated(open).label,'Apply now');assert.equal(rated(full).label,'Full-time or over your hours · closes today');assert.equal(PRIORITY_SECTIONS[rated(ask).section],'Ask about hours first');
+assert.match(rated(ask).reason,/Part-time is mentioned, but no weekly hours are stated/);assert.match(rated(full).reason,/40 hours a week, above your preference/);
+assert.equal(rated(unsure).note,'The last check could not confirm it is open');assert.equal(rated(stale).note,'Open at the last check, more than 14 days ago');assert.equal(rated(open).note,'');
+// Among roles in one group the imminent deadline still leads.
+assert.deepEqual(ids([job('open-later',{...seen,priority:'P1'}),job('open-soon',{...seen,deadline:'2026-10-10',priority:'P3'})]),['open-soon','open-later']);
+// Roles not yet checked keep part-time possibilities above hours needing agreement.
+assert.deepEqual(ids([job('fulltime-unchecked',{...fulltime,deadline:today}),job('unchecked-later')]),['unchecked-later','fulltime-unchecked']);
+// Hours: a denial is not an offer of part-time, and a single shift fits.
+assert.equal(assess(job('denied',{employment:'Full-time',hours:'Indeed copy says full time; no flexible-hours or job-share wording in that copy',description:'Paid employee role.'}),DEFAULT_PROFILE,today).hours,'Hours need agreement');
+assert.equal(assess(job('shift',{employment:'Temporary one-off student casual assignment',hours:'One paid 4-hour shift, Friday 16 October 2026',description:'Paid shift.'}),DEFAULT_PROFILE,today).hours,'One-off shift');
+assert.equal(assess(job('listed',vague),DEFAULT_PROFILE,today).hours,'Part-time mentioned');
+// The first list keeps everything a check has seen, whatever its hours, and leaves the rest to the other tabs.
+assert.deepEqual(ids([unchecked,stale,unsure,full,ask,open,job('graduate',{...seen,role:'Graduate Python Developer'}),job('sent',{...seen,status:'Applied'})],{scope:'apply'}),['open','ask','full','unsure','stale']);
 // Sent and closed jobs are not reordered by availability.
 assert.equal(rated(job('sent',{status:'Applied',checked:'2026-09-13'})).availability,0);assert.equal(rated(job('shut',{availability:'closed'})).availability,0);
 // The follow-up view retains its own calendar order. Filters remain intact.
@@ -49,4 +52,4 @@ assert.deepEqual(ids([job('unknown'),job('expired',{deadline:'2026-10-08'}),job(
 assert.deepEqual(ids([job('strong',{stack:'Python, SQL, Django'}),urgent],{sort:'match'}),['strong','today']);
 const localToday=dayNow();assert.equal(ids([job('a'),job('b')])[0],'a');
 const original=structuredClone([urgent,tomorrow]);ids(original);assert.deepEqual(original,[urgent,tomorrow]);
-console.log('PASS: confirmed-open first, then deadline-first priority, personal ties, fit/shortlist ties, sent/closed/out-of-scope demotion, hours conflicts, source/user deadline handling, day rollover, filters and follow-up order. London today: '+localToday);
+console.log('PASS: apply/ask/full-time/check/unchecked order, the first list, hours wording, then deadline-first priority, personal ties, fit/shortlist ties, sent/closed/out-of-scope demotion, hours conflicts, source/user deadline handling, day rollover, filters and follow-up order. London today: '+localToday);
