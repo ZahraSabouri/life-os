@@ -3,6 +3,8 @@ import { mapNativeStudy } from '../study/calendar.mjs'
 
 const inactive = new Set(['archived', 'cancelled', 'canceled', 'deleted', 'inactive', 'rejected', 'closed'])
 const finished = new Set(['done', 'completed', 'complete', 'bought', 'given', 'skipped'])
+// A finished task or plan of her own stays on its day, marked done, so the calendar is also a history.
+const kept = new Set(['done', 'completed', 'complete'])
 const stateOf = value => String(value ?? '').trim().toLowerCase()
 const array = value => Array.isArray(value) ? value : []
 const id = value => typeof value === 'string' && value.trim() ? value : null
@@ -56,19 +58,22 @@ const entryAreas = {
 export function mapEntries(value, range) {
   const output = []
   for (const entry of array(Array.isArray(value) ? value : value?.entries)) {
-    if (!id(entry?.id) || !available(entry) || finished.has(stateOf(entry.status))) continue
+    const done = kept.has(stateOf(entry.status))
+    if (!id(entry?.id) || !available(entry) || (finished.has(stateOf(entry.status)) && !done)) continue
     let details = entry.details ?? {}
     if (typeof details === 'string') { try { details = JSON.parse(details) } catch { details = {} } }
     if (inactive.has(stateOf(details.status)) || finished.has(stateOf(details.status))) continue
     const type = entry.type
+    // Filed under a room: the calendar area of that room when it has one, and the room's name either way.
+    const room = type !== 'time-block' && typeof details.area === 'string' ? details.area : ''
     const base = {
-      id: `core:entry:${entry.id}`, area: type === 'time-block' && blockAreas.has(details.area) ? details.area : entryAreas[type] ?? 'core',
+      id: `core:entry:${entry.id}`, area: type === 'time-block' && blockAreas.has(details.area) ? details.area : blockAreas.has(room) ? room : entryAreas[type] ?? 'core',
       kind: ['event', 'appointment', 'performance', 'interaction'].includes(type) ? 'fixed'
         : type === 'important-date' || type === 'message' ? 'reminder'
           : ['assignment', 'academic-application'].includes(type) ? 'deadline' : 'plan',
       title: text(entry.title, text(details.title, text(details.name, 'Untitled entry'))),
       href: `/ledger#entry-${encodeURIComponent(entry.id)}`,
-      meta: { source: 'core', readonly: false, entryId: entry.id, type, status: entry.status, archetype: entry.archetype },
+      meta: { source: 'core', readonly: false, entryId: entry.id, type, status: entry.status, archetype: entry.archetype, ...(room ? { room } : {}), ...(done ? { completed: true } : {}) },
       ...(details.location || details.venue ? { location: text(details.location ?? details.venue, '') } : {}),
     }
     const start = entry.start_at || details.deadline || details.exam_date || (type === 'trip' && details.start)

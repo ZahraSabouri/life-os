@@ -18,7 +18,7 @@ test('the shared service accepts native Study and maps it once without a legacy 
   assert.equal(result.sources.find(row => row.id === 'study').status, 'ready')
   assert.equal(result.items.length, 1)
   assert.equal(result.items[0].id, 'study:native:sessions:fixture-session')
-  assert.equal(result.items[0].href, '/study-native?session=fixture-session')
+  assert.equal(result.items[0].href, '/study#/schedule')
 })
 
 test('core reads every dated type and inclusive multi-day spans, preserving source identity', () => {
@@ -33,7 +33,10 @@ test('core reads every dated type and inclusive multi-day spans, preserving sour
     { id: 'invalid-end', type: 'task', start_at: '2026-10-02', end_at: 'not a date' },
   ]
   const items = mapEntries(rows, october)
-  assert.deepEqual(items.map(row => row.meta.entryId), ['trip', 'note', 'deadline'])
+  // A finished task stays on its day, marked done, so the calendar is also a history; an archived one does not.
+  assert.deepEqual(items.map(row => row.meta.entryId), ['trip', 'note', 'deadline', 'done'])
+  assert.equal(items[3].meta.completed, true)
+  assert.equal(items[0].meta.completed, undefined)
   assert.equal(items[0].end, '2026-10-02')
   assert.equal(items[1].all_day, true)
   assert.equal(items[2].area, 'study')
@@ -238,4 +241,18 @@ test('production loaders preserve source files and read the injected Study state
   await assert.rejects(loaders.loadStudy(october), /unavailable/)
   await assert.rejects(loaders.loadCareer(), /not running/)
   await assert.rejects(loaders.loadBudget(), /not running/)
+})
+
+test('an entry filed under a room takes that room: its calendar area when the room has one, its name either way', () => {
+  const rows = [
+    { id: 'ben', type: 'event', title: 'See Ben', start_at: '2026-10-17T13:00:00Z', details: { area: 'relationships' } },
+    { id: 'picnic', type: 'task', title: 'Picnic outside Cardiff', start_at: '2026-10-18', details: '{"area":"travel"}' },
+    { id: 'forms', type: 'task', title: 'Council tax form', start_at: '2026-10-19', status: 'done', details: { area: 'admin', note: 'Sent by post' } },
+    { id: 'jobs', type: 'time-block', title: 'Job applications', start_at: '2026-10-19T16:45:00Z', end_at: '2026-10-19T19:45:00Z', details: { area: 'career' } },
+    { id: 'plain', type: 'task', title: 'No area', start_at: '2026-10-20' },
+  ]
+  const items = mapEntries(rows, october)
+  assert.deepEqual(items.map(row => [row.meta.entryId, row.area, row.meta.room ?? null, row.meta.completed ?? false]), [
+    ['ben', 'relationships', 'relationships', false], ['picnic', 'core', 'travel', false], ['forms', 'core', 'admin', true], ['jobs', 'career', null, false], ['plain', 'core', null, false],
+  ])
 })

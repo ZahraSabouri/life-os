@@ -108,6 +108,9 @@ router.post('/', (req, res) => {
 
     const id = randomUUID()
     const now = new Date().toISOString()
+    // Something brought in from elsewhere may say when it was first written; never in the future.
+    const written = cleanOptionalDate(req.body?.created_at, 'created_at')
+    const createdAt = written && Date.parse(written) <= Date.parse(now) ? new Date(written).toISOString() : now
     const cleanType = String(type || 'note').trim() || 'note'
 
     if (!typeExists(cleanType)) {
@@ -134,7 +137,7 @@ router.post('/', (req, res) => {
       cleanAllDay,
       cleanFavorite,
       JSON.stringify(cleanDetails),
-      now,
+      createdAt,
       now
     )
 
@@ -161,7 +164,7 @@ router.get('/', (req, res) => {
   try {
     const requestedLimit = Number(req.query.limit)
     const limit = Number.isFinite(requestedLimit)
-      ? Math.max(1, Math.min(Math.trunc(requestedLimit), 100))
+      ? Math.max(1, Math.min(Math.trunc(requestedLimit), 5000))
       : 10
     const inlineFilter = req.query.filter ? JSON.parse(String(req.query.filter)) : {}
     const filter = typeof req.query.room === 'string' || typeof req.query.space === 'string'

@@ -36,8 +36,8 @@ export function mapNativeStudy(workspace, from, to, plans = []) {
       id: `study:native:${entity}:${record.id}${suffix ? `:${suffix}` : ''}`, area: 'study', kind: values.kind,
       title: values.title || record.title || 'Study plan', start, end, all_day: allDay,
       // What the Study hub app saved opens in the app; a record kept only as a row opens in the plain list.
-      href: String(record.provenance?.source ?? '').startsWith('hub:') ? '/study'
-        : `/study-native?${entity === 'cards' ? 'card' : entity === 'assessments' ? 'assessment' : 'session'}=${encodeURIComponent(record.id)}`,
+      // Everything of Study opens in the Study hub: a card on the card, a class or a test on the Schedule.
+      href: entity === 'cards' ? (record.data?.hubCardId ? `/study#/today?card=${encodeURIComponent(record.data.hubCardId)}` : '/study') : '/study#/schedule',
       ...(record.data?.location ? { location: record.data.location } : {}),
       meta: { source: 'native-study', readonly: true, entity, recordId: record.id,
         ...(entity === 'cards' ? { cardId: record.id } : {}), semesterId: record.semester_id, moduleId: record.module_id,

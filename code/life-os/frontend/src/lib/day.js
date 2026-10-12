@@ -94,7 +94,7 @@ export function buildDay({ items = [], day = null, date, now = '' }) {
     stops.push({
       key: item.id, type: 'item', start: clockOf(item.start), end: item.end ? clockOf(item.end) : '',
       title: item.title, area: item.area, kind: item.kind, place: shortPlace(item.location), href: item.href || '/calendar', choice: item.choice ?? '',
-      entry: ownEntry(item),
+      entry: ownEntry(item), room: item.meta?.room ?? '',
     })
   }
   for (const block of day?.blocks ?? []) {
@@ -121,7 +121,7 @@ export function buildDay({ items = [], day = null, date, now = '' }) {
     if (!item.all_day) continue
     // Today's study cards are drawn with their steps, so their bare calendar rows are left out.
     if (isCardItem(item) && shown.has(item.meta.recordId)) continue
-    const entry = { key: item.id, type: 'item', title: item.title, area: item.area, kind: item.kind, href: item.href || '/calendar', entry: ownEntry(item) }
+    const entry = { key: item.id, type: 'item', title: item.title, area: item.area, kind: item.kind, href: item.href || '/calendar', entry: ownEntry(item), room: item.meta?.room ?? '' }
     if (item.meta?.source === 'core' || item.area === 'home') anytime.push(entry)
     else also.push(entry)
   }

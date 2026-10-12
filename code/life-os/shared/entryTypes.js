@@ -609,6 +609,14 @@ function validateFieldValue(fieldName, schema, value) {
   return { error: `${fieldName} has unsupported field type: ${schema.type}` }
 }
 
+// Two details every kind of entry may carry whatever its own fields are: the area (room) it
+// is filed under, and a free note. A kind with a field of that name keeps its own rule.
+export const ENTRY_AREAS = ['study', 'academia', 'career', 'growth', 'body', 'style', 'relationships', 'travel', 'home', 'culture', 'memories', 'mind', 'admin']
+const COMMON_DETAILS = {
+  area: (value) => (typeof value === 'string' && ENTRY_AREAS.includes(value) ? value : undefined),
+  note: (value) => (typeof value === 'string' && value.trim() ? value.trim().slice(0, 20000) : undefined),
+}
+
 export function validateDetails(type, details = {}) {
   if (!typeExists(type)) {
     return {
@@ -630,9 +638,14 @@ export function validateDetails(type, details = {}) {
 
   const fields = ENTRY_TYPES[type].fields || {}
   const fieldNames = Object.keys(fields)
-  const stripped = Object.keys(details).filter((key) => !Object.hasOwn(fields, key))
+  const common = Object.keys(COMMON_DETAILS).filter((key) => !Object.hasOwn(fields, key))
+  const stripped = Object.keys(details).filter((key) => !Object.hasOwn(fields, key) && !common.includes(key))
   const value = {}
   const errors = []
+  for (const key of common) {
+    const kept = COMMON_DETAILS[key](details[key])
+    if (kept !== undefined) value[key] = kept
+  }
 
   fieldNames.forEach((fieldName) => {
     const result = validateFieldValue(fieldName, fields[fieldName], details[fieldName])

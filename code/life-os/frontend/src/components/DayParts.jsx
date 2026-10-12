@@ -1,6 +1,8 @@
 // The pieces a day is drawn with, shared by the Court, Today and the strip inside each part:
 // the line that adds to the day, the day's path, and the Study, Jobs, Home and Notes panels.
 import { Link } from 'react-router-dom'
+import { ENTRY_AREAS } from '@shared/entryTypes.js'
+import { ROOMS } from '@shared/rooms.js'
 import { calendarArea, formatCalendarDay } from '../lib/calendar.js'
 import { daysAway } from '../lib/day.js'
 
@@ -8,6 +10,7 @@ export const pounds = (pence) => new Intl.NumberFormat('en-GB', { style: 'curren
 export const hours = (value) => `${Number.isInteger(value) ? value : value.toFixed(1)} h`
 export const count = (value, one, many = `${one}s`) => `${value} ${value === 1 ? one : many}`
 const MEAL_NAMES = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' }
+export const roomName = (slug) => ROOMS.find((room) => room.slug === slug)?.name ?? ''
 const ADD = {
   plan: { label: 'Plan', button: 'Add', placeholder: (day) => `Add to ${day}: “17:30 library”, “Lidl”, “dinner at 8pm”` },
   note: { label: 'Note', button: 'Keep', placeholder: () => 'Write a note for today and press Enter' },
@@ -15,16 +18,23 @@ const ADD = {
 }
 
 // One line that adds a plan, a note or something to buy. A hint says what will be saved.
-export function AddLine({ page, id = 'day-add-input' }) {
+export function AddLine({ page, id = 'day-add-input', fixedArea = false }) {
   const { line } = page
-  return <form className="day-note" onSubmit={line.save}>
+  return <form className={`day-note${line.kind === 'buy' ? '' : ' has-filing'}`} onSubmit={line.save}>
     <div className="day-add-kind" role="group" aria-label="What to add">
       {Object.entries(ADD).map(([kind, words]) => <button key={kind} type="button" aria-pressed={line.kind === kind} onClick={() => line.choose(kind)}
         disabled={kind === 'note' && !line.noteAllowed} title={kind === 'note' && !line.noteAllowed ? 'A note belongs to the day it is written' : undefined}>{words.label}</button>)}
     </div>
     <input id={id} value={line.text} onChange={(event) => line.setText(event.target.value)} aria-label={ADD[line.kind].label} placeholder={ADD[line.kind].placeholder(page.dayName)} autoComplete="off" maxLength={2000} />
+    {line.kind === 'buy' ? null : <div className="day-add-filing">
+      {line.kind === 'plan' ? <label>for<input type="date" value={line.day} onChange={(event) => line.setDay(event.target.value)} aria-label="The day the plan is for" /></label> : null}
+      {fixedArea || line.fixedArea ? null : <label>under<select value={line.area} onChange={(event) => line.setArea(event.target.value)} aria-label="The area to file it under">
+        <option value="">no area</option>
+        {ENTRY_AREAS.map((slug) => <option key={slug} value={slug}>{roomName(slug)}</option>)}
+      </select></label>}
+    </div>}
     <button type="submit" disabled={!line.text.trim() || line.state === 'saving'}>{line.state === 'saving' ? 'Saving…' : line.state === 'saved' ? 'Saved' : ADD[line.kind].button}</button>
-    {line.hint ? <p className="day-add-hint">{line.hint}</p> : null}
+    {line.hint ? <p className="day-add-hint">{line.hint}{line.area && line.kind !== 'buy' ? ` Filed under ${roomName(line.area)}.` : ''}</p> : null}
     {!line.hint && page.notice ? <p className="day-add-hint day-add-done" role="status">{page.notice}</p> : null}
     {page.error ? <p className="day-add-hint day-warn" role="alert">{page.error}</p> : null}
   </form>
@@ -45,13 +55,15 @@ function Stop({ stop, onDone, onRemove, busy, compact }) {
   const area = calendarArea(stop.area)
   const card = stop.card
   const detailed = card && !card.done && (card.steps.length || card.doneWhen)
+  // Her own plan says the room it is filed under; everything else, its part of Life OS.
+  const label = (stop.room && roomName(stop.room)) || area.label
   return <li className={`day-stop${stop.when ? ` is-${stop.when}` : ''}${card ? ' has-card' : ''}`} data-kind={stop.kind} style={{ '--item-accent': area.tone }}>
     <div className="day-stop-time">{stop.start ? <span>{stop.start}</span> : null}{stop.end ? <small>{stop.end}</small> : null}</div>
     <div className="day-stop-mark" aria-hidden="true" />
     <div className="day-stop-body">
       <Link className="day-stop-title" to={stop.href}>{card?.title ?? stop.title}</Link>
       <p className="day-stop-meta">
-        <span>{area.label}</span>
+        <span>{label}</span>
         {card?.moduleCode || card?.module ? <span>{card.moduleCode || card.module}</span> : null}
         {stop.place ? <span>{stop.place}</span> : null}
         {stop.when === 'now' ? <span className="day-now-tag">Now</span> : null}

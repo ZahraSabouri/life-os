@@ -13,7 +13,7 @@ function savedKind() { try { const saved = window.localStorage.getItem(ADD_KIND_
 // Everything a page needs to show one day and to add to it: the calendar's dated items, the
 // day's study blocks and panels, the path they make, and the one line that adds a plan, a
 // note or something to buy. The Court, Today and the strip inside each part all use this.
-export function useDayPage(requested) {
+export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
   const today = useLondonToday()
   const clock = useLondonClock()
   const date = isDateKey(requested ?? '') ? requested : today
@@ -23,6 +23,12 @@ export function useDayPage(requested) {
   const calendar = useCalendar(near ? addDays(today, -350) : addDays(date, -7), near ? addDays(today, 14) : addDays(date, 14))
   const day = useDay(date)
   const [kind, setKind] = useState(savedKind)
+  // The area a plan or note is filed under (a room page fixes it), and the day a plan is for
+  // (the day being looked at unless she picks another).
+  const [chosenArea, setArea] = useState('')
+  const area = fixedArea || chosenArea
+  const [chosenDay, setDay] = useState('')
+  const planDay = isDateKey(chosenDay) ? chosenDay : date
   const [text, setText] = useState('')
   const [lineState, setLineState] = useState('')
   const [savingId, setSavingId] = useState('')
@@ -38,7 +44,8 @@ export function useDayPage(requested) {
   const adding = kind === 'note' && !isToday ? 'plan' : kind
   const plan = useMemo(() => parsePlan(text), [text])
   const things = useMemo(() => splitThings(text), [text])
-  const dayName = isToday ? 'today' : formatCalendarDay(date, { weekday: 'long' })
+  const dayName = planDay === today ? 'today' : formatCalendarDay(planDay, { weekday: 'long' })
+  const filed = area ? { area } : {}
   const hint = !text.trim() ? ''
     : adding === 'note' ? 'A note, kept on today and in the Ledger.'
       : adding === 'buy' ? (things.length ? `${things.length === 1 ? `“${things[0]}” goes` : `${things.length} things go`} on your shopping list in Budget.` : 'Say what to buy; commas separate several things.')
@@ -54,16 +61,16 @@ export function useDayPage(requested) {
     const body = text.trim()
     if (!body || lineState === 'saving') return
     let request
-    if (adding === 'note') request = ['/api/entries', { type: 'note', title: noteTitle(body), details: { body } }]
+    if (adding === 'note') request = ['/api/entries', { type: 'note', title: noteTitle(body), details: { body, ...filed } }]
     else if (adding === 'buy') {
       if (!things.length) { setError('Say what to buy.'); return }
-      request = ['/api/home/shopping', { items: things, date }]
+      request = ['/api/home/shopping', { items: things, date: planDay }]
     } else if (!plan.title) { setError('Say what it is as well as when, for example “17:30 library”.'); return }
     else if (plan.start) {
-      const start = londonDateTime(date, plan.start)
+      const start = londonDateTime(planDay, plan.start)
       if (!start) { setError('That clock time does not exist on this day (the clocks change). Try another time.'); return }
-      request = ['/api/entries', { type: 'event', title: plan.title, start_at: start, ...(plan.end && londonDateTime(date, plan.end) ? { end_at: londonDateTime(date, plan.end) } : {}) }]
-    } else request = ['/api/entries', { type: 'task', title: plan.title, start_at: date, all_day: true }]
+      request = ['/api/entries', { type: 'event', title: plan.title, start_at: start, ...(plan.end && londonDateTime(planDay, plan.end) ? { end_at: londonDateTime(planDay, plan.end) } : {}), details: filed }]
+    } else request = ['/api/entries', { type: 'task', title: plan.title, start_at: planDay, all_day: true, details: filed }]
     setLineState('saving')
     setError('')
     setNotice('')
@@ -71,6 +78,7 @@ export function useDayPage(requested) {
       const saved = await apiFetch(request[0], { method: 'POST', body: JSON.stringify(request[1]) })
       setText('')
       refetch()
+      onSaved?.()
       if (adding === 'buy') setNotice(saved.added?.length ? `On “${saved.list.name}” in Budget: ${saved.added.join(', ')}.${saved.skipped?.length ? ` Already there: ${saved.skipped.join(', ')}.` : ''}` : `Already on “${saved.list.name}”: ${(saved.skipped ?? []).join(', ')}.`)
       setLineState('saved')
       window.setTimeout(() => setLineState(''), 1500)
@@ -107,7 +115,7 @@ export function useDayPage(requested) {
     today, date, isToday, clock, dayName, calendar, day, data, items, groups, path, refetch,
     loading: calendar.loading || (day.loading && !data),
     unavailable: (id) => data?.sources.find((source) => source.id === id && source.status === 'unavailable')?.error,
-    line: { kind: adding, choose, text, setText, state: lineState, hint, save: saveLine, noteAllowed: isToday },
+    line: { kind: adding, choose, text, setText, state: lineState, hint, save: saveLine, noteAllowed: isToday, area, setArea, fixedArea: Boolean(fixedArea), day: planDay, setDay },
     error, notice, savingId, completeTask,
     stopProps: { onDone: (stop) => setEntryStatus(stop, 'done'), onRemove: (stop) => setEntryStatus(stop, 'cancelled'), busy: Boolean(savingId) },
   }

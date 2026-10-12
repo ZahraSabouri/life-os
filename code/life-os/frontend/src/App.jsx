@@ -6,6 +6,7 @@ import DivanIntro from './components/DivanIntro.jsx'
 import TheCourt from './components/TheCourt.jsx'
 import TodayView from './components/TodayView.jsx'
 import LedgerView from './components/LedgerView.jsx'
+import RoomView from './components/RoomView.jsx'
 import StudyHub from './components/study/StudyHub.jsx'
 import { GroundProvider, useGround } from './lib/groundContext.jsx'
 
@@ -102,6 +103,7 @@ function AppRoutes() {
           <Route path="/calendar" element={<CalendarView />} />
           <Route path="/today" element={<TodayView />} />
           <Route path="/ledger" element={<LedgerView />} />
+          <Route path="/room/:slug" element={<RoomView />} />
           <Route path="/study" element={<StudyRoute />} />
           <Route path="/cardiff-life" element={<CardiffLifeRoute />} />
           <Route path="/budget" element={<BudgetRoute />} />

@@ -42,7 +42,7 @@ export default function CourtLayout() {
     <main className={`court-screen${isBoardRoute ? ' board-screen' : ''}${isManuscriptCourt ? ' court-redesign-screen' : ''}${isSubApp ? ' subapp-screen' : ''}`}>
       {!isManuscriptCourt ? (
         <header className="court-topbar">
-          <div className="wordmark">Life OS</div>
+          <button type="button" className="wordmark" onClick={() => navigate('/court')} aria-label="Life OS: the first page">Life OS</button>
           <div className="date-line">{dateLabel}</div>
           <button type="button" className="court-menu-toggle" aria-expanded={menuOpen} aria-controls="court-menu" onClick={() => setMenuOpen((open) => !open)}>
             {menuOpen ? 'Close' : 'Menu'}

@@ -111,6 +111,17 @@ export const ROOMS = [
   }
 ]
 
+// Added 12 October 2026 (Xar: "assign them to a day under, I don't know, admin or anything").
+ROOMS.push({
+  slug: 'admin',
+  name: 'Life admin',
+  icon: 'Ad',
+  accent: '#8a6d3b',
+  blurb: 'Errands, paperwork, appointments, bookings, things to sort out.',
+  filter: { rooms: ['admin'], types: [] },
+  build: 'built'
+})
+
 export const LENSES = [
   { slug: 'today', name: 'Today', kind: 'spine', desc: 'Open commitments + today\'s dated entries, from every room.' },
   { slug: 'calendar', name: 'Calendar', kind: 'spine', desc: 'Everything dated, colour-layered by room.' },

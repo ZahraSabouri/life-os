@@ -13,7 +13,7 @@ test('native cards produce separate starts and deadlines with native source iden
   assert.equal(items[0].end, null)
   assert.equal(items[1].start, '2026-10-07T15:00:00.000Z')
   assert.equal(items[1].meta.type, 'study-deadline')
-  assert.equal(items[1].href, '/study-native?card=card')
+  assert.equal(items[1].href, '/study')   // a card kept only as a record opens the Study hub; one the hub saved opens on that card
   assert.deepEqual(workspace, before)
 })
 

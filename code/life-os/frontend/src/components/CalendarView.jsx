@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { apiFetch } from '../lib/api.js'
-import { CALENDAR_AREAS, CALENDAR_KINDS, addDays, calendarArea, calendarDisplay, dateForKey, dateKey, filterCalendarItems, formatCalendarDay, itemOverlaps, sortCalendarItems } from '../lib/calendar.js'
+import { isComplete, CALENDAR_AREAS, CALENDAR_KINDS, addDays, calendarArea, calendarDisplay, dateForKey, dateKey, filterCalendarItems, formatCalendarDay, itemOverlaps, sortCalendarItems } from '../lib/calendar.js'
 import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
 import { isDateKey } from '@shared/calendar.js'
 import CalendarItems, { CalendarStatus } from './CalendarItems.jsx'
@@ -131,7 +131,7 @@ export default function CalendarView() {
                 <time dateTime={day.key}><span>{day.date.getUTCDate()}</span><small lang="fa" dir="rtl">{persianDay.format(day.date)}</small></time>
                 <span className="calendar-mobile-count">{dayDisplay.state === 'ready' ? dayItems.length || '' : dayDisplay.state === 'partial' ? `${dayItems.length}+` : '?'}</span>
               </button>
-              <div className="day-entry-list">{dayItems.slice(0, 3).map(item => <Link className="day-chip" data-kind={item.kind} data-choice={item.choice} key={item.id} to={item.href || '/calendar'} style={{ '--item-accent': calendarArea(item.area).tone }} title={`${item.meta?.savedSnapshot ? 'Saved copy; check the current listing · ' : ''}${item.choice === 'maybe' ? 'Maybe · ' : ''}${item.title} · ${calendarArea(item.area).label}`}>{item.meta?.savedSnapshot ? 'Saved copy · ' : ''}{item.choice === 'maybe' ? 'Maybe · ' : ''}{item.title}</Link>)}{dayItems.length > 3 ? <button className="calendar-more" type="button" onClick={() => selectDay(day.key)}>+{dayItems.length - 3} more</button> : null}</div>
+              <div className="day-entry-list">{dayItems.slice(0, 3).map(item => <Link className={`day-chip${isComplete(item) ? ' is-complete' : ''}`} data-kind={item.kind} data-choice={item.choice} key={item.id} to={item.href || '/calendar'} style={{ '--item-accent': calendarArea(item.area).tone }} title={`${item.meta?.savedSnapshot ? 'Saved copy; check the current listing · ' : ''}${item.choice === 'maybe' ? 'Maybe · ' : ''}${item.title} · ${calendarArea(item.area).label}`}>{item.meta?.savedSnapshot ? 'Saved copy · ' : ''}{item.choice === 'maybe' ? 'Maybe · ' : ''}{item.title}</Link>)}{dayItems.length > 3 ? <button className="calendar-more" type="button" onClick={() => selectDay(day.key)}>+{dayItems.length - 3} more</button> : null}</div>
             </article>
           })}
         </div>

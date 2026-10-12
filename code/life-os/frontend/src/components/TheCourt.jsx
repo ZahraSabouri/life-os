@@ -26,6 +26,7 @@ const ROOM_NAME_OVERRIDES = {
   memories: 'Memories',
   home: 'Home',
   mind: 'Mind',
+  admin: 'Life admin',
   style: 'Closet'
 }
 
@@ -41,7 +42,8 @@ const ROOM_PRESENTATION = {
   home: { motif: 'home', wing: 'world' },
   culture: { motif: 'film', wing: 'soul' },
   memories: { motif: 'photo', wing: 'soul' },
-  mind: { motif: 'quill', wing: 'soul' }
+  mind: { motif: 'quill', wing: 'soul' },
+  admin: { motif: 'note', wing: 'world' }
 }
 
 const ROOM_ACCENTS = {
@@ -56,7 +58,8 @@ const ROOM_ACCENTS = {
   home: { dark: '#d9a94a', paper: '#a9702a' },
   culture: { dark: '#b193d8', paper: '#7a4fb3' },
   memories: { dark: '#adb37e', paper: '#7a8148' },
-  mind: { dark: '#c9917f', paper: '#a05a44' }
+  mind: { dark: '#c9917f', paper: '#a05a44' },
+  admin: { dark: '#cdb38a', paper: '#8a6d3b' }
 }
 
 const GLYPHS = {
@@ -92,13 +95,13 @@ const TYPE_ROOM_FALLBACKS = {
 const FEATURED_ROOMS = ['study', 'career', 'body']
 const ROOM_ORDER = [
   'study', 'academia', 'career', 'growth', 'body', 'style',
-  'relationships', 'travel', 'home', 'culture', 'memories', 'mind'
+  'relationships', 'travel', 'home', 'admin', 'culture', 'memories', 'mind'
 ]
 
 const WINGS = [
   { key: 'desk', label: 'The Desk', rooms: ['study', 'academia', 'career'] },
   { key: 'self', label: 'The Self', rooms: ['growth', 'body', 'style'] },
-  { key: 'world', label: 'The World', rooms: ['relationships', 'travel', 'home'] },
+  { key: 'world', label: 'The World', rooms: ['relationships', 'travel', 'home', 'admin'] },
   { key: 'soul', label: 'The Soul', rooms: ['culture', 'memories', 'mind'] }
 ]
 
@@ -241,9 +244,11 @@ function buildRoomModel(entries, scheme, facts = {}) {
   const latest = new Map()
 
   entries.forEach((entry) => {
-    // A time block is hours on the calendar for an area, not something filed in a room.
-    if (entry.type === 'time-block') return
-    roomSlugsForType(entry.type).forEach((slug) => {
+    // A time block is hours on the calendar for an area, not something filed in a room; what
+    // is done or taken off is history, kept on the room's own page.
+    if (entry.type === 'time-block' || ['done', 'completed', 'complete', 'cancelled', 'archived'].includes(String(entry.status ?? '').toLowerCase())) return
+    const filedUnder = entry.details?.area ? [entry.details.area] : roomSlugsForType(entry.type)
+    filedUnder.forEach((slug) => {
       counts.set(slug, (counts.get(slug) || 0) + 1)
       if (!latest.has(slug)) {
         latest.set(slug, entry)
@@ -540,20 +545,14 @@ function PaperCourt(props) {
 
         <section className="paper-greeting" aria-label="Court greeting">
           <h1>{greeting}, Xar.</h1>
-          <p>The desk and the body saw work today · Tehran calls at 19:00</p>
+          <p>{props.dayLine}</p>
         </section>
 
-        <form className="paper-capture" onSubmit={captureProps.handleSubmit}>
-          <div className="paper-capture-line">
-            <Dia />
-            <CaptureFields {...captureProps} variant="paper" />
-            <span className="paper-capture-enter" aria-hidden="true">⏎</span>
-          </div>
-          <p className="paper-capture-hint">it drafts the filing - you confirm · press / anywhere</p>
-        </form>
+        <CourtDay page={props.page} />
+        <MoreCapture captureProps={captureProps} variant="paper" />
 
         <section className="paper-index" aria-labelledby="paper-rooms-heading">
-          <SectionRule right="12" id="paper-rooms-heading">The twelve rooms</SectionRule>
+          <SectionRule right={String(paperRooms.length)} id="paper-rooms-heading">The rooms</SectionRule>
           <div className="paper-index-grid">
             {paperRooms.map((room) => (
               <PaperIndexRow key={room.slug} room={room} onOpen={onOpenRoom} />
@@ -562,23 +561,6 @@ function PaperCourt(props) {
         </section>
 
         <section className="paper-matter" aria-label="Court matter">
-          <article>
-            <SectionRule>Next</SectionRule>
-            <CourtCalendarNote calendar={calendarState} />
-            {nextItems.length ? (
-              <ol className="paper-simple-list">
-                {nextItems.map((entry) => (
-                  <li key={entry.id}>
-                    <time>{entry.time}</time>
-                    <p><Link to={entry.href}>{entry.title}</Link></p>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              !calendarState.loading && !calendarState.error ? <EmptyLine>{calendarDisplay(calendarState, { empty: 'No dated items today.' }).emptyMessage} <Link to="/today">Open Today</Link></EmptyLine> : null
-            )}
-          </article>
-
           <article>
             <SectionRule>Recently filed</SectionRule>
             {recentEntries.length ? (
@@ -723,17 +705,8 @@ function MadderCourt(props) {
           <p>{props.dayLine}</p>
         </section>
 
-        <form className="madder-capture-pool" onSubmit={captureProps.handleSubmit}>
-          <span className="madder-mic" aria-hidden="true"><Glyph name="mic" size={17} /></span>
-          <CaptureFields {...captureProps} variant="madder" />
-          <button className="madder-send" type="submit" disabled={!captureProps.body.trim() || captureProps.status === 'saving'}>
-            <Glyph name="send" size={15} />
-          </button>
-        </form>
-
-        <p className="madder-capture-hint">try - “exam on the 14th at 9, and I finished chapter four of The Blind Owl”</p>
-
-        <MadderDayChannel clockLabel={clockLabel} todayItems={todayItems} calendarState={calendarState} />
+        <CourtDay page={props.page} />
+        <MoreCapture captureProps={captureProps} variant="madder" />
 
         <section className="madder-doors" aria-label="Daily doors">
           {featuredRooms.map((room) => (
@@ -861,26 +834,12 @@ function IndigoCourt(props) {
               <span>{weekdayLabel} · {clockLabel}{props.nextLine ? ` · ${props.nextLine}` : ''}</span>
             </section>
 
-            <IndigoCapture captureProps={captureProps} />
-
-            <section className="indigo-today">
-              <SectionRule right={weekdayLabel}>Full day</SectionRule>
-              <CourtCalendarNote calendar={calendarState} />
-              {todayItems.length ? (
-                <ol className="today-lines">
-                  {todayItems.slice(0, 6).flatMap((entry, index, items) => [
-                    <TodayLine key={entry.id} entry={entry} />,
-                    entry.done && !items[index + 1]?.done ? (
-                      <li className="indigo-now-line" key={`${entry.id}-now`}>
-                        <i /><Dia /><span>now · {clockLabel}</span><i />
-                      </li>
-                    ) : null
-                  ])}
-                </ol>
-              ) : (
-                !calendarState.loading && !calendarState.error ? <EmptyLine>{calendarDisplay(calendarState, { empty: 'No dated items today.' }).emptyMessage} <Link to="/today">Open Today</Link></EmptyLine> : null
-              )}
-            </section>
+            <div className="court-day day-page">
+              <section className="day-path" aria-labelledby="court-day-heading">
+                <header><h2 id="court-day-heading">Today</h2><Link to="/today">The whole day</Link></header>
+                <DayPath page={props.page} compact />
+              </section>
+            </div>
 
             <section className="indigo-streak">
               <StreakRing days={streakDays} of={14} />
@@ -893,10 +852,14 @@ function IndigoCourt(props) {
 
           <div className="indigo-divider" aria-hidden="true" />
 
-          <section className="indigo-register" aria-label="The twelve rooms">
+          <section className="indigo-register" aria-label="Today and the rooms">
+            <div className="court-day day-page">
+              <AddLine page={props.page} id="court-add-input" />
+              <div className="day-panels"><DayPanels page={props.page} compact /></div>
+            </div>
             <div className="indigo-register-head">
               <div>
-                <p>The twelve rooms</p>
+                <p>The rooms</p>
                 <h1>Register</h1>
               </div>
               <span>Wing grouped / live counts</span>
@@ -935,8 +898,35 @@ function IndigoCourt(props) {
   )
 }
 
-// Rooms that already open somewhere; the rest stay plain tiles until their area exists.
-const ROOM_DESTINATIONS = { study: 'Study Hub', career: 'JobMap', relationships: 'Cardiff Life', home: 'Budget' }
+// The day, as every style's Court carries it: the line that adds to it, its path in short
+// form, and what Study, Jobs, Home and Notes hold today. Drawn with the style's own tokens.
+function CourtDay({ page }) {
+  return (
+    <section className="court-day day-page" aria-label="Today">
+      <AddLine page={page} id="court-add-input" />
+      <div className="day-grid">
+        <section className="day-path" aria-labelledby="court-day-heading">
+          <header><h2 id="court-day-heading">Today</h2><Link to="/today">The whole day</Link></header>
+          <DayPath page={page} compact />
+        </section>
+        <div className="day-panels"><DayPanels page={page} compact /></div>
+      </div>
+    </section>
+  )
+}
+
+// The form for every other kind of entry (a book, a workout, a person…), kept, closed by default.
+function MoreCapture({ captureProps, variant }) {
+  return (
+    <details className="court-more-capture">
+      <summary>File something else<small>a book, a workout, a person, a place and 40 more kinds</small></summary>
+      <form onSubmit={captureProps.handleSubmit}><CaptureFields {...captureProps} variant={variant} /></form>
+    </details>
+  )
+}
+
+// Rooms that have a whole part of Life OS behind them; every other room opens its own page.
+const ROOM_DESTINATIONS = { study: 'Study Hub', career: 'JobMap', home: 'Budget' }
 
 function ModernRoom({ room, onOpen }) {
   const destination = ROOM_DESTINATIONS[room.slug]
@@ -952,7 +942,7 @@ function ModernRoom({ room, onOpen }) {
   )
   return destination
     ? <button className={`modern-room is-linked${room.live ? ' is-live' : ''}`} style={room.style} type="button" onClick={() => onOpen(room)}>{body}</button>
-    : <div className="modern-room" style={room.style}>{body}</div>
+    : <button className="modern-room is-room" style={room.style} type="button" onClick={() => onOpen(room)}>{body}</button>
 }
 
 // The first page. The day is here, not a click away: the line that adds to it, its path, and
@@ -970,15 +960,7 @@ function ModernCourt(props) {
         {props.dayLine ? <p className="modern-day-line">{props.dayLine}</p> : null}
       </header>
 
-      <AddLine page={page} id="court-add-input" />
-
-      <div className="day-grid">
-        <section className="day-path" aria-labelledby="court-day-heading">
-          <header><h2 id="court-day-heading">Today</h2><Link to="/today">The whole day</Link></header>
-          <DayPath page={page} compact />
-        </section>
-        <div className="day-panels"><DayPanels page={page} compact /></div>
-      </div>
+      <CourtDay page={page} />
 
       <div className="modern-court-grid">
         <section className="modern-card" aria-labelledby="modern-filed">
@@ -1079,7 +1061,9 @@ export default function TheCourt() {
   const streakDays = Math.min(12, studyCount)
   const recentEntries = useMemo(() => {
     // Time blocks are plans laid on the calendar (two weeks of job time at once), not things she filed.
-    return entries.filter((entry) => entry.type !== 'time-block').slice(0, 6).map((entry) => {
+    // …and "recently" means the last thirty days, so history brought in from elsewhere stays in the Ledger.
+    const since = new Date(Date.now() - 30 * 86_400_000).toISOString()
+    return entries.filter((entry) => entry.type !== 'time-block' && entry.created_at >= since).slice(0, 6).map((entry) => {
       const room = roomForEntry(entry, rooms)
 
       return {
@@ -1182,19 +1166,9 @@ export default function TheCourt() {
     }
   }
 
+  // A room with a whole part behind it opens that part; every other room opens its own page.
   function onOpenRoom(room) {
-    if (room.slug === 'study') {
-      navigate('/study')
-    }
-    if (room.slug === 'relationships') {
-      navigate('/cardiff-life')
-    }
-    if (room.slug === 'home') {
-      navigate('/budget')
-    }
-    if (room.slug === 'career') {
-      navigate('/jobmap')
-    }
+    navigate({ study: '/study', career: '/jobmap', home: '/budget' }[room.slug] ?? `/room/${room.slug}`)
   }
 
   useEffect(() => {

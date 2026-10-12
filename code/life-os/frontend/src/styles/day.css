@@ -224,3 +224,57 @@
 .modern-filed-list li:hover .modern-filed-remove, .modern-filed-remove:focus-visible, .modern-filed-remove.is-sure { opacity: 1; }
 .modern-filed-remove.is-sure { color: var(--m-red); }
 @media (hover: none) { .modern-filed-remove { opacity: 1; } }
+
+/* ---- The add line: the day a plan is for, and the area it is filed under ---- */
+.day-note.has-filing { grid-template-columns: auto minmax(0, 1fr) auto auto; }
+.day-add-filing { display: flex; align-items: center; gap: 0.7rem; }
+.day-page .day-note .day-add-filing label { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--m-faint); font: 600 0.72rem/1.2 var(--m-font); letter-spacing: 0; text-transform: none; }
+.day-add-filing select, .day-add-filing input {
+  max-width: 9.5rem; padding: 0.3rem 0.4rem; border: 1px solid var(--m-line); border-radius: var(--m-radius-sm); background: var(--m-card-fill); color: var(--m-ink);
+  font: 500 0.8rem/1.2 var(--m-font); color-scheme: var(--m-scheme);
+}
+@media (max-width: 900px) {
+  .day-note.has-filing { grid-template-columns: minmax(0, 1fr) auto; }
+  .day-note.has-filing .day-add-kind, .day-add-filing { grid-column: 1 / -1; }
+}
+
+/* ---- A room's own page ---- */
+.room-head { display: grid; gap: 0.5rem; }
+.room-head > p { margin: 0; max-width: 46rem; color: var(--m-muted); font-size: 0.95rem; line-height: 1.5; }
+.room-head a { margin-left: 0.5rem; color: var(--m-accent-strong); font-weight: 600; }
+.room-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.15rem; align-items: start; }
+.room-page .day-panel > header span { color: var(--m-muted); font-size: 0.82rem; }
+.room-list { list-style: none; margin: 0; padding: 0; }
+.room-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.8rem; align-items: start; padding: 0.6rem 0; border-top: var(--m-rule, 1px solid var(--m-line)); }
+.room-list li:first-child { border-top: 0; padding-top: 0.1rem; }
+.room-list a { color: var(--m-ink); font: var(--m-title-weight) 0.95rem/1.35 var(--m-title-font); text-decoration: none; overflow-wrap: anywhere; }
+.room-list a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.room-list small { display: block; margin-top: 0.1rem; color: var(--m-muted); font-size: 0.78rem; }
+.room-list p { margin: 0.3rem 0 0; color: var(--m-muted); font-size: 0.86rem; line-height: 1.45; white-space: pre-wrap; }
+.room-list li.is-done a { color: var(--m-muted); font-weight: var(--m-text-weight); }
+.room-row-actions { display: flex; gap: 0.8rem; white-space: nowrap; }
+.room-row-actions button { border: 0; padding: 0; background: transparent; color: var(--m-accent-strong); cursor: pointer; font: 600 0.76rem/1.6 var(--m-font); }
+.room-row-actions button + button, .room-row-actions button:only-child { color: var(--m-faint); }
+.room-row-actions button.is-sure { color: var(--m-red); }
+@media (max-width: 720px) { .room-grid { grid-template-columns: 1fr; } }
+
+/* ---- The day on the Courts of Madder, Indigo and Paper ---- */
+.court-day { display: grid; gap: 1.15rem; width: 100%; margin: 0; text-align: left; }
+.court-redesign .court-day { margin: 1.4rem 0 0.4rem; }
+.court-more-capture { margin: 0 0 1rem; color: var(--m-muted); font: var(--m-text-weight) 0.88rem/1.4 var(--m-font); text-align: left; }
+.court-more-capture > summary { cursor: pointer; color: var(--m-ink); font-weight: 600; }
+.court-more-capture > summary small { margin-left: 0.7rem; color: var(--m-muted); font-weight: var(--m-text-weight); }
+.court-more-capture[open] > summary { margin-bottom: 0.8rem; }
+/* A finished thing on the calendar's month: still there, struck through. */
+.unified-calendar .day-chip.is-complete { opacity: 0.55; text-decoration: line-through; }
+
+/* The wordmark is a way home. */
+.app-shell button.wordmark { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; }
+.modern-room.is-room { cursor: pointer; text-align: left; }
+
+/* Indigo: the path in the rail, the add line and the panels in the main column. */
+.court-redesign-indigo .indigo-rail .court-day { margin: 1.2rem 0 1.4rem; }
+.court-redesign-indigo .indigo-register > .court-day { margin: 0 0 1.6rem; }
+.court-redesign-indigo .indigo-register > .court-day .day-panels { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Paper: thirteen rooms in three even columns. */
+.court-redesign-paper .paper-index-grid { grid-template-rows: repeat(5, auto); }
