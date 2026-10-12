@@ -113,7 +113,7 @@ export function jobTime(entries, date) {
     if (!entry || entry.type !== 'time-block' || ['cancelled', 'archived'].includes(lower(entry.status))) return []
     let details = entry.details ?? {}
     if (typeof details === 'string') { try { details = JSON.parse(details) } catch { details = {} } }
-    if (plain(details).area !== 'career') return []
+    if (plain(details).area !== 'career' || plain(details).focus === true) return []
     const timed = typeof entry.start_at === 'string' && entry.start_at.length > 10
     if ((timed ? dateKey(entry.start_at) : day(entry.start_at)) !== date) return []
     const minutes = timed && entry.end_at ? Math.max(0, Math.round((Date.parse(entry.end_at) - Date.parse(entry.start_at)) / 60_000)) : 0

@@ -53,35 +53,71 @@ export function tickState(state, plan, { card: cardId, step, done = true } = {},
   }
 }
 
+// A finished focus session on a card, recorded the way the hub's own timer records one
+// (useTrackerState.js: logFocusSession): the minutes, the card's hours in quarter hours, a line
+// in its activity, and the hub's event.
+export function focusState(state, plan, { card: cardId, minutes } = {}, now = new Date().toISOString()) {
+  const card = hubCards(plan, state).find((row) => row.id === cardId)
+  if (!card) throw new TickError(404, 'That card is no longer in the Study hub')
+  const elapsed = Math.round(Number(minutes))
+  if (!Number.isFinite(elapsed) || elapsed < 1 || elapsed > 720) throw new TickError(400, 'Say how many minutes, between 1 and 720')
+  const overlay = plain(plain(state.cards)[cardId])
+  const hours = Math.max(0.25, Math.round((elapsed / 60) * 4) / 4)
+  const before = Number(card.actualHours ?? 0) || 0
+  const after = Math.round((before + hours) * 4) / 4
+  const next = {
+    ...overlay, actualHours: after,
+    focusSessions: [{ id: `focus-${randomUUID()}`, at: now, minutes: elapsed, hours, from: 'life-os' }, ...(Array.isArray(overlay.focusSessions) ? overlay.focusSessions : [])].slice(0, 80),
+    activity: [{ id: `log-${randomUUID()}`, at: now, action: 'Focus session', details: `${elapsed} min, from the Life OS timer` }, ...(Array.isArray(overlay.activity) ? overlay.activity : [])].slice(0, 80),
+    updatedAt: now,
+  }
+  const nextState = { ...state, cards: { ...plain(state.cards), [cardId]: next }, updatedAt: now }
+  return {
+    state: nextState, changed: true, card: hubCards(plan, nextState).find((row) => row.id === cardId), hours: after,
+    event: { id: `event-${randomUUID()}`, occurredAt: now, entityType: 'card', entityId: cardId, eventType: 'focus_session.completed',
+      payload: { cardTitle: card.title ?? '', moduleGroup: card.moduleGroup ?? '', minutes: elapsed, hours, previousHours: before, hoursAfter: after } },
+  }
+}
+
 const summary = (card) => ({ id: card.id, title: card.title ?? '', done: Boolean(card.done), steps: card.checklist.map((item) => ({ id: item.id, text: item.text, done: Boolean(item.done) })) })
 
-export function createStudyTick({ hub, now = () => new Date().toISOString(), log = console.error } = {}) {
-  return async function tick({ semester, card, step, done = true } = {}) {
+// Reads the hub's saved state, makes one change on a copy, and saves it with the revision that
+// was read. If the hub's page saved in between, it reads again and redoes the change once.
+function createChange({ hub, now, log }) {
+  return async function change(semester, card, apply) {
     if (!hub) throw new TickError(503, 'The Study hub is not available')
     if (!named(semester) || !named(card)) throw new TickError(400, 'Say which card')
-    // If the hub's page saved in between, read again and redo the change once.
     for (let attempt = 0; attempt < 2; attempt += 1) {
       const [{ payload, revision }, plan] = await Promise.all([hub.readState(semester), hub.plan(semester)])
       const state = payload?.state
       if (!state || typeof state !== 'object') throw new TickError(409, 'The Study hub has nothing saved for that semester yet')
-      const result = tickState(state, plan, { card, step, done }, now())
+      const result = apply(state, plan, now())
       if (!result.changed) return { changed: false, card: summary(result.card), revision, writerId: DAY_WRITER }
       const saved = await hub.writeState(semester, result.state, { expectedRevision: revision, writerId: DAY_WRITER })
       if (saved.conflict) continue
       // The state is saved. The event is the hub's own record for its Review and Analytics pages.
-      try { await hub.appendEvent(semester, result.event) } catch (error) { log(`Study tick: the event was not logged (${error.message})`) }
-      return { changed: true, card: summary(result.card), revision: saved.revision, writerId: DAY_WRITER }
+      try { await hub.appendEvent(semester, result.event) } catch (error) { log(`Study hub: the event was not logged (${error.message})`) }
+      return { changed: true, card: summary(result.card), revision: saved.revision, writerId: DAY_WRITER, ...(result.hours === undefined ? {} : { hours: result.hours }) }
     }
     throw new TickError(409, 'The Study hub is being changed somewhere else. Try again.')
   }
 }
 
-// POST { semester, card, step?, done }.
-export function createStudyTickHandler(tick) {
+export function createStudyTick({ hub, now = () => new Date().toISOString(), log = console.error } = {}) {
+  const change = createChange({ hub, now, log })
+  return ({ semester, card, step, done = true } = {}) => change(semester, card, (state, plan, at) => tickState(state, plan, { card, step, done }, at))
+}
+
+export function createStudyFocus({ hub, now = () => new Date().toISOString(), log = console.error } = {}) {
+  const change = createChange({ hub, now, log })
+  return ({ semester, card, minutes } = {}) => change(semester, card, (state, plan, at) => focusState(state, plan, { card, minutes }, at))
+}
+
+// POST { semester, card, step?, done } for a tick; POST { semester, card, minutes } for a focus session.
+export function createStudyTickHandler(run, shape = (body) => ({ semester: body.semester, card: body.card, step: body.step, done: body.done !== false })) {
   return async function handler(req, res) {
     try {
-      const body = req.body ?? {}
-      res.json({ ok: true, ...(await tick({ semester: body.semester, card: body.card, step: body.step, done: body.done !== false })) })
+      res.json({ ok: true, ...(await run(shape(req.body ?? {}))) })
     } catch (error) {
       const status = Number.isInteger(error?.status) && error.status >= 400 && error.status < 500 ? error.status : error instanceof TickError ? error.status : 500
       if (status === 500) console.error('Study tick:', error.message)

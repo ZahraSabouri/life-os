@@ -1,0 +1,97 @@
+/* The Focus button in the top bar, the panel it opens, and the small player in the corner.
+   Everything is drawn from the chosen style's tokens (palettes.css), so it changes with the style. */
+
+.app-shell .focus-button { display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer; font-variant-numeric: tabular-nums; }
+.app-shell .focus-button-mark { width: 0.85rem; height: 0.85rem; flex: none; box-sizing: border-box; border: 1.5px solid currentColor; border-radius: 50%; position: relative; }
+.app-shell .focus-button-mark::after { content: ''; position: absolute; left: 50%; top: 50%; width: 1.5px; height: 0.3rem; background: currentColor; transform-origin: 50% 0; transform: translate(-50%, 0) rotate(180deg); }
+.app-shell .focus-button.is-running { color: var(--m-accent-strong); font-weight: 650; }
+.app-shell .focus-button.is-running .focus-button-mark { background: var(--m-accent-soft); }
+.app-shell .focus-button-sound { color: var(--m-accent-strong); }
+/* On the manuscript Courts the button sits in their own header and takes its look. */
+.app-shell .redesign-nav .focus-button { border: 0; background: transparent; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; padding: 0; }
+/* Paper's Court keeps a quiet header with only Style in it; Focus sits beside it, in the same hand. */
+.court-redesign-paper .redesign-nav-quiet > button.focus-button { display: inline-flex; color: var(--ink, #3a2f27); opacity: 0.85; letter-spacing: 0.18em; text-transform: uppercase; font-size: 0.7rem; }
+
+.focus-panel {
+  position: fixed; z-index: 60; top: 3.9rem; right: 1rem; width: min(23.5rem, calc(100vw - 2rem)); max-height: calc(100vh - 5rem); overflow: auto;
+  box-sizing: border-box; padding: 1rem 1.1rem 1.1rem; display: grid; gap: 0.9rem;
+  background: var(--m-card-fill, var(--m-surface)); color: var(--m-ink); border: 1px solid var(--m-line); border-radius: var(--m-radius-lg, var(--m-radius));
+  box-shadow: var(--m-shadow-lift, 0 18px 40px rgb(0 0 0 / 0.18)); font: var(--m-text-weight, 400) 0.9rem/1.45 var(--m-font);
+  opacity: 0; transform: translateY(-0.4rem); pointer-events: none; transition: opacity 140ms ease, transform 140ms ease;
+}
+.focus-panel.is-open { opacity: 1; transform: none; pointer-events: auto; }
+.focus-panel > header { display: flex; align-items: center; justify-content: space-between; }
+.focus-panel > header button { font-size: 1.15rem; line-height: 1; padding: 0.2rem 0.5rem; }
+.focus-panel h2 { margin: 0; font: var(--m-title-weight, 600) 1.25rem/1.2 var(--m-title-font, var(--m-font)); color: var(--m-ink); }
+.focus-panel h3 { margin: 0 0 0.5rem; color: var(--m-muted); font: 650 0.7rem/1.2 var(--m-label-font, var(--m-font)); letter-spacing: 0.09em; text-transform: uppercase; }
+.focus-part + .focus-part { padding-top: 0.9rem; border-top: 1px solid var(--m-line); }
+.focus-panel form { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.65rem; }
+/* Nothing inside may push the panel wider than it is. */
+.focus-panel { grid-template-columns: minmax(0, 1fr); }
+.focus-panel > *, .focus-part > *, .focus-panel form > * { min-width: 0; }
+
+.focus-panel button, .focus-player button {
+  font: 600 0.8rem/1.2 var(--m-font); color: var(--m-ink); background: var(--m-sunken, transparent); border: 1px solid var(--m-line); border-radius: var(--m-radius-control, 8px);
+  padding: 0.4rem 0.7rem; cursor: pointer;
+}
+.focus-panel button:hover:not(:disabled), .focus-player button:hover { border-color: var(--m-line-strong); }
+.focus-panel button:disabled { opacity: 0.5; cursor: default; }
+.focus-panel button.is-quiet { border-color: transparent; background: transparent; color: var(--m-muted); }
+.focus-panel button.is-chosen { background: var(--m-accent-soft); border-color: var(--m-accent); color: var(--m-accent-strong); }
+.focus-panel button.is-primary, .focus-panel .focus-start { background: var(--m-primary-bg, var(--m-accent)); border-color: var(--m-primary-bg, var(--m-accent)); color: var(--m-primary-ink, var(--m-on-accent)); }
+.focus-panel .focus-start { padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.focus-panel input, .focus-panel select {
+  box-sizing: border-box; min-width: 0; font: inherit; color: var(--m-ink); background: var(--m-surface, transparent); border: 1px solid var(--m-line); border-radius: var(--m-radius-control, 8px); padding: 0.5rem 0.65rem;
+}
+.focus-panel input:focus-visible, .focus-panel select:focus-visible, .focus-panel button:focus-visible, .focus-player button:focus-visible { outline: 2px solid var(--m-accent); outline-offset: 2px; }
+
+.focus-field { display: grid; gap: 0.3rem; }
+.focus-field > span, .focus-under > span { color: var(--m-muted); font-size: 0.78rem; }
+.focus-field input { width: 100%; }
+.focus-picks { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.focus-picks button { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.focus-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem; }
+.focus-lengths { display: flex; align-items: center; gap: 0.3rem; color: var(--m-muted); font-size: 0.78rem; }
+.focus-lengths input { width: 4.2rem; padding: 0.38rem 0.5rem; }
+.focus-under { display: flex; align-items: center; gap: 0.4rem; }
+.focus-under select { padding: 0.38rem 0.5rem; }
+
+.focus-clock { margin: 0; font: var(--m-title-weight, 600) 3rem/1 var(--m-display, var(--m-title-font, var(--m-font))); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--m-ink); }
+.focus-what { margin: 0.4rem 0 0.6rem; display: grid; gap: 0.1rem; }
+.focus-what span { color: var(--m-muted); font-size: 0.8rem; }
+.focus-bar { height: 4px; border-radius: 2px; background: var(--m-sunken, var(--m-line)); overflow: hidden; }
+.focus-bar span { display: block; height: 100%; background: var(--m-accent); transition: width 1s linear; }
+.focus-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
+.focus-note { margin: 0.6rem 0 0; color: var(--m-muted); font-size: 0.8rem; }
+.focus-note.is-warn { color: var(--m-red); }
+
+.focus-sounds { list-style: none; margin: 0 0 0.7rem; padding: 0; display: grid; gap: 0.35rem; }
+.focus-sounds li { display: flex; align-items: center; gap: 0.4rem; }
+.focus-sounds li > span { flex: 1; min-width: 0; display: grid; }
+.focus-sounds li b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.focus-sounds li small { color: var(--m-muted); font-size: 0.74rem; }
+.focus-sounds li.is-on b { color: var(--m-accent-strong); }
+.focus-sounds a { color: var(--m-accent-strong); font-weight: 600; font-size: 0.8rem; }
+.focus-panel form.focus-add { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) auto; align-items: center; gap: 0.4rem; }
+
+/* The player: a small box in the corner of the window, on every page. */
+.focus-player {
+  position: fixed; z-index: 55; right: 1rem; bottom: 1rem; width: min(21rem, calc(100vw - 2rem)); box-sizing: border-box; overflow: hidden;
+  background: var(--m-card-fill, var(--m-surface)); color: var(--m-ink); border: 1px solid var(--m-line); border-radius: var(--m-radius, 12px); box-shadow: var(--m-shadow-lift, 0 18px 40px rgb(0 0 0 / 0.2));
+  font: var(--m-text-weight, 400) 0.85rem/1.3 var(--m-font);
+}
+.focus-player > header { display: flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.5rem 0.45rem 0.75rem; }
+.focus-player > header b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.focus-player button { padding: 0.28rem 0.55rem; font-size: 0.74rem; }
+.focus-player iframe { display: block; width: 100%; height: 152px; border: 0; }
+.focus-player.is-video iframe { height: auto; aspect-ratio: 16 / 9; }
+/* Hidden: out of sight, still on the page, still playing. */
+.focus-player.is-hidden { left: -200vw; right: auto; }
+
+@media (max-width: 760px) {
+  .focus-panel { top: 3.4rem; right: 0.5rem; left: 0.5rem; width: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .focus-panel { transition: none; }
+  .focus-bar span { transition: none; }
+}

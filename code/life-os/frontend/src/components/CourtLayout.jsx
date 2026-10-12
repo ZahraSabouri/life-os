@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useGround } from '../lib/groundContext.jsx'
 import AreaToday from './AreaToday.jsx'
+import { FocusButton, FocusPanel, FocusPlayer } from './FocusDock.jsx'
 import ModeSwitch from './ModeSwitch.jsx'
 import StyleSwitch from './StyleSwitch.jsx'
 
@@ -100,6 +101,7 @@ export default function CourtLayout() {
             >
               JobMap
             </button>
+            <FocusButton />
             <StyleSwitch />
             <ModeSwitch />
             <button type="button" onClick={goDivan}>Divan</button>
@@ -109,6 +111,8 @@ export default function CourtLayout() {
 
       {isSubApp ? <AreaToday area={subAppArea} /> : null}
       <Outlet />
+      <FocusPanel />
+      <FocusPlayer />
     </main>
   )
 }

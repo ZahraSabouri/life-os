@@ -13,7 +13,7 @@ import { createCalendarService } from './calendar/service.mjs'
 import { createCalendarLoaders } from './calendar/loaders.mjs'
 import { createCalendarRouter } from './calendar-route.mjs'
 import { createDayRouter, createDayService } from './day/service.mjs'
-import { createStudyTick, createStudyTickHandler } from './study/hub/tick.mjs'
+import { createStudyFocus, createStudyTick, createStudyTickHandler } from './study/hub/tick.mjs'
 import { createShopping, createShoppingRouter } from './home/shopping.mjs'
 import { dateKey } from '../code/life-os/shared/calendar.js'
 import { createStudyRuntime } from './study/runtime.mjs'
@@ -159,6 +159,8 @@ export function createLifeOsApp(options = {}) {
   // content of Study, Jobs, Home and Notes. Read only.
   // A step of a study card ticked from the day, saved by the Study hub's own rule and revision check.
   app.post('/api/day/study', createStudyTickHandler(options.studyTick ?? createStudyTick({ hub: study.hub })))
+  // A focus session from the Life OS timer, added to the card it was spent on.
+  app.post('/api/day/study/focus', createStudyTickHandler(options.studyFocus ?? createStudyFocus({ hub: study.hub }), (body) => ({ semester: body.semester, card: body.card, minutes: body.minutes })))
   app.use('/api/day', createDayRouter({ express, service: createDayService({
     loadStudy: async () => {
       if (!study.configured) throw new Error('Study state is unavailable')

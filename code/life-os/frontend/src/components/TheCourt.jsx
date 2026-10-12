@@ -7,6 +7,7 @@ import { apiFetch } from '../lib/api.js'
 import { useEntries } from '../lib/useEntries.js'
 import { useGround } from '../lib/groundContext.jsx'
 import StyleSwitch from './StyleSwitch.jsx'
+import { FocusButton } from './FocusDock.jsx'
 import { AddLine, DayPanels, DayPath, count, hours, pounds } from './DayParts.jsx'
 import { useDayPage } from '../lib/useDayPage.js'
 import { clockOf } from '../lib/day.js'
@@ -325,6 +326,7 @@ function CourtNav({ navigate, quiet = false }) {
       <button type="button" onClick={() => navigate('/today')}>Today</button>
       <button type="button" onClick={() => navigate('/calendar')}>Calendar</button>
       <button className="redesign-search-button" type="button">Search <kbd>⌘K</kbd></button>
+      <FocusButton className="redesign-focus-button" />
       <StyleSwitch className="redesign-ground-button" compact />
     </nav>
   )

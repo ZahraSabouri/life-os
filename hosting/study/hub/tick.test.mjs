@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { createStudyTick, DAY_WRITER, TickError, tickState } from './tick.mjs'
+import { createStudyFocus, createStudyTick, DAY_WRITER, focusState, TickError, tickState } from './tick.mjs'
 import { hubCards } from './cards.mjs'
 
 const NOW = '2026-10-12T17:40:00.000Z'
@@ -92,4 +92,22 @@ test('if the hub\'s page saved in between, the tick is redone on what it saved, 
   assert.deepEqual(hub.state.cards.bayes.checklist, { s1: true, s2: true })
   await assert.rejects(createStudyTick({ hub })({ semester: '', card: 'bayes' }), (error) => error instanceof TickError && error.status === 400)
   await assert.rejects(createStudyTick({})({ semester: 'autumn', card: 'bayes' }), (error) => error instanceof TickError && error.status === 503)
+})
+
+test('a focus session is added to its card as the hub\'s own timer adds one: quarter hours, newest first, logged', async () => {
+  const before = state()
+  const result = focusState(before, plan, { card: 'bayes', minutes: 50 }, NOW)
+  const overlay = result.state.cards.bayes
+  assert.deepEqual([overlay.actualHours, overlay.focusSessions.length, overlay.focusSessions[0].minutes, overlay.focusSessions[0].hours, overlay.focusSessions[0].from], [0.75, 1, 50, 0.75, 'life-os'])
+  assert.deepEqual(overlay.checklist, { s1: true })                       // her ticks are untouched
+  assert.equal(overlay.activity[0].action, 'Focus session')
+  assert.deepEqual(result.event.payload, { cardTitle: 'Bayes table', moduleGroup: 'MAT022', minutes: 50, hours: 0.75, previousHours: 0, hoursAfter: 0.75 })
+  // A second, short session: at least a quarter of an hour is counted, as in the hub.
+  const again = focusState(result.state, plan, { card: 'bayes', minutes: 5 }, NOW)
+  assert.deepEqual([again.state.cards.bayes.actualHours, again.state.cards.bayes.focusSessions.length], [1, 2])
+  assert.throws(() => focusState(before, plan, { card: 'bayes', minutes: 0 }, NOW), (error) => error instanceof TickError && error.status === 400)
+  assert.throws(() => focusState(before, plan, { card: 'gone', minutes: 25 }, NOW), (error) => error instanceof TickError && error.status === 404)
+  const hub = fakeHub()
+  const saved = await createStudyFocus({ hub, now: () => NOW })({ semester: 'autumn', card: 'bayes', minutes: 25 })
+  assert.deepEqual([saved.changed, saved.revision, saved.hours, hub.events[0].eventType], [true, 8, 0.5, 'focus_session.completed'])
 })

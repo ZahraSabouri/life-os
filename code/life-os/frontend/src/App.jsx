@@ -8,6 +8,7 @@ import TodayView from './components/TodayView.jsx'
 import LedgerView from './components/LedgerView.jsx'
 import RoomView from './components/RoomView.jsx'
 import StudyHub from './components/study/StudyHub.jsx'
+import { FocusProvider } from './lib/focus.jsx'
 import { GroundProvider, useGround } from './lib/groundContext.jsx'
 
 const SKIP_INTRO_KEY = 'life-os.skip-intro'
@@ -133,7 +134,9 @@ export default function App() {
   return (
     <GroundProvider>
       <BrowserRouter>
-        <AppRoutes />
+        <FocusProvider>
+          <AppRoutes />
+        </FocusProvider>
       </BrowserRouter>
     </GroundProvider>
   )

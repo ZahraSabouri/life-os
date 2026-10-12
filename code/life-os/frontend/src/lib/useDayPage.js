@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { isDateKey, londonDateTime } from '../../../shared/calendar.js'
 import { apiFetch } from './api.js'
+import { tellStudyHub } from './studyHub.js'
 import { addDays, filterCalendarItems, formatCalendarDay, isComplete, todayGroups } from './calendar.js'
 import { buildDay, noteTitle, parsePlan, splitThings } from './day.js'
 import { useCalendar, useLondonToday } from './useCalendar.js'
@@ -13,17 +14,6 @@ function savedKind() { try { const saved = window.localStorage.getItem(ADD_KIND_
 // Everything a page needs to show one day and to add to it: the calendar's dated items, the
 // day's study blocks and panels, the path they make, and the one line that adds a plan, a
 // note or something to buy. The Court, Today and the strip inside each part all use this.
-// The Study hub's tabs tell each other about a save on a channel of their semester
-// (useTrackerState.js; hub/session.js puts the semester in the channel's name) and reload when
-// they hear of a newer one. One channel per semester is kept open here.
-const studyHubChannels = new Map()
-function tellStudyHub(semesterId, saved) {
-  try {
-    if (!studyHubChannels.has(semesterId)) studyHubChannels.set(semesterId, new BroadcastChannel(`study-hub:${semesterId}:summer-rescue-tracker-state`))
-    studyHubChannels.get(semesterId).postMessage({ revision: saved.revision, writerId: saved.writerId })
-  } catch { /* no such channel in this browser: a hub tab shows the change on its next load */ }
-}
-
 export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
   const today = useLondonToday()
   const clock = useLondonClock()

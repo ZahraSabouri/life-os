@@ -112,6 +112,9 @@
 .day-tick { width: 0.95rem; height: 0.95rem; margin-top: 0.2rem; border: 1.5px solid var(--m-line-strong); border-radius: min(var(--m-radius-sm), 4px); box-sizing: border-box; background: var(--m-card-fill); }
 .day-steps li.is-done { color: var(--m-muted); text-decoration: line-through; text-decoration-color: var(--m-line-strong); }
 button.day-tick { position: relative; padding: 0; appearance: none; cursor: pointer; }
+/* The manuscript Courts strip every button of its border; a tick keeps its square. */
+.app-shell button.day-tick { width: 0.95rem; height: 0.95rem; min-width: 0; min-height: 0; border: 1.5px solid var(--m-line-strong); border-radius: min(var(--m-radius-sm), 4px); background: var(--m-card-fill); box-shadow: none; }
+.app-shell .day-steps li.is-done button.day-tick { border-color: var(--m-accent); background: var(--m-accent) linear-gradient(45deg, transparent 44%, var(--m-on-accent) 45% 56%, transparent 57%) center / 60% 60% no-repeat; }
 button.day-tick::before { content: ''; position: absolute; inset: -0.55rem; }
 button.day-tick:hover:not(:disabled) { border-color: var(--m-accent); }
 button.day-tick:focus-visible { outline: 2px solid var(--m-accent); outline-offset: 2px; }

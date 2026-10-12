@@ -38,7 +38,10 @@ export const ENTRY_TYPES = {
     rooms: [],
     desc: 'Hours set aside for one area of life. Dated via entry start_at and end_at.',
     fields: {
-      area: { type: 'enum', enum: ['core', 'study', 'career', 'money', 'home', 'relationships', 'events'], default: 'core' }
+      area: { type: 'enum', enum: ['core', 'study', 'career', 'money', 'home', 'relationships', 'events'], default: 'core' },
+      // A block the focus timer wrote when it finished: time spent, not time set aside.
+      focus: { type: 'boolean' },
+      minutes: { type: 'number' }
     }
   },
   workout: {
