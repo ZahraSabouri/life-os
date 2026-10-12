@@ -4,6 +4,16 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 12 October 2026 (evening) — One part owns each answer; a tick is not a purchase; links name the thing (Xar with Claude Code)
+
+- **Xar:** "Data Manager (Neurological Data Platform) · Swansea University doesnt exist in the job app. where is it … not only that one!" The day had its own idea of which jobs mattered (everything on the shortlist, which the scheduled searches fill by themselves). **Decided:** the day does not rank jobs. It shows JobMap's own first list, in JobMap's order and words, read from one place (`hosting/career/first-screen.mjs`, JobMap's exported `FIRST_SCREEN`). The one thing the day adds is what a day page is for: a job that closes today is said first.
+- **Xar:** "these checkboxes that are not checkable … I should be able to kind of track the items, but not necessarily put the price." **Decided:** a tick on a shopping item means "I have it" and nothing else: no price, no receipt, nothing in the balance or the cupboard. Money still changes only by a receipt (Budget's rule, unchanged). The same tick works in Budget, on the Court and on Today.
+- **Xar:** "create different shopping lists … based on categories, another one … on the date … based on the shop." **Decided:** these are arrangements of the same items, not copies: By list, By category, By shop, By day, Everything. An item may have its own shop and day; otherwise it takes its list's.
+- **Xar:** "everything should be clickable … it should redirect to the main URL"; "if you click on a specific job role … directed to the same component." **Decided:** a link names the thing, not only the part: `/jobmap#job=<id>`, `/study#/today?card=<id>&semester=<id>`, `/budget#/shopping`. A part that is already open is moved to the new place instead of being reloaded.
+- **Xar:** the summer app keeps study only; "the admining stuff should be transferred to another part"; outings and people need "a day under … admin or anything". **Decided:** an entry of any kind can carry an area; every area has its own page; "Life admin" is an area. The summer's 140 non-study items became done entries with a mark of where they came from.
+- **Xar:** "i need you to use common sense making any of these changes!!" **Taken as:** every change is read on the live page with her real data, as a user, before it is called done (plain words, the urgent thing first, the common action in one step).
+- **Not decided:** progress, review, planner and focus for the whole app (TODO section K) wait for a short design with her.
+
 ## 12 October 2026 (evening) — JobMap: one first list, nothing open left out, in her own groups (Xar with Claude Code)
 
 - **Xar:** "why arent they present in the job app? i feel dates and roles and priorities and all are so messed up" (about open roles the first list left out for being full-time).

@@ -3,16 +3,19 @@
 **Updated 9 October 2026 by Claude Code** (the look); JobMap search reviewed 12 October by Codex; tech-only correction completed 11 October (see session notes). Branch: `stage/4b-one-look` (cut from `stage/4a-jobmap-refresh`, which was cut from `stage/3-study-hub`); none pushed; main untouched. Calendar is complete. Study hub and JobMap are live. The look (sub-apps as parts of Life OS, every style a whole design) has had two passes and waits for Xar's detailed check.
 
 ## Now
-**Today, 12 October (Claude Code):** Today is rebuilt as the page to work from and is live. Brief: `briefs/stage-2b-my-day.md` (CP1 and CP2 done; CP3 next). Note: `sessions/2026-10-12-claude-code-stage-2b-my-day.md`. Codex entered the autumn study plan the same afternoon; the two were coordinated in `COORDINATION_2026-10-12.md`.
+**Today, 12 October (Claude Code):** the Court and Today are the pages to work from and are live. Brief: `briefs/stage-2b-my-day.md` (CP1 to CP9 done). Notes: the five `sessions/2026-10-12-claude-code-stage-2b-*.md`. Codex entered the autumn study plan the same afternoon; a second Claude Code session reworked JobMap's first list; the three were coordinated in `COORDINATION_2026-10-12.md` and by messages.
 
-**The first page (Court, Modern), what works right now** (12 October afternoon; note `sessions/2026-10-12-claude-code-stage-2b-the-court-unified.md`)
-- The Court opens with the day on it: a line that adds a plan, a note or something to buy; the day in clock order (classes, study blocks, job time, her own plans); and Study, Jobs, Home and Notes with today's content. "The whole day" opens Today.
-- "To buy" puts things on Budget's shopping list from the Court or Today. The 13 items from the summer list are on a Budget list and gone from the study data.
-- Job-application time is on the calendar and in the day as blocks for 12 to 25 October; the Jobs panel shows the hours set aside and what was sent this week.
-- Inside the Study hub, JobMap, Budget and Cardiff Life, a strip under the top bar says what today holds for that part.
-- "Recently filed" is empty of tests (the seven July entries are deleted); its rows open their entry and can be removed.
-- Madder and Paper Courts say what is true today in place of invented lines. Indigo's capture box is still a mock-up.
-- **Not yet:** the Court in Madder, Indigo and Paper does not carry the day the way Modern does; ticking a study step or a shopping item from the day; job time after 25 October; "Open in Study hub" opening the card.
+**The first page (Court), what works right now** (12 October evening; note `sessions/2026-10-12-claude-code-stage-2b-links-and-shopping.md`)
+- The Court opens with the day on it, in all four styles: a line that adds a plan, a note or something to buy, for any day and under any area; the day in clock order; and Study, Jobs, Home and Notes with today's content. "The whole day" opens Today.
+- **Jobs** shows what JobMap's own first list shows: what closes today first, then the next in JobMap's order, "9 jobs to apply for now". Clicking a job opens that job in JobMap.
+- **Shopping:** the squares are ticks, on the Court, on Today and in Budget. A tick asks for no price and does not touch the budget. Budget → Shopping arranges the same items by list, category, shop, day or all together; typing an item and pressing Enter adds it; a list can have a spending limit.
+- **Study:** clicking a study item opens its card in the Study hub, in the right semester, without the "Which semester?" page.
+- **Every area has a page** (Relationships, Travel, Life admin and the rest): what is coming up, what has no day, what is done. A plan such as "picnic with Ben, Saturday" goes on its day under its area.
+- **The summer app's life and admin data** is out of the Study hub and in Life OS as done entries (history on the calendar).
+- "Life OS" in the top bar leads to the first page from everywhere; inside the Study hub the words "Life OS" on the save button do too.
+- Inside the Study hub, JobMap, Budget and Cardiff Life, a strip under the top bar says what today holds for that part; its first line links to the thing it names.
+- **Not yet:** ticking a study step from the day; job time after 25 October (single blocks, not a routine); progress, review, planner and the focus room for the whole app (TODO section K, not started); marking a job "applied" from the day.
+- **Known fault of the evening:** the Study hub page was blank for about eight minutes (about 18:05 to 18:13) after a rebuild without its address setting. Rebuilt correctly; an open hub tab was not affected. The right command is in `Build Life OS.cmd`.
 
 **Today, what works right now**
 - Top bar → Today. The day is a path in clock order with a "now" marker: classes, and the Study hub's study blocks, each opened to its card, steps and "done when". Under it: "Any time today", and one slim row for renewals and deadlines.
@@ -22,7 +25,7 @@
 - The calendar shows the Study hub's study blocks at their clock times.
 - Designed and checked in Modern, at laptop and phone width. Madder, Indigo and Paper draw it with their own boxes and type and are readable; their own designs of it are still to do.
 - **Light and dark:** in Modern the top bar has a Light/Dark button on every page; it turns the whole app dark, the Study hub, JobMap, Budget and Cardiff Life included. The other three styles keep their one look (her choice).
-- **Not yet:** ticking a study step or a shopping item from Today (it opens the owning part instead); "Open in Study hub" does not open the card (needs a Study hub rebuild); job-application time is not on the day; no shopping list exists.
+- **Not yet:** ticking a study step from Today (it opens the card in the hub instead).
 - **Everything still open is in `TODO.md`** (one list, by her objectives).
 
 Active brief: `briefs/stage-4b-one-look.md` (CP1 to CP3 done and live; her detailed check is next). Latest note on the look: `sessions/2026-10-09-claude-code-stage-4b-pages-and-court.md`.

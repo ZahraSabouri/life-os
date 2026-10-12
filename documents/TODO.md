@@ -7,11 +7,13 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 ## The order of work
 1. ~~E. Dark mode across the app~~ done 12 October (Modern, as she asked).
 2. ~~A. The study plan's leftovers~~ checked and recorded 12 October; two small items left.
-3. **B. The day reaches everything:** mostly done 12 October. Next: the card link (with a Study hub rebuild), ticking a study step from the day, job time as a repeating routine.
-4. **C. Shopping, meals and money on the day:** the list exists and is added to from anywhere (12 October). Next: ticking as bought, recipes and tonight's meal, "left to spend".
-5. **D. The first pages:** the Modern Court is the working first page (12 October). Next: the same for Madder, Indigo and Paper, each in its own design.
+3. **B. The day reaches everything:** done 12 October except two things: ticking a study step from the day, and job time as a repeating routine.
+4. **C. Shopping, meals and money on the day:** the list is added to and ticked from anywhere, and Budget arranges it by list, category, shop or day (12 October). Next: recipes and tonight's meal, "left to spend".
+5. **D. The first pages:** all four Courts carry the day (12 October). Next: her style-by-style review of the Court's own design.
 6. **F, G, H** as they come up; none blocks her this month except backups.
 7. **I. Applying now:** the first list shows every open role in the order to act on it (12 October). Next: re-check the 32 uncertain adverts; her three answers.
+8. **K. Progress, review and focus for the whole of Life OS** (new, 12 October evening): not started. The largest open piece; needs a short design with her before code.
+9. **L. Everything leads somewhere:** the five links she named work (12 October evening). Continue as she finds dead spots.
 
 ---
 
@@ -38,7 +40,7 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 - [x] One request that gathers a day's study blocks and the four panels (`/api/day`).
 - [x] A study card that starts and is due on one day shows once on the calendar.
 - [x] **Study blocks on the Life OS calendar at their clock times** (12 October). A card with blocks is shown by them; the block on its due date carries the deadline; a card without blocks keeps its all-day line.
-- [ ] **"Open in Study hub" opens that card.** Now it lands on the view used last, and on "Which semester?" in a fresh browser. Needs a change inside the Study hub and a rebuild of it, at a moment she is not using it (a rebuild can break a hub tab that is open).
+- [x] **A study item opens its own card in the Study hub** (12 October evening). The link names the card and its semester; the hub opens that semester without asking "Which semester?" and opens the card. From the Court, Today, the strip above the hub, and the calendar. The Study hub was rebuilt for it.
 - [x] **Plan the day from Today** (12 October): one line, Plan or Note. "17:30 library" is placed at 17:30, "Lidl" is for any time that day; a hint says what will be saved. Her own plans can be ticked off or taken off the day.
 - [x] **Today for any day** (12 October): the day before, today, the day after, or a date; the calendar's day has "Open this day".
 - [ ] Plans typed in words without a clock ("library after class") are kept as any-time plans. Placing them after a class, or by dragging, would be the next step in making input effortless.
@@ -46,7 +48,9 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 - [x] The Court and Today add things with the same line (12 October).
 - [x] **Job-application time on the day, both ways** (her answer, 12 October): as time blocks on the calendar and in the day's path (she can tick each off or take it off the day), and as the day's target in the Jobs panel ("3 h set aside today", "sent this week"). Blocks exist for 12 to 25 October, from the windows the study plan reserved.
 - [ ] Job time is 14 single blocks. Make it a repeating routine (a weekly pattern with exceptions), so it need not be added again after 25 October and one change moves every week.
-- [ ] **Jobs panel as a work list:** the next jobs to apply for in JobMap's own priority order (closing dates first), not only closing dates; "applied" marked from Today; this week's count against a target.
+- [~] **Jobs panel as a work list** (12 October evening): what closes today is said first, whatever its group; then the next jobs in JobMap's own order with JobMap's words ("Apply now · closes in 6 days"); "9 jobs to apply for now"; the other groups counted. Each job opens that job in JobMap. Still open: marking "applied" from the day; this week's count against a target.
+- [x] **The day reads JobMap's own first list, from one place** (`hosting/career/first-screen.mjs`, JobMap's `FIRST_SCREEN`). Her words: "Data Manager (Neurological Data Platform) · Swansea University doesnt exist in the job app. where is it … not only that one!" The panel had listed everything the scheduled searches shortlisted (80 jobs she never chose); it now lists what JobMap lists, and the calendar shows a closing date only for those.
+- [x] The Study panel no longer says "could not be read" on some loads: ranking 1,067 jobs on every request took half a second and timed the day out; it is now worked out once per JobMap save, and the page asks again by itself when a part fails.
 - [ ] Tick a step and mark a card done from Today, saved through the Study hub's own rules so an open hub tab loses nothing.
 - [x] **Today in every part** (her answer, 12 October: "good to have today in all sub apps"): a strip under the top bar inside the Study hub, JobMap, Budget and Cardiff Life says what today holds for that part and leads back to the whole day.
 - [x] The Study hub keeps its own Today (her answer: "sometimes one only wants to see what to study for today"); Life OS's day is the whole day.
@@ -57,8 +61,20 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 - [x] Home panel on Today: shopping lists with what is still to buy, the day's meals, what is at home by place, the month's budget (read only).
 - [x] The 13 shopping items from the summer app are on a Budget shopping list, "To buy (from the summer list)", and are gone from the study data (12 October; `scripts/move-summer-shopping-to-budget.mjs`).
 - [x] Something to buy is added from the Court or Today ("To buy": "eggs, 2 kg rice, onions x3"), onto Budget's list by Budget's own rules (`hosting/home/shopping.mjs`).
-- [ ] Tick a thing as bought from the day. In Budget "bought" means a receipt (money and stock), so a tick on the day should be "in the basket" until the receipt is recorded.
-- [ ] The summer list holds things like a bicycle and bedsheets beside shampoo. Budget needs lists that are not one shopping trip ("sometime"), without a date.
+- [x] **Tick a thing off from the day** (12 October evening): the squares on the Court and Today are real ticks. Budget's rule for a tick: the item leaves "to buy", no price is asked, no receipt is made, nothing reaches the balance or the cupboard. What was ticked today stays in sight, struck through, and can be put back.
+- [~] The summer list holds things like a bicycle and bedsheets beside shampoo. An item can now have its own shop and day and be moved to another list; a list still needs a date (Budget's own rule). A "sometime" list without a date is open.
+
+> "On the budget app, I need to be able to create different shopping lists … One of them should be, like, in shopping list based on categories, another one should be based on the date, something for all shopping, based on the shop, etc"
+> "I don't think I will be able to provide an approximate budget on everything I'm planning to [buy] … sometimes there is an estimation or just, like, the project limit. And see these checkboxes that are not checkable and cannot be marked … I should be able to kind of track the items, but not necessarily put the price, or kind of track them in the main hub budget." (12 October evening)
+
+- [x] **Budget → Shopping, arranged five ways** (12 October evening): By list, By category, By shop, By day, Everything. The same items, nothing copied; the choice is remembered. Each heading has "Add here" (the category, shop or day is filled in).
+- [x] **The squares in Budget are ticks.** Ticked items stay under "Ticked off", struck through, until cleared or put back. She ticked seven off the same evening.
+- [x] **No price is asked for.** "Price?" beside each item is gone; the total counts the items that have a price and says prices are optional. A list can carry a spending limit instead ("Edit list").
+- [x] **Type an item and press Enter** adds it; "Add with details" keeps the full form. A new list is for today, not the first of the month.
+- [ ] The month's forecast does not use a list's limit yet (it still adds up priced items only). Decide with her whether an unpriced list should count as its limit.
+- [ ] Moving an item between groups by dragging; ticking several at once.
+- [ ] **(Xar)** She wrote "use common sense making any of these changes" while these went live and did not say which change. I made the wording and the one-step actions plainer afterwards; ask her what it was if it is still there.
+
 - [ ] Tonight's dinner: Budget has no recipes saved (0) and one meal entry. Recipes need a way in that costs little (by hand, or "give this to your AI" import); then "what can I cook from what is at home" and "add what is missing to the list" (Budget can already make a list from a meal's missing items).
 - [ ] "Left to spend this month" on Today, by Budget's own rule (a big shop is counted over the months it feeds). Today shows the month's budget and a link for now.
 - [ ] After the shop: "Record the receipt" from Today's Home panel.
@@ -70,12 +86,12 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 > "all four should be amazing in their own designing context but for now let's focus the most on Modern."
 
 - [x] Notes are no longer left alone: a note typed on Today, or on the Court, is on Today for that day.
-- [~] **The Court, in every style** (Modern done 12 October; the others partly):
-  - [~] Invented lines removed (12 October). Every room now says what is true of it today (Study, Career, Home) or what it is for. Left: Indigo's capture box is still a mock-up of AI capture ("FIN301 exam", "Buy Sara's gift", "File both").
-  - [x] The seven July test entries deleted (her answer; a copy of the core database first). "Recently filed" kept and made useful: each row opens its entry, a plan shows the day it is for, a row can be removed for good (asked twice), and bulk time blocks are left out.
-  - [x] Modern: the capture box is replaced by the add line (Plan, Note, To buy); the full form for the other 46 kinds is kept under "File something else". The other styles still have their own capture boxes.
-  - [x] Modern: the Court carries the day itself (the path, and Study, Jobs, Home and Notes), with "The whole day" leading to Today. The other styles still show their own short list.
-  - [~] Modern: Study, Career and Home tiles say what today holds; an empty area shows no "0". Still: Relationships opens Cardiff Life; no door for Money or Events (Roadmap 1b).
+- [x] **The Court, in every style** (12 October): her words on the Modern Court, "it has turned out amazing … I want the [Court] to carry the day the way Modern does in [Madder], indigo, and paper." All four do: the add line, the path, and Study, Jobs, Home and Notes.
+  - [x] Invented lines removed in all four styles (12 October). Every room says what is true of it today (Study, Career, Home) or what it is for. The rooms not built yet (journal, relationships, gym and the rest) are kept, as she asked: "those are for our further developments, so keep them."
+  - [x] The seven July test entries deleted (her answer; a copy of the core database first). "Recently filed" kept and made useful: each row opens its entry, a plan shows the day it is for, a row can be removed for good (asked twice). It lists what she filed herself: bulk time blocks and what was moved in from the summer app are left out.
+  - [x] Every style: the add line (Plan, Note, To buy, a day, an area); the full form for the other 46 kinds is kept under "File something else".
+  - [x] Every style: the Court carries the day itself, with "The whole day" leading to Today.
+  - [x] Every area opens: Study, Career and Home open their parts; every other area opens its own page (`/room/<name>`) with what is coming up, what has no day yet, and what is done. Still: no door for Money or Events (Roadmap 1b).
   - [ ] One file fails to load on the Court (a 404 in the browser).
 - [x] The Court opens first, with today in it (her answer, 12 October).
 - [ ] The greeting's name ("Xar") is written in the page code. It belongs in settings (code rule: no personal content in code).
@@ -107,7 +123,7 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 - [ ] The core (notes, tasks, people) from SQLite to PostgreSQL, with history and refused stale saves (Roadmap 1a).
 - [ ] Tests for `hosting/study/hub/` (store, card records, router, duplicate).
 - [ ] The import pipeline with "give this to your AI" instructions (Roadmap 1c).
-- [ ] Study hub leftovers from the summer: "Hour-by-hour protected routines, study, project, and job blocks" and "days to exam window" wording; about 200 summer names in page code; classes and assessments not editable in the hub; the folder and address still called `summer-rescue`.
+- [ ] Study hub leftovers from the summer: "Hour-by-hour protected routines, study, project, and job blocks" and "days to exam window" wording; about 200 summer names in page code; classes and assessments not editable in the hub; the folder and address still called `summer-rescue`. The hub's own old tests fail (they ask for the summer app's names: `CAMPAIGN_START`, `PLAN_REVISION`, the title "Summer Rescue"); they need rewriting for the hub.
 - [ ] Acceptances waiting on her: the Study hub (to merge into main), the look (her detailed check), Calendar and Today.
 - [ ] Git: cut `stage/2b-my-day` (all of 12 October is on `stage/4b-one-look`); nothing is pushed; Codex's uncommitted notes and JobMap files are still in the working tree.
 - [ ] Do not run `hosting/app.test.mjs` until tests have their own database.
@@ -132,12 +148,52 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 - [x] The open full-time roles are in the first list, under their own heading (12 October; her question "why arent they present in the job app?").
 - [ ] **(Xar)** Cardiff University's Professional Specialist is saved twice, from two sites, and shows as the first two rows of Apply now. Archive the jobs.ac.uk copy? (I did not: it is her saved data. One click: open it, "Archive this job".) The same for the older LinkedIn copy of Admiral Money's Senior Software Engineer.
 - [ ] **(Xar)** Leads from September never checked since (348 that are not outside the search): they are out of the first list now, under the other tabs. Have a search check the likeliest, or leave them?
-- [~] The same order on Today's Jobs panel: another session's Today now reads JobMap's order (`selectJobs`, part-time leads). It could use the groups (`priority.section`) and the first list (`scope: 'apply'`).
+- [x] The same list on the day (12 October evening): Life OS reads JobMap's first screen through `FIRST_SCREEN` (exported by JobMap, both copies) and shows its groups. A job on the day opens that job in JobMap (`#job=<id>`).
+
+## J. Life beyond study: admin, outings, people
+> "I want the file, the cards and everything on the summer app to be preserved if they are about studying. If not, I want all of them to be gone, even sections related to those … Admin tasks are fine to remain, but all of them should be done … they can come up in my calendar when I'm looking at the history … the admining stuff should be transferred to another part rather than the Study Hub."
+> "if I'm putting time to go on a date or go see Ben, or go outside Cardiff, picnic and stuff, I need to be able to make those tasks or make those notes and … assign them to a day under, I don't know, admin or anything."
+
+- [x] **The summer app's life and admin data moved out of Study** (12 October): 18 admin tasks, 12 home chores, 5 health tasks, 98 meals (under Body & Health) and 7 career and interview notes are Life OS entries now, each marked with where it came from. All are done, so they show as history on the calendar. The routine rules are kept in a file. The Study hub's Summer 2026 holds study only. Backups first: `Life_OS_backups\summer-2026-not-study\`.
+- [x] **A plan or a note for any day, under any area**: the add line has "for" (a day) and "under" (an area: Relationships, Travel, Life admin, Body and the rest). "Picnic with Ben, Saturday" under Relationships is on that day's path, on the calendar, and on the Relationships page.
+- [x] **A page for every area**, and a new area, "Life admin".
+- [x] Done things stay on the calendar, marked done.
+- [ ] A person as more than an area: "see Ben" tied to Ben's own page (people exist in the core; the add line does not link to them yet).
+- [ ] Repeating plans ("every Sunday, laundry"): the same need as job time (B).
+- [ ] Editing a plan after it is made (its time, day, area, words) without the Ledger.
+
+## K. Progress, review and focus for the whole of Life OS
+> "it had amazing features, like kind of like tracking the progress and stuff in the study hub. We would call those … analytics or progress or planner, review and stuff. I need all those perfect … features inside the whole LifeOS app, not necessarily inside the study hub."
+> "maybe we need the focus room or study room to be part of the LifeOS app, or live music, or … YouTube player."
+
+Not started. The Study hub has all of these for study cards only: Review (a day looked back on), Planner (a week laid out), Progress, Analytics, the Focus Room with its timer, and the music and video players. Nothing is removed from the hub; the same things are wanted one level up.
+
+- [ ] **A short design with her first** (one page, in `briefs/`): what "progress" counts outside study (jobs sent, plans kept, things ticked, money against budget), and what a week's review asks.
+- [ ] **Review for the whole day and week:** what was planned and what happened, across study blocks, job time, her own plans, shopping and notes. The day page already holds every piece; it needs the look back.
+- [ ] **Progress and analytics across parts:** study (from the hub), applications sent per week against a target (JobMap), plans done against plans made (core), spending against the month (Budget).
+- [ ] **A planner for the week** in Life OS: the week's study blocks, job time and her own plans together, movable. The calendar's week view is the natural place.
+- [ ] **Focus as part of Life OS:** a timer that can be started on anything (a study card, a job application, a plan), with the hub's music and video player in the top bar so it keeps playing from page to page. The hub's player lives inside its frame today and stops when she leaves the hub.
+
+## L. Everything leads somewhere
+> "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
+> "when you click on [Life OS] … Click on the name above. It should, like directly direct to the main page, main URL. And if you click on a specific job role … on the today page … I should be able to kind of be directed to the same component … in the job map app." (12 October evening)
+
+- [x] "Life OS" in the top bar leads to the first page from every page and every part (it was plain text until 12 October afternoon; a page left open since before needs one reload).
+- [x] Inside the Study hub, the words "Life OS" on its save button lead to the Life OS first page; the rest of the button still saves.
+- [x] A job named anywhere on the day opens that job in JobMap.
+- [x] A study item opens its own card in the hub (see B).
+- [x] A shopping list on the day opens Budget's Shopping; the strip above each part links its first line to the thing it names.
+- [x] A link to another view of a part that is already open now moves the part there (before, it was lost).
+- [ ] Not yet clickable, found while testing: the "Next boundary" tile on the hub's Today; a single shopping item (to its line in Budget); a meal; "At home" by place; the Notes panel rows open the Ledger, which has no single-entry page.
+- [ ] **(Xar)** "When I click on a schedule": which schedule did not respond? The hub's hour-by-hour blocks open their cards for me; say where it failed.
 
 ## Waiting on Xar, gathered
 1. Nothing is waiting on her from 12 October's six questions; all were answered that day.
-2. The summer study data still keeps aside what is not study: 131 life and admin cards, 100 schedule rules, the interview module, 6 notes. She said the study part "has nothing to do with anything other than studying". Where do these go: Life OS tasks and notes, or an archive file?
+2. ~~The summer study data that is not study~~ answered and done 12 October (section J).
 3. Job time after 25 October: keep adding two weeks at a time, or make it a repeating routine?
 4. Her detailed check of the look, and of the new Court.
 5. JobMap, three questions in section I: the doubled vacancy, the September workbook's settings, the never-checked September leads.
+6. "Use common sense": which change did she mean (section C)?
+7. "When I click on a schedule": where (section L)?
+8. Section K needs twenty minutes of her time for the design before any code.
 

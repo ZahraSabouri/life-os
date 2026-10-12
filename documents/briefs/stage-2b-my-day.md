@@ -66,10 +66,10 @@ One page from which Xar runs her day. It shows the day in time order and lets he
 - [x] **Job time:** a new entry kind, "Time block" (`time-block`, with an area), drawn in its area's colour on the calendar and in the day; the Jobs panel shows the hours set aside and what was sent this week.
 - [x] **Deleting an entry:** `DELETE /api/entries/:id`.
 - **Commit:** `[2b-cp5] The Court is the working first page; today in every part; shopping and job time reach the day`
-- [ ] "Open in Study hub" from Today opens the semester and the card straight away (the hub's entry screen accepts the semester from the address). Needs a Study hub rebuild.
+- [x] A study item opens the semester and the card straight away (CP9, 12 October evening): the link carries `card` and `semester`; `HubGate.jsx` opens the named semester. Study hub rebuilt.
 - [ ] Tick a card's step and mark a card done from Today (through the Study hub's saved state, with its revision check; an open Study hub tab must not lose work).
-- [ ] Tick a shopping item as bought, and add an item, from Today (through Budget's own save).
-- [ ] Job-application time on the day (needs Xar's answer: see open questions).
+- [x] Tick a shopping item off, and add an item, from the Court and Today (CP8): `POST /api/home/shopping/tick`, through Budget's own rule `tickListLine` and Budget's own save.
+- [x] Job-application time on the day (CP5, her answer: both ways). Still single blocks to 25 October; a repeating routine is open.
 - **Done when:** a tick on Today is there when the owning part is opened, and the other way round.
 
 ### CP4: Light and dark everywhere (done 12 October)
@@ -81,8 +81,37 @@ One page from which Xar runs her day. It shows the day in time order and lets he
 - **Not looked at in dark:** dialogs, drawers and deeper pages inside the parts.
 - **Commit:** `[2b-cp4] Light and dark: one button everywhere, Modern dark across every part`
 
-### CP5: Today in Madder, Indigo and Paper
-- [ ] Each designed from that style's Court page (not a recolour), looked at by eye, shown to Xar.
+### CP5 (as first written): Today in Madder, Indigo and Paper
+- [ ] Each designed from that style's Court page (not a recolour), looked at by eye, shown to Xar. The Court in those styles carries the day since CP6; the Today page itself still only takes their boxes and type.
+
+### CP6: The day on every style's Court; a page for every area; the summer's life data out of Study (done 12 October)
+- [x] Madder, Indigo and Paper Courts carry the add line, the path and the four panels, as Modern does. The rooms not built yet are kept (her words: "those are for our further developments, so keep them").
+- [x] Every entry can carry an area and a note; a new area "Life admin"; `/room/<name>` for every area (coming up, no day yet, done and earlier).
+- [x] Done entries stay on the calendar, marked done.
+- [x] `scripts/move-summer-life-data.mjs`: 140 entries made from the summer app's non-study cards (18 admin, 12 home, 5 health, 98 meals, 7 career and interview notes), each with `Ref: summer-2026/<id>`; the summer semester keeps study only.
+- **Commits:** `1fcbb5f`, `fa181ec` `[2b-cp6]`
+
+### CP7: The day follows JobMap's own first list (done 12 October evening)
+- [x] `hosting/career/first-screen.mjs`: one place that asks JobMap's `selectJobs` for JobMap's opening list (`FIRST_SCREEN`), kept per JobMap revision. Used by the Jobs panel, the Court tile, the strip and the calendar.
+- [x] The day page asks again, twice at most, when a part could not be read; the day's time limit for a part is 6 s.
+- **Commit:** `3a28a52` `[2b-cp7]`
+
+### CP8: Acting on shopping and jobs from the day (done 12 October evening)
+- [x] Ticks on shopping items (Court, Today); what was ticked today stays in sight.
+- [x] Every job on the day, the strip and the calendar links to `/jobmap#job=<id>`; JobMap opens it (`[jobmap-cp5]`, both copies).
+- [x] `SubAppFrame` hands a changed fragment to a part that is already open.
+- [x] Jobs panel: "Closes today" first, then "Next, in JobMap's order"; plain words.
+- [x] Budget Shopping (`[budget-shopping]`): ticks, five arrangements, prices optional, a list limit, quick add, an item's own shop and day.
+- **Commits:** `b501fca` `[budget-shopping]`, `ab6c142` `[jobmap-cp5]`, `6a9ca23` `[2b-cp8]`
+
+### CP9: Links into the Study hub (done 12 October evening)
+- [x] Study links name their semester; the hub opens it and the card. The words "Life OS" on the hub's save button lead to the Life OS first page.
+- **Commit:** `0b3d58e` `[2b-cp9]`
+
+### Open after CP9
+- [ ] Tick a card's step and mark a card done from the day.
+- [ ] Job time as a repeating routine.
+- [ ] Progress, review, planner and focus for the whole of Life OS (TODO section K): needs its own brief.
 
 ## Data safety
 - CP1 and CP2 only read. The one write is a note, through the existing `/api/entries`, as the Court already does.
