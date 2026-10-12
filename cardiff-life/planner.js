@@ -75,6 +75,7 @@ if(typeof document!=='undefined')(()=>{
   function announce(message){$('message').textContent=message;}
   function save(){if(storageOK)try{localStorage.setItem(key,JSON.stringify({version:1,choices}));}catch(error){storageOK=false;$('storage-note').textContent='Your changes are only saved for this visit. Export your choices before closing the page.';}}
   function badge(e){
+    if(e.own)return '<span class="flag neutral">Added by you</span>'+(e.date&&e.date<today?'<span class="flag neutral">Past</span>':'');
     if(e.status==='missing')return '<span class="flag">Listing no longer in current research</span>';
     if(!['upcoming','needs_verification','recurring'].includes(e.status))return '<span class="flag">'+esc(e.status.replaceAll('_',' '))+'</span>';
     if(e.date&&e.date<today)return '<span class="flag neutral">Past event · attendance not recorded</span>';
@@ -82,7 +83,7 @@ if(typeof document!=='undefined')(()=>{
     if(!e.date)return '<span class="flag">Next date unconfirmed</span>';
     return '';
   }
-  function changed(e){const old=choices[e.event_id]?.snapshot;return old&&['date','start_time','end_time','location'].some(k=>old[k]!==e[k]);}
+  function changed(e){if(e.own)return false;const old=choices[e.event_id]?.snapshot;return old&&['date','start_time','end_time','location'].some(k=>old[k]!==e[k]);}
   function choose(id,status){
     const e=allEvents().find(x=>x.event_id===id);if(!e)return;
     if(selectedId===id&&choices[id]&&$('personal-note'))choices[id].note=$('personal-note').value;
@@ -92,15 +93,15 @@ if(typeof document!=='undefined')(()=>{
   }
   function actions(e){
     const state=choices[e.event_id]?.status,inactive=!P.active(e,today);
-    return '<div class="choice-actions">'+(!inactive?['maybe','going'].map(s=>`<button type="button" class="choice ${s}" data-choice="${s}" data-id="${esc(e.event_id)}" aria-pressed="${state===s}" aria-label="${label(s)}: ${esc(e.name)}">${s==='going'?'✓ ':''}${label(s)}</button>`).join(''):'')+(state?`<button type="button" class="text-button" data-choice="clear" data-id="${esc(e.event_id)}" aria-label="Remove choice: ${esc(e.name)}">Remove</button>`:'')+'</div>';
+    return '<div class="choice-actions">'+(!inactive?['maybe','going'].map(s=>`<button type="button" class="choice ${s}" data-choice="${s}" data-id="${esc(e.event_id)}" aria-pressed="${state===s}" aria-label="${label(s)}: ${esc(e.name)}">${s==='going'?'✓ ':''}${label(s)}</button>`).join(''):'')+(state&&!e.own?`<button type="button" class="text-button" data-choice="clear" data-id="${esc(e.event_id)}" aria-label="Remove choice: ${esc(e.name)}">Remove</button>`:'')+'</div>';
   }
   function card(e){
     const state=choices[e.event_id]?.status;
-    return `<article class="event-card ${state||''}" style="--category:var(--${esc(e.activity||'social')})"><div class="card-top"><span class="category">${esc(cat(e))}</span>${state?`<span class="decision ${state}">${label(state)}</span>`:rank.has(e.event_id)?'<span class="shortlisted">Shortlist</span>':''}</div><h3><button class="title-button" data-detail="${esc(e.event_id)}">${esc(e.name)}</button></h3><p class="date-line">${format(e.date,{weekday:'short',day:'numeric',month:'short'})}${e.date?' · '+esc(time(e)):''}</p><p class="location">${esc(e.location||'Venue to confirm')}</p><p class="description">${esc(e.description||e.notes)}</p><p class="price">${money(e.cost)}</p>${badge(e)}${changed(e)?'<span class="flag">Date, time or venue changed since you saved it</span>':''}<div class="card-bottom">${actions(e)}<button class="text-button" data-detail="${esc(e.event_id)}">Details & booking ↗</button></div></article>`;
+    return `<article class="event-card ${state||''}" style="--category:var(--${esc(e.activity||'social')})"><div class="card-top"><span class="category">${esc(cat(e))}</span>${state?`<span class="decision ${state}">${label(state)}</span>`:rank.has(e.event_id)?'<span class="shortlisted">Shortlist</span>':''}</div><h3><button class="title-button" data-detail="${esc(e.event_id)}">${esc(e.name)}</button></h3><p class="date-line">${format(e.date,{weekday:'short',day:'numeric',month:'short'})}${e.date?' · '+esc(time(e)):''}</p><p class="location">${esc(e.location||(e.own?'':'Venue to confirm'))}</p><p class="description">${esc(e.description||e.notes||'')}</p><p class="price">${e.own&&!e.cost?'':money(e.cost)}</p>${badge(e)}${changed(e)?'<span class="flag">Date, time or venue changed since you saved it</span>':''}<div class="card-bottom">${actions(e)}<button class="text-button" data-detail="${esc(e.event_id)}">${e.own?'Details, change or remove ↗':'Details & booking ↗'}</button></div></article>`;
   }
   function weekTile(e,option=false){
     const state=choices[e.event_id]?.status;
-    return `<button class="week-event ${option?'option':state}" style="--category:var(--${esc(e.activity||'social')})" data-detail="${esc(e.event_id)}"><span class="mini-category">${esc(cat(e))}</span><span class="mini-time">${esc(time(e))}</span><strong>${esc(e.name)}</strong>${state?`<span class="decision ${state}">${label(state)}</span>`:'<span class="option-label">Option to explore</span>'}${e.status==='needs_verification'?'<span class="mini-warning">Check details first</span>':''}${!P.active(e,today)?'<span class="mini-warning">'+esc(e.date<today?'Past event':e.status.replaceAll('_',' '))+'</span>':''}${changed(e)?'<span class="mini-warning">Details changed</span>':''}</button>`;
+    return `<button class="week-event ${option?'option':state}" style="--category:var(--${esc(e.activity||'social')})" data-detail="${esc(e.event_id)}"><span class="mini-category">${esc(cat(e))}</span><span class="mini-time">${esc(e.own&&!e.start_time?'Any time':time(e))}</span><strong>${esc(e.name)}</strong>${state?`<span class="decision ${state}">${label(state)}</span>`:'<span class="option-label">Option to explore</span>'}${e.status==='needs_verification'?'<span class="mini-warning">Check details first</span>':''}${!P.active(e,today)?'<span class="mini-warning">'+esc(e.date<today?'Past event':e.status.replaceAll('_',' '))+'</span>':''}${changed(e)?'<span class="mini-warning">Details changed</span>':''}</button>`;
   }
   function renderWeek(){
     const end=P.addDays(week,6),events=allEvents(),weekEvents=events.filter(e=>e.date>=week&&e.date<=end),planned=weekEvents.filter(e=>choices[e.event_id]),going=planned.filter(e=>choices[e.event_id].status==='going'),potential=weekEvents.filter(e=>P.active(e,today));
@@ -129,10 +130,43 @@ if(typeof document!=='undefined')(()=>{
     $('choice-total').textContent=Object.keys(choices).length;
   }
   function render(){renderWeek();renderExplore();}
+  // ---- Events she adds herself: kept in Life OS (api/own-events), drawn like any other event.
+  const ownApi=(path,method,body)=>(typeof fetch==='function'?fetch('api/own-events'+path,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined}):Promise.reject(Error('Open Cardiff Life inside Life OS to add your own events.'))).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'That could not be saved.');return d;});
+  function putOwn(e){const at=data.events.findIndex(x=>x.event_id===e.event_id);if(at>=0)data.events[at]=e;else data.events.push(e);byId.set(e.event_id,e);}
+  function ownForm(e){
+    const form=$('own-form');form.reset();$('own-error').hidden=true;
+    $('own-activity').innerHTML=Object.entries(P.categories).map(([id,title])=>`<option value="${id}">${esc(title)}</option>`).join('');
+    for(const k of ['event_id','name','date','start_time','end_time','location','activity','cost','source_url','description'])form.elements[k].value=e?.[k]??(k==='activity'?'social':k==='date'&&!e?(filters.date||(week<=today&&today<=P.addDays(week,6)?today:week)):'');
+    $('own-title').textContent=e?'Change my event':'Add my own event';$('own-save').textContent=e?'Save changes':'Add it to my plan';
+    if($('event-detail').open)$('event-detail').close();$('own-dialog').showModal();form.elements.name.focus();
+  }
+  $('add-own').onclick=()=>ownForm(null);$('close-own').onclick=$('own-cancel').onclick=()=>$('own-dialog').close();
+  $('own-form').addEventListener('submit',async event=>{
+    event.preventDefault();const form=event.target,body=Object.fromEntries(new FormData(form)),id=body.event_id;delete body.event_id;$('own-save').disabled=true;
+    try{const saved=(await ownApi(id?'/'+encodeURIComponent(id):'',id?'PATCH':'POST',body)).event;putOwn(saved);
+      choices[saved.event_id]={status:choices[saved.event_id]?.status||'going',note:choices[saved.event_id]?.note||'',snapshot:{...saved}};save();
+      if(saved.date){week=P.monday(saved.date);}$('own-dialog').close();render();announce((id?'Saved: ':'Added to your plan: ')+saved.name+'.');}
+    catch(error){$('own-error').textContent=error.message;$('own-error').hidden=false;}
+    finally{$('own-save').disabled=false;}
+  });
+  document.addEventListener('click',async event=>{
+    const change=event.target.closest('[data-own-change]'),remove=event.target.closest('[data-own-remove]');
+    if(change)ownForm(byId.get(change.dataset.ownChange));
+    if(remove){const id=remove.dataset.ownRemove,e=byId.get(id);if(!e||!confirm('Remove “'+e.name+'”? It is taken off Cardiff Life and your calendar.'))return;
+      try{await ownApi('/'+encodeURIComponent(id),'DELETE');data.events=data.events.filter(x=>x.event_id!==id);byId.delete(id);delete choices[id];save();$('event-detail').close();render();announce('Removed: '+e.name+'.');}catch(error){announce(error.message);}}
+  });
+  ownApi('','GET').then(d=>{let fresh=false;for(const e of d.events||[]){putOwn(e);if(!choices[e.event_id]){choices[e.event_id]={status:'going',note:'',snapshot:{...e}};fresh=true;}}if(fresh)save();if((d.events||[]).length)render();}).catch(()=>{/* opened as a file, without Life OS: only the researched events show */});
   function showView(view){for(const v of ['week','explore','communities','updates']){$(v+'-view').hidden=v!==view;document.querySelector(`[data-view="${v}"]`).setAttribute('aria-current',v===view?'page':'false');}}
   function detail(id,open=true){
     const e=allEvents().find(e=>e.event_id===id);if(!e)return;selectedId=id;$('detail-title').textContent=e.name;
     const fields=[['Where',e.location||'Not stated'],['Cost',String(e.cost||'Not stated').replace(/GBP\s?/g,'£')],['Booking',e.booking_required||'Check organiser page'],['Experience & equipment',e.experience||'See organiser details; requirements are not fully established'],['Could I return?',e.recurring||'Later sessions not established'],['Social value · assessment',e.social_value||'Not assessed'],['Professional value · assessment',e.networking_value||'Not assessed'],['Arriving alone',e.solo_friendliness||'Not established'],['Source notes',e.notes||''],['Verification',e.verification||'Current listing unavailable']];
+    if(e.own){
+      const facts=[['Where',e.location],['Cost',String(e.cost||'').replace(/GBP\s?/g,'£')]].filter(x=>x[1]);
+      $('detail-body').innerHTML=`<p class="category">${esc(cat(e))} · Added by you</p><p class="detail-date">${e.date?format(e.date,{weekday:'long',day:'numeric',month:'long',year:'numeric'})+(e.start_time?' · '+esc(time(e)):''):'No day yet'}</p>${e.date&&e.date<today?'<span class="flag neutral">Past</span>':''}${e.description?'<p>'+esc(e.description)+'</p>':''}${actions(e)}${/^https?:\/\//i.test(e.source_url||'')?`<a class="source-button" href="${link(e.source_url)}" target="_blank" rel="noopener noreferrer">Open the link ↗</a>`:''}${facts.length?'<dl>'+facts.map(([title,value])=>`<dt>${esc(title)}</dt><dd>${esc(value)}</dd>`).join('')+'</dl>':''}<div class="own-tools"><button type="button" data-own-change="${esc(id)}">Change this event</button><button type="button" class="text-button" data-own-remove="${esc(id)}">Remove this event</button></div><p class="small">You added this one. It is on your Life OS calendar as well.</p>${choices[id]?'<label class="note-label" for="personal-note">My note <span class="small">Saved with this choice</span></label><textarea id="personal-note" maxlength="2000" rows="3" placeholder="For example: who is coming, what to bring…"></textarea><button id="save-note">Save note</button>':''}`;
+      if(choices[id])$('personal-note').value=choices[id].note;
+      if(open){originFocus=document.activeElement;$('event-detail').showModal();}
+      return;
+    }
     $('detail-body').innerHTML=`<p class="category">${esc(cat(e))} · ${esc(e.organiser)}</p><p class="detail-date">${format(e.date,{weekday:'long',day:'numeric',month:'long',year:'numeric'})}${e.date?' · '+esc(time(e)):''}</p>${badge(e)}${changed(e)?'<p class="flag">Date, time or venue changed since you saved this choice. Recheck before travelling.</p>':''}<p>${esc(e.description||'')}</p>${actions(e)}<p class="small">Planning here does not reserve a place. Use the organiser’s page for any booking.</p><a class="source-button" href="${link(e.source_url)}" target="_blank" rel="noopener noreferrer">Open organiser & ticket details ↗</a><dl>${fields.filter(x=>x[1]).map(([title,value])=>`<dt>${esc(title)}</dt><dd>${esc(value)}</dd>`).join('')}</dl><p class="small">Source checked: ${e.last_checked?format(e.last_checked,{day:'numeric',month:'long',year:'numeric'}):'Current record unavailable'} · Europe/London</p>${choices[id]?'<label class="note-label" for="personal-note">My note <span class="small">Saved with this choice</span></label><textarea id="personal-note" maxlength="2000" rows="3" placeholder="For example: check the ticket, bring a water bottle…"></textarea><button id="save-note">Save note</button>':''}`;
     if(choices[id])$('personal-note').value=choices[id].note;
     if(open){originFocus=document.activeElement;$('event-detail').showModal();}

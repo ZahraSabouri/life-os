@@ -255,7 +255,7 @@ export function mapEvents(value, range) {
     const mapped = item({
       id: `events:cardiff:${event.event_id}`, area: 'events', kind: 'fixed', title: text(event.name, 'Cardiff event'),
       start: start || event.date, end: start ? end : null, href: '/cardiff-life', ...(event.location ? { location: event.location } : {}),
-      meta: { source: 'cardiff-life', readonly: true, eventId: event.event_id, status: event.status, candidate: true, needsVerification: event.status === 'needs_verification' },
+      meta: { source: 'cardiff-life', readonly: true, eventId: event.event_id, status: event.status, candidate: event.own !== true, needsVerification: event.status === 'needs_verification', ...(event.own === true ? { own: true } : {}) },
     }, range)
     if (mapped) output.push(mapped)
   }

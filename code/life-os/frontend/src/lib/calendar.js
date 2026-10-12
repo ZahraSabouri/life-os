@@ -97,6 +97,8 @@ export function filterCalendarItems(items, { areas, cardiffScope = 'saved', choi
   return items.filter(item => {
     if (areas && !areas.includes(item.area)) return false
     if (item.area !== 'events' || cardiffScope === 'all') return true
+    // An event she added to Cardiff Life herself is hers already; the researched ones show once she chooses them.
+    if (item.meta?.own) return true
     const choice = choices[item.meta?.eventId]
     return cardiffScope === 'going' ? choice?.status === 'going' : Boolean(choice)
   }).map(item => item.area === 'events' && choices[item.meta?.eventId]
