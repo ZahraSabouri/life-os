@@ -19,6 +19,7 @@ import { createReviewRouter, createReviewService } from './review/service.mjs'
 import { createNoticesRouter, createNoticesService } from './notices/service.mjs'
 import { withRoutines } from '../code/life-os/shared/routines.js'
 import { createOwnEvents, createOwnEventsRouter } from './cardiff/own-events.mjs'
+import { createJobMark, createJobMarkHandler } from './career/mark.mjs'
 import { createShopping, createShoppingRouter, loadBudgetRules } from './home/shopping.mjs'
 import { dateKey } from '../code/life-os/shared/calendar.js'
 import { createStudyRuntime } from './study/runtime.mjs'
@@ -191,6 +192,8 @@ export function createLifeOsApp(options = {}) {
   // content of Study, Jobs, Home and Notes. Read only.
   // A step of a study card ticked from the day, saved by the Study hub's own rule and revision check.
   app.post('/api/day/study', createStudyTickHandler(options.studyTick ?? createStudyTick({ hub: study.hub })))
+  // A job marked "applied" or "rejected" from the day, saved by JobMap's own server.
+  app.post('/api/day/jobs', createJobMarkHandler(options.jobMark ?? createJobMark({ getJobMapPort })))
   // A focus session from the Life OS timer, added to the card it was spent on.
   app.post('/api/day/study/focus', createStudyTickHandler(options.studyFocus ?? createStudyFocus({ hub: study.hub }), (body) => ({ semester: body.semester, card: body.card, minutes: body.minutes })))
   const dayService = createDayService({

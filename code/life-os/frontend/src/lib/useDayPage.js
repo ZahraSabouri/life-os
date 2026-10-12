@@ -39,6 +39,7 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
   const [until, setUntil] = useState('')
   const [lineState, setLineState] = useState('')
   const [savingId, setSavingId] = useState('')
+  const [jobMark, setJobMark] = useState(null)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
@@ -143,6 +144,20 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
     finally { setSavingId('') }
   }
 
+  // A job marked from the day ("applied", "rejected"). JobMap saves it by its own rule; what the
+  // status was comes back, so the last mark can be undone from where it was made.
+  async function markJob(job, status, restore = null) {
+    if (savingId || !job?.id) return
+    setSavingId(`job:${job.id}`)
+    setError('')
+    try {
+      const saved = await apiFetch('/api/day/jobs', { method: 'POST', body: JSON.stringify({ job: job.id, status, ...(restore ?? {}) }) })
+      setJobMark(restore ? null : { id: job.id, role: job.role, company: job.company, status, previous: saved.previous })
+      refetch()
+    } catch (failure) { setError(`Could not mark “${job.role}” as ${status.toLowerCase()}: ${failure.message}`) }
+    finally { setSavingId('') }
+  }
+
   async function completeTask(item) {
     if (savingId || item.meta?.source !== 'core' || item.meta?.type !== 'task' || !item.meta?.entryId) return
     setSavingId(item.id)
@@ -160,7 +175,8 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
     unavailable: (id) => data?.sources.find((source) => source.id === id && source.status === 'unavailable')?.error,
     line: { kind: adding, choose, text, setText, state: lineState, hint, save: saveLine, noteAllowed: isToday, area, setArea, fixedArea: Boolean(fixedArea), day: planDay, setDay,
       repeat, setRepeat, repeatDays, toggleRepeatDay: (weekday) => setRepeatDays((current) => (current.includes(weekday) ? current.filter((value) => value !== weekday) : [...current, weekday])), until, setUntil },
-    error, notice, savingId, completeTask, tickShopping, tickStudy,
+    error, notice, savingId, completeTask, tickShopping, tickStudy, markJob, jobMark,
+    undoJobMark: () => (jobMark?.previous?.status ? markJob(jobMark, jobMark.previous.status, jobMark.previous) : undefined),
     stopProps: { onDone: (stop) => setEntryStatus(stop, 'done'), onRemove: (stop) => setEntryStatus(stop, 'cancelled'), onStudy: tickStudy, busy: Boolean(savingId) },
   }
 }

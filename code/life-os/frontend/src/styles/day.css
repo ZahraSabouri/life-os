@@ -331,3 +331,9 @@ button.day-tick:disabled { cursor: progress; }
 /* In Indigo's rail the days stand one under another. */
 .indigo-rail .ahead-days { grid-template-columns: minmax(0, 1fr); }
 .indigo-rail .court-ahead > header { flex-wrap: wrap; }
+
+/* A one-step mark on a job row ("I applied", "Rejected"), and the line that says it was saved. */
+.day-page .day-list .day-mark, .day-page .day-marked .day-mark { justify-self: start; border: 0; padding: 0; background: transparent; color: var(--m-accent-strong); cursor: pointer; font: 600 0.78rem/1.3 var(--m-font); text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 3px; }
+.day-page .day-list .day-mark:hover, .day-page .day-marked .day-mark:hover { text-decoration-color: currentColor; }
+.day-page .day-list .day-mark:disabled, .day-page .day-marked .day-mark:disabled { opacity: 0.55; cursor: default; }
+.day-page .day-marked { margin: 0 0 0.7rem; padding: 0.45rem 0.65rem; border-radius: var(--m-radius-control, 8px); background: var(--m-accent-soft); color: var(--m-ink); font-size: 0.82rem; line-height: 1.45; }

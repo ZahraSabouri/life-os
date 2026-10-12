@@ -170,15 +170,18 @@ export function StudyPanel({ study, label = 'Today', compact = false, onStudy, s
   </>
 }
 
-export function JobsPanel({ jobs, compact = false }) {
+export function JobsPanel({ jobs, compact = false, onMark, marked = null, onUndo, savingId = '' }) {
   // JobMap's own first screen decides what is "to apply for": the same list, order, groups and words.
   const next = compact ? jobs.next.slice(0, 3) : jobs.next
   const others = jobs.due.filter((job) => !job.applied && !job.listed)
   const later = jobs.groups.slice(jobs.applyNow ? 1 : 0)
   const more = jobs.leads - jobs.closing.length - next.length
+  // One step from the day: "I applied" on a job to apply for, "Rejected" on one she is waiting on.
+  const act = (job, status, words, title) => (onMark ? <button type="button" className="day-mark" title={title} disabled={Boolean(savingId)} onClick={() => onMark(job, status)}>{savingId === `job:${job.id}` ? 'Saving…' : words}</button> : null)
   const lead = (job, warn) => <li key={job.id} title={job.reason}>
     <Link to={job.href}>{job.role}<em> · {job.company}</em></Link>
     <small className={warn ? 'day-warn' : undefined}>{job.label}{!warn && job.deadline ? ` · ${formatCalendarDay(job.deadline, { weekday: 'short' })}` : ''}</small>
+    {act(job, 'Applied', 'I applied', 'Mark it as applied in JobMap, with today’s date')}
   </li>
   return <>
     <div className="day-figure">
@@ -187,6 +190,7 @@ export function JobsPanel({ jobs, compact = false }) {
     </div>
     {jobs.time.length ? <p className="day-job-time">{jobs.minutesToday ? `${hours(Math.round(jobs.minutesToday / 6) / 10)} set aside today` : 'Time set aside today'}: {jobs.time.map((block) => `${block.start ? `${block.start}${block.end ? ` to ${block.end}` : ''}` : 'any time'}${block.done ? ' (done)' : ''}`).join(', ')}</p>
       : <p className="day-quiet">No time set aside for applications today. Add “job applications 17:00-20:00” as a plan, or see the calendar.</p>}
+    {marked ? <p className="day-marked" role="status">Marked as {marked.status.toLowerCase()} in JobMap: {marked.role}{marked.company ? ` · ${marked.company}` : ''}.{marked.previous?.status && onUndo ? <> <button type="button" className="day-mark" disabled={Boolean(savingId)} onClick={onUndo}>Undo</button></> : null}</p> : null}
     {jobs.closing.length ? <>
       <h3>Closes today</h3>
       <ul className="day-list">{jobs.closing.map((job) => lead(job, true))}</ul>
@@ -196,9 +200,9 @@ export function JobsPanel({ jobs, compact = false }) {
       : <p className="day-quiet">{jobs.closing.length ? 'Nothing else is listed.' : 'JobMap lists nothing to apply for right now.'}</p>}
     {more > 0 ? <p className="day-more"><Link to="/jobmap">and {more} more in JobMap</Link>{later.length ? ` (${later.map((group) => `${group.name.toLowerCase()} ${group.count}`).join(' · ')})` : ''}</p> : null}
     {others.length ? <p className="day-quiet">{count(others.length, 'other job')} on the shortlist {others.length === 1 ? 'closes' : 'close'} this week ({others.slice(0, 2).map((job) => job.role).join('; ')}{others.length > 2 ? '…' : ''}). A search shortlisted {others.length === 1 ? 'it' : 'them'}; JobMap has not seen {others.length === 1 ? 'it' : 'them'} open, or {others.length === 1 ? 'it is' : 'they are'} outside your search. Look under JobMap → Shortlist.</p> : null}
-    {jobs.interviews.length ? <><h3>Interviews</h3><ul className="day-list">{jobs.interviews.map((job) => <li key={job.id}><Link to={job.href}>{job.role}<em> · {job.company}</em></Link>{job.nextStep ? <small>{job.nextStep}</small> : null}</li>)}</ul></> : null}
+    {jobs.interviews.length ? <><h3>Interviews</h3><ul className="day-list">{jobs.interviews.map((job) => <li key={job.id}><Link to={job.href}>{job.role}<em> · {job.company}</em></Link>{job.nextStep ? <small>{job.nextStep}</small> : null}{act(job, 'Rejected', 'Rejected', 'Mark it as rejected in JobMap. It moves to the archive there.')}</li>)}</ul></> : null}
     {compact ? null : <>
-      {jobs.followUps.length ? <><h3>Follow up</h3><ul className="day-list">{jobs.followUps.map((job) => <li key={job.id}><Link to={job.href}>{job.role}<em> · {job.company}</em></Link><small>{daysAway(job.days)}</small></li>)}</ul></> : null}
+      {jobs.followUps.length ? <><h3>Follow up</h3><ul className="day-list">{jobs.followUps.map((job) => <li key={job.id}><Link to={job.href}>{job.role}<em> · {job.company}</em></Link><small>{daysAway(job.days)}</small>{act(job, 'Rejected', 'Rejected', 'Mark it as rejected in JobMap. It moves to the archive there.')}</li>)}</ul></> : null}
       {jobs.counts.missed ? <p className="day-quiet">{count(jobs.counts.missed, 'saved job')} passed {jobs.counts.missed === 1 ? 'its' : 'their'} closing date without an application. Archive or check them in JobMap.</p> : null}
     </>}
   </>
@@ -253,7 +257,7 @@ export function DayPanels({ page, compact = false, layout = PANELS_BESIDE_PATH }
     {data?.home ? <HomePanel home={data.home} today={isToday} compact={compact} onTick={page.tickShopping} savingId={page.savingId} /> : waiting('Nothing to show.')}
   </Panel>
   const jobs = <Panel title="Jobs" href="/jobmap" open="Open JobMap" unavailable={page.unavailable('jobs')}>
-    {data?.jobs ? <JobsPanel jobs={data.jobs} compact={compact} /> : waiting('Nothing to show.')}
+    {data?.jobs ? <JobsPanel jobs={data.jobs} compact={compact} onMark={page.markJob} marked={page.jobMark} onUndo={page.undoJobMark} savingId={page.savingId} /> : waiting('Nothing to show.')}
   </Panel>
   const notes = <Panel title="Notes" href="/ledger" open="Open Ledger" unavailable={page.unavailable('notes')}>
     {data?.notes ? <NotesPanel notes={data.notes} /> : waiting('Nothing to show.')}
