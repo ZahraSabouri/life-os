@@ -6,6 +6,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { isDateKey } from '../../../shared/calendar.js'
 import { apiFetch } from '../lib/api.js'
 import { addDays, formatCalendarDay } from '../lib/calendar.js'
+import { useSetting } from '../lib/settings.js'
 import { useLondonToday } from '../lib/useCalendar.js'
 import { count, pounds } from './DayParts.jsx'
 
@@ -67,7 +68,7 @@ function Tile({ label, value, unit, children, href, open }) {
   </article>
 }
 
-function Tiles({ data, before }) {
+function Tiles({ data, before, aims }) {
   const { totals, study, jobs, plans, home } = data
   // This week is not over: compare it with the week before up to the same weekday.
   const elapsed = data.today >= data.from && data.today < data.to ? data.days.filter((row) => row.date <= data.today).length : 0
@@ -84,12 +85,14 @@ function Tiles({ data, before }) {
       </> : <p className="review-note day-warn">The Study hub could not be read.</p>}
       <Delta now={totals.study.cardsDone} before={was?.cardsDone} than={than} />
     </Tile>
-    <Tile label="Focused" value={span(totals.focus.total)}>
+    <Tile label="Focused" value={span(totals.focus.total)} unit={aims.focusMinutesPerDay ? `of ${span(aims.focusMinutesPerDay * 7)}` : ''}>
+      {aims.focusMinutesPerDay ? <Meter part={totals.focus.total} whole={aims.focusMinutesPerDay * 7} label={`${span(totals.focus.total)} focused of the ${span(aims.focusMinutesPerDay * 7)} aimed at this week`} /> : null}
       <p className="review-note">{focusParts.length ? focusParts.join(' · ') : 'No focus session yet this week. The Focus button is in the top bar.'}</p>
       {totals.study.plannedMinutes ? <p className="review-note">{span(totals.study.plannedMinutes)} of study is on the plan for the week</p> : null}
       <Delta now={totals.focus.total} before={was?.focus} than={than} words={span} />
     </Tile>
-    <Tile label="Applications sent" value={totals.jobs.sent} href="/jobmap" open="JobMap">
+    <Tile label="Applications sent" value={totals.jobs.sent} unit={aims.applicationsPerWeek ? `of ${aims.applicationsPerWeek}` : ''} href="/jobmap" open="JobMap">
+      {aims.applicationsPerWeek ? <Meter part={totals.jobs.sent} whole={aims.applicationsPerWeek} label={`${totals.jobs.sent} of the ${aims.applicationsPerWeek} applications aimed at this week`} /> : null}
       {jobs ? <p className="review-note">{totals.jobs.setAsideMinutes ? `${span(totals.jobs.setAsideMinutes)} set aside` : totals.jobs.setAside ? `time set aside on ${count(totals.jobs.setAside, 'day')}` : 'no time set aside'}{totals.focus.jobs ? ` · ${span(totals.focus.jobs)} focused` : ''} · {jobs.sentEver} sent in all</p>
         : <p className="review-note day-warn">JobMap could not be read.</p>}
       <Delta now={totals.jobs.sent} before={was?.sent} than={than} />
@@ -165,6 +168,73 @@ function Slipped({ data }) {
   </section>
 }
 
+// Eight weeks side by side, one small chart for each measure. The week being looked at is in the
+// accent colour and the others step back, so the eye lands on "how does this week compare".
+// A measure with an aim has its line; every column says its value when pointed at.
+function Weeks({ title, weeks, pick, say = (value) => String(value), aim = 0, aimWords = '' }) {
+  const values = weeks.map((week) => pick(week))
+  const top = Math.max(1, aim, ...values)
+  return <figure className="review-weeks">
+    <figcaption><b>{title}</b>{aim ? <span>aim: {aimWords}</span> : null}</figcaption>
+    <div className="review-columns" role="img" aria-label={`${title}, week by week: ${weeks.map((week, index) => `${formatCalendarDay(week.from, { weekday: undefined })} ${say(values[index])}`).join(', ')}`}>
+      {aim ? <i className="review-aim" style={{ bottom: `${(aim / top) * 82}%` }} aria-hidden="true" /> : null}
+      {weeks.map((week, index) => <div key={week.from} className={`review-column${week.current ? ' is-current' : ''}`} title={`Week of ${formatCalendarDay(week.from, { weekday: undefined })}: ${say(values[index])}`}>
+        {week.current || values[index] === Math.max(...values) && values[index] > 0 ? <b>{say(values[index])}</b> : null}
+        <span style={{ height: `${values[index] ? Math.max(3, (values[index] / top) * 82) : 0}%` }} />
+      </div>)}
+    </div>
+    <div className="review-column-labels" aria-hidden="true">{weeks.map((week, index) => <span key={week.from}>{index === 0 || week.current || index === weeks.length - 1 ? formatCalendarDay(week.from, { weekday: undefined }) : ''}</span>)}</div>
+  </figure>
+}
+
+function Aims({ aims, setAims }) {
+  const [applications, setApplications] = useState('')
+  const [focus, setFocus] = useState('')
+  const [open, setOpen] = useState(false)
+  function begin() { setApplications(aims.applicationsPerWeek ? String(aims.applicationsPerWeek) : ''); setFocus(aims.focusMinutesPerDay ? String(aims.focusMinutesPerDay / 60) : ''); setOpen(true) }
+  function save(event) {
+    event.preventDefault()
+    const perWeek = Math.max(0, Math.min(200, Math.round(Number(applications)) || 0))
+    const perDay = Math.max(0, Math.min(16, Number(focus) || 0))
+    setAims({ applicationsPerWeek: perWeek, focusMinutesPerDay: Math.round(perDay * 60) })
+    setOpen(false)
+  }
+  const said = [aims.applicationsPerWeek ? `${count(aims.applicationsPerWeek, 'application')} a week` : '', aims.focusMinutesPerDay ? `${span(aims.focusMinutesPerDay)} of focus a day` : ''].filter(Boolean)
+  if (!open) return <p className="review-aims">{said.length ? <>You aim at {said.join(' and ')}. </> : <>No aim is set, so the figures only count. </>}<button type="button" onClick={begin}>{said.length ? 'Change' : 'Set what you aim at'}</button></p>
+  return <form className="review-aims is-open" onSubmit={save}>
+    <label>Applications a week<input type="number" min="0" max="200" step="1" value={applications} onChange={(event) => setApplications(event.target.value)} placeholder="5" /></label>
+    <label>Hours of focus a day<input type="number" min="0" max="16" step="0.25" value={focus} onChange={(event) => setFocus(event.target.value)} placeholder="3" /></label>
+    <button type="submit">Keep</button>
+    <button type="button" className="is-quiet" onClick={() => setOpen(false)}>Leave as it is</button>
+    <span>Leave one empty for no aim.</span>
+  </form>
+}
+
+function Progress({ data, current, aims, setAims }) {
+  if (!data) return null
+  const weeks = []
+  for (let from = data.from; from <= data.to; from = addDays(from, 7)) {
+    const days = data.days.filter((row) => row.date >= from && row.date <= addDays(from, 6))
+    const sum = (pick) => days.reduce((total, row) => total + pick(row), 0)
+    weeks.push({ from, current: from === current, sent: sum((row) => row.jobs.sent), focus: sum((row) => row.focus.total), cards: sum((row) => row.study.cardsDone), plans: sum((row) => row.plans.done) })
+  }
+  const study = data.study
+  return <section className="day-panel review-progress" aria-labelledby="review-progress-heading">
+    <header><h2 id="review-progress-heading">Eight weeks</h2></header>
+    <Aims aims={aims} setAims={setAims} />
+    <div className="review-weeks-grid">
+      <Weeks title="Applications sent" weeks={weeks} pick={(week) => week.sent} aim={aims.applicationsPerWeek} aimWords={`${aims.applicationsPerWeek} a week`} />
+      <Weeks title="Time focused" weeks={weeks} pick={(week) => week.focus} say={span} aim={aims.focusMinutesPerDay * 7} aimWords={`${span(aims.focusMinutesPerDay * 7)} a week`} />
+      <Weeks title="Study cards done" weeks={weeks} pick={(week) => week.cards} />
+      <Weeks title="Your plans done" weeks={weeks} pick={(week) => week.plans} />
+    </div>
+    {study?.cardsTotal ? <div className="review-semester">
+      <p><b>This semester</b> {study.cardsDone} of {count(study.cardsTotal, 'study card')} done{study.next ? ` · ${study.next.title} on ${formatCalendarDay(study.next.date, { weekday: 'long' })}` : ''}</p>
+      <Meter part={study.cardsDone} whole={study.cardsTotal} label={`${study.cardsDone} of ${study.cardsTotal} study cards done this semester`} />
+    </div> : null}
+  </section>
+}
+
 export default function ReviewView() {
   const today = useLondonToday()
   const [params, setParams] = useSearchParams()
@@ -174,6 +244,11 @@ export default function ReviewView() {
   const thisWeek = from === mondayOf(today)
   const review = useReview(from, to)
   const before = useReview(addDays(from, -7), addDays(from, -1))
+  // Eight weeks ending with the one shown, for the longer view.
+  const long = useReview(addDays(from, -49), to)
+  // What she aims at, kept for the whole app: applications a week, minutes of focus a day.
+  const [storedAims, setAims] = useSetting('targets', null)
+  const aims = { applicationsPerWeek: Number(storedAims?.applicationsPerWeek) > 0 ? Number(storedAims.applicationsPerWeek) : 0, focusMinutesPerDay: Number(storedAims?.focusMinutesPerDay) > 0 ? Number(storedAims.focusMinutesPerDay) : 0 }
   const show = (monday) => setParams(monday === mondayOf(today) ? {} : { week: monday })
   const data = review.data
   const hub = (view) => `/study#/${view}${data?.study?.semesterId ? `?semester=${encodeURIComponent(data.study.semesterId)}` : ''}`
@@ -191,9 +266,10 @@ export default function ReviewView() {
     {review.error ? <p className="form-error" role="alert">The week could not be read: {review.error}</p> : null}
     {!data && review.loading ? <p className="day-quiet" role="status">Gathering the week…</p> : null}
     {data ? <>
-      <Tiles data={data} before={before.data} />
+      <Tiles data={data} before={before.data} aims={aims} />
       <Days data={data} />
       <Slipped data={data} />
+      <Progress data={long.data} current={from} aims={aims} setAims={setAims} />
       <div className="today-page-controls">
         <Link className="ghost-pill compact-pill" to="/today">Today</Link>
         <Link className="ghost-pill compact-pill" to={thisWeek ? '/planner' : `/planner?week=${from}`}>Plan this week</Link>
