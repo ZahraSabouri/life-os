@@ -289,3 +289,6 @@ button.day-tick:disabled { cursor: progress; }
 .area-today p a:hover { color: var(--m-accent); border-bottom-color: var(--m-accent); }
 .day-shopping-name b a { color: inherit; text-decoration: none; }
 .day-shopping-name b a:hover { color: var(--m-accent); }
+
+/* A card's steps inside the Study panel's list. */
+.day-list .day-steps { margin-top: 0.45rem; }

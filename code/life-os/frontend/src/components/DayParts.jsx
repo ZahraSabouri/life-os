@@ -40,18 +40,23 @@ export function AddLine({ page, id = 'day-add-input', fixedArea = false }) {
   </form>
 }
 
-function Steps({ card, limit = 6 }) {
-  if (!card.steps.length) return card.doneWhen ? <p className="day-done-when"><span>Done when</span> {card.doneWhen}</p> : null
+// A card's steps. With `onStudy` each square is a real tick, saved in the Study hub.
+function Steps({ card, limit = 6, onStudy, busy, doneWhen = true }) {
+  const can = Boolean(onStudy && card.hubCardId && card.semesterId)
+  if (!card.steps.length) return doneWhen && card.doneWhen ? <p className="day-done-when"><span>Done when</span> {card.doneWhen}</p> : null
   return <>
     <ul className="day-steps">
-      {card.steps.slice(0, limit).map((step, index) => <li key={index} className={step.done ? 'is-done' : undefined}><span className="day-tick" aria-hidden="true" />{step.text}<span className="visually-hidden">{step.done ? ' (done)' : ''}</span></li>)}
+      {card.steps.slice(0, limit).map((step, index) => <li key={step.id || index} className={step.done ? 'is-done' : undefined}>
+        {can && step.id ? <button type="button" className="day-tick" role="checkbox" aria-checked={step.done} aria-label={`${step.done ? 'Untick' : 'Tick'}: ${step.text}`} disabled={busy} onClick={() => onStudy(card, step, !step.done)} /> : <span className="day-tick" aria-hidden="true" />}
+        <span>{step.text}{can ? null : <span className="visually-hidden">{step.done ? ' (done)' : ''}</span>}</span>
+      </li>)}
     </ul>
-    {card.steps.length > limit ? <p className="day-more">and {card.steps.length - limit} more in the Study hub</p> : null}
-    {card.doneWhen ? <p className="day-done-when"><span>Done when</span> {card.doneWhen}</p> : null}
+    {card.steps.length > limit ? <p className="day-more">and {card.steps.length - limit} more <Link to={card.href}>on the card</Link></p> : null}
+    {doneWhen && card.doneWhen ? <p className="day-done-when"><span>Done when</span> {card.doneWhen}</p> : null}
   </>
 }
 
-function Stop({ stop, onDone, onRemove, busy, compact }) {
+function Stop({ stop, onDone, onRemove, onStudy, busy, compact }) {
   const area = calendarArea(stop.area)
   const card = stop.card
   const detailed = card && !card.done && (card.steps.length || card.doneWhen)
@@ -72,9 +77,12 @@ function Stop({ stop, onDone, onRemove, busy, compact }) {
         {compact && detailed ? <span>{card.steps.length ? `${card.stepsDone} of ${card.steps.length} steps` : 'planned'}{card.hours ? ` · ${hours(card.hours)}` : ''}</span> : null}
       </p>
       {detailed && !compact ? <div className="day-card">
-        <Steps card={card} />
+        <Steps card={card} onStudy={onStudy} busy={busy} />
         <p className="day-card-foot">{card.steps.length ? `${card.stepsDone} of ${card.steps.length} steps done` : null}{card.steps.length && card.hours ? ' · ' : null}{card.hours ? hours(card.hours) : null} <Link to={card.href}>Open in Study hub</Link></p>
       </div> : null}
+      {card && onStudy && card.hubCardId && card.semesterId ? <p className="day-stop-actions">
+        <button type="button" onClick={() => onStudy(card, null, !card.done)} disabled={busy}>{card.done ? 'Not done after all' : 'Card done'}</button>
+      </p> : null}
       {stop.entry ? <p className="day-stop-actions">
         {stop.entry.task ? <button type="button" onClick={() => onDone(stop)} disabled={busy}>Done</button> : null}
         <button type="button" onClick={() => onRemove(stop)} disabled={busy}>Take off the day</button>
@@ -119,7 +127,7 @@ export function Panel({ title, href, open, children, unavailable, className = ''
   </section>
 }
 
-export function StudyPanel({ study, label = 'Today', compact = false }) {
+export function StudyPanel({ study, label = 'Today', compact = false, onStudy, savingId = '' }) {
   const pending = study.today.filter((card) => !card.done)
   const when = label === 'Today' ? 'today' : 'that day'
   return <>
@@ -136,6 +144,8 @@ export function StudyPanel({ study, label = 'Today', compact = false }) {
       {study.today.map((card) => <li key={card.id} className={card.done ? 'is-done' : undefined}>
         <Link to={card.href}>{card.title}</Link>
         <small>{card.done ? 'Done' : card.steps.length ? `${card.stepsDone} of ${card.steps.length} steps` : card.hours ? hours(card.hours) : 'Planned'}</small>
+        {/* On the Court the path is short, so the steps are ticked here; on Today they sit in the path. */}
+        {compact && !card.done && card.steps.length ? <Steps card={card} limit={5} onStudy={onStudy} busy={Boolean(savingId)} doneWhen={false} /> : null}
       </li>)}
     </ul> : <p className="day-quiet">No study card is due {when}.{study.running.length ? '' : ' Add one in the Study hub.'}</p>}
     {!pending.length && study.today.length ? <p className="day-quiet">Everything for {when} is done.</p> : null}
@@ -223,7 +233,7 @@ export function DayPanels({ page, compact = false }) {
   return <>
     <div className="day-panel-column">
       <Panel title="Study" href="/study" open="Open Study hub" unavailable={page.unavailable('study')}>
-        {data?.study ? <StudyPanel study={data.study} label={isToday ? 'Today' : 'That day'} compact={compact} /> : waiting('No semester is open.')}
+        {data?.study ? <StudyPanel study={data.study} label={isToday ? 'Today' : 'That day'} compact={compact} onStudy={page.tickStudy} savingId={page.savingId} /> : waiting('No semester is open.')}
       </Panel>
       <Panel title="Home" href="/budget" open="Open Budget" unavailable={page.unavailable('home')}>
         {data?.home ? <HomePanel home={data.home} today={isToday} compact={compact} onTick={page.tickShopping} savingId={page.savingId} /> : waiting('Nothing to show.')}

@@ -13,6 +13,17 @@ function savedKind() { try { const saved = window.localStorage.getItem(ADD_KIND_
 // Everything a page needs to show one day and to add to it: the calendar's dated items, the
 // day's study blocks and panels, the path they make, and the one line that adds a plan, a
 // note or something to buy. The Court, Today and the strip inside each part all use this.
+// The Study hub's tabs tell each other about a save on a channel of their semester
+// (useTrackerState.js; hub/session.js puts the semester in the channel's name) and reload when
+// they hear of a newer one. One channel per semester is kept open here.
+const studyHubChannels = new Map()
+function tellStudyHub(semesterId, saved) {
+  try {
+    if (!studyHubChannels.has(semesterId)) studyHubChannels.set(semesterId, new BroadcastChannel(`study-hub:${semesterId}:summer-rescue-tracker-state`))
+    studyHubChannels.get(semesterId).postMessage({ revision: saved.revision, writerId: saved.writerId })
+  } catch { /* no such channel in this browser: a hub tab shows the change on its next load */ }
+}
+
 export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
   const today = useLondonToday()
   const clock = useLondonClock()
@@ -100,6 +111,20 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
     finally { setSavingId('') }
   }
 
+  // Ticking a step of a study card, or the card itself. The Study hub's own rule saves it; a hub
+  // tab that is open is told the way another hub tab would tell it, and reloads.
+  async function tickStudy(card, step, done) {
+    if (savingId || !card?.hubCardId || !card.semesterId) return
+    setSavingId(`study:${card.id}`)
+    setError('')
+    try {
+      const saved = await apiFetch('/api/day/study', { method: 'POST', body: JSON.stringify({ semester: card.semesterId, card: card.hubCardId, ...(step ? { step: step.id } : {}), done }) })
+      tellStudyHub(card.semesterId, saved)
+      refetch()
+    } catch (failure) { setError(`Could not change “${step?.text ?? card.title}”: ${failure.message}`) }
+    finally { setSavingId('') }
+  }
+
   // Ticking a thing off a shopping list, or putting it back. Budget keeps the list; no price is asked.
   async function tickShopping(list, item, done) {
     if (savingId) return
@@ -128,7 +153,7 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
     loading: calendar.loading || (day.loading && !data),
     unavailable: (id) => data?.sources.find((source) => source.id === id && source.status === 'unavailable')?.error,
     line: { kind: adding, choose, text, setText, state: lineState, hint, save: saveLine, noteAllowed: isToday, area, setArea, fixedArea: Boolean(fixedArea), day: planDay, setDay },
-    error, notice, savingId, completeTask, tickShopping,
-    stopProps: { onDone: (stop) => setEntryStatus(stop, 'done'), onRemove: (stop) => setEntryStatus(stop, 'cancelled'), busy: Boolean(savingId) },
+    error, notice, savingId, completeTask, tickShopping, tickStudy,
+    stopProps: { onDone: (stop) => setEntryStatus(stop, 'done'), onRemove: (stop) => setEntryStatus(stop, 'cancelled'), onStudy: tickStudy, busy: Boolean(savingId) },
   }
 }

@@ -31,7 +31,7 @@ function bounded(load, timeoutMs) {
 // ---- Study ------------------------------------------------------------------------------
 function cardSummary(card, modules) {
   const data = plain(card.data)
-  const steps = array(data.checklist).map((step) => ({ text: text(step?.text, 400), done: Boolean(step?.done) })).filter((step) => step.text)
+  const steps = array(data.checklist).map((step) => ({ id: text(step?.id, 200), text: text(step?.text, 400), done: Boolean(step?.done) })).filter((step) => step.text)
   const hubCardId = text(data.hubCardId, 200)
   return {
     id: card.id,

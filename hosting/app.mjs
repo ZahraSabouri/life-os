@@ -13,6 +13,7 @@ import { createCalendarService } from './calendar/service.mjs'
 import { createCalendarLoaders } from './calendar/loaders.mjs'
 import { createCalendarRouter } from './calendar-route.mjs'
 import { createDayRouter, createDayService } from './day/service.mjs'
+import { createStudyTick, createStudyTickHandler } from './study/hub/tick.mjs'
 import { createShopping, createShoppingRouter } from './home/shopping.mjs'
 import { dateKey } from '../code/life-os/shared/calendar.js'
 import { createStudyRuntime } from './study/runtime.mjs'
@@ -156,6 +157,8 @@ export function createLifeOsApp(options = {}) {
   app.use('/api/calendar', createCalendarRouter(createCalendarService(calendarLoaders)))
   // What a day needs beyond its dated items: study blocks with their cards, and the current
   // content of Study, Jobs, Home and Notes. Read only.
+  // A step of a study card ticked from the day, saved by the Study hub's own rule and revision check.
+  app.post('/api/day/study', createStudyTickHandler(options.studyTick ?? createStudyTick({ hub: study.hub })))
   app.use('/api/day', createDayRouter({ express, service: createDayService({
     loadStudy: async () => {
       if (!study.configured) throw new Error('Study state is unavailable')
