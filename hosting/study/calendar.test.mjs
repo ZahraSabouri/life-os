@@ -17,6 +17,16 @@ test('native cards produce separate starts and deadlines with native source iden
   assert.deepEqual(workspace, before)
 })
 
+test('a card that starts and is due on the same day shows once', () => {
+  const workspace = { cards: [
+    { id: 'one-day', title: 'Mock A', start_date: '2026-10-20', end_date: '2026-10-20' },
+    { id: 'week', title: 'Regression', start_date: '2026-10-26', end_date: '2026-10-30' },
+  ] }
+  const items = mapNativeStudy(workspace, ...range)
+  assert.deepEqual(items.map(item => item.id), ['study:native:cards:one-day:deadline', 'study:native:cards:week:start', 'study:native:cards:week:deadline'])
+  assert.equal(items[0].title, 'Mock A')
+})
+
 test('native provider excludes completion/results and inactive parent semesters/modules', () => {
   const workspace = { semesters: [{ id: 'old', status: 'archived' }], modules: [{ id: 'off', status: 'inactive' }, { id: 'old-module', semester_id: 'old' }],
     cards: ['done', 'completed', 'archived'].map(status => ({ id: status, status, end_date: '2026-10-05' })),

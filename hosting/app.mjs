@@ -12,6 +12,7 @@ import db from '../code/life-os/backend/src/db.js'
 import { createCalendarService } from './calendar/service.mjs'
 import { createCalendarLoaders } from './calendar/loaders.mjs'
 import { createCalendarRouter } from './calendar-route.mjs'
+import { createDayRouter, createDayService } from './day/service.mjs'
 import { createStudyRuntime } from './study/runtime.mjs'
 import { createStudyRouter } from '../code/life-os/backend/src/modules/study/router.js'
 import { saveStudyUpload, studyFilesRoot } from './study/storage.mjs'
@@ -146,6 +147,19 @@ export function createLifeOsApp(options = {}) {
     ...options.calendarLoaders,
   })
   app.use('/api/calendar', createCalendarRouter(createCalendarService(calendarLoaders)))
+  // What a day needs beyond its dated items: study blocks with their cards, and the current
+  // content of Study, Jobs, Home and Notes. Read only.
+  app.use('/api/day', createDayRouter({ express, service: createDayService({
+    loadStudy: async () => {
+      if (!study.configured) throw new Error('Study state is unavailable')
+      return study.repository.workspace()
+    },
+    loadPlans: async (semesterId) => (study.hub ? (await study.hub.workspace(semesterId)).plan : {}),
+    loadCareer: calendarLoaders.loadCareer,
+    loadBudget: calendarLoaders.loadBudget,
+    loadNotes: () => db.prepare("SELECT * FROM entries WHERE type = 'note'").all(),
+    ...options.dayLoaders,
+  }) }))
   app.use('/api', (_req, res) => res.status(404).json({ error: 'not found' }))
 
   app.use(express.static(mainDist))

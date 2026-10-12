@@ -44,8 +44,10 @@ export function mapNativeStudy(workspace, from, to) {
   }
   for (const card of rows(workspace?.cards)) {
     if (!card.id || !visible(card) || complete(card)) continue
-    add(card, 'cards', 'start', { date: card.start_date, at: card.start_at, kind: 'plan', type: 'study-plan', title: `Start · ${card.title || 'Study plan'}` })
     const date = card.end_date || card.data?.due_date || card.data?.dueDate
+    // A card that starts and is due on the same day is one thing that day, not two.
+    const oneDay = !card.start_at && isDateKey(card.start_date) && card.start_date === date
+    if (!oneDay) add(card, 'cards', 'start', { date: card.start_date, at: card.start_at, kind: 'plan', type: 'study-plan', title: `Start · ${card.title || 'Study plan'}` })
     const dueTime = card.data?.dueTime || card.data?.due_time
     const configuredTime = dueTime && isDateKey(date) ? londonDateTime(date, dueTime) : ''
     const reminder = card.data?.kind === 'reminder' || rows(card.data?.tags).includes('date-watch')
