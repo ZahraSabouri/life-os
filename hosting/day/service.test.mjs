@@ -153,11 +153,27 @@ test('what to apply for is JobMap\'s own first screen, in its order and groups, 
     { id: 'fulltime', role: 'Data Manager', company: 'C', saved: true, status: 'To review', hours: 'Full time', availability: 'open', checked: '2026-10-10', deadline: DATE },
     { id: 'unchecked', role: 'Officer', company: 'D', saved: true, status: 'To review', hours: '12 hours per week', deadline: '2026-10-15' },
   ] }, DATE)
-  // JobMap's groups come first (apply now, then full-time), and inside a group the nearest closing date.
-  assert.deepEqual(jobs.next.map(job => job.id), ['lead-soon', 'lead-late', 'fulltime'])
+  // What closes today is said first, whatever its group; the rest follow in JobMap's order (inside a group, the nearest closing date).
+  assert.deepEqual(jobs.closing.map(job => [job.id, job.label, job.href]), [['fulltime', 'Full-time or over your hours · closes today', '/jobmap#job=fulltime']])
+  assert.deepEqual(jobs.next.map(job => job.id), ['lead-soon', 'lead-late'])
   assert.match(jobs.next[0].label, /^Apply now · closes tomorrow/)
+  assert.equal(jobs.applyNow, 2)
   assert.deepEqual(jobs.groups, [{ name: 'Apply now', count: 2 }, { name: 'Full-time or over your hours', count: 1 }])
   assert.deepEqual([jobs.leads, jobs.closingToday, jobs.closingThisWeek], [3, 1, 2])
   // A job a search shortlisted that nobody has checked still closes this week, but JobMap's first screen does not list it.
   assert.deepEqual(jobs.due.map(job => [job.id, job.listed]), [['fulltime', true], ['lead-soon', true], ['unchecked', false]])
+})
+
+test('what was ticked off a shopping list this day stays in sight, and a list with only ticks comes last', () => {
+  const home = homeDay({ state: { lists: [
+    { id: 'done', name: 'Lidl', date: DATE, lines: [{ id: 'a', name: 'Milk', quantity: 1, status: 'bought', ticked: true, gotOn: DATE }] },
+    { id: 'open', name: 'To buy', date: '2026-10-20', lines: [
+      { id: 'b', name: 'Shampoo', quantity: 1, status: 'planned' },
+      { id: 'c', name: 'Soap', quantity: 1, status: 'bought', ticked: true, gotOn: DATE },
+      { id: 'd', name: 'Rice', quantity: 1, status: 'bought', ticked: true, gotOn: '2026-10-01' },   // ticked on another day
+      { id: 'e', name: 'Eggs', quantity: 1, status: 'bought', receiptId: 'r1' },                      // on a receipt
+    ] },
+    { id: 'old', name: 'Last week', date: '2026-10-05', lines: [{ id: 'f', name: 'Tea', quantity: 1, status: 'bought', ticked: true, gotOn: '2026-10-05' }] },
+  ] } }, DATE)
+  assert.deepEqual(home.lists.map(list => [list.id, list.items.map(item => item.name), list.got.map(item => item.name)]), [['open', ['Shampoo'], ['Soap']], ['done', [], ['Milk']]])
 })

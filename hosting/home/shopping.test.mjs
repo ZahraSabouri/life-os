@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import path from 'node:path'
-import { addToList, loadBudgetRules, parseItem, ShoppingError } from './shopping.mjs'
+import { addToList, loadBudgetRules, parseItem, ShoppingError, tickLine } from './shopping.mjs'
 
 // Budget's own rules, from Budget's own files: a change that passes here is one Budget accepts.
 const rules = loadBudgetRules(path.join(import.meta.dirname, '../../budget-management'))
@@ -59,4 +59,22 @@ test('nothing to buy, a missing day, or a Budget with nothing saved is refused w
   assert.throws(() => addToList(rules, state(), ['  '], { date: DATE }), (error) => error instanceof ShoppingError && error.status === 400)
   assert.throws(() => addToList(rules, state(), ['eggs'], { date: 'today' }), (error) => error instanceof ShoppingError && error.status === 400)
   assert.throws(() => addToList(rules, null, ['eggs'], { date: DATE }), (error) => error instanceof ShoppingError && error.status === 409)
+})
+
+test('a thing is ticked off with no price and no receipt, and can be put back exactly', () => {
+  const before = addToList(rules, state(), ['eggs', 'rice'], { date: DATE }).state
+  const [list] = before.lists
+  const eggs = list.lines[0]
+  const ticked = tickLine(rules, before, { list: list.id, line: eggs.id, done: true, date: DATE })
+  assert.equal(ticked.changed, true)
+  assert.deepEqual(ticked.result, { item: { id: eggs.id, name: 'eggs', done: true }, list: { id: list.id, name: 'Shopping list', toBuy: 1 } })
+  assert.deepEqual(plainCopy(ticked.state.lists[0].lines).map((line) => [line.name, line.status, line.gotOn ?? null]), [['eggs', 'bought', DATE], ['rice', 'planned', null]])
+  // Nothing is spent and nothing is put in the cupboard: only a receipt does that.
+  assert.deepEqual([ticked.state.receipts.length, ticked.state.expenses.length, ticked.state.lots.length], [0, 0, 0])
+  rules.validate(ticked.state)
+  // Ticking what is already ticked changes nothing; putting it back restores the list as it was.
+  assert.equal(tickLine(rules, ticked.state, { list: list.id, line: eggs.id, done: true, date: DATE }).changed, false)
+  const back = tickLine(rules, ticked.state, { list: list.id, line: eggs.id, done: false, date: DATE })
+  assert.deepEqual(plainCopy(back.state), plainCopy(before))
+  assert.throws(() => tickLine(rules, before, { list: list.id, line: 'gone', done: true }), (error) => error instanceof ShoppingError && error.status === 404)
 })

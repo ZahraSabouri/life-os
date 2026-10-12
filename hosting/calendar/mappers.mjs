@@ -157,7 +157,7 @@ export function mapCareer(value, range, today = dateKey(new Date())) {
     const status = stateOf(job.status)
     const applied = ['applied', 'interview', 'offer'].includes(status) || Boolean(temporal(job.applied))
     const title = `${text(job.role, 'Job')} · ${text(job.company, 'Company')}`
-    const base = { area: 'career', href: '/jobmap', meta: { source: 'jobmap', readonly: true, jobId: job.id, status: job.status, saved: Boolean(job.saved) } }
+    const base = { area: 'career', href: `/jobmap#job=${encodeURIComponent(job.id)}`, meta: { source: 'jobmap', readonly: true, jobId: job.id, status: job.status, saved: Boolean(job.saved) } }
     if ((applied || (job.saved && (!current || current.has(job.id)))) && job.availability !== 'closed') {
       const mapped = item({ ...base, id: `career:deadline:${job.id}`, kind: 'deadline', title, start: job.deadline, meta: { ...base.meta, type: 'deadline' } }, range)
       if (mapped) output.push(mapped)

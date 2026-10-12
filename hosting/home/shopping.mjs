@@ -21,7 +21,7 @@ export function loadBudgetRules(budgetRoot) {
   const context = vm.createContext({ React: { createElement: () => null } })
   for (const name of ['core', 'seed', 'domain']) vm.runInContext(fs.readFileSync(path.join(budgetRoot, 'app/src', `${name}.js`), 'utf8'), context)
   const pick = (name) => vm.runInContext(name, context)
-  return { validate: pick('validateV4'), addListLine: pick('addListLine'), ensureShop: pick('ensureShop'), findShop: pick('findShop'), uid: pick('uid') }
+  return { validate: pick('validateV4'), addListLine: pick('addListLine'), tickListLine: pick('tickListLine'), ensureShop: pick('ensureShop'), findShop: pick('findShop'), uid: pick('uid') }
 }
 
 // "eggs", "6 eggs", "eggs x6", "2 kg rice": a quantity when one is typed, otherwise one.
@@ -81,6 +81,20 @@ export function addToList(rules, state, items, { list: listName = '', date, shop
   return { state: next, changed: created || added.length > 0, result: { list: { id: saved.id, name: saved.name, date: saved.date, toBuy: saved.lines.filter((line) => line.status === 'planned').length, created }, added, skipped } }
 }
 
+// Ticking an item off a list, or putting it back, by Budget's own rule: no price is asked for and
+// nothing reaches the balance or the cupboard (only a receipt does that).
+export function tickLine(rules, state, { list: listId, line: lineId, done = true, date } = {}) {
+  if (!state || typeof state !== 'object') throw new ShoppingError(409, 'Budget has nothing saved yet. Open Budget once, then try again.')
+  const list = (Array.isArray(state.lists) ? state.lists : []).find((row) => row.id === listId)
+  const line = list?.lines.find((row) => row.id === lineId)
+  if (!line) throw new ShoppingError(404, 'That item is no longer on the list')
+  const result = (lines) => ({ item: { id: line.id, name: line.name, done: Boolean(done) }, list: { id: list.id, name: list.name, toBuy: lines.filter((row) => row.status === 'planned').length } })
+  if ((line.status !== 'planned') === Boolean(done)) return { state, changed: false, result: result(list.lines) }
+  let next
+  try { next = rules.tickListLine(state, listId, lineId, Boolean(done), isDateKey(date) ? date : undefined) } catch (error) { throw new ShoppingError(409, error.message) }
+  return { state: next, changed: true, result: result(next.lists.find((row) => row.id === listId).lines) }
+}
+
 function request(port, method, pathname, body) {
   if (!Number.isInteger(port)) return Promise.reject(new ShoppingError(503, 'Budget is not running'))
   return new Promise((resolve, reject) => {
@@ -99,27 +113,46 @@ function request(port, method, pathname, body) {
 
 export function createShopping({ budgetRoot, getBudgetPort, today }) {
   let rules
+  // Read Budget, make the change on a copy by Budget's own rules, and save it with Budget's own
+  // revision check. If Budget was saved from its own page in between, read again and redo it once.
+  async function change(apply) {
+    rules ??= loadBudgetRules(budgetRoot)
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const current = await request(getBudgetPort(), 'GET', '/api/state')
+      if (current.status !== 200 || !current.value) throw new ShoppingError(503, 'Budget could not be read')
+      const { state, changed, result } = apply(rules, current.value.state)
+      if (!changed) return { ...result, revision: current.value.revision }
+      const saved = await request(getBudgetPort(), 'PUT', '/api/state', { state, revision: current.value.revision })
+      if (saved.status === 200) return { ...result, revision: saved.value.revision }
+      if (saved.status !== 409) throw new ShoppingError(saved.status === 400 ? 400 : 502, saved.value?.error || 'Budget refused the change')
+    }
+    throw new ShoppingError(409, 'Budget is being changed somewhere else. Try again.')
+  }
   return {
+    async tick({ list, line, done = true } = {}) {
+      if (typeof list !== 'string' || typeof line !== 'string' || !list || !line) throw new ShoppingError(400, 'Say which item')
+      return change((budget, state) => tickLine(budget, state, { list, line, done, date: today() }))
+    },
     async add({ items, list, date, shop } = {}) {
       if (!Array.isArray(items) || items.length === 0 || items.length > 200) throw new ShoppingError(400, 'Say what to buy')
-      rules ??= loadBudgetRules(budgetRoot)
-      // If Budget was saved from its own page in between, read again and redo the change once.
-      for (let attempt = 0; attempt < 2; attempt += 1) {
-        const current = await request(getBudgetPort(), 'GET', '/api/state')
-        if (current.status !== 200 || !current.value) throw new ShoppingError(503, 'Budget could not be read')
-        const { state, changed, result } = addToList(rules, current.value.state, items, { list, date: isDateKey(date) ? date : today(), shop })
-        if (!changed) return { ...result, revision: current.value.revision }
-        const saved = await request(getBudgetPort(), 'PUT', '/api/state', { state, revision: current.value.revision })
-        if (saved.status === 200) return { ...result, revision: saved.value.revision }
-        if (saved.status !== 409) throw new ShoppingError(saved.status === 400 ? 400 : 502, saved.value?.error || 'Budget refused the change')
-      }
-      throw new ShoppingError(409, 'Budget is being changed somewhere else. Try again.')
+      return change((budget, state) => addToList(budget, state, items, { list, date: isDateKey(date) ? date : today(), shop }))
     },
   }
 }
 
 export function createShoppingRouter({ express, shopping }) {
   const router = express.Router()
+  // Tick an item off a list, or put it back: { list, line, done }.
+  router.post('/tick', async (req, res) => {
+    try {
+      const body = req.body ?? {}
+      res.json({ ok: true, ...(await shopping.tick({ list: body.list, line: body.line, done: body.done !== false })) })
+    } catch (error) {
+      const status = error instanceof ShoppingError ? error.status : 500
+      if (status === 500) console.error('Shopping:', error.message)
+      res.status(status).json({ ok: false, error: status === 500 ? 'The shopping list could not be changed. Try again.' : error.message })
+    }
+  })
   router.post('/', async (req, res) => {
     try {
       const body = req.body ?? {}

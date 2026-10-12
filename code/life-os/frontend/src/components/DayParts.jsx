@@ -151,23 +151,27 @@ export function JobsPanel({ jobs, compact = false }) {
   // JobMap's own first screen decides what is "to apply for": the same list, order, groups and words.
   const next = compact ? jobs.next.slice(0, 3) : jobs.next
   const others = jobs.due.filter((job) => !job.applied && !job.listed)
-  const first = jobs.groups[0]
-  const later = jobs.groups.slice(1)
+  const later = jobs.groups.slice(jobs.applyNow ? 1 : 0)
+  const more = jobs.leads - jobs.closing.length - next.length
+  const lead = (job, warn) => <li key={job.id} title={job.reason}>
+    <Link to={job.href}>{job.role}<em> · {job.company}</em></Link>
+    <small className={warn ? 'day-warn' : undefined}>{job.label}{!warn && job.deadline ? ` · ${formatCalendarDay(job.deadline, { weekday: 'short' })}` : ''}</small>
+  </li>
   return <>
     <div className="day-figure">
-      <strong>{first?.count ?? 0}</strong>
-      <p><b>{first?.name ? `under “${first.name}” in JobMap` : 'to apply for in JobMap'}</b><span>{count(jobs.leads, 'job')} on its first screen{jobs.closingToday ? `, ${jobs.closingToday} closing today` : jobs.closingThisWeek ? `, ${jobs.closingThisWeek} closing this week` : ''} · {jobs.appliedThisWeek} sent this week</span></p>
+      <strong>{jobs.applyNow}</strong>
+      <p><b>{jobs.applyNow === 1 ? 'job to apply for now' : 'jobs to apply for now'}</b><span>JobMap lists {jobs.leads} in all · {jobs.appliedThisWeek} sent this week</span></p>
     </div>
     {jobs.time.length ? <p className="day-job-time">{jobs.minutesToday ? `${hours(Math.round(jobs.minutesToday / 6) / 10)} set aside today` : 'Time set aside today'}: {jobs.time.map((block) => `${block.start ? `${block.start}${block.end ? ` to ${block.end}` : ''}` : 'any time'}${block.done ? ' (done)' : ''}`).join(', ')}</p>
       : <p className="day-quiet">No time set aside for applications today. Add “job applications 17:00-20:00” as a plan, or see the calendar.</p>}
-    <h3>Next to apply for, in JobMap’s order</h3>
-    {next.length ? <ul className="day-list">
-      {next.map((job) => <li key={job.id} title={job.reason}>
-        <Link to={job.href}>{job.role}<em> · {job.company}</em></Link>
-        <small className={job.days === 0 ? 'day-warn' : undefined}>{job.label}{job.deadline ? ` · ${formatCalendarDay(job.deadline, { weekday: 'short' })}` : ''}</small>
-      </li>)}
-    </ul> : <p className="day-quiet">JobMap lists nothing to apply for right now.</p>}
-    {jobs.leads > next.length ? <p className="day-more">and {jobs.leads - next.length} more on JobMap’s first screen{later.length ? `: ${later.map((group) => `${group.name} ${group.count}`).join(' · ')}` : ''}</p> : null}
+    {jobs.closing.length ? <>
+      <h3>Closes today</h3>
+      <ul className="day-list">{jobs.closing.map((job) => lead(job, true))}</ul>
+    </> : null}
+    <h3>Next, in JobMap’s order</h3>
+    {next.length ? <ul className="day-list">{next.map((job) => lead(job, false))}</ul>
+      : <p className="day-quiet">{jobs.closing.length ? 'Nothing else is listed.' : 'JobMap lists nothing to apply for right now.'}</p>}
+    {more > 0 ? <p className="day-more"><Link to="/jobmap">and {more} more in JobMap</Link>{later.length ? ` (${later.map((group) => `${group.name.toLowerCase()} ${group.count}`).join(' · ')})` : ''}</p> : null}
     {others.length ? <p className="day-quiet">{count(others.length, 'other job')} on the shortlist {others.length === 1 ? 'closes' : 'close'} this week ({others.slice(0, 2).map((job) => job.role).join('; ')}{others.length > 2 ? '…' : ''}). A search shortlisted {others.length === 1 ? 'it' : 'them'}; JobMap has not seen {others.length === 1 ? 'it' : 'them'} open, or {others.length === 1 ? 'it is' : 'they are'} outside your search. Look under JobMap → Shortlist.</p> : null}
     {jobs.interviews.length ? <><h3>Interviews</h3><ul className="day-list">{jobs.interviews.map((job) => <li key={job.id}><Link to={job.href}>{job.role}<em> · {job.company}</em></Link>{job.nextStep ? <small>{job.nextStep}</small> : null}</li>)}</ul></> : null}
     {compact ? null : <>
@@ -177,18 +181,26 @@ export function JobsPanel({ jobs, compact = false }) {
   </>
 }
 
-export function HomePanel({ home, today = true, compact = false }) {
+export function HomePanel({ home, today = true, compact = false, onTick, savingId = '' }) {
   const shown = compact ? 6 : 10
+  const toBuy = home.lists.filter((list) => list.items.length > 0)
+  // A thing to buy is a real tick when the page can save it; ticked today, it stays struck through.
+  const row = (list, item, done) => <li key={item.id} className={done ? 'is-done' : undefined}>
+    {onTick ? <button type="button" className="day-tick" role="checkbox" aria-checked={done} aria-label={`${done ? 'Put back on the list' : 'Tick off'}: ${item.name}`} title={done ? 'Put it back on the list' : 'Tick it off. No price needed.'} disabled={Boolean(savingId)} onClick={() => onTick(list, item, !done)} /> : <span className="day-tick" aria-hidden="true" />}
+    <span>{item.name}{!done && item.quantity && !(item.quantity === 1 && item.unit === 'item') ? <small> {item.quantity}{item.unit && item.unit !== 'item' ? ` ${item.unit}` : ''}</small> : null}{!done && item.optional ? <small> if there is money left</small> : null}</span>
+  </li>
   return <>
     <h3>Shopping</h3>
     {home.lists.length ? home.lists.slice(0, compact ? 1 : 2).map((list) => <div className="day-shopping" key={list.id}>
-      <p className="day-shopping-name"><b>{list.name}</b><span>{[list.shop, list.date ? formatCalendarDay(list.date) : '', `${count(list.items.length, 'thing')} to buy`].filter(Boolean).join(' · ')}</span></p>
+      <p className="day-shopping-name"><b><Link to="/budget#/shopping">{list.name}</Link></b><span>{[list.shop, list.date ? formatCalendarDay(list.date) : '', list.items.length ? `${count(list.items.length, 'thing')} to buy` : 'everything ticked off'].filter(Boolean).join(' · ')}</span></p>
       <ul className="day-steps day-items">
-        {list.items.slice(0, shown).map((item) => <li key={item.id}><span className="day-tick" aria-hidden="true" />{item.name}{item.quantity && !(item.quantity === 1 && item.unit === 'item') ? <small> {item.quantity}{item.unit && item.unit !== 'item' ? ` ${item.unit}` : ''}</small> : null}{item.optional ? <small> if there is money left</small> : null}</li>)}
+        {list.items.slice(0, shown).map((item) => row(list, item, false))}
+        {list.got.slice(0, compact ? 3 : list.got.length).map((item) => row(list, item, true))}
       </ul>
-      {list.items.length > shown ? <p className="day-more">and {list.items.length - shown} more in Budget</p> : null}
+      {compact && list.got.length > 3 ? <p className="day-more">and {list.got.length - 3} more ticked off today</p> : null}
+      {list.items.length > shown ? <p className="day-more">and {list.items.length - shown} more in <Link to="/budget#/shopping">Budget</Link></p> : null}
     </div>) : <p className="day-quiet">Nothing on a shopping list. Choose “To buy” in the line at the top and type what you need.</p>}
-    {compact && home.lists.length > 1 ? <p className="day-more">and {count(home.lists.length - 1, 'more list')}</p> : null}
+    {compact && toBuy.length > 1 ? <p className="day-more">and {count(toBuy.length - 1, 'more list')}</p> : null}
     <h3>Eating {today ? 'today' : 'that day'}</h3>
     {home.meals.length ? <ul className="day-list">{home.meals.map((meal) => <li key={meal.id} className={meal.cooked ? 'is-done' : undefined}><span>{meal.name}</span><small>{MEAL_NAMES[meal.slot] ?? 'Meal'}{meal.cooked ? ' · eaten' : ''}</small></li>)}</ul>
       : <p className="day-quiet">Nothing planned to eat.{home.recipes ? '' : ' No recipes are saved yet.'} <Link to="/budget">Plan a meal in Budget</Link>.</p>}
@@ -214,7 +226,7 @@ export function DayPanels({ page, compact = false }) {
         {data?.study ? <StudyPanel study={data.study} label={isToday ? 'Today' : 'That day'} compact={compact} /> : waiting('No semester is open.')}
       </Panel>
       <Panel title="Home" href="/budget" open="Open Budget" unavailable={page.unavailable('home')}>
-        {data?.home ? <HomePanel home={data.home} today={isToday} compact={compact} /> : waiting('Nothing to show.')}
+        {data?.home ? <HomePanel home={data.home} today={isToday} compact={compact} onTick={page.tickShopping} savingId={page.savingId} /> : waiting('Nothing to show.')}
       </Panel>
     </div>
     <div className="day-panel-column">

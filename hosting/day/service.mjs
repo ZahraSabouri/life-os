@@ -131,7 +131,7 @@ export function jobsDay(value, date, entries = []) {
       id: job.id, role: text(job.role, 200) || 'Job', company: text(job.company, 200) || 'Company', location: text(job.location, 120),
       deadline, days: deadline ? daysBetween(date, deadline) : null, priority: text(job.priority, 20), stage: text(job.status, 40),
       applied: JOB_APPLIED.has(lower(job.status)) || Boolean(day(job.applied)), nextStep: text(job.nextStep, 240),
-      uncertain: job.availability === 'uncertain', href: '/jobmap',
+      uncertain: job.availability === 'uncertain', href: `/jobmap#job=${encodeURIComponent(job.id)}`,
     }
   }
   // What to apply for is JobMap's own answer: the list its first screen shows, in its order and
@@ -140,7 +140,10 @@ export function jobsDay(value, date, entries = []) {
   let ranked = []
   try { ranked = firstScreen(value, date) } catch { ranked = [] }
   const listed = new Set(ranked.map((entry) => entry.job.id))
-  const next = ranked.slice(0, 6).map((entry) => ({ ...row(entry.job), label: text(entry.priority.label, 120), reason: text(entry.priority.reason, 400) }))
+  const lead = (entry) => ({ ...row(entry.job), label: text(entry.priority.label, 120), reason: text(entry.priority.reason, 400) })
+  // A job that closes today is said first, whatever group JobMap has it in; the rest follow in JobMap's order.
+  const closing = ranked.filter((entry) => entry.priority.urgency === 0).map(lead)
+  const next = ranked.filter((entry) => entry.priority.urgency !== 0).slice(0, 6).map(lead)
   const closingSoon = ranked.filter((entry) => entry.priority.urgency < 8)
   const groups = new Map()
   for (const entry of ranked) groups.set(entry.priority.section ?? 0, (groups.get(entry.priority.section ?? 0) ?? 0) + 1)
@@ -152,8 +155,10 @@ export function jobsDay(value, date, entries = []) {
     .map((job) => ({ ...row(job), followUp: day(job.followUp), days: daysBetween(date, day(job.followUp)) })).sort((a, b) => a.followUp.localeCompare(b.followUp))
   return {
     // In JobMap's order: what to apply for next, its groups, and how many close today or this week.
+    closing,
     next,
     leads: ranked.length,
+    applyNow: groups.get(0) ?? 0,
     groups: [...groups].sort((a, b) => a[0] - b[0]).map(([section, count]) => ({ name: sectionName(section), count })),
     closingToday: closingSoon.filter((entry) => entry.priority.urgency === 0).length,
     closingThisWeek: closingSoon.length,
@@ -189,9 +194,11 @@ export function homeDay(value, date) {
         id: text(line.id, 80), name: text(line.name, 200), quantity: Number(line.quantity) || null, unit: text(line.unit, 30), optional: line.priority === 'optional', note: text(line.note ?? line.notes, 200),
       })),
       bought: lines.filter((line) => line?.status === 'bought').length,
+      // Ticked off this day without a receipt: shown struck through, and can be put back.
+      got: lines.filter((line) => line?.status === 'bought' && line.ticked && !line.receiptId && day(line.gotOn) === date).map((line) => ({ id: text(line.id, 80), name: text(line.name, 200) })),
     }
-  }).filter((list) => list.items.length > 0)
-    .sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || a.name.localeCompare(b.name))
+  }).filter((list) => list.items.length > 0 || list.got.length > 0)
+    .sort((a, b) => Number(!a.items.length) - Number(!b.items.length) || (a.date || '9999').localeCompare(b.date || '9999') || a.name.localeCompare(b.name))
   const meals = array(state.mealEntries).filter((meal) => meal && day(meal.date) === date && !['skipped', 'cancelled'].includes(lower(meal.status)))
     .map((meal) => ({ id: text(meal.id, 80), slot: lower(meal.slot), name: text(meal.name, 200) || 'Meal', cooked: lower(meal.status) === 'cooked' }))
     .sort((a, b) => MEAL_ORDER.indexOf(a.slot) - MEAL_ORDER.indexOf(b.slot))

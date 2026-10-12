@@ -273,3 +273,5 @@ button.check-circle.on::after{content:'';position:absolute;left:5px;top:1.5px;wi
 .shopping-group h3 .button{margin-left:auto}
 .shopping-got{margin-top:30px}
 .shopping-got h3{color:#889076}
+.quick-add{display:flex;gap:9px;align-items:stretch;margin:16px 0 4px}
+.quick-add .field{flex:1}

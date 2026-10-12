@@ -100,6 +100,18 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
     finally { setSavingId('') }
   }
 
+  // Ticking a thing off a shopping list, or putting it back. Budget keeps the list; no price is asked.
+  async function tickShopping(list, item, done) {
+    if (savingId) return
+    setSavingId(`buy:${item.id}`)
+    setError('')
+    try {
+      await apiFetch('/api/home/shopping/tick', { method: 'POST', body: JSON.stringify({ list: list.id, line: item.id, done }) })
+      refetch()
+    } catch (failure) { setError(`Could not ${done ? 'tick off' : 'put back'} “${item.name}”: ${failure.message}`) }
+    finally { setSavingId('') }
+  }
+
   async function completeTask(item) {
     if (savingId || item.area !== 'core' || item.meta?.type !== 'task' || !item.meta?.entryId) return
     setSavingId(item.id)
@@ -116,7 +128,7 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
     loading: calendar.loading || (day.loading && !data),
     unavailable: (id) => data?.sources.find((source) => source.id === id && source.status === 'unavailable')?.error,
     line: { kind: adding, choose, text, setText, state: lineState, hint, save: saveLine, noteAllowed: isToday, area, setArea, fixedArea: Boolean(fixedArea), day: planDay, setDay },
-    error, notice, savingId, completeTask,
+    error, notice, savingId, completeTask, tickShopping,
     stopProps: { onDone: (stop) => setEntryStatus(stop, 'done'), onRemove: (stop) => setEntryStatus(stop, 'cancelled'), busy: Boolean(savingId) },
   }
 }

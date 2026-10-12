@@ -229,8 +229,8 @@ function roomFacts(data) {
     meta: study.next ? `${study.next.title} · ${study.next.days === 0 ? 'today' : `in ${study.next.days} ${study.next.days === 1 ? 'day' : 'days'}`}` : `${study.progress.done} of ${count(study.progress.total, 'card')} done`,
   }
   if (jobs) facts.career = {
-    latest: jobs.groups[0] ? `${jobs.groups[0].count} under “${jobs.groups[0].name}”${jobs.closingToday ? `, ${jobs.closingToday} closing today` : jobs.closingThisWeek ? `, ${jobs.closingThisWeek} closing this week` : ''}` : 'Nothing to apply for right now',
-    meta: `${jobs.leads} on JobMap’s first screen · ${jobs.appliedThisWeek} sent this week`,
+    latest: jobs.leads ? `${count(jobs.applyNow, 'job')} to apply for now${jobs.closing.length ? `, ${jobs.closing.length} closing today` : ''}` : 'Nothing to apply for right now',
+    meta: `${jobs.leads} listed in JobMap · ${jobs.appliedThisWeek} sent this week`,
   }
   if (home) {
     const toBuy = home.lists.reduce((sum, list) => sum + list.items.length, 0)
@@ -1063,7 +1063,7 @@ export default function TheCourt() {
     // Time blocks are plans laid on the calendar (two weeks of job time at once), not things she filed.
     // …and "recently" means the last thirty days, so history brought in from elsewhere stays in the Ledger.
     const since = new Date(Date.now() - 30 * 86_400_000).toISOString()
-    return entries.filter((entry) => entry.type !== 'time-block' && entry.created_at >= since).slice(0, 6).map((entry) => {
+    return entries.filter((entry) => entry.type !== 'time-block' && entry.created_at >= since && !String(entry.details?.note ?? '').includes('Ref: summer-')).slice(0, 6).map((entry) => {
       const room = roomForEntry(entry, rooms)
 
       return {

@@ -17,6 +17,8 @@ const SKIP_INTRO_KEY = 'life-os.skip-intro'
 // host adds the shared skin files to its page (hosting/skins).
 function SubAppFrame({ route, documentPath, title }) {
   const frameRef = useRef(null)
+  const location = useLocation()
+  const arrived = useRef(false)
   const initialUrl = useRef(`${documentPath}${window.location.hash}`)
   const childRef = useRef(null)
   function syncHash() {
@@ -28,6 +30,15 @@ function SubAppFrame({ route, documentPath, title }) {
     childRef.current.addEventListener('hashchange', syncHash)
     syncHash()
   }
+  // A Life OS link to another view of the app that is already open (the strip's next job, a
+  // shopping list) changes only the fragment. Hand it to the app: it moves without reloading.
+  useEffect(() => {
+    if (!arrived.current) { arrived.current = true; return }
+    const child = frameRef.current?.contentWindow
+    try {
+      if (child && location.hash && child.location.pathname.startsWith(documentPath) && child.location.hash !== location.hash) child.location.hash = location.hash
+    } catch { /* the app is still loading; it reads the address itself when it starts */ }
+  }, [location.key, location.hash, documentPath])
   useEffect(() => {
     // Some sub-apps use history.replaceState, which does not emit hashchange.
     // Mirror the fragment so a Life OS reload restores the same view.

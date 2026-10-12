@@ -15,7 +15,7 @@ function studyLine(day, clock) {
   const next = ahead[0]
   const left = study.today.filter((card) => !card.done).length
   return [
-    next ? `${next.start <= clock ? 'Now' : next.start}: ${next.card?.title ?? next.title}${next.card?.steps.length ? ` (${next.card.stepsDone} of ${next.card.steps.length} steps)` : ''}`
+    next ? { to: next.card?.href, text: `${next.start <= clock ? 'Now' : next.start}: ${next.card?.title ?? next.title}${next.card?.steps.length ? ` (${next.card.stepsDone} of ${next.card.steps.length} steps)` : ''}` }
       : study.today.length ? (left ? `${count(left, 'card')} still open today, no study time left on the plan` : 'Everything planned for today is done') : 'Nothing to study on the plan today',
     ahead.length > 1 ? `then ${ahead.slice(1).map((block) => block.start).join(', ')}` : '',
     study.next ? `${study.next.days === 0 ? 'Today' : `${study.next.days} ${study.next.days === 1 ? 'day' : 'days'} to`} ${study.next.title}` : '',
@@ -29,10 +29,10 @@ function jobsLine(day) {
   // JobMap's own first screen, in its order.
   const first = jobs.next[0]
   return [
-    first ? `Next: ${first.role} · ${first.company} (${first.label.toLowerCase()})` : 'Nothing to apply for right now',
-    jobs.groups[0] ? `${jobs.groups[0].count} under “${jobs.groups[0].name}”` : '',
-    jobs.closingThisWeek ? `${jobs.closingThisWeek} on its first screen close this week` : '',
-    jobs.time.length ? `${jobs.minutesToday ? `${hours(Math.round(jobs.minutesToday / 6) / 10)} set aside` : 'time set aside'}${jobs.time[0].start ? ` from ${jobs.time[0].start}` : ''}` : 'no time set aside today',
+    jobs.closing[0] ? { to: jobs.closing[0].href, text: `Closes today: ${jobs.closing[0].role} · ${jobs.closing[0].company}${jobs.closing.length > 1 ? ` and ${jobs.closing.length - 1} more` : ''}` } : '',
+    first ? { to: first.href, text: `Next: ${first.role} · ${first.company}${first.days !== null && first.days <= 7 ? ` (closes ${first.days === 1 ? 'tomorrow' : `in ${first.days} days`})` : ''}` } : jobs.closing.length ? '' : 'Nothing to apply for right now',
+    `${jobs.applyNow} to apply for now`,
+    jobs.minutesToday ? `${hours(Math.round(jobs.minutesToday / 6) / 10)} set aside${jobs.time[0].start ? ` from ${jobs.time[0].start}` : ''}` : '',
     `${jobs.appliedThisWeek} sent this week`,
   ]
 }
@@ -41,9 +41,10 @@ function homeLine(day) {
   const home = day.home
   if (!home) return ['Budget could not be read.']
   const toBuy = home.lists.reduce((sum, list) => sum + list.items.length, 0)
+  const first = home.lists.find((list) => list.items.length > 0)
   const dinner = home.meals.find((meal) => meal.slot === 'dinner') ?? home.meals[0]
   return [
-    toBuy ? `${count(toBuy, 'thing')} to buy${home.lists[0] ? ` (${home.lists[0].items.slice(0, 3).map((item) => item.name).join(', ')}${home.lists[0].items.length > 3 ? '…' : ''})` : ''}` : 'Nothing on a shopping list',
+    toBuy ? { to: '/budget#/shopping', text: `${count(toBuy, 'thing')} to buy (${first.items.slice(0, 3).map((item) => item.name).join(', ')}${first.items.length > 3 ? '…' : ''})` } : 'Nothing on a shopping list',
     dinner ? `${dinner.slot === 'dinner' ? 'Dinner' : 'Planned'}: ${dinner.name}` : 'no meal planned today',
     home.budget ? `${pounds(home.budget.totalPence)} this month` : '',
   ]
@@ -70,7 +71,7 @@ export default function AreaToday({ area }) {
   return <aside className="area-today" aria-label="Today in this part">
     <Link className="area-today-name" to="/today">Today</Link>
     <p>
-      {area === 'events' ? <EventsLine today={today} /> : day.data ? parts.map((part, index) => <span key={index}>{part}</span>) : <span>{day.error ? 'The day could not be read.' : 'Reading the day…'}</span>}
+      {area === 'events' ? <EventsLine today={today} /> : day.data ? parts.map((part, index) => <span key={index}>{typeof part === 'object' && part.to ? <Link to={part.to}>{part.text}</Link> : part.text ?? part}</span>) : <span>{day.error ? 'The day could not be read.' : 'Reading the day…'}</span>}
     </p>
     <Link className="area-today-all" to="/today">The whole day</Link>
   </aside>
