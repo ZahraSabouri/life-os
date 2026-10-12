@@ -1,6 +1,6 @@
 // Puts one day in order: timed things as a path, things for any time, and the all-day rest.
 // Pure functions, so the page and the tests share them.
-import { CALENDAR_TIME_ZONE, itemOverlaps } from '../../../shared/calendar.js'
+import { addDays, CALENDAR_TIME_ZONE, dateKey, itemOverlaps } from '../../../shared/calendar.js'
 
 const LONDON_CLOCK = new Intl.DateTimeFormat('en-GB', { timeZone: CALENDAR_TIME_ZONE, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
 
@@ -128,4 +128,33 @@ export function buildDay({ items = [], day = null, date, now = '' }) {
   }
   // Where "now" falls in the path: the first stop that is not over. -1 when every stop is over; -2 when there is nothing to place it in.
   return { stops, anytime, also, nowIndex: now && stops.length ? stops.findIndex((stop) => stop.when !== 'past') : -2 }
+}
+
+// The Court looks ahead; Today looks at the day. From tomorrow on: tests and assessments, jobs
+// on her list that close, her own dated plans and events, renewals, birthdays, events she
+// chose. Left out on purpose, because they are a day's detail: classes, study blocks, time set
+// aside, the days of a repeating plan, and single study cards.
+const LANDMARK = (item) => {
+  if (item.meta?.routine || item.meta?.completed) return false
+  if (item.area === 'study') return item.meta?.entity === 'assessments'
+  if (item.area === 'career') return item.meta?.source === 'jobmap'
+  if (item.meta?.source === 'core') return item.meta?.type !== 'time-block'
+  return true
+}
+export function aheadOf(items, today, days = 14, perDay = 4) {
+  const first = addDays(today, 1)
+  const last = addDays(today, days)
+  const byDay = new Map()
+  for (const item of items ?? []) {
+    if (!LANDMARK(item)) continue
+    const date = item.all_day ? String(item.start).slice(0, 10) : dateKey(item.start)
+    if (!date || date < first || date > last) continue
+    if (!byDay.has(date)) byDay.set(date, [])
+    byDay.get(date).push({ id: item.id, title: item.title, area: item.area, href: item.href || `/today?date=${date}`, time: item.all_day ? '' : clockOf(item.start), kind: item.kind, room: item.meta?.room ?? '' })
+  }
+  const order = { study: 0, core: 1, relationships: 2, career: 3, events: 4, money: 5, home: 6 }
+  return [...byDay].sort((a, b) => a[0].localeCompare(b[0])).map(([date, rows]) => {
+    rows.sort((a, b) => (order[a.area] ?? 9) - (order[b.area] ?? 9) || a.time.localeCompare(b.time) || a.title.localeCompare(b.title))
+    return { date, days: Math.round((Date.parse(`${date}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000), rows: rows.slice(0, perDay), more: Math.max(0, rows.length - perDay) }
+  })
 }

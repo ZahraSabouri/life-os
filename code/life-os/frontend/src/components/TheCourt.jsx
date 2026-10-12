@@ -9,7 +9,8 @@ import { useGround } from '../lib/groundContext.jsx'
 import StyleSwitch from './StyleSwitch.jsx'
 import { FocusButton } from './FocusDock.jsx'
 import { NoticeBell } from './NoticeBell.jsx'
-import { AddLine, DayPanels, PANELS_ALONE, count, hours, pounds } from './DayParts.jsx'
+import { AddLine, count, hours, pounds, roomName } from './DayParts.jsx'
+import { aheadOf } from '../lib/day.js'
 import { useDayPage } from '../lib/useDayPage.js'
 import { clockOf } from '../lib/day.js'
 import { calendarArea, calendarDisplay, calendarKind, dateKey, filterCalendarItems, formatCalendarDay, itemTime, todayGroups } from '../lib/calendar.js'
@@ -839,9 +840,7 @@ function IndigoCourt(props) {
               <span>{weekdayLabel} · {clockLabel}{props.nextLine ? ` · ${props.nextLine}` : ''}</span>
             </section>
 
-            <div className="court-day day-page">
-              <div className="day-panels is-rail"><DayPanels page={props.page} compact layout={[['notes']]} /></div>
-            </div>
+            <div className="court-day day-page"><Ahead page={props.page} /></div>
 
             <section className="indigo-streak">
               <StreakRing days={streakDays} of={14} />
@@ -857,7 +856,6 @@ function IndigoCourt(props) {
           <section className="indigo-register" aria-label="Today and the rooms">
             <div className="court-day day-page">
               <AddLine page={props.page} id="court-add-input" />
-              <div className="day-panels"><DayPanels page={props.page} compact layout={[['study', 'home'], ['jobs']]} /></div>
             </div>
             <div className="indigo-register-head">
               <div>
@@ -902,13 +900,38 @@ function IndigoCourt(props) {
 
 // The day, as every style's Court carries it: the line that adds to it, its path in short
 // form, and what Study, Jobs, Home and Notes hold today. Drawn with the style's own tokens.
-// What the Court carries of the day: the line that adds to it, and Study, Jobs, Home and Notes.
-// The day hour by hour is on the Today page only (her choice, 12 October).
+// The Court stands back: where Today shows one day, the Court shows what lies ahead and every
+// area of her life. Xar, 12 October: "Between the [Court] and Today tab should be … actual,
+// genuine differences." So the day's modules (the path, Study, Jobs, Home, Notes) are on Today
+// only; here are the line that adds something, and the landmarks of the next two weeks.
+function Ahead({ page }) {
+  const groups = useMemo(() => aheadOf(page.items, page.today), [page.items, page.today])
+  return (
+    <section className="day-panel court-ahead" aria-labelledby="court-ahead-heading">
+      <header><h2 id="court-ahead-heading">Ahead</h2><span>the next two weeks</span><Link to="/planner">Plan the week</Link><Link to="/calendar">Calendar</Link></header>
+      {page.calendar.loading && !groups.length ? <p className="day-quiet">Looking ahead…</p> : null}
+      {!page.calendar.loading && !groups.length ? <p className="day-quiet">Nothing is dated in the next two weeks: no test, no job closing on your list, no plan, no renewal.</p> : null}
+      {groups.length ? <ol className="ahead-days">
+        {groups.map((group) => <li key={group.date}>
+          <Link className="ahead-date" to={`/today?date=${group.date}`}><b>{formatCalendarDay(group.date, { weekday: 'short', month: 'short' })}</b><small>{group.days === 1 ? 'tomorrow' : `in ${group.days} days`}</small></Link>
+          <ul>
+            {group.rows.map((row) => <li key={row.id} style={{ '--item-accent': calendarArea(row.area).tone }}>
+              <Link to={row.href}>{row.time ? <time>{row.time}</time> : null}{row.title}</Link>
+              <small>{(row.room && roomName(row.room)) || calendarArea(row.area).label}{row.kind === 'deadline' ? ' · closes' : ''}</small>
+            </li>)}
+            {group.more ? <li className="ahead-more"><Link to={`/today?date=${group.date}`}>and {group.more} more that day</Link></li> : null}
+          </ul>
+        </li>)}
+      </ol> : null}
+    </section>
+  )
+}
+
 function CourtDay({ page }) {
   return (
-    <section className="court-day day-page" aria-label="Study, jobs, home and notes today">
+    <section className="court-day day-page" aria-label="Add something, and what lies ahead">
       <AddLine page={page} id="court-add-input" />
-      <div className="day-panels is-three"><DayPanels page={page} compact layout={PANELS_ALONE} /></div>
+      <Ahead page={page} />
     </section>
   )
 }

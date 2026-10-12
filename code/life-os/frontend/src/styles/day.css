@@ -308,3 +308,26 @@ button.day-tick:disabled { cursor: progress; }
 .day-add-days { display: inline-flex; gap: 0.2rem; }
 .app-shell .day-add-days button { border: 1px solid var(--m-line); border-radius: var(--m-radius-control); background: transparent; color: var(--m-muted); padding: 0.28rem 0.5rem; cursor: pointer; font: 600 0.74rem/1.2 var(--m-font); letter-spacing: 0; text-transform: none; min-height: 0; }
 .app-shell .day-add-days button[aria-pressed='true'] { background: var(--m-accent-soft); border-color: var(--m-accent); color: var(--m-accent-strong); }
+
+/* ---- The Court: what lies ahead (the next two weeks' landmarks) ---- */
+.court-ahead > header { display: flex; align-items: baseline; gap: 0.7rem; margin-bottom: 0.6rem; }
+.court-ahead > header h2 { margin: 0; }
+.court-ahead > header span { flex: 1; color: var(--m-muted); font-size: 0.84rem; }
+.court-ahead > header a { color: var(--m-accent-strong); font-size: 0.8rem; white-space: nowrap; }
+.ahead-days { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 0.2rem 1.6rem; }
+.ahead-days > li { display: grid; grid-template-columns: 5.6rem minmax(0, 1fr); gap: 0.2rem 0.8rem; padding: 0.6rem 0; border-top: var(--m-rule, 1px solid var(--m-line)); align-items: start; min-width: 0; }
+.ahead-date { display: grid; gap: 0.05rem; color: var(--m-ink); text-decoration: none; }
+.ahead-date b { font: var(--m-title-weight, 600) 0.92rem/1.25 var(--m-title-font, var(--m-font)); }
+.ahead-date small { color: var(--m-muted); font-size: 0.72rem; }
+.ahead-date:hover b { text-decoration: underline; text-underline-offset: 3px; }
+.ahead-days ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; min-width: 0; }
+.ahead-days ul li { display: grid; gap: 0.02rem; padding-left: 0.6rem; border-left: 3px solid var(--item-accent, var(--m-accent)); min-width: 0; }
+.ahead-days ul li a { color: var(--m-ink); text-decoration: none; font-size: 0.88rem; line-height: 1.3; overflow-wrap: anywhere; }
+.ahead-days ul li a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ahead-days ul li time { color: var(--m-muted); font-variant-numeric: tabular-nums; margin-right: 0.4rem; font-size: 0.8rem; }
+.ahead-days ul li small { color: var(--m-muted); font-size: 0.72rem; }
+.ahead-days ul li.ahead-more { border-left-color: transparent; }
+.ahead-days ul li.ahead-more a { color: var(--m-muted); font-size: 0.78rem; }
+/* In Indigo's rail the days stand one under another. */
+.indigo-rail .ahead-days { grid-template-columns: minmax(0, 1fr); }
+.indigo-rail .court-ahead > header { flex-wrap: wrap; }
