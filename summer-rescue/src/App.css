@@ -10567,3 +10567,7 @@ button.countdown-chip:hover {
     white-space: normal;
   }
 }
+
+/* The words "Life OS" on the save button lead to the Life OS first page. */
+.save-button .save-home { text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.save-button .save-home:hover { text-decoration-thickness: 2px; }

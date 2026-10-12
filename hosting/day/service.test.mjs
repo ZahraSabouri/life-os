@@ -36,7 +36,7 @@ test('study blocks come in time order with the card each belongs to', () => {
   assert.equal(blocks[0].minutes, 90)
   assert.equal(blocks[0].card.stepsDone, 1)
   assert.equal(blocks[0].card.steps.length, 2)
-  assert.equal(blocks[0].card.href, '/study#/today?card=plots')
+  assert.equal(blocks[0].card.href, '/study#/today?card=plots&semester=autumn')
   assert.deepEqual(panel.today.map(card => [card.title, card.done, card.inBlock]), [['Plots', false, true], ['Bayes', true, true]])
   assert.equal(panel.hoursToday, 3)
 })

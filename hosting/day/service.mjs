@@ -48,7 +48,8 @@ function cardSummary(card, modules) {
     steps,
     stepsDone: steps.filter((step) => step.done).length,
     doneWhen: text(data.doneCondition, 600),
-    href: hubCardId ? `/study#/today?card=${encodeURIComponent(hubCardId)}` : '/study',
+    // The link names the card's semester, so the hub opens it without asking which one.
+    href: hubCardId ? `/study#/today?card=${encodeURIComponent(hubCardId)}${card.semester_id ? `&semester=${encodeURIComponent(card.semester_id)}` : ''}` : '/study',
   }
 }
 

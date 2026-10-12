@@ -26,6 +26,8 @@ export function mapNativeStudy(workspace, from, to, plans = []) {
     && (!record.module_id || !modules.has(record.module_id) || (activeParent(modules.get(record.module_id))
       && (!modules.get(record.module_id).semester_id || !semesters.has(modules.get(record.module_id).semester_id) || activeParent(semesters.get(modules.get(record.module_id).semester_id)))))
   const output = []
+  // The hub asks which semester to open unless the link says (HubGate reads "semester").
+  const inSemester = (id, joiner) => (id ? `${joiner}semester=${encodeURIComponent(id)}` : '')
   function add(record, entity, suffix, values) {
     const start = instant(values.at) || (isDateKey(values.date) ? values.date : '')
     if (!start) return
@@ -37,7 +39,7 @@ export function mapNativeStudy(workspace, from, to, plans = []) {
       title: values.title || record.title || 'Study plan', start, end, all_day: allDay,
       // What the Study hub app saved opens in the app; a record kept only as a row opens in the plain list.
       // Everything of Study opens in the Study hub: a card on the card, a class or a test on the Schedule.
-      href: entity === 'cards' ? (record.data?.hubCardId ? `/study#/today?card=${encodeURIComponent(record.data.hubCardId)}` : '/study') : '/study#/schedule',
+      href: entity === 'cards' ? (record.data?.hubCardId ? `/study#/today?card=${encodeURIComponent(record.data.hubCardId)}${inSemester(record.semester_id, '&')}` : '/study') : `/study#/schedule${inSemester(record.semester_id, '?')}`,
       ...(record.data?.location ? { location: record.data.location } : {}),
       meta: { source: 'native-study', readonly: true, entity, recordId: record.id,
         ...(entity === 'cards' ? { cardId: record.id } : {}), semesterId: record.semester_id, moduleId: record.module_id,
@@ -63,7 +65,7 @@ export function mapNativeStudy(workspace, from, to, plans = []) {
         output.push({
           id: `study:block:${semester.id}:${block.occurrenceId}`, area: 'study', kind: due ? 'deadline' : 'plan',
           title: block.title, start, end, all_day: false,
-          href: card?.data?.hubCardId ? `/study#/today?card=${encodeURIComponent(card.data.hubCardId)}` : '/study#/schedule',
+          href: card?.data?.hubCardId ? `/study#/today?card=${encodeURIComponent(card.data.hubCardId)}${inSemester(semester.id, '&')}` : `/study#/schedule${inSemester(semester.id, '?')}`,
           ...(block.location ? { location: block.location } : {}),
           meta: { source: 'native-study', readonly: true, entity: 'blocks', type: 'study-block', semesterId: semester.id,
             ...(card ? { cardId: card.id, recordId: card.id, moduleId: card.module_id, status: card.status } : {}) },

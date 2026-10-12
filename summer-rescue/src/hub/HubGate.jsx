@@ -182,6 +182,9 @@ export function HubGate() {
         const has = (id) => id && list.some((semester) => semester.id === id)
         // A tab the app opened itself (the Focus Room) follows the semester it came from.
         if (isFocusRoomRoute() && has(tabSemesterId())) return open(tabSemesterId())
+        // A link from Life OS (a card of the day, a block on the calendar) names its semester.
+        const named = new URLSearchParams(window.location.hash.split('?')[1] ?? '').get('semester')
+        if (has(named)) return open(named)
         if (staysInSemester() && has(tabSemesterId())) return open(tabSemesterId())
         if (opensLastSemester() && has(lastSemesterId())) return open(lastSemesterId())
         setStage('choose')

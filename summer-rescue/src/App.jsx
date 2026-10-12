@@ -2102,7 +2102,17 @@ export default function App() {
               title={autosaveDetail || backupStatusText}
             >
               <strong>{saveButtonLabel}</strong>
-              <span>{saveButtonDetail}</span>
+              {/* Inside Life OS the words "Life OS" lead to its first page; the rest of the button saves. */}
+              {saveButtonDetail === 'Life OS' && window.top !== window.self ? (
+                <span
+                  className="save-home"
+                  role="link"
+                  title="Go to the Life OS first page"
+                  onClick={(event) => { event.stopPropagation(); window.top.location.assign('/court') }}
+                >
+                  Life OS
+                </span>
+              ) : <span>{saveButtonDetail}</span>}
             </button>
             <button type="button" className="primary-button" onClick={() => setAddDialogOpen(true)} aria-label="Add card">
               <Icon name="plus" />

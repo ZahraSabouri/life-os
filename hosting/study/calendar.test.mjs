@@ -126,7 +126,7 @@ test('study blocks go on the calendar at their clock times, and the card is not 
   assert.equal(block.end, '2026-10-20T09:30:00.000Z')
   assert.equal(block.meta.type, 'study-block')
   assert.equal(block.meta.cardId, 'c-day')
-  assert.equal(block.href, '/study#/today?card=mock-a')
+  assert.equal(block.href, '/study#/today?card=mock-a&semester=autumn')   // the link names its semester, so the hub opens it without asking
   assert.equal(block.location, 'Library')
   assert.equal(attentionReason(block, '2026-10-21'), 'Overdue')
   assert.equal(attentionReason(items[2], '2026-10-28'), '')
