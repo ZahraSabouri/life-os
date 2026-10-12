@@ -82,6 +82,22 @@ function addListLine(s,listId,line){
   need(line.estimatePence==null||Number.isSafeInteger(line.estimatePence)&&line.estimatePence>=0,'Invalid estimated total.');
   return {...s,lists:s.lists.map(l=>l.id===listId?{...l,lines:[...l.lines,{id:uid('line'),status:'planned',priority:'needed',tracking:'none',unit:'item',categoryId:'uncategorised',...line,name:line.name.trim(),quantity}]}:l)};
 }
+// Ticking an item off without a receipt: it leaves "to buy" and the forecast, and nothing reaches
+// the balance or the cupboard. Unticking puts it back. A line bought on a receipt is not changed here.
+function tickListLine(s,listId,lineId,got=true,today=isoDate(new Date())){
+  const line=s.lists.find(l=>l.id===listId)?.lines.find(l=>l.id===lineId);need(line,'That item is no longer on the list.');
+  need(!line.receiptId,'This item is on a receipt. Change the receipt to bring it back.');
+  return {...s,lists:s.lists.map(l=>l.id!==listId?l:{...l,lines:l.lines.map(x=>{if(x.id!==lineId)return x;if(got)return {...x,status:'bought',ticked:true,gotOn:today};const {ticked,gotOn,...rest}=x;return {...rest,status:'planned'};})})};
+}
+// Every line with its list, and the shop and day it is meant for: its own when it has one, else its list's.
+function shoppingRows(s){return s.lists.flatMap(l=>l.lines.map(x=>({line:x,list:l,category:category(s,x.categoryId),shop:shopName(s,x)||shopName(s,l),date:validDate(x.date)?x.date:l.date})));}
+// The same items arranged another way: by category, by shop, by day, or all together.
+function groupShopping(rows,by){
+  if(by==='all')return rows.length?[{key:'all',label:'Everything',rows:rows.slice().sort((a,b)=>a.line.name.localeCompare(b.line.name))}]:[];
+  const key=r=>by==='category'?r.category.id:by==='shop'?r.shop.toLowerCase():r.date,label=r=>by==='category'?r.category.name:by==='shop'?(r.shop||'Any shop'):r.date,groups=[];
+  for(const r of rows){const k=key(r);let g=groups.find(x=>x.key===k);if(!g){g={key:k,label:label(r),rows:[]};groups.push(g);}g.rows.push(r);}
+  return groups.sort((a,b)=>by==='date'?a.key.localeCompare(b.key):!a.key-!b.key||a.label.localeCompare(b.label));
+}
 function apportion(total,weights){
   const sum=weights.reduce((n,x)=>n+x,0);need(Number.isSafeInteger(total)&&total>=0&&total<=sum,'Discount exceeds the item total.');
   if(!sum)return weights.map(()=>0);

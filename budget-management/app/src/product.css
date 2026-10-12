@@ -255,3 +255,21 @@ button.pick-row{width:100%;background:transparent;border:0;border-bottom:1px sol
 @media (max-width:640px){.item-photo{aspect-ratio:auto;height:140px}}
 .sub-note{font-size:.78rem;color:#6d7a5f;background:#eef2e4;border-radius:7px;padding:7px 10px;margin-top:8px}
 .home-now{background:#eef2e4;border-radius:9px;padding:10px 12px}
+
+/* Shopping: real ticks, and the same items arranged by list, category, shop or day */
+button.check-circle{position:relative;padding:0;background:transparent;cursor:pointer;appearance:none;-webkit-appearance:none}
+button.check-circle::before{content:'';position:absolute;inset:-12px}
+button.check-circle:hover{border-color:#6a8354}
+button.check-circle:focus-visible{outline:2px solid #6a8354;outline-offset:3px}
+button.check-circle.on{background:#6a8354;border-color:#6a8354}
+button.check-circle.on::after{content:'';position:absolute;left:5px;top:1.5px;width:4px;height:8.5px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.shopping-line.got .line-main strong{text-decoration:line-through;color:#889076;font-weight:400}
+.shopping-arrange{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 18px}
+.shopping-arrange>span{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:#889076}
+.shopping-arrange .segments{flex-wrap:wrap}
+.shopping-group{margin-top:22px}
+.shopping-group h3{display:flex;align-items:baseline;gap:9px;margin:0;padding-bottom:7px;border-bottom:1px solid #d4dac4;font-size:1rem}
+.shopping-group h3 small{font-size:.72rem;color:#889076;font-weight:400}
+.shopping-group h3 .button{margin-left:auto}
+.shopping-got{margin-top:30px}
+.shopping-got h3{color:#889076}
