@@ -95,3 +95,33 @@
   .focus-panel { transition: none; }
   .focus-bar span { transition: none; }
 }
+
+/* ---- Notices: the bell in the top bar and its list ---- */
+.app-shell .notice-bell { position: relative; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; min-width: 2rem; }
+.app-shell .notice-bell svg { display: block; }
+.app-shell .notice-bell.has-new { color: var(--m-accent-strong); }
+.app-shell .notice-count {
+  position: absolute; top: 0.1rem; right: -0.1rem; min-width: 1rem; height: 1rem; padding: 0 0.22rem; box-sizing: border-box; border-radius: 999px;
+  background: var(--m-red); color: #fff; font: 700 0.62rem/1rem var(--m-font); letter-spacing: 0; text-align: center;
+}
+.app-shell .redesign-nav .notice-bell { border: 0; background: transparent; color: inherit; padding: 0; }
+.court-redesign-paper .redesign-nav-quiet > button.notice-bell { display: inline-flex; color: var(--ink, #3a2f27); opacity: 0.85; }
+.notice-head-actions { display: flex; align-items: center; gap: 0.35rem; }
+.focus-panel > header .notice-head-actions button:not(.is-quiet) { font-size: 0.76rem; line-height: 1.2; padding: 0.3rem 0.6rem; }
+.notice-group ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; }
+.notice-group li { display: flex; align-items: flex-start; gap: 0.3rem; padding: 0.4rem 0 0.4rem 0.7rem; border-left: 2px solid var(--m-accent); }
+.notice-group[aria-label='Slipped'] li { border-left-color: var(--m-red); }
+.notice-group[aria-label='Coming up'] li { border-left-color: var(--m-line-strong); }
+.notice-group li a { flex: 1; min-width: 0; display: grid; gap: 0.1rem; color: var(--m-ink); text-decoration: none; }
+.notice-group li a:hover b { text-decoration: underline; text-underline-offset: 3px; }
+.notice-group li b { font-weight: 600; line-height: 1.3; }
+.notice-group li small { color: var(--m-muted); font-size: 0.78rem; line-height: 1.35; overflow-wrap: anywhere; }
+.notice-group li.is-seen { border-left-color: var(--m-line); }
+.notice-group li.is-seen b { font-weight: 400; color: var(--m-muted); }
+.notice-group li > button { flex: none; padding: 0.2rem 0.45rem; }
+.notice-settings { display: grid; gap: 0.45rem; }
+.notice-desktop, .notice-before { display: flex; align-items: center; gap: 0.5rem; }
+.notice-desktop input { width: 1rem; height: 1rem; padding: 0; accent-color: var(--m-accent); }
+.notice-before select { padding: 0.3rem 0.45rem; }
+.notice-before span { color: var(--m-muted); font-size: 0.8rem; }
+.notice-settings .focus-note { margin: 0; }

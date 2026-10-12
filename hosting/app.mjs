@@ -4,6 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import entriesRouter from '../code/life-os/backend/src/routes/entries.js'
 import peopleRouter from '../code/life-os/backend/src/routes/people.js'
+import settingsRouter from '../code/life-os/backend/src/routes/settings.js'
 import { createLocalTrackerApi } from '../summer-rescue/src/server/localTrackerApi.js'
 import { BUDGET_PATH, budgetProxy } from './budget.mjs'
 import { budgetBrowserRoutes } from './budget-browser-data.mjs'
@@ -15,6 +16,7 @@ import { createCalendarRouter } from './calendar-route.mjs'
 import { createDayRouter, createDayService } from './day/service.mjs'
 import { createStudyFocus, createStudyTick, createStudyTickHandler } from './study/hub/tick.mjs'
 import { createReviewRouter, createReviewService } from './review/service.mjs'
+import { createNoticesRouter, createNoticesService } from './notices/service.mjs'
 import { createShopping, createShoppingRouter, loadBudgetRules } from './home/shopping.mjs'
 import { dateKey } from '../code/life-os/shared/calendar.js'
 import { createStudyRuntime } from './study/runtime.mjs'
@@ -115,6 +117,7 @@ export function createLifeOsApp(options = {}) {
   })
   app.use('/api/entries', entriesRouter)
   app.use('/api/people', peopleRouter)
+  app.use('/api/settings', settingsRouter)
   app.post('/api/study/uploads', async (req, res, next) => {
     try { res.status(201).json(await saveStudyUpload(projectRoot, req.body, study.repository)) }
     catch (error) { next(error) }
@@ -155,14 +158,15 @@ export function createLifeOsApp(options = {}) {
     },
     ...options.calendarLoaders,
   })
-  app.use('/api/calendar', createCalendarRouter(createCalendarService(calendarLoaders)))
+  const calendarService = createCalendarService(calendarLoaders)
+  app.use('/api/calendar', createCalendarRouter(calendarService))
   // What a day needs beyond its dated items: study blocks with their cards, and the current
   // content of Study, Jobs, Home and Notes. Read only.
   // A step of a study card ticked from the day, saved by the Study hub's own rule and revision check.
   app.post('/api/day/study', createStudyTickHandler(options.studyTick ?? createStudyTick({ hub: study.hub })))
   // A focus session from the Life OS timer, added to the card it was spent on.
   app.post('/api/day/study/focus', createStudyTickHandler(options.studyFocus ?? createStudyFocus({ hub: study.hub }), (body) => ({ semester: body.semester, card: body.card, minutes: body.minutes })))
-  app.use('/api/day', createDayRouter({ express, service: createDayService({
+  const dayService = createDayService({
     loadStudy: async () => {
       if (!study.configured) throw new Error('Study state is unavailable')
       return study.repository.workspace()
@@ -172,9 +176,17 @@ export function createLifeOsApp(options = {}) {
     loadBudget: calendarLoaders.loadBudget,
     loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('note', 'time-block')").all(),
     ...options.dayLoaders,
+  })
+  app.use('/api/day', createDayRouter({ express, service: dayService }))
+  let budgetRules
+  const budgetFigures = (state, month) => { budgetRules ??= loadBudgetRules(budgetRoot); return budgetRules.forecast(state, month) }
+  // Notices for the whole app: what is on now, starts soon, is asked of today, has slipped, is close ahead. Read only.
+  app.use('/api/notices', createNoticesRouter({ express, service: options.notices ?? createNoticesService({
+    dayOf: dayService, calendarOf: calendarService,
+    loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('task', 'time-block')").all(),
+    loadBudget: calendarLoaders.loadBudget, budgetFigures,
   }) }))
   // A week looked back on across every part. Read only. "Spent" is Budget's own month rule.
-  let budgetRules
   app.use('/api/review', createReviewRouter({ express, service: createReviewService({
     loadStudy: async () => {
       if (!study.configured) throw new Error('Study state is unavailable')
@@ -185,7 +197,7 @@ export function createLifeOsApp(options = {}) {
     loadCareer: calendarLoaders.loadCareer,
     loadBudget: calendarLoaders.loadBudget,
     loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('note', 'task', 'event', 'time-block')").all(),
-    budgetFigures: (state, month) => { budgetRules ??= loadBudgetRules(budgetRoot); return budgetRules.forecast(state, month) },
+    budgetFigures,
     ...options.reviewLoaders,
   }) }))
   // Things to buy, added from anywhere in Life OS, go into Budget's own shopping list.

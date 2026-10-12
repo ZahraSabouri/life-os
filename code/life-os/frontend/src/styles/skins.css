@@ -144,6 +144,12 @@
   color: var(--m-muted); font: 600 0.84rem/1.2 var(--m-font);
 }
 .app-shell[data-ground='modern'] .court-nav button:hover { background: var(--m-sunken); color: var(--m-ink); }
+/* Thirteen entries: on a laptop's width they sit a little closer, and the bell is only its mark. */
+@media (min-width: 1101px) and (max-width: 1560px) {
+  .app-shell[data-ground='modern'] .court-nav { gap: 0.1rem; }
+  .app-shell[data-ground='modern'] .court-nav button { padding-inline: 0.62rem; }
+}
+.app-shell .court-nav button.notice-bell { padding-inline: 0.45rem; }
 .app-shell[data-ground='modern'] .court-nav .active { background: var(--m-accent-soft); color: var(--m-accent-strong); font-weight: 700; }
 .app-shell[data-ground='modern'] .court-nav .style-switch-trigger { border: 1px solid var(--m-line-strong); background: var(--m-card); color: var(--m-ink); }
 
@@ -274,3 +280,11 @@ button.modern-room:hover { transform: translateY(-1px); border-color: var(--m-li
   --g-deep: #0c1210;
 }
 .app-shell[data-ground='modern'] .calendar-explicit-capture input[type='date'] { color-scheme: var(--m-scheme); }
+
+/* On a smaller laptop the top bar keeps to one line: the date gives way (every page says it below). */
+@media (min-width: 1101px) and (max-width: 1420px) {
+  .app-shell[data-ground] .court-topbar .date-line { display: none; }
+  .app-shell[data-ground] .court-topbar { grid-template-columns: auto 1fr; }
+  /* …and the menu stays beside the name instead of taking a row of its own. */
+  .app-shell[data-ground] .court-topbar .court-nav { grid-column: auto; justify-content: flex-end; }
+}

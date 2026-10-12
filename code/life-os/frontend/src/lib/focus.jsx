@@ -3,6 +3,8 @@
 // the Study hub, Budget and JobMap. The Study hub keeps its own Focus Room for study cards.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { apiFetch } from './api.js'
+import { desktopNotice } from './notices.jsx'
+import { useSetting } from './settings.js'
 import { safeMaterialUrl, youtubeEmbed } from './study.js'
 import { tellStudyHub } from './studyHub.js'
 
@@ -75,10 +77,13 @@ export function FocusProvider({ children }) {
   const [session, setSession] = useState(() => read(SESSION_KEY, null))
   const [now, setNow] = useState(() => Date.now())
   const [last, setLast] = useState(null)
-  const [sound, setSound] = useState(() => {
-    const saved = read(SOUND_KEY, null)
-    return { list: Array.isArray(saved?.list) ? saved.list : FIRST_SOUNDS }
-  })
+  // Her saved sound links are a setting of the whole app. What an earlier version kept in this
+  // browser is used until she changes the list, which saves it as the setting.
+  const [storedSound, setStoredSound] = useSetting('sound', null)
+  const sound = useMemo(() => {
+    const here = read(SOUND_KEY, null)
+    return { list: Array.isArray(storedSound?.list) ? storedSound.list : Array.isArray(here?.list) ? here.list : FIRST_SOUNDS }
+  }, [storedSound])
   // What is playing is not restored after a reload: a browser will not start sound by itself.
   const [playing, setPlaying] = useState(null)
   // The small player in the corner can be hidden; the sound goes on.
@@ -89,7 +94,12 @@ export function FocusProvider({ children }) {
   const running = Boolean(session?.endsAt)
   const left = session ? (session.endsAt ? Math.max(0, session.endsAt - now) : session.left ?? 0) : 0
 
-  useEffect(() => { write(SOUND_KEY, sound) }, [sound])
+  // One panel at a time: opening the notices shuts this one.
+  useEffect(() => {
+    const onPanel = (event) => { if (event.detail !== 'focus') setOpen(false) }
+    window.addEventListener('life-os:panel', onPanel)
+    return () => window.removeEventListener('life-os:panel', onPanel)
+  }, [])
 
   // Another Life OS tab started, paused or ended the session.
   useEffect(() => {
@@ -140,7 +150,7 @@ export function FocusProvider({ children }) {
     const end = Date.now()
     const remaining = current.endsAt ? Math.max(0, current.endsAt - end) : current.left ?? 0
     const worked = Math.round((current.minutes * 60_000 - remaining) / 60_000)
-    if (byClock) chime()
+    if (byClock) { chime(); desktopNotice('Focus session finished', `${current.minutes} min on ${current.what}`, { tag: `focus:${current.startedAt}` }) }
     try {
       if (worked < 1) { setLast({ what: current.what, minutes: 0, note: 'Under a minute: nothing was logged.' }); return }
       await apiFetch('/api/entries', { method: 'POST', body: JSON.stringify({
@@ -171,13 +181,13 @@ export function FocusProvider({ children }) {
     if (!safe || safe.startsWith('/')) return 'That is not a link.'
     const embed = soundEmbed(safe)
     const id = `sound-${Date.now().toString(36)}`
-    setSound((current) => ({ ...current, list: [...current.list, { id, name: String(name).trim().slice(0, 80) || (embed ? `${embed.kind} link` : 'Link'), url: safe }] }))
+    setStoredSound({ list: [...sound.list, { id, name: String(name).trim().slice(0, 80) || (embed ? `${embed.kind} link` : 'Link'), url: safe }] })
     return ''
-  }, [])
-  const removeSound = useCallback((id) => { setSound((current) => ({ ...current, list: current.list.filter((item) => item.id !== id) })); setPlaying((current) => (current === id ? null : current)) }, [])
+  }, [sound, setStoredSound])
+  const removeSound = useCallback((id) => { setStoredSound({ list: sound.list.filter((item) => item.id !== id) }); setPlaying((current) => (current === id ? null : current)) }, [sound, setStoredSound])
 
   const value = useMemo(() => ({
-    open, setOpen, toggle: () => setOpen((current) => !current),
+    open, setOpen, toggle: () => setOpen((current) => { if (!current) window.dispatchEvent(new CustomEvent('life-os:panel', { detail: 'focus' })); return !current }),
     session, running, left, last, start, pause, resume, cancel, finish: () => finish(false),
     sounds: sound.list, playing, play, playerShown, setPlayerShown, addSound, removeSound,
   }), [open, session, running, left, last, start, pause, resume, cancel, finish, sound, playing, play, playerShown, addSound, removeSound])

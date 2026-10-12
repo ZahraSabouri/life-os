@@ -8,6 +8,7 @@ import { useEntries } from '../lib/useEntries.js'
 import { useGround } from '../lib/groundContext.jsx'
 import StyleSwitch from './StyleSwitch.jsx'
 import { FocusButton } from './FocusDock.jsx'
+import { NoticeBell } from './NoticeBell.jsx'
 import { AddLine, DayPanels, PANELS_ALONE, count, hours, pounds } from './DayParts.jsx'
 import { useDayPage } from '../lib/useDayPage.js'
 import { clockOf } from '../lib/day.js'
@@ -327,6 +328,7 @@ function CourtNav({ navigate, quiet = false }) {
       <button type="button" onClick={() => navigate('/calendar')}>Calendar</button>
       <button type="button" onClick={() => navigate('/review')}>Review</button>
       <button className="redesign-search-button" type="button">Search <kbd>⌘K</kbd></button>
+      <NoticeBell className="redesign-focus-button" />
       <FocusButton className="redesign-focus-button" />
       <StyleSwitch className="redesign-ground-button" compact />
     </nav>
