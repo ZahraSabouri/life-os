@@ -136,7 +136,7 @@ export default function CalendarView() {
           })}
         </div>
         <section className="calendar-day-agenda" aria-labelledby="calendar-day-heading">
-          <h3 id="calendar-day-heading">{formatCalendarDay(selectedDay, { weekday: 'long', year: 'numeric' })}</h3>
+          <h3 id="calendar-day-heading">{formatCalendarDay(selectedDay, { weekday: 'long', year: 'numeric' })} <Link className="calendar-open-day" to={selectedDay === today ? '/today' : `/today?date=${selectedDay}`}>Open this day</Link></h3>
           {!calendar.loading ? <CalendarItems items={selectedItems} calendar={calendar} areas={areas} empty={areas.length ? 'Nothing dated for this day in the selected areas.' : 'Choose an area to see its dates.'} /> : null}
         </section>
       </> : <section className="calendar-day-agenda" aria-label="Month agenda">

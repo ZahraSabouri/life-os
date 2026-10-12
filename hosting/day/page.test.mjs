@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { buildDay, daysAway, noteTitle, shortPlace } from '../../code/life-os/frontend/src/lib/day.js'
+import { buildDay, daysAway, noteTitle, parsePlan, shortPlace } from '../../code/life-os/frontend/src/lib/day.js'
 
 const DATE = '2026-10-12'
 const items = [
@@ -49,4 +49,38 @@ test('the small wording helpers', () => {
   assert.equal(noteTitle('Ask about calculators\nand the start time'), 'Ask about calculators')
   assert.equal(noteTitle('x'.repeat(120)).length, 78)
   assert.deepEqual([daysAway(0), daysAway(1), daysAway(5), daysAway(-2)], ['today', 'tomorrow', 'in 5 days', '2 days ago'])
+})
+
+test('a plan typed in one line: a clock time places it, no time means any time that day', () => {
+  const cases = {
+    '17:30 library': ['library', '17:30', ''],
+    'Library 17:30-18:30': ['Library', '17:30', '18:30'],
+    'Lidl': ['Lidl', '', ''],
+    'dinner at 8pm': ['dinner', '20:00', ''],
+    '9am gym': ['gym', '09:00', ''],
+    'call mum 7.15pm': ['call mum', '19:15', ''],
+    '5:30 to 6:30pm study group': ['study group', '17:30', '18:30'],
+    'from 10:00 until 11:30 revision': ['revision', '10:00', '11:30'],
+    'Meet Sara at 16:00 at the SU': ['Meet Sara at the SU', '16:00', ''],
+    'Lunch @ 12:30': ['Lunch', '12:30', ''],
+    'read chapter 3.14': ['read chapter 3.14', '', ''],
+    'read 20 pages': ['read 20 pages', '', ''],
+    'study 25:00': ['study 25:00', '', ''],
+    '12am pack bag': ['pack bag', '00:00', ''],
+    'gym 18:00-17:00': ['gym', '18:00', ''],
+    '8pm': ['', '20:00', ''],
+  }
+  for (const [typed, [title, start, end]] of Object.entries(cases)) assert.deepEqual(parsePlan(typed), { title, start, end }, typed)
+})
+
+test('her own plans can be ticked off or taken off the day; a study block from the calendar is not drawn twice', () => {
+  const mine = [
+    { id: 'core:entry:t1', area: 'core', kind: 'plan', title: 'Lidl', start: DATE, all_day: true, href: '/ledger#entry-t1', meta: { entryId: 't1', type: 'task' } },
+    { id: 'core:entry:e1', area: 'core', kind: 'fixed', title: 'Library', start: '2026-10-12T16:15:00.000Z', all_day: false, meta: { entryId: 'e1', type: 'event' } },
+    { id: 'study:block:autumn:b1:2026-10-12', area: 'study', kind: 'deadline', title: 'Library block', start: '2026-10-12T16:30:00.000Z', end: '2026-10-12T17:30:00.000Z', all_day: false, meta: { type: 'study-block', cardId: 'c1' } },
+  ]
+  const { stops, anytime } = buildDay({ items: mine, day, date: DATE, now: '14:00' })
+  assert.deepEqual(stops.map(stop => [stop.start, stop.title, stop.entry?.id ?? null]), [['17:15', 'Library', 'e1'], ['17:30', 'Library', null]])
+  assert.deepEqual(stops[0].entry, { id: 'e1', task: false, revision: undefined })
+  assert.deepEqual(anytime.find(entry => entry.title === 'Lidl').entry, { id: 't1', task: true, revision: undefined })
 })

@@ -95,3 +95,39 @@ test('exams show their start and full interval while coursework uses its due ins
   assert.equal(coursework.end, null)
   assert.equal(coursework.kind, 'deadline')
 })
+
+test('study blocks go on the calendar at their clock times, and the card is not listed a second time', () => {
+  const workspace = {
+    semesters: [{ id: 'autumn', status: 'active' }, { id: 'summer', status: 'completed' }],
+    cards: [
+      { id: 'c-day', title: 'Mock A', semester_id: 'autumn', end_date: '2026-10-20', data: { hubCardId: 'mock-a' } },
+      { id: 'c-week', title: 'Regression', semester_id: 'autumn', start_date: '2026-10-26', end_date: '2026-10-30', data: { hubCardId: 'regression' } },
+      { id: 'c-loose', title: 'No block', semester_id: 'autumn', end_date: '2026-10-21', data: { hubCardId: 'loose' } },
+      { id: 'c-done', title: 'Finished', status: 'done', semester_id: 'autumn', end_date: '2026-10-19', data: { hubCardId: 'finished' } },
+    ],
+  }
+  const plans = [
+    { semesterId: 'autumn', plan: { scheduleRules: [
+      { id: 'a', title: 'Mock A: 50 minutes', category: 'study', from: '2026-10-20', to: '2026-10-20', weekdays: [2], start: '09:00', end: '10:30', cardId: 'mock-a', location: 'Library' },
+      { id: 'b', title: 'Regression', category: 'study', from: '2026-10-26', to: '2026-10-27', weekdays: [1, 2], start: '10:00', end: '11:30', cardId: 'regression' },
+      { id: 'c', title: 'Finished work', category: 'study', from: '2026-10-19', to: '2026-10-19', weekdays: [1], start: '10:00', end: '11:00', cardId: 'finished' },
+    ] } },
+    { semesterId: 'summer', plan: { scheduleRules: [{ id: 'old', title: 'Summer block', category: 'study', from: '2026-10-20', to: '2026-10-20', weekdays: [2], start: '09:00', end: '10:00' }] } },
+  ]
+  const items = mapNativeStudy(workspace, ...range, plans)
+  assert.deepEqual(items.map(item => [item.start, item.kind, item.title]), [
+    ['2026-10-20T08:00:00.000Z', 'deadline', 'Mock A: 50 minutes'],   // 09:00 in London (summer time); the card falls due in this block
+    ['2026-10-21', 'deadline', 'No block'],                            // a card without blocks keeps its own line
+    ['2026-10-26T10:00:00.000Z', 'plan', 'Regression'],                // 10:00 in London after the clocks go back
+    ['2026-10-27T10:00:00.000Z', 'plan', 'Regression'],
+    ['2026-10-30', 'deadline', 'Regression'],                          // due on a day with no block: still listed
+  ])
+  const block = items[0]
+  assert.equal(block.end, '2026-10-20T09:30:00.000Z')
+  assert.equal(block.meta.type, 'study-block')
+  assert.equal(block.meta.cardId, 'c-day')
+  assert.equal(block.href, '/study#/today?card=mock-a')
+  assert.equal(block.location, 'Library')
+  assert.equal(attentionReason(block, '2026-10-21'), 'Overdue')
+  assert.equal(attentionReason(items[2], '2026-10-28'), '')
+})

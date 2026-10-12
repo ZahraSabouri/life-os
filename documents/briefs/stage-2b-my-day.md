@@ -55,8 +55,12 @@ One page from which Xar runs her day. It shows the day in time order and lets he
 - **Verify:** pictures looked at by eye (Modern at 1440 and 390 wide; the other three styles for legibility only); no page errors; `npm run build` for the frontend.
 - **Commit:** `[2b-cp2] Today is the page to work from: the day's path with Study, Jobs, Home and Notes`
 
-### CP3: Acting from the day
-- [ ] "Open in Study hub" from Today opens the semester and the card straight away (the hub's entry screen accepts the semester from the address).
+### CP3: Acting from the day (part done 12 October; the rest open)
+- [x] A line on Today adds a plan (with a clock time, or for any time that day) or a note. Her own plans can be ticked off or taken off the day; the entry is kept with status `done` or `cancelled`.
+- [x] Today for any day (`/today?date=…`), with the day before and after, and "Open this day" on the calendar.
+- [x] Study blocks on the Life OS calendar at their clock times (`hosting/study/calendar.mjs`).
+- **Commit:** `[2b-cp3] Plan the day from Today, any day, and study blocks on the calendar`
+- [ ] "Open in Study hub" from Today opens the semester and the card straight away (the hub's entry screen accepts the semester from the address). Needs a Study hub rebuild.
 - [ ] Tick a card's step and mark a card done from Today (through the Study hub's saved state, with its revision check; an open Study hub tab must not lose work).
 - [ ] Tick a shopping item as bought, and add an item, from Today (through Budget's own save).
 - [ ] Job-application time on the day (needs Xar's answer: see open questions).

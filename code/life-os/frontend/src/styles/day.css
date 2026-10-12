@@ -15,7 +15,7 @@
 }
 
 /* ---- The note line ---- */
-.day-note { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.9rem; padding: 0.55rem 0.6rem 0.55rem 1.15rem; }
+.day-note { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.9rem; padding: 0.55rem 0.6rem; }
 .day-page .day-note label, .day-page :is(.day-path, .day-panel) h3, .day-page .day-facts dt, .day-page .day-done-when span {
   color: var(--m-muted); font: 700 0.68rem/1.2 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase;
 }
@@ -29,6 +29,29 @@
 }
 .day-note button:disabled { opacity: 0.45; cursor: default; }
 .day-retry { border: 0; padding: 0.2rem; background: transparent; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; }
+
+/* The line adds a plan or a note; the hint under it says what will be saved. */
+.day-add-kind { display: inline-flex; padding: 0.15rem; border: 1px solid var(--m-line); border-radius: var(--m-radius-control); background: var(--m-sunken); }
+.day-add-kind button { border: 0; padding: 0.35rem 0.8rem; border-radius: calc(var(--m-radius-control) - 2px); background: transparent; color: var(--m-muted); cursor: pointer; font: var(--m-control-weight) 0.8rem/1.2 var(--m-control-font); font-variant-caps: var(--m-control-caps); letter-spacing: var(--m-control-tracking); }
+.day-add-kind button[aria-pressed='true'] { background: var(--m-card-fill); color: var(--m-ink); box-shadow: var(--m-shadow); }
+.day-add-kind button:disabled { opacity: 0.4; cursor: default; }
+.day-note > button { align-self: center; }
+.day-add-hint { grid-column: 1 / -1; margin: 0 0 0.35rem; padding-top: 0.45rem; border-top: 1px solid var(--m-line); color: var(--m-muted); font-size: 0.84rem; line-height: 1.4; }
+
+/* Another day: the day before, today, the day after, or a date. */
+.day-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-top: -0.4rem; }
+.day-nav button, .day-nav input {
+  border: 1px solid var(--m-line); border-radius: var(--m-radius-control); padding: 0.32rem 0.75rem; background: transparent; color: var(--m-muted); cursor: pointer;
+  font: 600 0.8rem/1.3 var(--m-font); color-scheme: var(--m-scheme);
+}
+.day-nav button:hover, .day-nav button[aria-pressed='true'] { color: var(--m-ink); border-color: var(--m-line-strong); background: var(--m-card-fill); }
+.day-nav label { display: inline-flex; align-items: center; gap: 0.45rem; margin-left: auto; color: var(--m-faint); font: 600 0.74rem/1.2 var(--m-font); }
+.day-stop-actions { display: flex; gap: 0.9rem; margin: 0.35rem 0 0; }
+.day-stop-actions button { border: 0; padding: 0; background: transparent; color: var(--m-accent-strong); cursor: pointer; font: 600 0.78rem/1.3 var(--m-font); }
+.day-stop-actions button + button { color: var(--m-faint); }
+.day-stop-actions button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.day-stop-actions button:disabled { opacity: 0.5; cursor: default; }
+.calendar-open-day { margin-left: 0.75rem; color: var(--g-acc); font: 600 0.85rem/1.2 var(--font-ui); vertical-align: middle; }
 
 /* ---- The two halves ---- */
 .day-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 1.15rem; align-items: start; }
@@ -144,8 +167,9 @@
   .day-panel-column:last-child .day-panel:first-child { order: 2; }
   .day-panel-column:last-child .day-panel:last-child { order: 4; }
   .day-now-line { grid-template-columns: 2.9rem 1rem minmax(0, 1fr); column-gap: 0.5rem; }
-  .day-note { grid-template-columns: minmax(0, 1fr) auto; padding-left: 0.9rem; }
-  .day-note label { display: none; }
+  .day-note { grid-template-columns: minmax(0, 1fr) auto; padding-left: 0.6rem; }
+  .day-add-kind { grid-column: 1 / -1; justify-self: start; }
+  .day-nav label { margin-left: 0; }
   .day-path, .day-panel { padding: 1rem 1rem 1.1rem; }
   .day-stop { grid-template-columns: 2.9rem 1rem minmax(0, 1fr); column-gap: 0.5rem; }
 }

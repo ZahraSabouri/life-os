@@ -142,7 +142,12 @@ export function createLifeOsApp(options = {}) {
     loadPeople: () => db.prepare('SELECT * FROM people').all(),
     loadStudy: async () => {
       if (!study.configured) throw new Error('Study state is unavailable')
-      return { nativeWorkspace: await study.repository.workspace() }
+      const nativeWorkspace = await study.repository.workspace()
+      // Each open semester's Study hub plan, for its study blocks. A plan that cannot be read
+      // leaves the rest of Study on the calendar.
+      const open = nativeWorkspace.semesters.filter((row) => !['completed', 'archived'].includes(String(row.status ?? '').toLowerCase()))
+      const hubPlans = study.hub ? await Promise.all(open.map(async (row) => ({ semesterId: row.id, plan: await study.hub.plan(row.id).catch(() => ({})) }))) : []
+      return { nativeWorkspace, hubPlans }
     },
     ...options.calendarLoaders,
   })
@@ -154,7 +159,7 @@ export function createLifeOsApp(options = {}) {
       if (!study.configured) throw new Error('Study state is unavailable')
       return study.repository.workspace()
     },
-    loadPlans: async (semesterId) => (study.hub ? (await study.hub.workspace(semesterId)).plan : {}),
+    loadPlans: async (semesterId) => (study.hub ? study.hub.plan(semesterId) : {}),
     loadCareer: calendarLoaders.loadCareer,
     loadBudget: calendarLoaders.loadBudget,
     loadNotes: () => db.prepare("SELECT * FROM entries WHERE type = 'note'").all(),

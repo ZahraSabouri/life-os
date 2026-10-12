@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { apiFetch } from '../lib/api.js'
-import { addDays, calendarArea, calendarDisplay, filterCalendarItems, formatCalendarDay, todayGroups } from '../lib/calendar.js'
-import { buildDay, daysAway, noteTitle } from '../lib/day.js'
+import { addDays, calendarArea, calendarDisplay, filterCalendarItems, formatCalendarDay, isComplete, todayGroups } from '../lib/calendar.js'
+import { londonDateTime, isDateKey } from '../../../shared/calendar.js'
+import { buildDay, daysAway, noteTitle, parsePlan } from '../lib/day.js'
 import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
 import { useDay, useLondonClock } from '../lib/useDay.js'
 import { poemForDate } from '../lib/poems.js'
@@ -25,7 +26,7 @@ function Steps({ card, limit = 6 }) {
   </>
 }
 
-function Stop({ stop }) {
+function Stop({ stop, onDone, onRemove, busy }) {
   const area = calendarArea(stop.area)
   const card = stop.card
   return <li className={`day-stop${stop.when ? ` is-${stop.when}` : ''}${card ? ' has-card' : ''}`} data-kind={stop.kind} style={{ '--item-accent': area.tone }}>
@@ -45,6 +46,10 @@ function Stop({ stop }) {
         <Steps card={card} />
         <p className="day-card-foot">{card.steps.length ? `${card.stepsDone} of ${card.steps.length} steps done` : null}{card.steps.length && card.hours ? ' · ' : null}{card.hours ? hours(card.hours) : null} <Link to={card.href}>Open in Study hub</Link></p>
       </div> : null}
+      {stop.entry ? <p className="day-stop-actions">
+        {stop.entry.task ? <button type="button" onClick={() => onDone(stop)} disabled={busy}>Done</button> : null}
+        <button type="button" onClick={() => onRemove(stop)} disabled={busy}>Take off the day</button>
+      </p> : null}
     </div>
   </li>
 }
@@ -60,7 +65,7 @@ function Panel({ title, href, open, children, unavailable }) {
   </section>
 }
 
-function StudyPanel({ study }) {
+function StudyPanel({ study, label = 'Today' }) {
   const pending = study.today.filter((card) => !card.done)
   return <>
     {study.next ? <div className="day-figure">
@@ -71,14 +76,14 @@ function StudyPanel({ study }) {
       <span style={{ width: `${Math.round((study.progress.done / study.progress.total) * 100)}%` }} />
       <p>{study.progress.done} of {count(study.progress.total, 'card')} {study.next ? 'before it' : 'planned'} done</p>
     </div> : null}
-    <h3>Today{study.today.length ? ` · ${count(study.today.length, 'card')}${study.hoursToday ? `, ${hours(study.hoursToday)}` : ''}` : ''}</h3>
+    <h3>{label}{study.today.length ? ` · ${count(study.today.length, 'card')}${study.hoursToday ? `, ${hours(study.hoursToday)}` : ''}` : ''}</h3>
     {study.today.length ? <ul className="day-list">
       {study.today.map((card) => <li key={card.id} className={card.done ? 'is-done' : undefined}>
         <Link to={card.href}>{card.title}</Link>
         <small>{card.done ? 'Done' : card.steps.length ? `${card.stepsDone} of ${card.steps.length} steps` : card.hours ? hours(card.hours) : 'Planned'}</small>
       </li>)}
-    </ul> : <p className="day-quiet">No study card is due today.{study.running.length ? '' : ' Add one in the Study hub.'}</p>}
-    {!pending.length && study.today.length ? <p className="day-quiet">Everything for today is done.</p> : null}
+    </ul> : <p className="day-quiet">No study card is due {label === 'Today' ? 'today' : 'that day'}.{study.running.length ? '' : ' Add one in the Study hub.'}</p>}
+    {!pending.length && study.today.length ? <p className="day-quiet">Everything for {label === 'Today' ? 'today' : 'that day'} is done.</p> : null}
     {study.running.length ? <><h3>This week</h3><ul className="day-list">{study.running.map((card) => <li key={card.id}><Link to={card.href}>{card.title}</Link><small>due {formatCalendarDay(card.due)}</small></li>)}</ul></> : null}
     {study.overdue.count ? <><h3 className="day-warn">{count(study.overdue.count, 'card')} past {study.overdue.count === 1 ? 'its' : 'their'} date</h3><ul className="day-list">{study.overdue.cards.map((card) => <li key={card.id}><Link to={card.href}>{card.title}</Link><small>{formatCalendarDay(card.due)}</small></li>)}</ul></> : null}
     {study.undated.length ? <p className="day-quiet">No date yet: {study.undated.join('; ')}.</p> : null}
@@ -104,7 +109,7 @@ function JobsPanel({ jobs }) {
   </>
 }
 
-function HomePanel({ home }) {
+function HomePanel({ home, today = true }) {
   return <>
     <h3>Shopping</h3>
     {home.lists.length ? home.lists.slice(0, 2).map((list) => <div className="day-shopping" key={list.id}>
@@ -114,9 +119,9 @@ function HomePanel({ home }) {
       </ul>
       {list.items.length > 10 ? <p className="day-more">and {list.items.length - 10} more in Budget</p> : null}
     </div>) : <p className="day-quiet">No shopping list yet. <Link to="/budget">Make one in Budget</Link> (Shopping) and it shows here.</p>}
-    <h3>Eating today</h3>
+    <h3>Eating {today ? 'today' : 'that day'}</h3>
     {home.meals.length ? <ul className="day-list">{home.meals.map((meal) => <li key={meal.id} className={meal.cooked ? 'is-done' : undefined}><span>{meal.name}</span><small>{MEAL_NAMES[meal.slot] ?? 'Meal'}{meal.cooked ? ' · eaten' : ''}</small></li>)}</ul>
-      : <p className="day-quiet">Nothing planned to eat today.{home.recipes ? '' : ' No recipes are saved yet.'}</p>}
+      : <p className="day-quiet">Nothing planned to eat.{home.recipes ? '' : ' No recipes are saved yet.'}</p>}
     <dl className="day-facts">
       <div><dt>At home</dt><dd>{home.stock.total ? <>{count(home.stock.total, 'thing')}<small>{home.stock.places.map((place) => `${place.place} ${place.count}`).join(' · ')}</small></> : 'Nothing recorded'}</dd></div>
       <div><dt>{home.budget ? formatCalendarDay(`${home.budget.month}-01`, { weekday: undefined, day: undefined, month: 'long' }) : 'This month'}</dt><dd>{home.budget ? <>{pounds(home.budget.totalPence)} budget<small><Link to="/budget">See what is left in My month</Link></small></> : 'No budget set'}</dd></div>
@@ -125,15 +130,24 @@ function HomePanel({ home }) {
 }
 
 function NotesPanel({ notes }) {
-  if (!notes.length) return <p className="day-quiet">No notes today. Write one in the line at the top; it is kept here and in the Ledger.</p>
+  if (!notes.length) return <p className="day-quiet">No notes were written this day. Choose Note in the line at the top; it is kept here and in the Ledger.</p>
   return <ul className="day-notes">{notes.map((note) => <li key={note.id}><time>{note.at}</time><p>{note.body || note.title}</p></li>)}</ul>
 }
+
+const ADD_KIND_KEY = 'life-os.today-add'
+function savedKind() { try { return window.localStorage.getItem(ADD_KIND_KEY) === 'note' ? 'note' : 'plan' } catch { return 'plan' } }
 
 export default function TodayView() {
   const today = useLondonToday()
   const clock = useLondonClock()
-  const calendar = useCalendar(addDays(today, -350), addDays(today, 14))
-  const day = useDay(today)
+  const [params, setParams] = useSearchParams()
+  // Today by default; any other day when the address names one (?date=2026-10-13).
+  const date = isDateKey(params.get('date') ?? '') ? params.get('date') : today
+  const isToday = date === today
+  const near = date >= addDays(today, -350) && date <= addDays(today, 14)
+  const calendar = useCalendar(near ? addDays(today, -350) : addDays(date, -7), near ? addDays(today, 14) : addDays(date, 14))
+  const day = useDay(date)
+  const [kind, setKind] = useState(savedKind)
   const [note, setNote] = useState('')
   const [noteState, setNoteState] = useState('')
   const [savingId, setSavingId] = useState('')
@@ -142,29 +156,59 @@ export default function TodayView() {
   const [showAllWeek, setShowAllWeek] = useState(false)
   const items = useMemo(() => filterCalendarItems(calendar.items, { choices: calendar.choices }), [calendar.items, calendar.choices])
   const groups = useMemo(() => todayGroups(items, today), [items, today])
-  const path = useMemo(() => buildDay({ items: groups.today, day: day.data, date: today, now: clock }), [groups.today, day.data, today, clock])
+  const open = useMemo(() => items.filter((item) => !isComplete(item)), [items])
+  const path = useMemo(() => buildDay({ items: open, day: day.data?.date === date ? day.data : null, date, now: isToday ? clock : '' }), [open, day.data, date, isToday, clock])
+  const adding = kind === 'note' && isToday ? 'note' : 'plan'
+  const plan = useMemo(() => parsePlan(note), [note])
+  const dayName = isToday ? 'today' : formatCalendarDay(date, { weekday: 'long' })
+  function show(next) { setParams(next === today ? {} : { date: next }) }
+  function choose(next) { setKind(next); try { window.localStorage.setItem(ADD_KIND_KEY, next) } catch { /* kept for this visit */ } }
   const dailyPoem = useMemo(() => poemForDate(new Date()), [today])
   const attention = showAllAttention ? groups.attention : groups.attention.slice(0, 6)
   const unavailable = (id) => day.data?.sources.find((source) => source.id === id && source.status === 'unavailable')?.error
   const loadingDay = day.loading && !day.data
 
-  async function saveNote(event) {
+  // One line adds to the day: a plan (with a clock time if one is typed, otherwise for any time
+  // that day) or a note. A plan is an ordinary Life OS entry, so it is also on the calendar.
+  async function saveLine(event) {
     event.preventDefault()
     const body = note.trim()
     if (!body || noteState === 'saving') return
+    let entry
+    if (adding === 'note') entry = { type: 'note', title: noteTitle(body), details: { body } }
+    else if (!plan.title) { setActionError('Say what it is as well as when, for example “17:30 library”.'); return }
+    else if (plan.start) {
+      const start = londonDateTime(date, plan.start)
+      if (!start) { setActionError('That clock time does not exist on this day (the clocks change). Try another time.'); return }
+      entry = { type: 'event', title: plan.title, start_at: start, ...(plan.end && londonDateTime(date, plan.end) ? { end_at: londonDateTime(date, plan.end) } : {}) }
+    } else entry = { type: 'task', title: plan.title, start_at: date, all_day: true }
     setNoteState('saving')
     setActionError('')
     try {
-      await apiFetch('/api/entries', { method: 'POST', body: JSON.stringify({ type: 'note', title: noteTitle(body), details: { body } }) })
+      await apiFetch('/api/entries', { method: 'POST', body: JSON.stringify(entry) })
       setNote('')
-      day.refetch()
+      if (adding === 'note') day.refetch()
+      else calendar.refetch()
       setNoteState('saved')
       window.setTimeout(() => setNoteState(''), 1500)
     } catch (error) {
-      setActionError(`The note was not saved: ${error.message}`)
+      setActionError(`Not saved: ${error.message}`)
       setNoteState('')
     }
   }
+
+  // Ticking off or taking off something she added herself. The entry is kept; only its status changes.
+  async function setEntryStatus(stop, status) {
+    if (savingId || !stop.entry) return
+    setSavingId(stop.key)
+    setActionError('')
+    try {
+      await apiFetch(`/api/entries/${encodeURIComponent(stop.entry.id)}`, { method: 'PATCH', body: JSON.stringify({ status, ...(stop.entry.revision === undefined ? {} : { revision: stop.entry.revision }) }) })
+      calendar.refetch()
+    } catch (error) { setActionError(`Could not change “${stop.title}”: ${error.message}`) }
+    finally { setSavingId('') }
+  }
+  const stopProps = { onDone: (stop) => setEntryStatus(stop, 'done'), onRemove: (stop) => setEntryStatus(stop, 'cancelled'), busy: Boolean(savingId) }
 
   async function completeTask(item) {
     if (savingId || item.area !== 'core' || item.meta?.type !== 'task' || !item.meta?.entryId) return
@@ -180,16 +224,30 @@ export default function TodayView() {
   }
 
   const listProps = { calendar, onComplete: completeTask, savingId }
-  return <section className="today-layout unified-today day-page" aria-label="Today">
+  return <section className="today-layout unified-today day-page" aria-label={isToday ? 'Today' : `The day of ${formatCalendarDay(date, { weekday: 'long' })}`}>
     <header className="ledger-header">
-      <div className="ledger-brandline"><h1>Today</h1><span /></div>
-      <div className="today-date-stack"><time dateTime={today}>{formatCalendarDay(today, { weekday: 'long', year: 'numeric' })}</time><p lang="fa" dir="rtl">{new Intl.DateTimeFormat('fa-IR-u-ca-persian', { timeZone: 'Europe/London', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}</p></div>
+      <div className="ledger-brandline"><h1>{isToday ? 'Today' : formatCalendarDay(date, { weekday: 'long', month: undefined, day: undefined })}</h1><span /></div>
+      <div className="today-date-stack"><time dateTime={date}>{formatCalendarDay(date, { weekday: 'long', year: 'numeric' })}</time><p lang="fa" dir="rtl">{new Intl.DateTimeFormat('fa-IR-u-ca-persian', { timeZone: 'Europe/London', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${date}T12:00:00Z`))}</p></div>
     </header>
+    <nav className="day-nav" aria-label="Choose a day">
+      <button type="button" onClick={() => show(addDays(date, -1))} aria-label="The day before">‹ {formatCalendarDay(addDays(date, -1), { weekday: 'short', month: undefined })}</button>
+      <button type="button" onClick={() => show(today)} aria-pressed={isToday}>Today</button>
+      <button type="button" onClick={() => show(addDays(date, 1))} aria-label="The day after">{formatCalendarDay(addDays(date, 1), { weekday: 'short', month: undefined })} ›</button>
+      <label>Go to<input type="date" value={date} onChange={(event) => { if (isDateKey(event.target.value)) show(event.target.value) }} /></label>
+    </nav>
 
-    <form className="day-note" onSubmit={saveNote}>
-      <label htmlFor="day-note-input">Note for today</label>
-      <input id="day-note-input" value={note} onChange={(event) => setNote(event.target.value)} placeholder="Write a note for today and press Enter" autoComplete="off" maxLength={2000} />
-      <button type="submit" disabled={!note.trim() || noteState === 'saving'}>{noteState === 'saving' ? 'Saving…' : noteState === 'saved' ? 'Saved' : 'Keep'}</button>
+    <form className="day-note" onSubmit={saveLine}>
+      <div className="day-add-kind" role="group" aria-label="What to add">
+        <button type="button" aria-pressed={adding === 'plan'} onClick={() => choose('plan')}>Plan</button>
+        <button type="button" aria-pressed={adding === 'note'} onClick={() => choose('note')} disabled={!isToday} title={isToday ? undefined : 'A note belongs to the day it is written'}>Note</button>
+      </div>
+      <input id="day-note-input" value={note} onChange={(event) => setNote(event.target.value)} aria-label={adding === 'note' ? 'A note for today' : `Something to do ${dayName}`}
+        placeholder={adding === 'note' ? 'Write a note for today and press Enter' : `Add to ${dayName}: “17:30 library”, “Lidl”, “dinner at 8pm”`} autoComplete="off" maxLength={2000} />
+      <button type="submit" disabled={!note.trim() || noteState === 'saving'}>{noteState === 'saving' ? 'Saving…' : noteState === 'saved' ? 'Saved' : adding === 'note' ? 'Keep' : 'Add'}</button>
+      {note.trim() ? <p className="day-add-hint">{adding === 'note' ? 'A note, kept on today and in the Ledger.'
+        : !plan.title ? 'Say what it is as well as when.'
+          : plan.start ? `“${plan.title}” at ${plan.start}${plan.end ? ` to ${plan.end}` : ''}, ${dayName}. It goes on the calendar too.`
+            : `“${plan.title}”, any time ${dayName}. Type a time (17:30, 5pm) to place it.`}</p> : null}
     </form>
     <CalendarStatus calendar={calendar} />
     {day.error ? <p className="form-error" role="alert">The day's details could not be loaded: {day.error} <button type="button" className="day-retry" onClick={day.refetch}>Try again</button></p> : null}
@@ -197,22 +255,22 @@ export default function TodayView() {
 
     <div className="day-grid">
       <section className="day-path" aria-labelledby="day-path-heading">
-        <header><h2 id="day-path-heading">Your day</h2><span>{clock}</span></header>
+        <header><h2 id="day-path-heading">{isToday ? 'Your day' : 'The day'}</h2><span>{isToday ? clock : daysAway(Math.round((Date.parse(`${date}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000))}</span></header>
         {calendar.loading || loadingDay ? <p className="day-quiet" role="status">Putting your day in order…</p> : <>
           {path.stops.length ? <ol className="day-stops">
             {path.stops.flatMap((stop, index) => [
               index === path.nowIndex && index > 0 && stop.when !== 'now' ? <NowLine key="now" clock={clock} /> : null,
-              <Stop key={stop.key} stop={stop} />,
+              <Stop key={stop.key} stop={stop} {...stopProps} />,
             ])}
             {path.nowIndex === -1 ? <NowLine key="now" clock={clock} label="Now · nothing else has a time today" /> : null}
           </ol>
-            : <p className="day-quiet">Nothing has a time today.</p>}
+            : <p className="day-quiet">Nothing has a time {isToday ? 'today' : 'that day'}. Add a plan in the line above.</p>}
           {path.anytime.length ? <>
-            <h3>Any time today</h3>
-            <ol className="day-stops day-anytime">{path.anytime.map((entry) => <Stop key={entry.key} stop={{ ...entry, start: '', end: '', kind: entry.kind ?? 'plan' }} />)}</ol>
+            <h3>Any time {isToday ? 'today' : 'that day'}</h3>
+            <ol className="day-stops day-anytime">{path.anytime.map((entry) => <Stop key={entry.key} stop={{ ...entry, start: '', end: '', kind: entry.kind ?? 'plan' }} {...stopProps} />)}</ol>
           </> : null}
           {path.also.length ? <>
-            <h3>Also today</h3>
+            <h3>Also {isToday ? 'today' : 'that day'}</h3>
             <ul className="day-also">{path.also.map((entry) => <li key={entry.key} style={{ '--item-accent': calendarArea(entry.area).tone }}><Link to={entry.href}>{entry.title}</Link><small>{calendarArea(entry.area).label}</small></li>)}</ul>
           </> : null}
         </>}
@@ -221,10 +279,10 @@ export default function TodayView() {
       <div className="day-panels">
         <div className="day-panel-column">
           <Panel title="Study" href="/study" open="Open Study hub" unavailable={unavailable('study')}>
-            {day.data?.study ? <StudyPanel study={day.data.study} /> : <p className="day-quiet">{loadingDay ? 'Loading…' : 'No semester is open.'}</p>}
+            {day.data?.study ? <StudyPanel study={day.data.study} label={isToday ? 'Today' : 'That day'} /> : <p className="day-quiet">{loadingDay ? 'Loading…' : 'No semester is open.'}</p>}
           </Panel>
           <Panel title="Home" href="/budget" open="Open Budget" unavailable={unavailable('home')}>
-            {day.data?.home ? <HomePanel home={day.data.home} /> : <p className="day-quiet">{loadingDay ? 'Loading…' : 'Nothing to show.'}</p>}
+            {day.data?.home ? <HomePanel home={day.data.home} today={isToday} /> : <p className="day-quiet">{loadingDay ? 'Loading…' : 'Nothing to show.'}</p>}
           </Panel>
         </div>
         <div className="day-panel-column">
@@ -238,7 +296,7 @@ export default function TodayView() {
       </div>
     </div>
 
-    <div className="day-later">
+    {isToday ? <div className="day-later">
       <section className="today-cross-area-panel" aria-labelledby="today-attention-heading">
         <div className="today-panel-title"><h2 id="today-attention-heading">Needs attention</h2><span>{calendarDisplay(calendar, { count: groups.attention.length }).countLabel}</span></div>
         <p className="today-section-note">Unfinished work from the past 350 days, and follow-ups, deadlines and renewals in the next fortnight.</p>
@@ -250,8 +308,8 @@ export default function TodayView() {
         {!calendar.loading ? <CalendarItems items={showAllWeek ? groups.week : groups.week.slice(0, 6)} showDate {...listProps} empty="No further dated plans in the coming week." /> : null}
         {!showAllWeek && groups.week.length > 6 ? <button className="ghost-pill compact-pill" type="button" onClick={() => setShowAllWeek(true)}>Show {groups.week.length - 6} more</button> : null}
       </section>
-    </div>
-    <div className="today-page-controls"><Link className="ghost-pill compact-pill" to="/calendar">Open calendar</Link><Link className="ghost-pill compact-pill" to="/ledger">Recent entries</Link><button className="ghost-pill compact-pill" type="button" onClick={() => { calendar.refetch(); day.refetch() }} disabled={calendar.loading}>Refresh</button></div>
+    </div> : null}
+    <div className="today-page-controls"><Link className="ghost-pill compact-pill" to={isToday ? '/calendar' : `/calendar?date=${date}`}>Open calendar</Link><Link className="ghost-pill compact-pill" to="/ledger">Recent entries</Link><button className="ghost-pill compact-pill" type="button" onClick={() => { calendar.refetch(); day.refetch() }} disabled={calendar.loading}>Refresh</button></div>
     <p className="today-section-note">Cardiff events show your saved plans and maybes from this browser. <Link to="/cardiff-life">Manage choices</Link>.</p>
     <footer className="ledger-poem" aria-label="Poem of the day"><div lang="fa" dir="rtl">{dailyPoem.lines.map((line, index) => <p key={index}>{line}</p>)}</div><small lang="fa" dir="rtl">{dailyPoem.poet}</small></footer>
   </section>

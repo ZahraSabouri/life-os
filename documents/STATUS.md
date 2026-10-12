@@ -8,10 +8,12 @@
 **Today, what works right now**
 - Top bar → Today. The day is a path in clock order with a "now" marker: classes, and the Study hub's study blocks, each opened to its card, steps and "done when". Under it: "Any time today", and one slim row for renewals and deadlines.
 - Beside it, four panels with real content: Study (days to the next test, cards done before it, today's cards), Jobs (saved jobs closing in the next seven days, interviews, follow-ups), Home (shopping list, today's meals, what is at home, the month's budget), Notes.
-- A note typed in the line at the top is kept for the day and in the Ledger.
+- The line at the top adds to the day: a plan ("17:30 library" goes at 17:30; "Lidl" is for any time) or a note. Her own plans have "Done" and "Take off the day".
+- The day before, the day after or any date opens the same page for that day; the calendar's day has "Open this day".
+- The calendar shows the Study hub's study blocks at their clock times.
 - Designed and checked in Modern, at laptop and phone width. Madder, Indigo and Paper draw it with their own boxes and type and are readable; their own designs of it are still to do.
 - **Light and dark:** in Modern the top bar has a Light/Dark button on every page; it turns the whole app dark, the Study hub, JobMap, Budget and Cardiff Life included. The other three styles keep their one look (her choice).
-- **Not yet:** ticking a step or a shopping item from Today (it opens the owning part instead); "Open in Study hub" does not open the card; job-application time is not on the day.
+- **Not yet:** ticking a study step or a shopping item from Today (it opens the owning part instead); "Open in Study hub" does not open the card (needs a Study hub rebuild); job-application time is not on the day; no shopping list exists.
 - **Everything still open is in `TODO.md`** (one list, by her objectives).
 
 Active brief: `briefs/stage-4b-one-look.md` (CP1 to CP3 done and live; her detailed check is next). Latest note on the look: `sessions/2026-10-09-claude-code-stage-4b-pages-and-court.md`.
@@ -41,7 +43,7 @@ Active brief: `briefs/stage-4b-one-look.md` (CP1 to CP3 done and live; her detai
 - The name is Study hub everywhere she sees it. Life & Admin, Admin & Dates, Job Hunt, the interview hub and Shopping are gone from the menus; their data is kept aside in the database.
 
 ## Exact next step
-000. `TODO.md`, in its order: section B next (study blocks on the calendar at their times; the card link; planning the day from Today; Today for any day), then C (shopping and meals). Brief: `briefs/stage-2b-my-day.md`.
+000. `TODO.md`, in its order: the rest of section B (the card link, with a Study hub rebuild when she is not in it; ticking a step from Today; job-application time once she has answered), then C (shopping and meals). Brief: `briefs/stage-2b-my-day.md`.
 00. The look: Xar's detailed check (she announced one), then what it lists.
 0. JobMap: the shared-workspace fix is live. Refresh both existing tabs once. Stars, archives, notes, stages, dates and preferences are shared; use each app's parity check after future changes. Read the connection before inspecting saved progress.
 1. Study hub: ask Xar to try the acceptance list at the end of the 7 October Study hub session note and collect what is wrong.

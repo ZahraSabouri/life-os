@@ -104,6 +104,12 @@ export function createHubStore({ pool, repository, clock = () => new Date(), log
     }
   }
 
+  // Only the plan (study blocks, schedule wording) of a semester.
+  async function plan(id) {
+    const saved = (await pool.query('SELECT plan FROM study.hub_workspaces WHERE semester_id = $1', [semesterId(id)])).rows[0]
+    return plain(saved?.plan) ? saved.plan : {}
+  }
+
   async function readState(id) {
     const semester = await semesterRow(id)
     const row = (await pool.query('SELECT revision, state, writer_id, written_at FROM study.hub_workspaces WHERE semester_id = $1', [semester.id])).rows[0]
@@ -271,5 +277,5 @@ export function createHubStore({ pool, repository, clock = () => new Date(), log
     }
   }
 
-  return Object.freeze({ semesters, semesterRow, workspace, readState, writeState, replaceWorkspace, updatePlan, project, appendEvent, importEvents, recentEvents, health, moduleRows })
+  return Object.freeze({ semesters, semesterRow, workspace, plan, readState, writeState, replaceWorkspace, updatePlan, project, appendEvent, importEvents, recentEvents, health, moduleRows })
 }

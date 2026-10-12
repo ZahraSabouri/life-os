@@ -1,4 +1,5 @@
 import { dateKey, isDateKey, itemOverlaps, londonDateTime } from '../../code/life-os/shared/calendar.js'
+import { expandScheduleRange } from '../../summer-rescue/src/utils/schedule.js'
 
 const inactive = new Set(['archived', 'cancelled', 'canceled', 'deleted', 'inactive', 'rescheduled'])
 const finished = new Set(['done', 'completed', 'complete', 'submitted', 'passed'])
@@ -14,7 +15,9 @@ function instant(value) {
   return Number.isFinite(+parsed) ? parsed.toISOString() : ''
 }
 
-export function mapNativeStudy(workspace, from, to) {
+// `plans`: each open semester's Study hub plan ({ semesterId, plan }). Its study blocks are
+// the hours set aside for a card, so they go on the calendar at their clock times.
+export function mapNativeStudy(workspace, from, to, plans = []) {
   if (!isDateKey(from) || !isDateKey(to) || from > to) throw new Error('Choose valid inclusive calendar dates')
   const semesters = new Map(rows(workspace?.semesters).map(row => [row.id, row]))
   const modules = new Map(rows(workspace?.modules).map(row => [row.id, row]))
@@ -42,12 +45,41 @@ export function mapNativeStudy(workspace, from, to) {
     }
     if (itemOverlaps(item, from, to)) output.push(item)
   }
+  // Study blocks first: a card with blocks is shown by them, at the hours it is worked on.
+  const cardsByHubId = new Map(rows(workspace?.cards).filter(card => card.id && card.data?.hubCardId).map(card => [`${card.semester_id}\0${card.data.hubCardId}`, card]))
+  const blockDays = new Map()
+  for (const entry of rows(plans)) {
+    const semester = semesters.get(entry?.semesterId)
+    if (!semester || !activeParent(semester)) continue
+    for (const day of expandScheduleRange(rows(entry.plan?.scheduleRules), rows(entry.plan?.scheduleExceptions), from, to)) {
+      for (const block of day.blocks) {
+        const card = [block.cardId, ...rows(block.cardIds)].filter(Boolean).map(id => cardsByHubId.get(`${semester.id}\0${id}`)).find(Boolean) ?? null
+        if (card && (!visible(card) || complete(card))) continue
+        const start = londonDateTime(day.date, block.start), end = londonDateTime(day.date, block.end)
+        if (!start || !end || Date.parse(end) <= Date.parse(start)) continue
+        if (card) blockDays.set(card.id, (blockDays.get(card.id) ?? new Set()).add(day.date))
+        // The block on a card's due date is where the card falls due.
+        const due = card && (card.end_date || card.data?.due_date || card.data?.dueDate) === day.date
+        output.push({
+          id: `study:block:${semester.id}:${block.occurrenceId}`, area: 'study', kind: due ? 'deadline' : 'plan',
+          title: block.title, start, end, all_day: false,
+          href: card?.data?.hubCardId ? `/study#/today?card=${encodeURIComponent(card.data.hubCardId)}` : '/study#/schedule',
+          ...(block.location ? { location: block.location } : {}),
+          meta: { source: 'native-study', readonly: true, entity: 'blocks', type: 'study-block', semesterId: semester.id,
+            ...(card ? { cardId: card.id, recordId: card.id, moduleId: card.module_id, status: card.status } : {}) },
+        })
+      }
+    }
+  }
   for (const card of rows(workspace?.cards)) {
     if (!card.id || !visible(card) || complete(card)) continue
     const date = card.end_date || card.data?.due_date || card.data?.dueDate
-    // A card that starts and is due on the same day is one thing that day, not two.
+    const worked = blockDays.get(card.id)
+    // A card that starts and is due on the same day is one thing that day, not two; a card
+    // with study blocks starts where its first block is.
     const oneDay = !card.start_at && isDateKey(card.start_date) && card.start_date === date
-    if (!oneDay) add(card, 'cards', 'start', { date: card.start_date, at: card.start_at, kind: 'plan', type: 'study-plan', title: `Start · ${card.title || 'Study plan'}` })
+    if (!oneDay && !worked) add(card, 'cards', 'start', { date: card.start_date, at: card.start_at, kind: 'plan', type: 'study-plan', title: `Start · ${card.title || 'Study plan'}` })
+    if (worked?.has(date)) continue
     const dueTime = card.data?.dueTime || card.data?.due_time
     const configuredTime = dueTime && isDateKey(date) ? londonDateTime(date, dueTime) : ''
     const reminder = card.data?.kind === 'reminder' || rows(card.data?.tags).includes('date-watch')

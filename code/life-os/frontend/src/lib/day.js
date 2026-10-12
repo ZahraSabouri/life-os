@@ -32,15 +32,64 @@ export function daysAway(days) {
 
 const isCardItem = (item) => item.area === 'study' && item.meta?.entity === 'cards'
 
+// ---- "17:30 library", "Lidl", "dinner at 8pm": a plan typed in one line ----
+const pad = (value) => String(value).padStart(2, '0')
+
+function clockFrom(hour, minute, half) {
+  let h = Number(hour)
+  const m = Number(minute ?? 0)
+  if (half === 'pm' && h < 12) h += 12
+  if (half === 'am' && h === 12) h = 0
+  return h > 23 || m > 59 ? '' : `${pad(h)}:${pad(m)}`
+}
+
+// A clock time needs minutes after a colon ("17:30") or am/pm ("5pm", "7.15pm"), so "chapter 3.14"
+// and "read 20 pages" stay words.
+function times(text) {
+  const found = []
+  for (const match of text.matchAll(/(?<![\d:.])(\d{1,2})(?:([:.])(\d{2}))?\s*(am|pm)?(?![\d:])/gi)) {
+    const [whole, hour, separator, minute, meridiem] = match
+    const half = meridiem?.toLowerCase() ?? ''
+    if (!(separator === ':' || half)) continue
+    found.push({ index: match.index, end: match.index + whole.length, hour, minute, half })
+  }
+  return found
+}
+
+export function parsePlan(text) {
+  const value = String(text ?? '').trim().replace(/\s+/g, ' ')
+  const [first, second] = times(value)
+  if (!first) return { title: value, start: '', end: '' }
+  // "17:30-18:30", "5:30 to 6:30pm": a second time straight after the first is where it ends.
+  const between = second ? value.slice(first.end, second.index) : ''
+  const ranged = second && /^\s*(?:-|–|—|to|until|till)\s*$/i.test(between)
+  const start = clockFrom(first.hour, first.minute, first.half || (ranged && Number(first.hour) <= 12 ? second.half : ''))
+  if (!start) return { title: value, start: '', end: '' }
+  const finish = ranged ? clockFrom(second.hour, second.minute, second.half) : ''
+  const cut = ranged ? second.end : first.end
+  // The word that led to the time ("at", "@", "from") goes with it.
+  const before = value.slice(0, first.index).replace(/(?:^|\s)(?:at|@|from)\s*$/i, ' ')
+  const title = `${before} ${value.slice(cut)}`.replace(/\s+/g, ' ').replace(/^[\s,;:–—-]+|[\s,;:–—@-]+$/g, '').trim()
+  return { title, start, end: finish > start ? finish : '' }
+}
+
+// Something she added to the day herself (a core entry) can be ticked off or taken off the day there.
+function ownEntry(item) {
+  if (item.area !== 'core' || !item.meta?.entryId) return null
+  return { id: item.meta.entryId, task: item.meta.type === 'task', revision: item.meta.revision }
+}
+
 export function buildDay({ items = [], day = null, date, now = '' }) {
   const todays = items.filter((item) => itemOverlaps(item, date, date))
   const shown = new Set((day?.study?.today ?? []).map((card) => card.id))
   const stops = []
   for (const item of todays) {
-    if (item.all_day) continue
+    // Study blocks arrive with their cards in `day.blocks`; the calendar's copy of them is left out.
+    if (item.all_day || item.meta?.type === 'study-block') continue
     stops.push({
       key: item.id, type: 'item', start: clockOf(item.start), end: item.end ? clockOf(item.end) : '',
       title: item.title, area: item.area, kind: item.kind, place: shortPlace(item.location), href: item.href || '/calendar', choice: item.choice ?? '',
+      entry: ownEntry(item),
     })
   }
   for (const block of day?.blocks ?? []) {
@@ -67,7 +116,7 @@ export function buildDay({ items = [], day = null, date, now = '' }) {
     if (!item.all_day) continue
     // Today's study cards are drawn with their steps, so their bare calendar rows are left out.
     if (isCardItem(item) && shown.has(item.meta.recordId)) continue
-    const entry = { key: item.id, type: 'item', title: item.title, area: item.area, kind: item.kind, href: item.href || '/calendar' }
+    const entry = { key: item.id, type: 'item', title: item.title, area: item.area, kind: item.kind, href: item.href || '/calendar', entry: ownEntry(item) }
     if (item.area === 'core' || item.area === 'home') anytime.push(entry)
     else also.push(entry)
   }

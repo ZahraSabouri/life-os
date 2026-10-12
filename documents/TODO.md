@@ -7,7 +7,7 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 ## The order of work
 1. ~~E. Dark mode across the app~~ done 12 October (Modern, as she asked).
 2. ~~A. The study plan's leftovers~~ checked and recorded 12 October; two small items left.
-3. **B. The day reaches everything:** study blocks on the calendar, the card link, planning the day from Today, other days.
+3. **B. The day reaches everything:** done 12 October: study blocks on the calendar, planning the day from Today, other days. Next: the card link, ticking a step from Today, job-application time.
 4. **C. Shopping, meals and money on the day.**
 5. **D. The first pages.**
 6. **F, G, H** as they come up; none blocks her this month except backups.
@@ -36,10 +36,13 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 - [x] Today rebuilt: the day as a path in clock order with a "now" marker; Study, Jobs, Home and Notes beside it (12 October, Modern).
 - [x] One request that gathers a day's study blocks and the four panels (`/api/day`).
 - [x] A study card that starts and is due on one day shows once on the calendar.
-- [ ] **Study blocks on the Life OS calendar at their clock times.** Today they are in the hub's Schedule and on Today only; the calendar shows the card as an all-day line. This is the missing half of "connect Study hub to the calendar".
-- [ ] **"Open in Study hub" opens that card.** Now it lands on the view used last, and on "Which semester?" in a fresh browser.
-- [ ] **Plan the day from Today:** add something to do today, with or without a time ("library after class", "Lidl", "dinner"), and see it in the path. Today only takes a note. (Vision: effortless input. Inventory: "Day planning".)
-- [ ] **Today for any day:** yesterday, tomorrow, a chosen date, so tomorrow can be planned the evening before. The calendar's day opens it.
+- [x] **Study blocks on the Life OS calendar at their clock times** (12 October). A card with blocks is shown by them; the block on its due date carries the deadline; a card without blocks keeps its all-day line.
+- [ ] **"Open in Study hub" opens that card.** Now it lands on the view used last, and on "Which semester?" in a fresh browser. Needs a change inside the Study hub and a rebuild of it, at a moment she is not using it (a rebuild can break a hub tab that is open).
+- [x] **Plan the day from Today** (12 October): one line, Plan or Note. "17:30 library" is placed at 17:30, "Lidl" is for any time that day; a hint says what will be saved. Her own plans can be ticked off or taken off the day.
+- [x] **Today for any day** (12 October): the day before, today, the day after, or a date; the calendar's day has "Open this day".
+- [ ] Plans typed in words without a clock ("library after class") are kept as any-time plans. Placing them after a class, or by dragging, would be the next step in making input effortless.
+- [ ] Moving a plan to another time or day from Today (now: take it off and add it again, or edit it in the Ledger).
+- [ ] The line on the Court should be this same line, so there is one way to add things.
 - [ ] **Job-application time on the day.** Codex's plan keeps 3 hours a day in a file outside the app. **(Xar)** real calendar blocks she can move, or a daily target in the Jobs panel?
 - [ ] **Jobs panel as a work list:** the next jobs to apply for in JobMap's own priority order (closing dates first), not only closing dates; "applied" marked from Today; this week's count against a target.
 - [ ] Tick a step and mark a card done from Today, saved through the Study hub's own rules so an open hub tab loses nothing.
