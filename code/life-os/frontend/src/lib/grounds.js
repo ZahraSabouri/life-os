@@ -9,6 +9,25 @@ export const GROUND_SWATCHES = {
   modern: ['#f4f2ea', '#1f6f5e']
 }
 
+// Light or dark is chosen once for the whole app. A style lists the versions it has, its own
+// first; a style without the chosen one shows its own.
+export const MODE_KEY = 'life-os.mode'
+export const GROUND_MODES = { madder: ['dark'], indigo: ['dark'], paper: ['light'], modern: ['light', 'dark'] }
+
+export function readMode(storage) {
+  try {
+    const saved = storage?.getItem(MODE_KEY)
+    return saved === 'light' || saved === 'dark' ? saved : ''
+  } catch {
+    return ''
+  }
+}
+
+export function schemeFor(ground, mode) {
+  const modes = GROUND_MODES[ground] ?? GROUND_MODES[GROUNDS[0]]
+  return modes.includes(mode) ? mode : modes[0]
+}
+
 export function nextGround(ground) {
   return GROUNDS[(GROUNDS.indexOf(ground) + 1) % GROUNDS.length]
 }

@@ -106,6 +106,32 @@ html:not([data-life-os-ground]) {
   --m-shadow-lift: 0 14px 38px rgba(34, 48, 43, 0.13);
 }
 
+/* Modern, dark: the same design at night. Chosen with the light/dark button. */
+.app-shell[data-ground='modern'][data-mode='dark'],
+html[data-life-os-ground='modern'][data-life-os-mode='dark'] {
+  --m-bg: #121916;
+  --m-surface: #161f1b;
+  --m-card: #1b2521;
+  --m-sunken: #0e1412;
+  --m-ink: #e9ede6;
+  --m-muted: #a5b0a8;
+  --m-faint: #8d9890;
+  --m-line: #26322d;
+  --m-line-strong: #36453e;
+  --m-accent: #58b79f;
+  --m-accent-strong: #7fcdb8;
+  --m-accent-soft: #1d3a33;
+  --m-on-accent: #0c1512;
+  --m-green: #58b79f;
+  --m-scheme: dark;
+  --m-spark: #e39a73;
+  --m-blue: #84aede;
+  --m-red: #f0a091;
+  --m-amber: #e0b65f;
+  --m-sidebar: #151d19;
+  --m-shadow-lift: 0 14px 38px rgba(0, 0, 0, 0.5);
+}
+
 /* ============================ The design of each style ============================
    Colour is only part of a style. Each one also has its own type, its own way of drawing
    a box, a button, a label and the chosen item of a menu. These follow the Court page of
@@ -235,4 +261,10 @@ html:not([data-life-os-ground]) {
   --m-shadow: 0 1px 2px rgba(34, 48, 43, 0.05), 0 4px 14px rgba(34, 48, 43, 0.05);
   --m-shadow-strength: 1;
   --m-rule: 1px solid var(--m-line);
+}
+
+/* Modern, dark: depth comes from darker shadows; everything else is the Modern design. */
+.app-shell[data-ground='modern'][data-mode='dark'],
+html[data-life-os-ground='modern'][data-life-os-mode='dark'] {
+  --m-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 4px 14px rgba(0, 0, 0, 0.28);
 }

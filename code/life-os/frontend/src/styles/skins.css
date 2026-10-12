@@ -97,7 +97,7 @@
   --g-line: var(--m-line-strong);
   --g-panel: var(--m-card);
   --g-accsoft: color-mix(in srgb, var(--m-accent) 40%, transparent);
-  --g-shadow: rgba(34, 48, 43, 0.1);
+  --g-shadow: color-mix(in srgb, var(--m-ink) 12%, transparent);
   --g-danger: var(--m-red);
   --g-muted: var(--m-muted);
   --g-faint: var(--m-faint);
@@ -171,11 +171,11 @@
 .modern-capture .redesign-capture-tools label { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--m-muted); font: 600 0.8rem/1.2 var(--m-font); }
 .modern-capture select, .modern-capture input:not([type='checkbox']), .modern-capture .fields-form textarea {
   min-height: 2.25rem; padding: 0.35rem 0.6rem; border: 1px solid var(--m-line-strong); border-radius: var(--m-radius-sm);
-  background: var(--m-card); color: var(--m-ink); font: 500 0.88rem/1.3 var(--m-font); color-scheme: light;
+  background: var(--m-card); color: var(--m-ink); font: 500 0.88rem/1.3 var(--m-font); color-scheme: var(--m-scheme);
 }
 .modern-capture .redesign-submit {
   min-height: 2.35rem; padding: 0.5rem 1.1rem; border: 0; border-radius: var(--m-radius-sm);
-  background: var(--m-accent); color: #fff; font: 700 0.86rem/1.2 var(--m-font); cursor: pointer;
+  background: var(--m-accent); color: var(--m-on-accent); font: 700 0.86rem/1.2 var(--m-font); cursor: pointer;
 }
 .modern-capture .redesign-submit:disabled { opacity: 0.45; cursor: default; }
 .modern-capture .form-error { margin: 0; color: var(--m-red); font-size: 0.88rem; }
@@ -250,3 +250,23 @@ button.modern-room:hover { transform: translateY(-1px); border-color: var(--m-li
   .app-shell .subapp-screen > .court-topbar { padding-inline: 1rem; }
   .app-shell .court-screen.board-screen.subapp-screen { padding-top: 1.4rem; }
 }
+
+/* ---- Light and dark: one button on every page ---- */
+.app-shell .mode-switch {
+  display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer;
+}
+.app-shell .mode-switch-mark {
+  width: 0.85rem; height: 0.85rem; flex: none; border-radius: 50%; box-sizing: border-box;
+  border: 1.5px solid currentColor; background: linear-gradient(90deg, currentColor 0 50%, transparent 50% 100%);
+}
+.app-shell .mode-switch[data-scheme='dark'] .mode-switch-mark { background: currentColor; box-shadow: inset -0.28rem -0.1rem 0 0 var(--m-bg, var(--g-bg)); }
+.app-shell .mode-switch-label { width: auto; height: auto; border-radius: 0; background: none; }
+
+/* Modern, dark: the area colours that were fixed for a light page, and the browser's own controls. */
+.app-shell[data-ground='modern'] { color-scheme: var(--m-scheme); }
+.app-shell[data-ground='modern'][data-mode='dark'] {
+  --g-rose: #d58aa1;
+  --g-sage: #8fb382;
+  --g-deep: #0c1210;
+}
+.app-shell[data-ground='modern'] .calendar-explicit-capture input[type='date'] { color-scheme: var(--m-scheme); }

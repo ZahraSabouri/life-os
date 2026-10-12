@@ -87,7 +87,6 @@ const TYPE_ROOM_FALLBACKS = {
 }
 
 const FEATURED_ROOMS = ['study', 'career', 'body']
-const LIGHT_GROUNDS = ['paper', 'modern']
 const ROOM_ORDER = [
   'study', 'academia', 'career', 'growth', 'body', 'style',
   'relationships', 'travel', 'home', 'culture', 'memories', 'mind'
@@ -214,7 +213,7 @@ function roomSlugsForType(type) {
   return TYPE_ROOM_FALLBACKS[type] || ['mind']
 }
 
-function buildRoomModel(entries, ground) {
+function buildRoomModel(entries, scheme) {
   const counts = new Map(ROOMS.map((room) => [room.slug, 0]))
   const latest = new Map()
 
@@ -237,8 +236,8 @@ function buildRoomModel(entries, ground) {
       latest: latestEntry ? entryTitle(latestEntry) : ROOM_PRESENTATION[room.slug]?.latest || room.blurb,
       motif: ROOM_PRESENTATION[room.slug]?.motif || 'note',
       wing: ROOM_PRESENTATION[room.slug]?.wing || 'soul',
-      accent: ROOM_ACCENTS[room.slug]?.[LIGHT_GROUNDS.includes(ground) ? 'paper' : 'dark'] || room.accent,
-      style: { '--room-accent': ROOM_ACCENTS[room.slug]?.[LIGHT_GROUNDS.includes(ground) ? 'paper' : 'dark'] || room.accent }
+      accent: ROOM_ACCENTS[room.slug]?.[scheme === 'light' ? 'paper' : 'dark'] || room.accent,
+      style: { '--room-accent': ROOM_ACCENTS[room.slug]?.[scheme === 'light' ? 'paper' : 'dark'] || room.accent }
     }
   }).sort((left, right) => ROOM_ORDER.indexOf(left.slug) - ROOM_ORDER.indexOf(right.slug))
 }
@@ -1035,7 +1034,7 @@ function CourtStage({ children }) {
 
 export default function TheCourt() {
   const navigate = useNavigate()
-  const { ground } = useGround()
+  const { ground, scheme } = useGround()
   const [body, setBody] = useState('')
   const [entryType, setEntryType] = useState('note')
   const [detailsDraft, setDetailsDraft] = useState({})
@@ -1047,7 +1046,7 @@ export default function TheCourt() {
 
   const [now, setNow] = useState(() => new Date())
   const entryTypeOptions = useMemo(() => Object.entries(ENTRY_TYPES), [])
-  const rooms = useMemo(() => buildRoomModel(entries, ground), [entries, ground])
+  const rooms = useMemo(() => buildRoomModel(entries, scheme), [entries, scheme])
   const studyCount = useMemo(() => {
     return entries.filter((entry) => roomSlugsForType(entry.type).includes('study')).length
   }, [entries])

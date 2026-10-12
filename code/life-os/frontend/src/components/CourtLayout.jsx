@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useGround } from '../lib/groundContext.jsx'
+import ModeSwitch from './ModeSwitch.jsx'
 import StyleSwitch from './StyleSwitch.jsx'
 
 export default function CourtLayout() {
@@ -98,6 +99,7 @@ export default function CourtLayout() {
               JobMap
             </button>
             <StyleSwitch />
+            <ModeSwitch />
             <button type="button" onClick={goDivan}>Divan</button>
           </nav>
         </header>

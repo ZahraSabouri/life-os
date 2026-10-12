@@ -15,6 +15,8 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 - **How it is built:** the calendar already carried every area's dated things, so JobMap and the Study hub were connected to it; what was missing was their content. One read-only request (`/api/day`) gives the day's study blocks with their cards and the current content of Study, Jobs, Home and Notes; Today draws it. Acting from the day comes second: first read and open the owning part, then tick from the day through the owner's own save rules.
 - **Two agents on one request.** Codex was already entering the study plan when she gave me the same request; she asked us to cooperate. Codex kept the plan and the Study hub data; Claude Code took the day. The hand-over is `COORDINATION_2026-10-12.md`. Job-application time stays outside the Study hub (Codex, following her 6 October rule); where it lives is open.
 - Brief: `briefs/stage-2b-my-day.md`. "2b" because Today belongs to Stage 2 of the Roadmap.
+- **Dark mode is for Modern only** (Xar, later the same day: "we only need the dark mode for the modern skin"). One button in the top bar of every page and part; it shows in Modern. Madder, Indigo and Paper keep their single look. Light or dark is one choice for the whole app, kept apart from the style, so a future style can list two versions without new plumbing.
+- **One to-do list:** `documents/TODO.md`, written at her request from her words that day, the documents' aims and a walk through the app. `STATUS.md` says where things stand; `TODO.md` says what is left.
 
 ## 9 October 2026 — The ancient Court flows (Xar with Claude Code)
 

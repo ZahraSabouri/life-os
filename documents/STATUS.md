@@ -10,7 +10,9 @@
 - Beside it, four panels with real content: Study (days to the next test, cards done before it, today's cards), Jobs (saved jobs closing in the next seven days, interviews, follow-ups), Home (shopping list, today's meals, what is at home, the month's budget), Notes.
 - A note typed in the line at the top is kept for the day and in the Ledger.
 - Designed and checked in Modern, at laptop and phone width. Madder, Indigo and Paper draw it with their own boxes and type and are readable; their own designs of it are still to do.
-- **Not yet:** ticking a step or a shopping item from Today (it opens the owning part instead); "Open in Study hub" still stops at "Which semester?" unless "open the semester I used last" is ticked; job-application time is not on the day; the light/dark button everywhere.
+- **Light and dark:** in Modern the top bar has a Light/Dark button on every page; it turns the whole app dark, the Study hub, JobMap, Budget and Cardiff Life included. The other three styles keep their one look (her choice).
+- **Not yet:** ticking a step or a shopping item from Today (it opens the owning part instead); "Open in Study hub" does not open the card; job-application time is not on the day.
+- **Everything still open is in `TODO.md`** (one list, by her objectives).
 
 Active brief: `briefs/stage-4b-one-look.md` (CP1 to CP3 done and live; her detailed check is next). Latest note on the look: `sessions/2026-10-09-claude-code-stage-4b-pages-and-court.md`.
 
@@ -39,7 +41,7 @@ Active brief: `briefs/stage-4b-one-look.md` (CP1 to CP3 done and live; her detai
 - The name is Study hub everywhere she sees it. Life & Admin, Admin & Dates, Job Hunt, the interview hub and Shopping are gone from the menus; their data is kept aside in the database.
 
 ## Exact next step
-000. Today (`briefs/stage-2b-my-day.md`): CP3, acting from the day (card link straight into the card; tick a step and a shopping item, after a backup of both); then CP4, light and dark everywhere, Modern first. Three answers are needed from Xar first (below).
+000. `TODO.md`, in its order: section B next (study blocks on the calendar at their times; the card link; planning the day from Today; Today for any day), then C (shopping and meals). Brief: `briefs/stage-2b-my-day.md`.
 00. The look: Xar's detailed check (she announced one), then what it lists.
 0. JobMap: the shared-workspace fix is live. Refresh both existing tabs once. Stars, archives, notes, stages, dates and preferences are shared; use each app's parity check after future changes. Read the connection before inspecting saved progress.
 1. Study hub: ask Xar to try the acceptance list at the end of the 7 October Study hub session note and collect what is wrong.
@@ -54,7 +56,7 @@ Active brief: `briefs/stage-4b-one-look.md` (CP1 to CP3 done and live; her detai
 To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-test.mjs` (makes `lifeos_test` a copy of the live Study data); build the Study hub with `--outDir dist-hub`, the main app with `--outDir dist-next`, JobMap with `--outDir dist/client-next`; then `node .runtime/hub-dev/dev-server.mjs` (port 47860: the whole app on the test database, with JobMap and Budget on fresh copies of their data). Skin files (`hosting/skins/public`, `palettes.css`) are read on every page load, so a change there needs only a refresh.
 
 ## Waiting on Xar
-- Today: (1) job-application time as real calendar blocks, or as a daily target in the Jobs panel? (2) remove the Court's invented sample lines in the ancient styles? (3) light and dark for every style (a second version of Madder, Indigo and Paper), or Modern only for now?
+- Six questions gathered at the end of `TODO.md` (job-application time; the 13 kept-aside shopping items; the Court's invented lines and the agents' test entries; which page opens first; the two Today pages).
 - JobMap scheduled-search destination decided on 8 October: update both copies. The existing automation now requires delivery and separate import checks for both; its cadence is unchanged. No answer on its destination is pending.
 - Whether the Study hub stage can be merged into main ("nothing more on the Study Hub" on 7 October was not yet a formal acceptance).
 - Her check of the Study hub (acceptance list in the session note).
@@ -88,6 +90,8 @@ To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-t
 - Original app, untouched: `Documents\Apply\…\Summer_Rescue_Campaign_2026\summer-rescue-plan-app`.
 
 ## Last five sessions
+- 2026-10-12 Light and dark, the to-do list, the day's connections (2b CP3, CP4): `sessions/2026-10-12-claude-code-stage-2b-dark-and-connections.md`
+- 2026-10-12 Check of Codex's autumn study plan: `sessions/2026-10-12-claude-code-study-plan-check.md`
 - 2026-10-12 Today as the page to work from (2b CP1, CP2): `sessions/2026-10-12-claude-code-stage-2b-my-day.md`
 - 2026-10-12 JobMap shared saved workspace: `sessions/2026-10-12-codex-jobmap-shared-workspace.md`
 - 2026-10-12 JobMap search review, no new qualifying additions: `sessions/2026-10-12-codex-jobmap-search.md`

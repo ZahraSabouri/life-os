@@ -62,10 +62,14 @@ One page from which Xar runs her day. It shows the day in time order and lets he
 - [ ] Job-application time on the day (needs Xar's answer: see open questions).
 - **Done when:** a tick on Today is there when the owning part is opened, and the other way round.
 
-### CP4: Light and dark everywhere
-- [ ] One light/dark button in the top bar of every page and every part. Modern gets a dark version first.
-- [ ] The Study hub's own light/dark follows it (since 4b it follows the style and its own switch is hidden).
-- [ ] Each ancient style gets its second version (Madder and Indigo are dark by nature and need a light one; Paper is light and needs a dark one). These are designs, to be shown to Xar before they go live.
+### CP4: Light and dark everywhere (done 12 October)
+- [x] One light/dark button in the top bar of every page and every part (`ModeSwitch.jsx`). The choice is one saved value for the whole app (`life-os.mode`); a style lists the versions it has (`GROUND_MODES` in `lib/grounds.js`) and shows its own when it lacks the chosen one.
+- [x] Modern dark: one palette in `palettes.css`, plus the four fixed colours Modern had in `skins.css`. The framed parts get it through `hosting/skins/public/boot.js`, which now writes the chosen light or dark on their page as well as the style.
+- [x] The Study hub's own light/dark follows it (it reads the palette's `--m-scheme`).
+- [x] **Xar, 12 October: "we only need the dark mode for the modern skin."** No second version of Madder, Indigo or Paper; the button does not show in them.
+- **Verified:** on the try-out, every page and part looked at in Modern dark (Court, Today, Calendar, Ledger, Study hub's Today, Budget, JobMap, Cardiff Life); the button pressed while inside each part, both ways; the three other styles unchanged with dark chosen and no button; live after the build, pressed and reloaded. 13 tests (`hosting/skins/modes.test.mjs`, `recolor.test.mjs`).
+- **Not looked at in dark:** dialogs, drawers and deeper pages inside the parts.
+- **Commit:** `[2b-cp4] Light and dark: one button everywhere, Modern dark across every part`
 
 ### CP5: Today in Madder, Indigo and Paper
 - [ ] Each designed from that style's Court page (not a recolour), looked at by eye, shown to Xar.

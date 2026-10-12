@@ -92,9 +92,9 @@ function DivanRoute() {
 }
 
 function AppRoutes() {
-  const { ground } = useGround()
+  const { ground, scheme } = useGround()
   return (
-    <div className="app-shell" data-ground={ground}>
+    <div className="app-shell" data-ground={ground} data-mode={scheme}>
       <Routes>
         <Route path="/" element={<DivanRoute />} />
         <Route element={<CourtLayout />}>
