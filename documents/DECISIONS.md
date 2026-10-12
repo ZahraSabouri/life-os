@@ -4,6 +4,18 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 12 October 2026 — Today is the page to work from; the Court stays (Xar with Claude Code)
+
+- **Xar:** "I want a connection so I can access all of these from my day." "I'm not happy with any of the design versions' first pages." "We had some features like adding notes on the first pages that are now left alone."
+- **Her four answers** (asked with drawn options):
+  1. The Court stays as it is. **Today is rebuilt as the working page.** (My recommendation had been one first page replacing both; she chose to keep the Court.)
+  2. Layout: "a combo of this path + glance and your four panels". The day as a path in time order, each stop opening what it needs, with Study, Jobs, Home and Notes as four panels beside it.
+  3. "All four [styles] should be amazing in their own designing context but for now let's focus the most on Modern." And a **light/dark button everywhere in the app**, not only in the Study hub. This replaces the 8 October rule that light or dark follows the style.
+  4. Phone access and a responsive app are wanted, "not our priority yet". She will not use the app at the shop for now.
+- **How it is built:** the calendar already carried every area's dated things, so JobMap and the Study hub were connected to it; what was missing was their content. One read-only request (`/api/day`) gives the day's study blocks with their cards and the current content of Study, Jobs, Home and Notes; Today draws it. Acting from the day comes second: first read and open the owning part, then tick from the day through the owner's own save rules.
+- **Two agents on one request.** Codex was already entering the study plan when she gave me the same request; she asked us to cooperate. Codex kept the plan and the Study hub data; Claude Code took the day. The hand-over is `COORDINATION_2026-10-12.md`. Job-application time stays outside the Study hub (Codex, following her 6 October rule); where it lives is open.
+- Brief: `briefs/stage-2b-my-day.md`. "2b" because Today belongs to Stage 2 of the Roadmap.
+
 ## 9 October 2026 — The ancient Court flows (Xar with Claude Code)
 
 - **Xar:** "make it responsive and beautiful … it's okay if I have to scroll and also it'd be nice if I don't have to."

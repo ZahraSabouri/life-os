@@ -1,8 +1,17 @@
 # Life OS: status
 
-**Updated 9 October 2026 by Claude Code** (the look) and by Codex (JobMap search, priority and source parity; see session notes). Branch: `stage/4b-one-look` (cut from `stage/4a-jobmap-refresh`, which was cut from `stage/3-study-hub`); none pushed; main untouched. Calendar is complete. Study hub and JobMap are live. The look (sub-apps as parts of Life OS, every style a whole design) has had two passes and waits for Xar's detailed check.
+**Updated 9 October 2026 by Claude Code** (the look); JobMap search reviewed 12 October by Codex; tech-only correction completed 11 October (see session notes). Branch: `stage/4b-one-look` (cut from `stage/4a-jobmap-refresh`, which was cut from `stage/3-study-hub`); none pushed; main untouched. Calendar is complete. Study hub and JobMap are live. The look (sub-apps as parts of Life OS, every style a whole design) has had two passes and waits for Xar's detailed check.
 
 ## Now
+**Today, 12 October (Claude Code):** Today is rebuilt as the page to work from and is live. Brief: `briefs/stage-2b-my-day.md` (CP1 and CP2 done; CP3 next). Note: `sessions/2026-10-12-claude-code-stage-2b-my-day.md`. Codex entered the autumn study plan the same afternoon; the two were coordinated in `COORDINATION_2026-10-12.md`.
+
+**Today, what works right now**
+- Top bar → Today. The day is a path in clock order with a "now" marker: classes, and the Study hub's study blocks, each opened to its card, steps and "done when". Under it: "Any time today", and one slim row for renewals and deadlines.
+- Beside it, four panels with real content: Study (days to the next test, cards done before it, today's cards), Jobs (saved jobs closing in the next seven days, interviews, follow-ups), Home (shopping list, today's meals, what is at home, the month's budget), Notes.
+- A note typed in the line at the top is kept for the day and in the Ledger.
+- Designed and checked in Modern, at laptop and phone width. Madder, Indigo and Paper draw it with their own boxes and type and are readable; their own designs of it are still to do.
+- **Not yet:** ticking a step or a shopping item from Today (it opens the owning part instead); "Open in Study hub" still stops at "Which semester?" unless "open the semester I used last" is ticked; job-application time is not on the day; the light/dark button everywhere.
+
 Active brief: `briefs/stage-4b-one-look.md` (CP1 to CP3 done and live; her detailed check is next). Latest note on the look: `sessions/2026-10-09-claude-code-stage-4b-pages-and-court.md`.
 
 **The look, what works right now**
@@ -13,7 +22,9 @@ Active brief: `briefs/stage-4b-one-look.md` (CP1 to CP3 done and live; her detai
 - The ancient Court flows: it fills any window, folds to one column on a phone, grows with its content, and is enlarged on screens bigger than a laptop's. On a phone the top bar folds behind a Menu button. Today, Calendar and Ledger draw their items, tags and panels with each ancient style's design. A check of 152 pages (every view, four styles) found five legibility problems, all fixed.
 
 **JobMap, what works right now**
-- Both JobMap apps hold the same 1,064 source records and shared feature code (checked 9 October). My priority is the default: imminent deadlines first among current part-time possibilities, then personal priority and match, with a reason on every row. Dates, filters and Life OS styles are retained.
+- The 12 October public search and subsequent 122-message Gmail review found no new verified qualifying additions. Both interfaces remain at 1,066 jobs, shared revision 30. Three application updates are in `sessions/2026-10-12-codex-jobmap-email-accounts-review.md`; Cardiff Outlook, Student Futures and signed-in portals remain unchecked after a browser URL-policy stop.
+- Searches are tech/data only. On 11 October one Dataspire software role was imported into each copy; six previously identified off-field leads were archived and unsaved reversibly. Personal progress was preserved. Details: `sessions/2026-10-11-codex-jobmap-tech-scope.md`.
+- Both JobMap apps hold the same 1,066 source records and shared feature code (checked 12 October). My priority is the default: imminent deadlines first among current part-time possibilities, then personal priority and match, with a reason on every row. Dates, filters and Life OS styles are retained.
 - It holds the jobs and choices from both places JobMap was used (the standalone app and Life OS), each vacancy once.
 - It looks like the Study hub, and changes with the Style menu (Madder, Indigo, Paper, Modern) at once.
 
@@ -28,8 +39,9 @@ Active brief: `briefs/stage-4b-one-look.md` (CP1 to CP3 done and live; her detai
 - The name is Study hub everywhere she sees it. Life & Admin, Admin & Dates, Job Hunt, the interview hub and Shopping are gone from the menus; their data is kept aside in the database.
 
 ## Exact next step
+000. Today (`briefs/stage-2b-my-day.md`): CP3, acting from the day (card link straight into the card; tick a step and a shopping item, after a backup of both); then CP4, light and dark everywhere, Modern first. Three answers are needed from Xar first (below).
 00. The look: Xar's detailed check (she announced one), then what it lists.
-0. JobMap: both copies are imported, reconciled and rebuilt. Refresh either app to see the new My priority order; closing-today jobs lead. Keep future source/features aligned using each app's parity check. Personal stages, notes, priorities and preferences remain separate.
+0. JobMap: the shared-workspace fix is live. Refresh both existing tabs once. Stars, archives, notes, stages, dates and preferences are shared; use each app's parity check after future changes. Read the connection before inspecting saved progress.
 1. Study hub: ask Xar to try the acceptance list at the end of the 7 October Study hub session note and collect what is wrong.
 2. Add automated tests for `hosting/study/hub/` (store, card records, router, duplicate).
 3. Clean-up listed under "Known problems and limits".
@@ -42,6 +54,7 @@ Active brief: `briefs/stage-4b-one-look.md` (CP1 to CP3 done and live; her detai
 To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-test.mjs` (makes `lifeos_test` a copy of the live Study data); build the Study hub with `--outDir dist-hub`, the main app with `--outDir dist-next`, JobMap with `--outDir dist/client-next`; then `node .runtime/hub-dev/dev-server.mjs` (port 47860: the whole app on the test database, with JobMap and Budget on fresh copies of their data). Skin files (`hosting/skins/public`, `palettes.css`) are read on every page load, so a change there needs only a refresh.
 
 ## Waiting on Xar
+- Today: (1) job-application time as real calendar blocks, or as a daily target in the Jobs panel? (2) remove the Court's invented sample lines in the ancient styles? (3) light and dark for every style (a second version of Madder, Indigo and Paper), or Modern only for now?
 - JobMap scheduled-search destination decided on 8 October: update both copies. The existing automation now requires delivery and separate import checks for both; its cadence is unchanged. No answer on its destination is pending.
 - Whether the Study hub stage can be merged into main ("nothing more on the Study Hub" on 7 October was not yet a formal acceptance).
 - Her check of the Study hub (acceptance list in the session note).
@@ -51,7 +64,7 @@ To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-t
 
 ## Known problems and limits
 - **The look:** the page-by-page check measures legibility, not shapes; a box deep inside a part may still have the app's own corners or border in some style. Calendar and Ledger were not looked at by eye in each ancient style. On a laptop the ancient Court may scroll a little. Its own header has no links to the parts (they are reached through the room tiles).
-- **JobMap:** both copies have identical vacancy evidence and features; personal notes, shortlist choices and stages remain independent. The standalone keeps its blue look; Life OS uses the shared skins. Deadline urgency is based on saved dates, and uncertain availability is shown for checking.
+- **JobMap:** both interfaces share vacancy evidence and personal progress. The standalone keeps its blue look; Life OS uses the shared skins. A tab can select its own view/search/sort; it refreshes shared changes on idle/focus. The old Life OS progress file is historical. Deadline urgency uses saved dates, and uncertain availability is shown for checking.
 - **A browser tab opened before the switch cannot save.** Refresh it.
 - **Renaming a module** changes its title and menu name; cards keep the name it was created with in their Module field.
 - **Classes and assessments** show in the hub but are not yet editable there (the addresses exist, the screen does not). The 5 university reminders that belong to no semester are on the calendar, not in the hub.
@@ -66,7 +79,8 @@ To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-t
 - Separate, later work: sign-in, a backup copy off this laptop, the core's move to PostgreSQL, the import worker, PWA.
 
 ## Data
-- JobMap (`jobmap/data`, plain files): both copies have 980 original + 84 added = 1,064 records. Life OS revision 26; standalone revision 21 (verified 9 October). Pending search batches imported; parity check passes. Existing personal fields verified unchanged. Source reconciliation backups: standalone `data/recovery/source-parity-2026-10-09T10-28-49-337Z/` and automatic before-restore snapshot. Earlier pre-merge copy remains `../Life_OS_backups/jobmap-before-merge-2026-10-06T23-57-18-031Z/`.
+- University sources refreshed 11 October: 18 new material files and 8 caption TXT files in the existing Cardiff Autumn folder. New MAT022 test date (23 October) is saved in `.runtime/university-imports/2026-10-11/calendar-updates.json`; app import remains pending because Life OS was not running. Details: `sessions/2026-10-11-codex-university-materials-refresh.md`.
+- JobMap: one active standalone owning workspace, connected from both app data/workspace-connection.json files. Shared revision 30, 980 original + 86 added = 1,066 records. All original personal values preserved; Life OS historical progress (revision 41) untouched. Both inboxes empty and parity passes. Recovery snapshots and verification in each app data/recovery/shared-workspace-2026-10-12T11-07-20-272Z/. Details: sessions/2026-10-12-codex-jobmap-shared-workspace.md.
 - PostgreSQL (`lifeos`, schema `study`), live records: 2 semesters, 7 modules, 42 cards, 6 assessments, 81 sessions, 76 materials; 2 hub workspaces, 426 hub events. Removed and restorable: 132 cards, 7 modules, 219 materials (the stale July import and the 4 autumn cards that moved into the hub).
 - Summer 2026's workspace also keeps what is not study (`set_aside`): 133 cards, 100 schedule rules, the interview module, 6 notes, 13 shopping items.
 - The app's old saved file (`summer-rescue/local-data/summer-rescue-tracker-state.json`) is no longer read or written. Copy: `../Life_OS_backups/study-hub-switch-2026-10-07/`.
@@ -74,8 +88,9 @@ To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-t
 - Original app, untouched: `Documents\Apply\…\Summer_Rescue_Campaign_2026\summer-rescue-plan-app`.
 
 ## Last five sessions
+- 2026-10-12 Today as the page to work from (2b CP1, CP2): `sessions/2026-10-12-claude-code-stage-2b-my-day.md`
+- 2026-10-12 JobMap shared saved workspace: `sessions/2026-10-12-codex-jobmap-shared-workspace.md`
+- 2026-10-12 JobMap search review, no new qualifying additions: `sessions/2026-10-12-codex-jobmap-search.md`
+- 2026-10-11 University materials and captions: `sessions/2026-10-11-codex-university-materials-refresh.md`
+- 2026-10-11 JobMap tech-only search and correction: `sessions/2026-10-11-codex-jobmap-tech-scope.md`
 - 2026-10-09 JobMap priority and source parity: `sessions/2026-10-09-codex-jobmap-priority.md`
-- 2026-10-09 The look, second pass: `sessions/2026-10-09-claude-code-stage-4b-pages-and-court.md`
-- 2026-10-09 JobMap search (queued in both): `sessions/2026-10-09-codex-jobmap-search.md`
-- 2026-10-08 One look: `sessions/2026-10-08-claude-code-stage-4b-one-look.md`
-- 2026-10-08 JobMap maintenance: `sessions/2026-10-08-codex-jobmap-both-copies.md`

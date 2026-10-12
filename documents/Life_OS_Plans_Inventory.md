@@ -71,7 +71,7 @@ When Study, Career, Money, Home and Events become modules with their own tables,
 | View | Status | Notes |
 |---|---|---|
 | **Home** (the Court) | Built: 12 doors in four wings, three grounds, greeting, poem | Stage 1b: Today first, doors below, real data or honest empty states, wording review, Money and Events doors |
-| **Today** | Built: shared day/week/attention across attached apps, core task completion; visual acceptance pending | Stage 2: review; native providers grow as modules move |
+| **Today** | Built: shared day/week/attention across attached apps, core task completion. **12 October: rebuilt as the page to work from** (the day's path with study blocks and their cards; Study, Jobs, Home and Notes panels; a note line), live in Modern | Stage 2b (`briefs/stage-2b-my-day.md`): acting from the day, light and dark everywhere, the three other styles' designs |
 | **Day planning** | Idea | From the Vision: marking what a day is for (study day, free day) |
 | **Calendar** | Built: month/day/agenda, Persian/English dates, birthdays, attached providers, kinds and area switches; visual acceptance pending | Stage 3: native timetable recurrence. Later: week grid and an `.ics` feed out |
 | **Capture** | Partly: a form driven by the type registry | The type picker isn't grouped by room yet. AI capture is Parked |

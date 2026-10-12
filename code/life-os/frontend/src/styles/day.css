@@ -1,0 +1,158 @@
+/* Today: the page to work from. The day as a path in time order, with Study, Jobs, Home and
+   Notes beside it. Drawn only with the shared style tokens (--m-* in palettes.css), so each
+   style gives it its own boxes, corners and type. */
+
+.day-page { width: min(94rem, 100%); gap: 1.15rem; margin-top: 1.75rem; }
+.day-page .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* A box, the way the chosen style draws one. */
+.day-note, .day-path, .day-panel {
+  background: var(--m-card-fill);
+  border: var(--m-card-outline);
+  border-top: var(--m-card-outline-top);
+  border-radius: var(--m-radius-lg);
+  box-shadow: var(--m-shadow);
+}
+
+/* ---- The note line ---- */
+.day-note { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.9rem; padding: 0.55rem 0.6rem 0.55rem 1.15rem; }
+.day-page .day-note label, .day-page :is(.day-path, .day-panel) h3, .day-page .day-facts dt, .day-page .day-done-when span {
+  color: var(--m-muted); font: 700 0.68rem/1.2 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase;
+}
+.day-note input { min-width: 0; border: 0; padding: 0.55rem 0; background: transparent; color: var(--m-ink); font: var(--m-text-weight) 1rem/1.4 var(--m-font); outline: none; }
+.day-note input::placeholder { color: var(--m-faint); }
+.day-note:focus-within { border-color: var(--m-accent); }
+.day-note button {
+  border: var(--m-primary-outline); border-radius: var(--m-radius-control); padding: 0.5rem 1.05rem; cursor: pointer;
+  background: var(--m-primary-bg); color: var(--m-primary-ink);
+  font: var(--m-control-weight) 0.85rem/1.2 var(--m-control-font); font-variant-caps: var(--m-control-caps); letter-spacing: var(--m-control-tracking);
+}
+.day-note button:disabled { opacity: 0.45; cursor: default; }
+.day-retry { border: 0; padding: 0.2rem; background: transparent; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; }
+
+/* ---- The two halves ---- */
+.day-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 1.15rem; align-items: start; }
+.day-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.15rem; align-items: start; }
+.day-panel-column { display: grid; gap: 1.15rem; min-width: 0; }
+.day-later { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; margin-top: 1rem; align-items: start; }
+
+.day-path, .day-panel { min-width: 0; padding: 1.2rem 1.35rem 1.3rem; }
+.day-path > header, .day-panel > header { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
+.day-path h2, .day-panel h2 { margin: 0; color: var(--m-ink); font: var(--m-heading-weight) 1.45rem/1.15 var(--m-display); letter-spacing: var(--m-heading-tracking); }
+.day-path > header span { color: var(--m-accent); font: 600 0.95rem/1 var(--m-num); font-variant-numeric: tabular-nums; }
+.day-panel > header a { color: var(--m-accent-strong); font: 600 0.8rem/1.2 var(--m-font); text-decoration: none; white-space: nowrap; }
+.day-panel > header a:hover, .day-page .day-list a:hover, .day-stop-title:hover, .day-also a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.day-path h3, .day-panel h3 { margin: 1.15rem 0 0.5rem; }
+.day-panel h3:first-child { margin-top: 0; }
+.day-quiet, .day-more, .day-unavailable { margin: 0.3rem 0 0; color: var(--m-muted); font-size: 0.88rem; line-height: 1.5; }
+.day-quiet a, .day-facts a, .day-card-foot a { color: var(--m-accent-strong); }
+.day-unavailable { color: var(--m-red); }
+.day-page .day-warn { color: var(--m-red); }
+
+/* ---- The path ---- */
+.day-stops { list-style: none; margin: 0; padding: 0; }
+.day-stop { display: grid; grid-template-columns: 3.3rem 1.1rem minmax(0, 1fr); column-gap: 0.7rem; }
+.day-stop-time { padding-top: 0.05rem; text-align: right; color: var(--m-ink); font: 600 0.92rem/1.35 var(--m-num); font-variant-numeric: tabular-nums; }
+.day-stop-time small { display: block; color: var(--m-faint); font-weight: 400; font-size: 0.78rem; }
+.day-stop-mark { position: relative; }
+.day-stop-mark::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--m-line-strong); transform: translateX(-50%); }
+.day-stop:first-child .day-stop-mark::before { top: 0.45rem; }
+.day-stop:last-child .day-stop-mark::before { bottom: auto; height: 0.45rem; }
+.day-stop:only-child .day-stop-mark::before { display: none; }
+.day-stop-mark::after { content: ''; position: absolute; left: 50%; top: 0.33rem; width: 0.6rem; height: 0.6rem; border-radius: 50%; transform: translateX(-50%); background: var(--m-card-fill); border: 2px solid var(--item-accent, var(--m-accent)); box-sizing: border-box; }
+.day-stop[data-kind='fixed'] .day-stop-mark::after { background: var(--item-accent, var(--m-accent)); }
+.day-stop-body { min-width: 0; padding-bottom: 1.05rem; }
+.day-stop:last-child .day-stop-body { padding-bottom: 0.1rem; }
+.day-stop-title { color: var(--m-ink); font: var(--m-title-weight) 1.02rem/1.35 var(--m-title-font); text-decoration: none; overflow-wrap: anywhere; }
+.day-stop-meta { display: flex; flex-wrap: wrap; gap: 0.15rem 0.6rem; margin: 0.2rem 0 0; color: var(--m-muted); font-size: 0.8rem; line-height: 1.4; }
+.day-stop-meta > span:first-child { color: var(--item-accent, var(--m-accent)); font-weight: 600; }
+.day-now-tag, .day-done-tag { padding: 0 0.45rem; border-radius: var(--m-radius-chip); font-weight: 700; font-size: 0.72rem; line-height: 1.55; }
+.day-now-tag { background: var(--m-accent); color: var(--m-on-accent); }
+.day-done-tag { background: var(--m-accent-soft); color: var(--m-accent-strong); }
+.day-stop.is-past { opacity: 0.55; }
+.day-stop.is-now .day-stop-mark::after { width: 0.8rem; height: 0.8rem; top: 0.23rem; background: var(--m-accent); border-color: var(--m-accent); box-shadow: 0 0 0 4px var(--m-accent-soft); }
+.day-stop.is-now .day-stop-time, .day-stop.is-next .day-stop-time { color: var(--m-accent-strong); }
+
+.day-now-line { display: grid; grid-template-columns: 3.3rem 1.1rem minmax(0, 1fr); column-gap: 0.7rem; align-items: center; margin: -0.35rem 0 0.7rem; color: var(--m-accent-strong); }
+.day-now-line span { text-align: right; font: 600 0.78rem/1 var(--m-num); font-variant-numeric: tabular-nums; }
+.day-now-line i { justify-self: center; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--m-accent); box-shadow: 0 0 0 4px var(--m-accent-soft); }
+.day-now-line b { display: flex; align-items: center; gap: 0.6rem; font: 700 0.68rem/1 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase; }
+.day-now-line b::after { content: ''; flex: 1; height: 1px; background: var(--m-accent); opacity: 0.45; }
+
+/* The card a study block belongs to, opened in place. */
+.day-card { margin-top: 0.6rem; padding: 0.75rem 0.9rem 0.8rem; border-radius: var(--m-radius); background: var(--m-sunken); }
+.day-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.day-steps li { display: grid; grid-template-columns: 1rem minmax(0, 1fr); column-gap: 0.6rem; align-items: start; color: var(--m-ink); font-size: 0.9rem; line-height: 1.45; }
+.day-steps li > small { grid-column: 2; color: var(--m-muted); }
+.day-items li { grid-template-columns: 1rem minmax(0, 1fr); }
+.day-items li > small { display: inline; grid-column: auto; }
+.day-tick { width: 0.95rem; height: 0.95rem; margin-top: 0.2rem; border: 1.5px solid var(--m-line-strong); border-radius: min(var(--m-radius-sm), 4px); box-sizing: border-box; background: var(--m-card-fill); }
+.day-steps li.is-done { color: var(--m-muted); text-decoration: line-through; text-decoration-color: var(--m-line-strong); }
+.day-steps li.is-done .day-tick { border-color: var(--m-accent); background: var(--m-accent) linear-gradient(45deg, transparent 44%, var(--m-on-accent) 45% 56%, transparent 57%) center / 60% 60% no-repeat; }
+.day-done-when { margin: 0.65rem 0 0; color: var(--m-muted); font-size: 0.86rem; line-height: 1.5; }
+.day-done-when span { margin-right: 0.45rem; }
+.day-card-foot { margin: 0.6rem 0 0; color: var(--m-muted); font-size: 0.8rem; }
+.day-card-foot a { margin-left: 0.5rem; font-weight: 600; text-decoration: none; }
+.day-card-foot a:hover { text-decoration: underline; }
+
+.day-also { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.day-also li { display: inline-flex; align-items: baseline; gap: 0.45rem; max-width: 100%; padding: 0.3rem 0.7rem; border: 1px solid var(--m-line); border-radius: var(--m-radius-chip); font-size: 0.82rem; line-height: 1.35; }
+.day-also li::before { content: ''; flex: none; align-self: center; width: 0.42rem; height: 0.42rem; border-radius: 50%; background: var(--item-accent, var(--m-accent)); }
+.day-also a { min-width: 0; color: var(--m-ink); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.day-also small { flex: none; color: var(--m-faint); font-size: 0.72rem; }
+
+/* ---- The four panels ---- */
+.day-figure { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 0.85rem; }
+.day-figure strong { min-width: 2.6rem; color: var(--m-accent-strong); font: var(--m-heading-weight) 2.5rem/1 var(--m-display); font-variant-numeric: tabular-nums; text-align: center; }
+.day-figure p { margin: 0; display: grid; gap: 0.15rem; }
+.day-figure b { color: var(--m-ink); font: var(--m-title-weight) 0.98rem/1.3 var(--m-title-font); }
+.day-figure span { color: var(--m-muted); font-size: 0.82rem; line-height: 1.4; }
+.day-progress { margin-top: 0.85rem; position: relative; padding-top: 0.6rem; }
+.day-progress::before, .day-progress > span { content: ''; position: absolute; left: 0; top: 0; height: 0.3rem; border-radius: 999px; }
+.day-progress::before { width: 100%; background: var(--m-sunken); }
+.day-progress > span { background: var(--m-accent); min-width: 0.3rem; }
+.day-progress p { margin: 0.25rem 0 0; color: var(--m-muted); font-size: 0.8rem; }
+.day-page .day-list { list-style: none; margin: 0; padding: 0; }
+.day-page .day-list li { display: grid; gap: 0.1rem; padding: 0.5rem 0; border-top: var(--m-rule, 1px solid var(--m-line)); }
+.day-page .day-list li:first-child { border-top: 0; padding-top: 0.1rem; }
+.day-page .day-list a, .day-page .day-list li > span { color: var(--m-ink); font: var(--m-title-weight) 0.92rem/1.35 var(--m-title-font); text-decoration: none; overflow-wrap: anywhere; }
+.day-page .day-list em { color: var(--m-muted); font-style: normal; font-weight: var(--m-text-weight); }
+.day-page .day-list small { color: var(--m-muted); font-size: 0.78rem; line-height: 1.4; }
+.day-page .day-list li.is-done a, .day-page .day-list li.is-done > span { color: var(--m-muted); font-weight: var(--m-text-weight); }
+.day-shopping + .day-shopping { margin-top: 0.9rem; }
+.day-shopping-name { margin: 0 0 0.5rem; display: grid; gap: 0.1rem; }
+.day-shopping-name b { color: var(--m-ink); font: var(--m-title-weight) 0.95rem/1.3 var(--m-title-font); }
+.day-shopping-name span { color: var(--m-muted); font-size: 0.78rem; }
+.day-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem; margin: 1.15rem 0 0; padding-top: 0.95rem; border-top: var(--m-rule, 1px solid var(--m-line)); }
+.day-facts div { min-width: 0; }
+.day-facts dd { margin: 0.3rem 0 0; color: var(--m-ink); font: var(--m-title-weight) 0.95rem/1.3 var(--m-title-font); }
+.day-facts dd small { display: block; margin-top: 0.15rem; color: var(--m-muted); font: var(--m-text-weight) 0.78rem/1.4 var(--m-font); }
+.day-notes { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+.day-notes li { display: grid; grid-template-columns: 2.9rem minmax(0, 1fr); gap: 0.6rem; align-items: baseline; }
+.day-notes time { color: var(--m-faint); font: 600 0.78rem/1.4 var(--m-num); font-variant-numeric: tabular-nums; }
+.day-notes p { margin: 0; color: var(--m-ink); font-size: 0.92rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* ---- Narrower windows: the panels drop under the path, then everything is one column ---- */
+@media (max-width: 1180px) {
+  .day-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .day-panels, .day-later { grid-template-columns: 1fr; }
+  /* One column in the order Study, Jobs, Home, Notes. */
+  .day-panel-column { display: contents; }
+  .day-panel-column:first-child .day-panel:last-child { order: 3; }
+  .day-panel-column:last-child .day-panel:first-child { order: 2; }
+  .day-panel-column:last-child .day-panel:last-child { order: 4; }
+  .day-now-line { grid-template-columns: 2.9rem 1rem minmax(0, 1fr); column-gap: 0.5rem; }
+  .day-note { grid-template-columns: minmax(0, 1fr) auto; padding-left: 0.9rem; }
+  .day-note label { display: none; }
+  .day-path, .day-panel { padding: 1rem 1rem 1.1rem; }
+  .day-stop { grid-template-columns: 2.9rem 1rem minmax(0, 1fr); column-gap: 0.5rem; }
+}
+
+/* Paper draws no boxes: a ruled line above each section instead. */
+.app-shell[data-ground='paper'] :is(.day-path, .day-panel, .day-note) { padding-left: 0; padding-right: 0; }
+.app-shell[data-ground='paper'] .day-card { background: transparent; border-left: 1px solid var(--m-line-strong); border-radius: 0; padding: 0.1rem 0 0.1rem 0.9rem; }
+
+/* The ancient styles' display serif draws 1 like the letter I; their figures are in the number face. */
+.app-shell:not([data-ground='modern']) .day-figure strong { font: 600 2.05rem/1 var(--m-num); }
