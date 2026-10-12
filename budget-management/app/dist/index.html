@@ -990,6 +990,10 @@ h1{font-size:clamp(1.9rem,3vw,2.5rem);line-height:1.2}h2{font-size:1.25rem}h3{fo
 @media(max-width:1100px){.remaining-list{grid-template-columns:1fr}}@media(max-width:520px){.remaining-card{padding:16px;gap:12px}.remaining-art{width:68px;height:68px;flex-basis:68px}.remaining-intro{padding:18px}.remaining-copy .inline-actions{margin-left:-80px;padding-top:8px}.remaining-copy .button{flex:1 1 44%;justify-content:center;text-align:center}}
 
 .original-plan{padding:24px}.reference-row{padding:18px 0;border-top:1px solid var(--line,#ddd)}.reference-row h3{margin:0 0 6px}.reference-row p{margin:6px 0}.reference-row small{display:block;margin-top:9px}.review-note{display:block;color:#78501a;line-height:1.5;margin:6px 0}
+
+.workflow-tools{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1rem}.food-plan-panel{margin-bottom:1rem;padding:1.2rem}.food-plan-panel h2,.prep-card h2{margin:0 0 .4rem}.food-budget{text-align:right;display:grid;gap:.25rem}.food-budget strong{font-size:1.8rem}.food-budget small{font-size:.8rem}.food-priorities,.prep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.8rem;margin:1rem 0}.food-priority{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem;border:1px solid var(--line,#d9dfd3);border-radius:var(--m-radius,12px)}.food-priority>div{display:grid;gap:.35rem;min-width:0}.food-priority small{line-height:1.4;overflow-wrap:anywhere}.food-priority.done{opacity:.65}.food-priority.done strong{text-decoration:line-through}.prep-card,.recipe-readiness{padding:1.2rem}.recipe-readiness .food-priority{margin:.6rem 0}.ingredient-link{grid-column:1/-1;display:grid;grid-template-columns:minmax(180px,1fr) auto;align-items:end;gap:.8rem}.prepared-summary{padding:1rem;border:1px solid var(--line,#d9dfd3);border-radius:var(--m-radius,12px)}.food-plan-panel ul{padding-left:1.3rem;line-height:1.7}@media(max-width:600px){.food-plan-panel .section-heading{align-items:start}.food-budget strong{font-size:1.4rem}.food-priorities,.prep-grid{grid-template-columns:1fr}.ingredient-link{grid-template-columns:1fr}.food-priority{gap:.5rem}}
+
+.payment-review{padding:1rem;margin-bottom:1rem}.payment-review .food-priority{margin:.6rem 0}
 </style></head><body><div id="root"></div><noscript>Please enable JavaScript to use your planner.</noscript><script id="planner-app">
 const e = React.createElement;
 const {useState,useEffect,useMemo} = React;
@@ -1943,7 +1947,7 @@ function autoPaySubscriptions(s,today=isoDate(new Date())){
 function subscriptionsDue(s,month,today=isoDate(new Date())){return s.subscriptions.filter(x=>!x.paused).flatMap(x=>subscriptionDates(x,month).filter(d=>d>today||x.auto===false).map(d=>({sub:x,date:d}))).sort((a,b)=>a.date.localeCompare(b.date));}
 function monthlyCost(x){return x.paused?0:x.interval==='yearly'?x.costPence/12:x.interval==='weekly'?x.costPence*52/12:x.costPence;}
 function convertQty(n,from,to){
-  if(from===to)return n;const units={g:['mass',1],kg:['mass',1000],ml:['volume',1],mL:['volume',1],L:['volume',1000],l:['volume',1000]};
+  if(unitKey(from)===unitKey(to))return n;const units={g:['mass',1],kg:['mass',1000],ml:['volume',1],mL:['volume',1],L:['volume',1000],l:['volume',1000]};
   return units[from]&&units[to]&&units[from][0]===units[to][0]?n*units[from][1]/units[to][1]:null;
 }
 function planMeal(s,d){
@@ -1954,11 +1958,12 @@ function planMeal(s,d){
     let left=ing.quantity*servings/recipe.servings;
     // Oil, sauces, spices: the recipe says how much, the cupboard never subtracts it. Just note a little was used.
     const fits=ingredientMatcher(s,ing);
-    const lasting=rows.filter(r=>r.remaining>0&&r.tracking==='level'&&(fits(r)||itemKey(r.name)===itemKey(ing.name)||wordsIn(ing.name,r.name))).sort(bottleOrder(d.date));
+    const directLasting=rows.filter(r=>r.remaining>0&&r.tracking==='level'&&fits(r));
+    const lasting=(directLasting.length?directLasting:rows.filter(r=>r.remaining>0&&r.tracking==='level'&&!ing.sourceIds?.length&&!ing.itemId&&!ing.typeId&&wordsIn(ing.name,r.name))).sort(bottleOrder(d.date));
     if(lasting.length){if(!touches.some(t=>t.sourceId===lasting[0].id))touches.push({sourceId:lasting[0].id,name:lasting[0].name,recipe:+(+left).toFixed(2)+' '+ing.unit});continue;}
     const candidates=rows.filter(r=>r.remaining>0&&r.tracking!=='level'&&r.tracking!=='durable'&&!r.scheduledDate&&fits(r)).sort(stockOrder(d.date));
     for(const r of candidates){const one=convertQty(1,r.unit,ing.unit);if(!one)continue;const free=r.remaining-reservedAmount(s,r.id,d.id)-reserved.filter(x=>x.sourceId===r.id).reduce((n,x)=>n+x.amount,0);const amount=Math.min(Math.max(0,free),left/one);if(amount>0){reserved.push({sourceId:r.id,amount:+amount.toFixed(6),unit:r.unit,name:r.name,...(r.availableMonth&&r.availableMonth>dateMonth(d.date)?{fromMonth:r.availableMonth}:{})});left-=amount*one;}}
-    if(left>1e-6)missing.push({...ing,quantity:+left.toFixed(6)});
+    if(left>1e-6&&!ing.optional)missing.push({...ing,quantity:+left.toFixed(6)});
   }
   for(const pick of d.stock||[]){
     let pool=rows.filter(r=>(pick.ids||[]).includes(r.id)&&r.remaining>0);
@@ -2227,6 +2232,7 @@ function priceHistory(s,item){
 }
 // Which stock rows fit a recipe ingredient: the exact product, any product of the same general type, or the same name.
 function ingredientMatcher(s,ing){
+  if(ing.sourceIds?.length)return r=>ing.sourceIds.includes(r.id);
   const idx=itemIndex(s),key=itemKey(ing.name),wanted=ing.typeId?typeDescendants(s,ing.typeId):null;
   return r=>{const item=(r.itemId&&s.items.find(i=>i.id===r.itemId))||idx.get(itemKey(r.name));
     if(ing.itemId)return item?.id===ing.itemId||(!item&&itemKey(r.name)===key);
@@ -2809,6 +2815,124 @@ function OriginalPlanReference({state:s}){
  return e('section',{className:'surface original-plan'},e('h2',null,'Your original plan & recorded usage'),e('p',{className:'muted'},'The amounts you gave us, alongside what remains from that stock. This is a reference: early use reduces what is left, and future purchases keep their own portions. Change the active plan in In my monthly plan.'),e(Input,{label:'Find in your original plan',value:query,onChange:setQuery,placeholder:'Chicken, pasta, supplies…'}),entries.map(p=>{const f=originalPlanFacts(s,p);return e('article',{className:'reference-row',key:p.id},e('h3',null,p.name),e('p',null,p.portions),e('p',{className:'muted'},p.schedule),e('div',{className:'share-chips'},e('span',null,'Originally '+displayQty(p.total,p.unit)),e('span',null,!f.rows.length?'Remaining not recorded':!f.same?'Portions changed — see What’s left':f.unmeasured?'Remaining amount not measured':displayQty(f.remaining,p.unit)+' left'),f.same&&f.used>0&&e('span',null,displayQty(f.used,p.unit)+' recorded used'),f.same&&f.early>0&&e('span',null,displayQty(f.early,p.unit)+' used before the planned month')),p.note&&e('small',{className:'muted'},p.note));}),!entries.length&&e('p',null,s.resourcePlanReference?'No matching items.':'No original plan reference saved.'));
 }
 
+/* Recipes, preparation and eating share the same stock ledger. */
+const basePlanMeal = planMeal, baseCookMeal = cookMeal, baseUneatMeal = uneatMeal, baseUsageLog = usageLog, baseWeeklyUsage = weeklyUsage;
+function preparedLots(s,id){return s.lots.filter(l=>l.mealId===id&&l.prepared);}
+planMeal = function connectedMealPlan(s,d){
+  if(!d.preparedFrom){
+    let next=basePlanMeal(s,d);
+    if(d.kind==='prep'&&d.id){const children=next.mealEntries.filter(m=>m.status==='planned'&&m.preparedFrom===d.id);need(children.reduce((n,m)=>n+m.servings,0)<=d.servings,'This batch needs enough portions for its linked meals.');for(const child of children)next=planMeal(next,child);}
+    return next;
+  }
+  need(d.preparedFrom!==d.id,'A meal cannot use itself as a prepared batch.');
+  const batch=s.mealEntries.find(m=>m.id===d.preparedFrom);
+  need(batch&&batch.kind==='prep'&&batch.status!=='skipped','Choose a preparation batch.');
+  need(d.date>=batch.date,'This meal is before its preparation batch.');
+  const lots=preparedLots(s,batch.id),n=positive(d.servings||1);
+  const planned=s.mealEntries.filter(m=>m.status==='planned'&&m.id!==d.id&&m.preparedFrom===batch.id).reduce((a,m)=>a+m.servings,0);
+  if(batch.status==='planned')need(planned+n<=batch.servings,'This batch does not make enough portions for these meals.');
+  const extra=(d.stock||[]).filter(p=>!(p.ids||[]).some(id=>s.lots.some(l=>l.id===id&&l.mealId===batch.id)));
+  const input={...d,recipeId:'',kind:'leftovers',servings:n,stock:[...(lots.length?[{name:lots[0].name,unit:'serving',amount:n,ids:lots.map(l=>l.id)}]:[]),...extra]};
+  const next=basePlanMeal(s,input);
+  return {...next,mealEntries:next.mealEntries.map(m=>m.id===(d.id||next.mealEntries.at(-1).id)?{...m,waitingForPrep:!lots.length}:m)};
+};
+cookMeal = function connectedMealConsumption(s,id,leftovers=0,force=false,options={}){
+  let m=s.mealEntries.find(x=>x.id===id);
+  need(m?.status==='planned','This meal is already completed.');
+  const date=options.date||m.date;need(validDate(date),'Choose a valid date.');
+  if(m.preparedFrom){
+    need(preparedLots(s,m.preparedFrom).length,'Prepare the linked batch first.');
+    s=planMeal(s,m);m=s.mealEntries.find(x=>x.id===id);
+    need(!m.missing.length,'There are not enough prepared portions left.');
+    need(!leftovers,'Eating prepared portions cannot create another batch.');
+  }
+  if(m.kind==='prep'&&!options.preparing)throw Error('Use “Prepare this batch” to cook it without marking it eaten.');
+  const expired=m.reservations.map(r=>stockRows(s).find(x=>x.id===r.sourceId)).filter(r=>r?.expiry&&r.expiryType==='use-by'&&r.expiry<date);
+  need(!expired.length,'Check the use-by date before using '+expired.map(r=>r.name).join(', ')+'.');
+  const before=new Set(s.lots.map(l=>l.id));
+  s={...s,mealEntries:s.mealEntries.map(x=>x.id===id?{...x,date}:x)};
+  let next=baseCookMeal(s,id,leftovers,force);
+  next={...next,lots:next.lots.map(l=>!before.has(l.id)&&l.mealId===id?{...l,prepared:true,preparedDate:date,location:options.location||'Fridge',expiry:options.expiry||'',expiryType:options.expiry?'use-by':'best-before',notes:'Prepared portions. Ingredients were used once when this batch was cooked. Storage date is entered by you.'}:l),mealEntries:next.mealEntries.map(x=>x.id===id?{...x,cookedDate:date,prepOnly:!!options.preparing}:x)};
+  if(options.preparing&&options.freezerServings){
+    const frozen=Number(options.freezerServings);need(Number.isInteger(frozen)&&frozen>0&&frozen<=leftovers,'Choose how many whole portions to freeze.');
+    next={...next,lots:next.lots.flatMap(l=>!before.has(l.id)&&l.mealId===id?[...(frozen<leftovers?[{...l,quantity:leftovers-frozen,remaining:leftovers-frozen,location:'Fridge'}]:[]),{...l,id:frozen<leftovers?uid('lot'):l.id,quantity:frozen,remaining:frozen,location:'Freezer',expiry:'',expiryType:'best-before'}]:[l])};
+  }
+  for(const meal of next.mealEntries.filter(x=>x.status==='planned'&&x.preparedFrom===id))next=planMeal(next,meal);
+  return next;
+};
+function prepareMeal(s,id,options={}){
+  const m=s.mealEntries.find(x=>x.id===id);need(m?.kind==='prep','Choose a meal-prep batch.');
+  need(!options.expiry||validDate(options.expiry)&&options.expiry>=(options.date||m.date),'Check the storage date.');
+  need(['Fridge','Freezer'].includes(options.location||'Fridge'),'Choose fridge or freezer.');
+  return cookMeal(s,id,m.servings,false,{...options,preparing:true});
+}
+function skipWorkflowMeal(s,id){
+  const meal=s.mealEntries.find(m=>m.id===id);need(meal?.status==='planned','This meal is already completed.');
+  return {...s,mealEntries:s.mealEntries.map(m=>m.id===id||meal.kind==='prep'&&m.preparedFrom===id&&m.status==='planned'?{...m,status:'skipped',reservations:[],touches:[]}:m)};
+}
+uneatMeal = function undoConnectedMeal(s,id){
+  const m=s.mealEntries.find(x=>x.id===id);need(m?.status==='cooked','This meal is not completed.');
+  const lots=s.lots.filter(l=>l.mealId===id);
+  need(!lots.some(l=>l.remaining<l.quantity),'Some prepared portions have already been used. Undo those meals first.');
+  let next={...s,mealEntries:s.mealEntries.map(x=>x.status==='planned'&&x.preparedFrom===id?{...x,reservations:[],stock:[],waitingForPrep:true}:x)};
+  next=baseUneatMeal(next,id);
+  return {...next,mealEntries:next.mealEntries.map(x=>x.id===id?{...x,prepOnly:false,cookedDate:undefined}:x)};
+};
+usageLog = function connectedUsageLog(s){
+  return baseUsageLog(s).map(x=>x.kind==='meal'&&s.mealEntries.find(m=>m.id===x.mealId)?.prepOnly?{...x,kind:'prep',action:'prepared'}:x);
+};
+weeklyUsage=function connectedWeeklyUsage(s,date){
+  const report=baseWeeklyUsage(s,date),prep=usageLog(s).filter(x=>x.kind==='prep'&&x.date>=report.start&&x.date<=report.end);
+  const events=[...report.events,...prep].sort((a,b)=>a.date.localeCompare(b.date));
+  return {...report,events,prepared:prep,activeDays:new Set(events.map(x=>x.date)).size,days:report.days.map(d=>({...d,events:events.filter(x=>x.date===d.date)}))};
+};
+function recordReceiptDraft(s,d,replaceId,pendingId){
+  if(!replaceId){const next=checkout(s,d);return pendingId?{...next,pendingPayments:(s.pendingPayments||[]).filter(x=>x.id!==pendingId)}:next;}
+  const old=s.receipts.find(r=>r.id===replaceId);need(old,'The payment being replaced is no longer here.');
+  need(old.lines.length===1&&old.lines[0].tracking==='none'&&!replaceId.startsWith('subscription-'),'Choose a simple payment estimate, not an itemised purchase or renewal.');
+  need(!blocked(removalImpact(s,{receiptId:replaceId})),'This payment has linked stock, use or money back. Edit it from its details.');
+  const audit={id:uid('reconciliation'),previousReceipt:clone(old),previousExpenses:clone(s.expenses.filter(x=>x.receiptId===replaceId)),replacementReceiptId:d.id};
+  const next=checkout(cancelReceipt(s,replaceId),d);
+  return {...next,receiptReconciliations:[...(s.receiptReconciliations||[]),audit]};
+}
+function recipeAvailability(s,r,date=isoDate(new Date())){
+  const d={id:'recipe-preview',recipeId:r.id,date,name:r.name,servings:r.servings};
+  const meal=planMeal(s,d).mealEntries.find(x=>x.id===d.id);
+  return {meal,ready:!meal.missing.length};
+}
+function moveFoodStock(s,ids,location,date=isoDate(new Date())){
+  need(validDate(date)&&['Fridge','Freezer','Cupboard'].includes(location),'Choose a place and date.');
+  const rows=stockRows(s).filter(r=>ids.includes(r.id)&&r.remaining>0);need(rows.length,'There is none left to move.');
+  const meta={...s.resourceMeta};for(const r of rows.filter(x=>x.source==='resource'))meta[r.id]={...meta[r.id],location};
+  return {...s,resourceMeta:meta,lots:s.lots.map(l=>ids.includes(l.id)&&l.remaining>0?{...l,location}:l),stockEvents:[...s.stockEvents,...rows.map(r=>({id:uid('event'),sourceId:r.id,date,action:'store',name:r.name,unit:r.unit,amount:null,note:'Moved to '+location}))]};
+}
+/* Pasted receipt text is a draft. No stock or spending changes until checkout. */
+function parseReceiptText(s,text){
+  const raw=String(text||'').split(/\r?\n/).map(l=>l.trim()).filter(Boolean),lines=[];
+  let paidPence=null,date='',merchant='',last=null;
+  for(let i=0;i<raw.length;i++){
+    const line=raw[i];
+    if(/\blidl\b/i.test(line))merchant='Lidl';
+    const dm=/\b(?:Date:\s*)?(\d{2})\/(\d{2})\/(\d{2}|\d{4})\b/.exec(line);
+    if(dm)date=(dm[3].length===2?'20'+dm[3]:dm[3])+'-'+dm[2]+'-'+dm[1];
+    if(/^TOTAL\s*[:£]?\s*(\d+\.\d{2})?$/i.test(line)){const v=line.match(/\d+\.\d{2}/)?.[0]||raw[i+1];if(/^\d+\.\d{2}$/.test(v||''))paidPence=pennies(v);continue;}
+    if(/^Price Cut$/i.test(line)&&last){const cut=/^-([\d]+\.\d{2})$/.exec(raw[i+1]||'');if(cut){last.grossPence-=pennies(cut[1]);last.offer=true;i++;}continue;}
+    const match=/^(.+?)\s+£?(\d+\.\d{2})\s*(?:[AB])?$/.exec(line);
+    const pipes=line.split('|').map(x=>x.trim());
+    if(!match&&pipes.length!==2)continue;
+    let name=pipes.length===2?pipes[0]:match[1],price=pipes.length===2?pipes[1]:match[2];
+    if(!name||/^(TOTAL|CARD|Amount|VAT|A |B |Date|SALE|TOTAL DISCOUNT)/i.test(name)||!/^\d+\.\d{2}$/.test(price))continue;
+    const multi=/\s+(\d+)\s*[x×]\s*£?\d+\.\d{2}\s*$/.exec(name),quantity=multi?Number(multi[1]):1;
+    if(multi)name=name.slice(0,multi.index).trim();
+    name=name.replace(/\s+\d{7}$/,'');
+    const item=itemIndex(s).get(itemKey(name)),filed=typeof classifyTypeId==='function'?classifyTypeId(s,name,'uncategorised'):'',cat=item?.categoryId||(filed&&typeof typeNode==='function'?typeNode(s,filed)?.categoryId:'')||'uncategorised';
+    last={key:uid('draftline'),name,quantity,unit:'pack',categoryId:cat,itemId:item?.id,grossPence:pennies(price),tracking:'none',bought:true,stockBasis:'purchase',location:'Cupboard'};lines.push(last);
+  }
+  need(lines.length,'No item lines found. Paste receipt text or use “name | line total”.');
+  need(lines.every(l=>l.grossPence>=0),'A line discount is larger than its price.');
+  return {merchant,date,paidPence:paidPence??lines.reduce((n,l)=>n+l.grossPence,0),lines:lines.map(l=>({...l,price:(l.grossPence/100).toFixed(2)}))};
+}
+
 
 const NAV = [['overview','home','Overview'],['planner','calendar','Meal planner'],['resources','box','Food & supplies'],['budget','wallet','Spending']];
 const ICONS = {
@@ -3289,7 +3413,7 @@ function CountMoney({value,className}){const v=useCountUp(value);return e('span'
 // One money-back payment can be split across several purchases; show it as the single payment it was.
 function groupedLedger(rows,s){if(s)return transactionRows(s,rows);const out=[],seen={};for(const x of rows){if(x.refund&&x.groupId&&seen[x.groupId]){const g=seen[x.groupId];g.amount=Math.round(g.amount*100+x.amount*100)/100;g.fors.push(x.forNote);continue;}const row=x.refund?{...x,fors:[x.forNote]}:x;if(x.refund&&x.groupId)seen[x.groupId]=row;out.push(row);}return out;}
 function LedgerRow({state:s,x,onOpen}){
- if(x.receiptTotal){const back=x.expenseIds.reduce((n,id)=>n+paidBackPence(s,id),0);return e('button',{type:'button',className:'plain-row receipt-row',onClick:()=>onOpen(x)},e('span',{className:'item-glyph'},e(Icon,{name:'bag'})),e('div',null,e('strong',null,x.note),e('small',null,prettyDate(x.date)+' · '+x.itemCount+' item lines · Itemised receipt')),e('span',{className:'row-amount'},e('b',null,money(x.amount)),e('small',null,'View receipt →'),back>0&&e('small',{className:'money-in'},pounds(back)+' back')));}
+ if(x.receiptTotal){const back=x.expenseIds.reduce((n,id)=>n+paidBackPence(s,id),0);return e('button',{type:'button',className:'plain-row receipt-row',onClick:()=>onOpen(x)},e('span',{className:'item-glyph'},e(Icon,{name:'bag'})),e('div',null,e('strong',null,x.note),e('small',null,prettyDate(x.date)+' · '+(s.receipts.find(r=>r.id===x.receiptId)?.lines.length===1&&s.receipts.find(r=>r.id===x.receiptId)?.lines[0].tracking==='none'?'Payment record':x.itemCount+' item lines · Itemised receipt'))),e('span',{className:'row-amount'},e('b',null,money(x.amount)),e('small',null,'View receipt →'),back>0&&e('small',{className:'money-in'},pounds(back)+' back')));}
 
  if(x.refund)return e('button',{type:'button',className:'plain-row moneyback-row',onClick:()=>onOpen(x)},e('span',{className:'item-glyph back-glyph'},e(Icon,{name:'back'})),e('div',null,e('strong',null,x.note),e('small',null,prettyDate(x.date)+(x.kind==='moneyback'?' · for '+x.fors.join(', '):''))),e('b',{className:'money-in'},'\u2212'+money(-x.amount)));
  const back=paidBackPence(s,x.id),place=placeOf(s,x);
@@ -3822,13 +3946,15 @@ function HistoryEditor({state:s,dialog:d,commit,onClose}){
 function PasteItems({state:s,commit,onClose}){const [text,set]=useState(''),[cat,setCat]=useState('uncategorised');return e(FormModal,{title:'Paste a list',onClose,onSubmit:()=>{const names=[...new Set(text.split(/\r?\n/).map(x=>x.replace(/^[-*•]\s*/, '').trim()).filter(Boolean))];need(names.length,'Add one item per line.');return commit(st=>names.reduce((next,name)=>next.items.some(i=>i.name.toLowerCase()===name.toLowerCase())?next:upsertItem(next,{name,categoryId:cat,tracking:'none',unit:'item',usual:true}),st),'Your list is saved in Usual buys');}},e('p',{className:'muted'},'One item per line. This builds your personal catalogue; it does not record spending or add stock.'),e(Textarea,{label:'Items',value:text,onChange:set,placeholder:'Toilet rolls\nSunflower oil\nSoy sauce',rows:10,required:true}),e(CategorySelect,{state:s,value:cat,onChange:setCat}));}
 function ReceiptEditor({state:s,dialog:d,selectedMonth,commit,onClose}){
  const list=s.lists.find(l=>l.id===d.listId),blank=()=>({key:uid('draftline'),name:'',quantity:1,unit:'pack',stockBasis:'purchase',categoryId:'uncategorised',tracking:'none',price:'',bought:true,location:'Cupboard'});
- const [id]=useState(()=>uid('receipt')),[photoBusy,setPhotoBusy]=useState(false),[photoErr,setPhotoErr]=useState(''),[form,set]=useDraft({photo:'',merchant:list?.merchant||d.merchant||'',date:d.date||(dateMonth(isoDate(new Date()))===selectedMonth?isoDate(new Date()):monthStart(selectedMonth)),place:'',channel:list?.channel||'in-store',paid:'',discount:'0',fee:'0',note:''}),[lines,setLines]=useState(()=>list?list.lines.filter(x=>x.status==='planned').map(x=>({...x,key:x.id,planLineId:x.id,stockBasis:'purchase',stockQuantity:'',stockUnit:'',bought:true,price:x.estimatePence==null?'':(x.estimatePence/100).toFixed(2),location:'Cupboard'})):[blank()]);
+ const [id]=useState(()=>d.receiptId||uid('receipt')),[photoBusy,setPhotoBusy]=useState(false),[photoErr,setPhotoErr]=useState(''),[form,set]=useDraft({photo:'',merchant:list?.merchant||d.merchant||d.prefill?.merchant||'',date:d.date||d.prefill?.date||(dateMonth(isoDate(new Date()))===selectedMonth?isoDate(new Date()):monthStart(selectedMonth)),place:'',channel:list?.channel||'in-store',paid:d.prefill?((d.prefill.paidPence||0)/100).toFixed(2):'',discount:'0',fee:'0',note:''}),[lines,setLines]=useState(()=>list?list.lines.filter(x=>x.status==='planned').map(x=>({...x,key:x.id,planLineId:x.id,stockBasis:'purchase',stockQuantity:'',stockUnit:'',bought:true,price:x.estimatePence==null?'':(x.estimatePence/100).toFixed(2),location:'Cupboard'})):d.prefill?.lines?.length?d.prefill.lines:[blank()]);
  function patch(key,k,v){setLines(rows=>rows.map(l=>l.key===key?{...l,[k]:v}:l));}
  const autoTrack=(name,cat,unit)=>category(s,cat).pool==='grocery'||STOCK_CATEGORIES.includes(cat)?suggestTracking(name,cat,unit):'none';
  function pick(key,name){const i=s.items.find(x=>x.name===name)||itemIndex(s).get(itemKey(name));setLines(rows=>rows.map(l=>l.key===key?{...l,name,...(i?{itemId:i.id,categoryId:i.categoryId,tracking:i.tracking==='none'?autoTrack(i.name,i.categoryId,'pack'):i.tracking==='measured'?'count':i.tracking,unit:['level','durable'].includes(i.tracking)?i.unit:'pack',stockBasis:'purchase',ownShop:i.shopId?(findShop(s,i.shopId)||{}).name||'':'',stockQuantity:'',stockUnit:''}:{itemId:undefined,...(l.trackingTouched?{}:{tracking:autoTrack(name,l.categoryId,l.unit)})})}:l));}
  const counted=lines.filter(l=>l.bought),known=counted.every(l=>l.price!==''),sum=counted.reduce((n,l)=>n+Math.round((Number(l.price)||0)*100),0)+Math.round((Number(form.fee)||0)*100)-Math.round((Number(form.discount)||0)*100),difference=form.paid===''?null:Math.round(Number(form.paid)*100)-sum;
- return e(FormModal,{title:list?'What did you buy?':'Record a purchase',wide:true,onClose,label:'Save paid receipt',onSubmit:()=>commit(st=>checkout(st,{id,photo:form.photo,date:form.date,merchant:form.merchant,channel:form.channel,note:form.note,place:form.place,discountPence:pennies(form.discount),feePence:pennies(form.fee),paidPence:pennies(form.paid),lines:counted.map(l=>({...l,quantity:positive(l.quantity),grossPence:pennies(l.price),offer:!!l.offer,regularPence:l.offer&&l.regular!=null&&l.regular!==''?pennies(l.regular):undefined,priceNote:l.offer?l.priceNote:''}))}),'Receipt saved · budget and stock updated together')},
+ return e(FormModal,{title:list?'What did you buy?':d.prefill?'Review pasted receipt':'Record a purchase',wide:true,onClose,label:'Save paid receipt',onSubmit:()=>commit(st=>recordReceiptDraft(st,{id,photo:form.photo,date:form.date,merchant:form.merchant,channel:form.channel,note:form.note,place:form.place,discountPence:pennies(form.discount),feePence:pennies(form.fee),paidPence:pennies(form.paid),lines:counted.map(l=>({...l,quantity:positive(l.quantity),grossPence:pennies(l.price),offer:!!l.offer,regularPence:l.offer&&l.regular!=null&&l.regular!==''?pennies(l.regular):undefined,priceNote:l.offer?l.priceNote:''}))},d.replaceReceiptId,d.pendingPaymentId),'Receipt saved · budget and stock updated together')},
+ d.replaceReceiptId&&e('p',{className:'confirmation-box'},'This replaces the original payment of '+pounds(s.receipts.find(r=>r.id===d.replaceReceiptId)?.paidPence||0)+'. It does not add a second payment.'),
  e(ShopFields,{d:form,set,state:s}),
+ d.prefill&&e('p',{className:'confirmation-box'},'Check categories and amounts. Stock starts off; choose what to keep at home for each line.'),
  e('div',{className:'receipt-photo'},form.photo?e('a',{href:'art/'+form.photo.split('/').map(encodeURIComponent).join('/'),target:'_blank',rel:'noreferrer',className:'receipt-thumb'},e(Art,{file:form.photo})):e('span',{className:'receipt-thumb empty'},e(Icon,{name:'bag',size:22})),e('div',null,e('strong',null,'Photo of the receipt (optional)'),e('div',{className:'inline-actions'},e('label',{className:'button small'+(photoBusy?' busy':'')},photoBusy?'Saving…':form.photo?'Change photo':'Add a photo',e('input',{type:'file',accept:'image/*',className:'sr-only',disabled:photoBusy,onChange:async ev=>{const file=ev.target.files?.[0];ev.target.value='';if(!file)return;setPhotoBusy(true);setPhotoErr('');try{set('photo',await uploadPhoto(file,'receipt-'+(form.merchant||'shop'),1800));}catch(x){setPhotoErr(x.message);}finally{setPhotoBusy(false);}}})),form.photo&&e(Btn,{small:true,onClick:()=>set('photo','')},'Remove')),photoErr&&e('p',{className:'error-box'},photoErr))),e('div',{className:'form-grid'},e(Input,{label:'Purchase date',type:'date',value:form.date,onChange:v=>set('date',v),required:true}),e(Input,{label:'Where (optional)',value:form.place,onChange:v=>set('place',v),placeholder:'Street or area'})),e('datalist',{id:'receipt-items'},s.items.map(i=>e('option',{key:i.id,value:i.name}))),e('div',{className:'receipt-lines'},lines.map((l,i)=>e('section',{className:'receipt-line',key:l.key},e('div',{className:'section-heading'},e('label',{className:'checkbox-label'},e('input',{type:'checkbox',checked:l.bought,onChange:ev=>patch(l.key,'bought',ev.target.checked)}),'Bought item '+(i+1)),e(Btn,{small:true,onClick:()=>setLines(rows=>rows.filter(x=>x.key!==l.key))},'Remove')),e('fieldset',{className:'form-fieldset form-stack',disabled:!l.bought},e('div',{className:'form-grid'},e(Input,{label:'Item name',value:l.name,onChange:v=>pick(l.key,v),list:'receipt-items',required:l.bought}),e(Input,{label:'Actual line total (£)',type:'number',min:0,step:'.01',value:l.price,onChange:v=>patch(l.key,'price',v),required:l.bought})),e('div',{className:'form-grid'},e(Input,{label:'Bought quantity',type:'number',min:'.000001',step:'any',value:l.quantity,onChange:v=>patch(l.key,'quantity',v),required:l.bought}),e(Input,{label:'Unit / pack',value:l.unit,onChange:v=>patch(l.key,'unit',v),required:l.bought})),e('div',{className:'offer-line'},e('label',{className:'checkbox-label'},e('input',{type:'checkbox',checked:!!l.offer,onChange:ev=>patch(l.key,'offer',ev.target.checked)}),'On offer'),l.offer&&e(Input,{label:'Normal price each (£, optional)',type:'number',min:0,step:'.01',value:l.regular??'',onChange:v=>patch(l.key,'regular',v)}),l.offer&&e(Input,{label:'Offer note (optional)',value:l.priceNote||'',onChange:v=>patch(l.key,'priceNote',v),placeholder:'Clubcard, 2 for £3…'})),e(CategorySelect,{state:s,value:l.categoryId,onChange:v=>setLines(rows=>rows.map(x=>x.key===l.key?{...x,categoryId:v,...(x.itemId||x.trackingTouched?{}:{tracking:autoTrack(x.name,v,x.unit)})}:x))}),e('details',null,e('summary',null,(l.tracking==='none'?'Not kept at home':'At home as: '+TRACKING.find(x=>x[0]===l.tracking)?.[1])+' · filed under '+(typeLabel(s,l.typeId||classifyTypeId(s,l.name,l.categoryId),' › ')||'nothing yet')),
     e(TypePicker,{state:s,value:l.typeId||classifyTypeId(s,l.name,l.categoryId)||'',onChange:v=>patch(l.key,'typeId',v),label:'What is it?'}),
     e(ShopInput,{state:s,label:'A shop’s own product? (optional)',value:l.ownShop!=null?l.ownShop:((ownLabelGuess(l.name)||{}).shop||''),onChange:v=>patch(l.key,'ownShop',v),placeholder:'Leave empty if any shop sells it',hint:(l.ownShop!=null?l.ownShop:((ownLabelGuess(l.name)||{}).shop||''))?'Only sold there · clear it if any shop sells this.':'Sold anywhere · name a shop only for its own range, like Morrisons Savers.'}),e(Select,{label:'Keep track at home as',value:l.tracking,onChange:v=>setLines(rows=>rows.map(x=>x.key===l.key?{...x,tracking:v,trackingTouched:true}:x)),options:TRACKING}),l.tracking!=='none'&&e(React.Fragment,null,e(Select,{label:'Stock for this purchase',value:l.stockBasis||'purchase',onChange:v=>patch(l.key,'stockBasis',v),options:[['purchase','Keep as bought'],['custom','Choose amount or portions']]}),l.stockBasis!=='custom'?e('p',{className:'muted'},displayQty(Number(l.quantity)||0,l.unit)+' will be added. You can change its portions later.') : e('div',{className:'form-grid'},e(Input,{label:'Total stock received',type:'number',min:'.000001',step:'any',value:l.stockQuantity??'',onChange:v=>patch(l.key,'stockQuantity',v),required:true,hint:'This purchase only: for example 6 eggs, 500 g or 5 portions.'}),e(Input,{label:'Stock unit',value:l.stockUnit||'',onChange:v=>patch(l.key,'stockUnit',v),required:true,placeholder:'egg, g, ml, portion…'})),e(Input,{label:'Store in',value:l.location||'Cupboard',onChange:v=>patch(l.key,'location',v)})))),!l.bought&&e('small',null,'Stays on your list for later.')))),e(Btn,{icon:'plus',onClick:()=>setLines(rows=>[...rows,blank()])},'Another item'),
@@ -3841,7 +3967,7 @@ function SpreadControl({state:s,receipt:r,commit,setErr}){
    e('small',null,n>1?'You paid '+pounds(r.paidPence)+' on '+prettyDate(r.date)+'. For budget planning, this cost is allocated from '+monthLabel(from)+'.':'The whole '+pounds(r.paidPence)+' counts against '+monthLabel(from)+'.')),
   e(Select,{label:'Count this shop over',value:String(n),onChange:v=>commit(st=>setReceiptSpread(st,r.id,Number(v)),'Spending spread updated').catch(x=>setErr(x.message)),options:[1,2,3,4,6,9,10,12,18,24].map(k=>[String(k),k===1?'Just its own month':k+' months'])}));
 }
-function ReceiptDetail(p){const {state:s,dialog:d,setDialog,commit,onClose}=p,r=s.receipts.find(x=>x.id===d.id),[err,setErr]=useState('');if(!r)return null;const shop=r.shopId?findShop(s,r.shopId):findShop(s,r.merchant);return e(Modal,{title:shopName(s,r)||r.merchant,kicker:prettyDate(r.date)+' · '+r.channel+(r.place?' · '+r.place:''),onClose},e('div',{className:'dialog-body form-stack'},e('div',{className:'receipt-head'},e('strong',{className:'detail-total'},pounds(r.paidPence)),shop&&e(Btn,{small:true,onClick:()=>setDialog({type:'shop-page',id:shop.id})},'Open '+shop.name)),r.sourceUrl&&/^https:\/\//.test(r.sourceUrl)&&e('a',{href:r.sourceUrl,target:'_blank',rel:'noreferrer',className:'text-link'},'Open original receipt'),r.photo&&e('a',{href:'art/'+r.photo.split('/').map(encodeURIComponent).join('/'),target:'_blank',rel:'noreferrer',className:'receipt-photo-view'},e(Art,{file:r.photo}),e('span',null,'Open the full photo')),r.lines.map(l=>e('button',{className:'plain-row',key:l.id,onClick:()=>setDialog({type:'expense-detail',id:l.id})},e('div',null,e('strong',null,l.name),e('small',null,l.quantity+' '+l.unit+' · '+category(s,s.expenses.find(x=>x.id===l.id)?.categoryId||l.categoryId).name+(l.offer?' · on offer'+(l.regularPence?' (normally '+pounds(l.regularPence)+')':''):''))),e('b',null,pounds(l.netPence)))),e('p',{className:'muted'},'Discount '+pounds(r.discountPence)+' · Charges '+pounds(r.feePence)),e(SpreadControl,{state:s,receipt:r,commit,setErr}),r.note&&e('p',null,r.note),r.lines.some(l=>l.categoryId==='too-good-to-go-bags')&&!r.unpacked&&e(Btn,{kind:'primary',onClick:()=>setDialog({type:'unpack',id:r.id})},'Unpack my surprise bag'),r.unpacked&&e(Badge,{tone:'green'},'Bag unpacked · cost recorded once'),e(ReceiptFacts,{state:s,receipt:r,commit,setErr,key:r.id+r.date+r.merchant+(r.place||'')}),e(ErrorMessage,{error:err}),e('details',null,e('summary',null,'Remove this receipt'),e('p',{className:'muted'},'For a real return, record a linked refund on the line instead. Remove the receipt when the purchase never happened, or open a line above to remove just that one.'),e(Btn,{kind:'danger',onClick:()=>{const extra=impactSentence(removalImpact(s,{receiptId:r.id}));if(!confirm('Remove this whole receipt and its stock?'+(extra?' '+extra:'')))return;commit(st=>cancelReceipt(st,r.id,true),'Receipt removed').catch(x=>setErr(x.message));}},'Remove this receipt'))),e(DialogFooter,{onClose,label:'Done'}));}
+function ReceiptDetail(p){const {state:s,dialog:d,setDialog,commit,onClose}=p,r=s.receipts.find(x=>x.id===d.id),[err,setErr]=useState('');if(!r)return null;const shop=r.shopId?findShop(s,r.shopId):findShop(s,r.merchant);return e(Modal,{title:shopName(s,r)||r.merchant,kicker:prettyDate(r.date)+' · '+r.channel+(r.place?' · '+r.place:''),onClose},e('div',{className:'dialog-body form-stack'},e('div',{className:'receipt-head'},e('strong',{className:'detail-total'},pounds(r.paidPence)),shop&&e(Btn,{small:true,onClick:()=>setDialog({type:'shop-page',id:shop.id})},'Open '+shop.name)),r.sourceUrl&&/^https:\/\//.test(r.sourceUrl)&&e('a',{href:r.sourceUrl,target:'_blank',rel:'noreferrer',className:'text-link'},'Open original receipt'),r.photo&&e('a',{href:'art/'+r.photo.split('/').map(encodeURIComponent).join('/'),target:'_blank',rel:'noreferrer',className:'receipt-photo-view'},e(Art,{file:r.photo}),e('span',null,'Open the full photo')),r.lines.length===1&&r.lines[0].tracking==='none'&&!r.id.startsWith('subscription-')&&e(Btn,{onClick:()=>setDialog({type:'paste-receipt',replaceReceiptId:r.id})},'Replace estimate with receipt'),r.lines.map(l=>e('button',{className:'plain-row',key:l.id,onClick:()=>setDialog({type:'expense-detail',id:l.id})},e('div',null,e('strong',null,l.name),e('small',null,l.quantity+' '+l.unit+' · '+category(s,s.expenses.find(x=>x.id===l.id)?.categoryId||l.categoryId).name+(l.offer?' · on offer'+(l.regularPence?' (normally '+pounds(l.regularPence)+')':''):''))),e('b',null,pounds(l.netPence)))),e('p',{className:'muted'},'Discount '+pounds(r.discountPence)+' · Charges '+pounds(r.feePence)),e(SpreadControl,{state:s,receipt:r,commit,setErr}),r.note&&e('p',null,r.note),r.lines.some(l=>l.categoryId==='too-good-to-go-bags')&&!r.unpacked&&e(Btn,{kind:'primary',onClick:()=>setDialog({type:'unpack',id:r.id})},'Unpack my surprise bag'),r.unpacked&&e(Badge,{tone:'green'},'Bag unpacked · cost recorded once'),e(ReceiptFacts,{state:s,receipt:r,commit,setErr,key:r.id+r.date+r.merchant+(r.place||'')}),e(ErrorMessage,{error:err}),e('details',null,e('summary',null,'Remove this receipt'),e('p',{className:'muted'},'For a real return, record a linked refund on the line instead. Remove the receipt when the purchase never happened, or open a line above to remove just that one.'),e(Btn,{kind:'danger',onClick:()=>{const extra=impactSentence(removalImpact(s,{receiptId:r.id}));if(!confirm('Remove this whole receipt and its stock?'+(extra?' '+extra:'')))return;commit(st=>cancelReceipt(st,r.id,true),'Receipt removed').catch(x=>setErr(x.message));}},'Remove this receipt'))),e(DialogFooter,{onClose,label:'Done'}));}
 function StockEditor({state:s,dialog:d,commit,onClose}){
  const old=s.lots.find(x=>x.id===d.id),pre=d.prefill||{};
  const [form,set,setForm]=useDraft(old?{...old,typeId:old.typeId||(old.itemId?s.items.find(i=>i.id===old.itemId)?.typeId:'')||''}:{name:pre.name||'',itemId:pre.itemId,typeId:pre.typeId||'',quantity:1,unit:pre.unit||'item',tracking:pre.tracking&&!['none'].includes(pre.tracking)?pre.tracking:'count',categoryId:pre.categoryId||'uncategorised',location:'Cupboard',expiry:'',expiryType:'best-before',notes:'',image:'',purchased:pre.purchased||'',merchant:pre.merchant||''});
@@ -3924,14 +4050,14 @@ function StockActions({state:s,dialog:d,selectedMonth:m,commit,setDialog,onClose
 function RecipeEditor({state:s,dialog:d,commit,onClose}){
  const old=s.recipes.find(x=>x.id===d.id),[form,set]=useDraft(old||{name:'',servings:2,minutes:'',steps:'',notes:'',source:'',image:'',infographic:''}),[rows,setRows]=useState(()=>old?.ingredients?.length?old.ingredients.map(i=>({...i,key:uid('ing'),quantity:String(i.quantity)})):[{key:uid('ing'),name:'',quantity:'',unit:'g'}]),[paste,setPaste]=useState('');
  return e(FormModal,{title:old?'Edit recipe':'New recipe',wide:true,onClose,onSubmit:()=>{
-  need(form.name.trim(),'Give the recipe a title.');const lines=rows.filter(r=>r.name.trim()).map(r=>{need(String(r.unit||'').trim(),'Give '+r.name+' a unit.');const x={name:r.name.trim(),quantity:positive(r.quantity),unit:String(r.unit).trim()};if(r.itemId)x.itemId=r.itemId;if(r.type)x.type=r.type;return x;});
+  need(form.name.trim(),'Give the recipe a title.');const lines=rows.filter(r=>r.name.trim()).map(r=>{need(String(r.unit||'').trim(),'Give '+r.name+' a unit.');const x={name:r.name.trim(),quantity:positive(r.quantity),unit:String(r.unit).trim()};if(r.itemId)x.itemId=r.itemId;if(r.typeId)x.typeId=r.typeId;if(r.sourceIds?.length)x.sourceIds=r.sourceIds;if(r.optional)x.optional=true;return x;});
   const recipe={...form,id:old?.id||uid('recipe'),servings:positive(form.servings),ingredients:lines};return commit(st=>({...st,recipes:old?st.recipes.map(x=>x.id===old.id?recipe:x):[...st.recipes,recipe]}),'Recipe saved');}},
  e(Input,{label:'Recipe title',value:form.name,onChange:v=>set('name',v),required:true}),e('div',{className:'form-grid'},e(Input,{label:'Makes (servings)',type:'number',min:1,step:1,value:form.servings,onChange:v=>set('servings',v),required:true}),e(Input,{label:'Time in minutes (optional)',type:'number',min:0,value:form.minutes,onChange:v=>set('minutes',v)})),e('fieldset',{className:'form-fieldset form-stack'},e('legend',{className:'mini-head'},'Ingredients'),e(IngredientRows,{state:s,rows,setRows}),e('details',null,e('summary',null,'Paste a list instead'),e(Textarea,{label:'One per line: name | amount | unit',value:paste,onChange:setPaste,placeholder:'Chicken breast | 2 | half-breast portion\nLinguine | 125 | g',rows:4}),e(Btn,{small:true,onClick:()=>{const add=paste.split(/\r?\n/).filter(x=>x.trim()).map(l=>{const [name,n,unit]=l.split('|').map(x=>(x||'').trim());return {key:uid('ing'),name,quantity:n||'',unit:unit||''};});setRows(rs=>[...rs.filter(r=>r.name.trim()),...add]);setPaste('');}},'Add these'))),e(Textarea,{label:'Steps (paste or type)',value:form.steps,onChange:v=>set('steps',v),rows:7}),e(Textarea,{label:'Notes / tags',value:form.notes,onChange:v=>set('notes',v)}),e(Input,{label:'Source / attribution (optional)',value:form.source,onChange:v=>set('source',v)}),e(ArtPicker,{value:form.image,onChange:v=>set('image',v)}),old&&e(Btn,{kind:'danger',onClick:()=>{if(confirm('Archive this recipe? Existing meal plans stay saved.'))commit(st=>({...st,recipes:st.recipes.map(r=>r.id===old.id?{...r,archived:true}:r)}),'Recipe archived').catch(()=>{});}},'Archive recipe'));
 }
 function pickDefault(g){if(g.row.tracking==='level')return null;if(g.row.tracking==='count')return 1;const sizes=g.rows.map(x=>x.remaining).filter(x=>x>0);return sizes.length?Math.min(...sizes):1;}
 function MealEditor({state:s,dialog:d,selectedMonth,commit,onClose}){
  const old=s.mealEntries.find(x=>x.id===d.id),recipe=s.recipes.find(x=>x.id===d.recipeId),today=isoDate(new Date());
- const [form,set]=useDraft(()=>old?{...old}:{date:d.date||monthStart(selectedMonth),slot:d.slot||'dinner',name:d.pick?titleName(d.pick.name):(d.name||recipe?.name||''),kind:recipe?'recipe':'note',recipeId:recipe?.id||'',servings:recipe?.servings||1,notes:''});
+ const [form,set]=useDraft(()=>old?{...old}:{date:d.date||(dateMonth(today)===selectedMonth?today:monthStart(selectedMonth)),slot:d.slot||'dinner',name:d.pick?titleName(d.pick.name):(d.name||recipe?.name||''),kind:recipe?'recipe':'note',recipeId:recipe?.id||'',servings:recipe?.servings||1,notes:''});
  const [picks,setPicks]=useState(()=>old?.stock?old.stock.map(x=>({...x})):d.pick?[{...d.pick,amount:d.pick.tracking==='level'?null:pickDefault({row:d.pick,rows:stockRows(s).filter(r=>d.pick.ids.includes(r.id))})}]:[]);
  const [query,setQuery]=useState(''),[eaten,setEaten]=useState(()=>!old&&(d.date||'')!==''&&d.date<today);
  function chooseRecipe(id){set('recipeId',id);const r=s.recipes.find(x=>x.id===id);if(r){set('name',r.name);set('servings',r.servings);set('kind','recipe');}else set('kind','note');}
@@ -4207,9 +4333,9 @@ function WeeklyHistory(p){
  );
 }
 function HistoryLine({x,setDialog,ingredient=false}){
- const group=historyGroup(x),t=usageText(x),label=group==='used'?'Used':group==='waste'?'Waste':group==='kept'?'Kept thing':group==='returns'?'Returned':'Bottle update';
+ const group=historyGroup(x),t=usageText(x),label=x.kind==='prep'?'Prepared':group==='used'?'Used':group==='waste'?'Waste':group==='kept'?'Kept thing':group==='returns'?'Returned':'Bottle update';
  const editable=x.kind==='stock'&&(x.id.startsWith('used-')||['use','waste','open','half','low','touch','finish'].includes(x.action));
- return e('div',{className:'history-line '+group+(ingredient?' ingredient':'')},e('span',{className:'history-kind'},label),e('div',{className:'history-line-copy'},e('strong',null,t.title),e('small',null,t.sub),x.note&&e('small',null,x.note)),editable&&e('button',{type:'button',className:'history-edit','aria-label':'Edit '+t.title+' on '+x.date,onClick:()=>setDialog({type:'event-edit',id:x.id})},'Edit'));
+ return e('div',{className:'history-line '+group+(ingredient?' ingredient':'')},e('span',{className:'history-kind'},label),e('div',{className:'history-line-copy'},e('strong',null,t.title),e('small',null,t.sub),x.note&&e('small',null,x.note)),editable&&e('button',{type:'button',className:'history-edit','aria-label':'Edit '+t.title+' on '+x.date,onClick:()=>setDialog({type:'event-edit',id:x.id})},'Edit'),x.kind==='prep'&&e(Btn,{small:true,onClick:()=>setDialog({type:'meal-detail',id:x.mealId})},'Open batch'));
 }
 function WeekSnapshot({state:s,month,go,setDialog}){
  const r=weeklyUsage(s,historyAnchor(month));
@@ -4392,11 +4518,12 @@ function IngredientRows({state:s,rows,setRows}){
  return e('div',{className:'ingredient-rows'},rows.map(r=>{
   const fits=r.name.trim()?ingredientMatcher(s,r):null,have=fits?stockRows(s).filter(x=>x.remaining>0&&fits(x)):[],level=have.some(x=>x.tracking==='level'),total=have.filter(x=>x.tracking!=='level').reduce((n,x)=>n+x.remaining,0);
   return e('div',{className:'ingredient-row',key:r.key},
-   e('div',{className:'ingredient-main'},e(Input,{label:'Ingredient',value:r.name,onChange:v=>patch(r.key,{name:v,itemId:undefined,typeId:undefined}),placeholder:'Pasta, chicken breast…',autoComplete:'off'}),
-    r.focus!==false&&!r.itemId&&!r.typeId&&e(ProductSuggestions,{state:s,query:r.name,onPick:i=>patch(r.key,{name:i.name,itemId:i.id,typeId:undefined,unit:r.unit||i.stockUnit||i.unit}),onPickType:t=>patch(r.key,{name:t.name,typeId:t.id,itemId:undefined})})),
+   e('div',{className:'ingredient-main'},e(Input,{label:'Ingredient',value:r.name,onChange:v=>patch(r.key,{name:v,itemId:undefined,typeId:undefined,sourceIds:undefined}),placeholder:'Pasta, chicken breast…',autoComplete:'off'}),
+    r.focus!==false&&!r.itemId&&!r.typeId&&!r.sourceIds?.length&&e(ProductSuggestions,{state:s,query:r.name,onPick:i=>patch(r.key,{name:i.name,itemId:i.id,typeId:undefined,unit:r.unit||i.stockUnit||i.unit}),onPickType:t=>patch(r.key,{name:t.name,typeId:t.id,itemId:undefined})})),
    e(Input,{label:'Amount',type:'number',min:'.000001',step:'any',value:r.quantity,onChange:v=>patch(r.key,{quantity:v})}),
    e(Input,{label:'Unit',value:r.unit,onChange:v=>patch(r.key,{unit:v}),placeholder:'g, ml, piece'}),
    e('button',{type:'button',className:'icon-button','aria-label':'Remove '+(r.name||'ingredient'),onClick:()=>setRows(rs=>rs.filter(x=>x.key!==r.key))},'×'),
+   e('div',{className:'ingredient-link'},e(Select,{label:'Link to cupboard stock',value:r.sourceIds?.length?r.sourceIds.join('|'):'',onChange:v=>{const ids=v.split('|').filter(Boolean),row=stockRows(s).find(x=>ids.includes(x.id));patch(r.key,{sourceIds:ids.length?ids:undefined,...(row&&row.tracking!=='level'?{unit:row.unit}:{})});},options:[['','Match by product or type'],...workflowStockGroups(s).map(g=>[g.ids.join('|'),g.name+' · '+displayQty(g.free,g.unit)])]}),e('label',{className:'checkbox-label'},e('input',{type:'checkbox',checked:!!r.optional,onChange:ev=>patch(r.key,{optional:ev.target.checked})}),'Optional')),
    r.name.trim()&&e('small',{className:'ingredient-status'+(have.length?' ok':'')},(r.itemId?'Your product · ':r.typeId?'Any '+String(typeNode(s,r.typeId)?.name||'').toLowerCase()+' · ':'')+(level?'long-lasting, at home':have.length?'at home: '+displayQty(+total.toFixed(2),have[0].unit):'not at home now')));
  }),e(Btn,{small:true,icon:'plus',onClick:()=>setRows(rs=>[...rs,blank()])},'Add ingredient'));
 }
@@ -4543,7 +4670,7 @@ MoneyV2 = function MoneyClarity(p) {
       e('section',{className:'balance-card '+(f.totalRemaining<0?'over-budget':'')},e('span',null,monthLabel(m)),e('h2',null,f.totalRemaining<0?'Over your allowance':'Left in this month’s budget'),e('strong',null,s.budgets[m]?money(Math.abs(f.totalRemaining)):'Not set'),e('p',null,money(f.baseTotal)+' allowance'+(f.carryIn?' − '+money(f.carryIn)+' earlier overspend':'')+' − '+money(f.totalSpent)+' counted this month'),shares.map(x=>e('p',{key:x.receipt.id,className:'sub-note'},x.shop+': '+pounds(x.pence)+' counted this month from '+pounds(x.receipt.paidPence)+' paid, allocated over '+x.receipt.spreadMonths+' months.')),f.carryOut>0&&e('small',null,carryForwardText(s,f))),
       e('section',{className:'surface payment-summary'},e('h2',null,'What actually happened'),
         [['Payments',pounds(paid)],['Money back',pounds(returned)],['Net cash paid',pounds(paid-returned)]].map(([label,value])=>e('div',{className:'summary-line',key:label},e('span',null,label),e('b',null,value))),
-        e('small',null,rows.filter(x=>!x.refund).length+' payments · '+rows.filter(x=>x.receiptTotal).length+' itemised receipts'))),
+        e('small',null,rows.filter(x=>!x.refund).length+' payments · '+rows.filter(x=>x.receiptTotal&&s.receipts.find(r=>r.id===x.receiptId)?.lines.some(l=>l.tracking!=='none')).length+' receipts with stock details'))),
     e('section',{className:'surface ledger-panel'},e(SectionTitle,{title:'Bills & receipts',note:'Recorded spending since 8 September. Entries without itemised receipts are labelled.',action:e('div',{className:'ledger-actions'},e(Btn,{icon:'back',onClick:()=>setDialog({type:'money-back'})},'Money back'),e(Btn,{kind:'primary',icon:'plus',onClick:()=>setDialog({type:'receipt'})},'Add payment'))}),
       rows.map(x=>e(LedgerRow,{key:x.id,state:s,x,onOpen:x=>setDialog(transactionDialog(x))})),!rows.length&&e('p',{className:'empty-copy'},'No payments recorded this month.')),
     e('details',{className:'surface quiet-details'},e('summary',null,'Spending calendar'),e(SpendingCalendar,{state:s,month:m,onAdd:date=>setDialog({type:'receipt',date}),onOpen:x=>setDialog(transactionDialog(x))})),
@@ -4637,5 +4764,107 @@ typeArt=function(s,node){
 };
 const previousAdoptArtwork=adoptNewArtwork;
 adoptNewArtwork=function(files){let count=previousAdoptArtwork(files);for(const f of files.filter(f=>f.startsWith('approved/Products/'))){const name=f.split('/').at(-1).replace(/\.(png|jpe?g|webp)$/i,''),key=artSlug(name);ITEM_ART[key]=[f];count++;}return count;};
+
+function workflowStockGroups(s){
+ const groups=new Map();for(const r of stockRows(s).filter(r=>r.remaining>0&&r.tracking!=='durable')){
+  const key=itemKey(r.name)+'|'+unitKey(r.unit);if(!groups.has(key))groups.set(key,{key,name:r.name,unit:r.unit,ids:[],free:0});
+  const g=groups.get(key);g.ids.push(r.id);g.free+=Math.max(0,r.remaining-reservedAmount(s,r.id));
+ }return [...groups.values()].sort((a,b)=>a.name.localeCompare(b.name));
+}
+const oldWorkflowDialog=ProductDialog, oldWorkflowMeals=MealsV2, oldWorkflowMoney=MoneyV2;
+ProductDialog=function workflowDialog(p){
+ const extra={'paste-receipt':PasteReceipt,'prep-plan':PrepPlan,'prepared-meal':PreparedMeal};
+ const C=extra[p.dialog.type];return C?e(C,p):e(oldWorkflowDialog,p);
+};
+function PasteReceipt({state:s,dialog:d,setDialog,onClose}){
+ const [raw,setRaw]=useState(''),[err,setErr]=useState('');
+ return e(Modal,{title:'Paste a receipt',onClose,wide:true},e('div',{className:'dialog-body form-stack'},
+  e('p',null,'Copy the item lines and total from your digital receipt. You can also paste one item per line as name | line total.'),
+  e(Textarea,{label:'Receipt text',value:raw,onChange:setRaw,rows:14,placeholder:'Eggs | 1.69\nHalloumi | 1.99'}),
+  e(ErrorMessage,{error:err}),e(Btn,{kind:'primary',onClick:()=>{try{setDialog({type:'receipt',replaceReceiptId:d.replaceReceiptId,prefill:parseReceiptText(s,raw)});}catch(x){setErr(x.message);}}},'Review items and total')),e(DialogFooter,{onClose,label:'Cancel'}));
+}
+MoneyV2=function workflowMoney(p){
+ const s=p.state,m=p.selectedMonth,pending=(s.pendingPayments||[]).filter(x=>x.month===m),simple=s.receipts.filter(r=>r.date.startsWith(m)&&r.lines.length===1&&r.lines[0].categoryId==='uncategorised'),total=pending.reduce((n,x)=>n+x.pence,0);
+ return e(React.Fragment,null,e('div',{className:'workflow-tools'},e(Btn,{icon:'plus',onClick:()=>p.setDialog({type:'paste-receipt'})},'Paste a receipt')),
+ (pending.length>0||simple.length>0)&&e('section',{className:'surface payment-review'},e('h2',null,'Payments to check'),pending.map(x=>e('div',{className:'food-priority',key:x.id},e('div',null,e('strong',null,(x.estimated?'About ':'')+pounds(x.pence)+' not recorded'),e('small',null,x.note)),e(Btn,{small:true,onClick:()=>p.setDialog({type:'receipt',pendingPaymentId:x.id,prefill:{paidPence:x.pence,lines:[{key:uid('draftline'),name:'',quantity:1,unit:'payment',categoryId:'uncategorised',tracking:'none',price:(x.pence/100).toFixed(2),bought:true,stockBasis:'purchase',location:'Cupboard'}]}})},'Complete payment'))),simple.map(r=>e('div',{className:'food-priority',key:r.id},e('div',null,e('strong',null,r.merchant+' · '+pounds(r.paidPence)+' recorded'),e('small',null,'Details or purchase date need checking.')),e(Btn,{small:true,onClick:()=>p.setDialog({type:'receipt-detail',id:r.id})},'Check payment'))),total>0&&e('p',{className:'muted'},'Estimated balance after these unrecorded payments: '+money(budgetFigures(s,m).totalRemaining-total/100)+'. They are not counted in the saved ledger yet.')),
+ e(oldWorkflowMoney,p));
+};
+function PrepPlan({state:s,dialog:d,selectedMonth:m,commit,onClose}){
+ const old=s.mealEntries.find(x=>x.id===d.id),today=isoDate(new Date()),[recipe,setRecipe]=useState(old?.recipeId||d.recipeId||''),r=s.recipes.find(x=>x.id===recipe);
+ const [date,setDate]=useState(old?.date||(dateMonth(today)===m?today:monthStart(m))),[servings,setServings]=useState(String(old?.servings||r?.servings||2));
+ return e(FormModal,{title:old?'Change meal prep':'Plan meal prep',onClose,label:'Save preparation batch',onSubmit:()=>{need(r,'Choose a recipe.');return commit(st=>planMeal(st,{...old,id:old?.id||uid('meal'),date,name:r.name,recipeId:r.id,servings:positive(servings),kind:'prep',slot:'dinner',notes:old?.notes||'Preparation batch; portions are eaten in linked meals.'}),'Batch planned · ingredients reserved');}},
+  e(Select,{label:'Recipe to prepare',value:recipe,onChange:v=>{setRecipe(v);setServings(String(s.recipes.find(x=>x.id===v)?.servings||2));},options:[['','Choose a recipe'],...s.recipes.filter(x=>!x.archived).map(x=>[x.id,x.name])]}),
+  e('div',{className:'form-grid'},e(Input,{label:'Preparation day',type:'date',value:date,onChange:setDate,required:true}),e(Input,{label:'Portions to make',type:'number',min:1,step:1,value:servings,onChange:setServings,required:true})),
+  e('p',{className:'muted'},'Preparing uses the ingredients once and adds ready portions. Plan meals from those portions with “Use a prepared batch”.'));
+}
+function PreparedMeal({state:s,dialog:d,selectedMonth:m,commit,onClose}){
+ const today=isoDate(new Date()),[batchId,setBatch]=useState(d.batchId||''),batch=s.mealEntries.find(x=>x.id===batchId);
+ const [date,setDate]=useState(dateMonth(today)===m?today:monthStart(m)),[slot,setSlot]=useState('dinner'),[n,setN]=useState('1'),[name,setName]=useState('');
+ return e(FormModal,{title:'Use a prepared batch',onClose,label:'Save meal from batch',onSubmit:()=>{need(batch,'Choose a batch.');return commit(st=>planMeal(st,{id:uid('meal'),preparedFrom:batch.id,name:name.trim()||batch.name,date,slot,servings:positive(n)}),'Meal linked · ingredients will not be used twice');}},
+  e(Select,{label:'Prepared or planned batch',value:batchId,onChange:setBatch,options:[['','Choose a batch'],...s.mealEntries.filter(x=>x.kind==='prep'&&x.status!=='skipped').map(x=>[x.id,x.name+' · '+prettyDate(x.date)])]}),
+  e(Input,{label:'Meal name (optional)',value:name,onChange:setName,placeholder:batch?.name||'Meal'}),
+  e('div',{className:'form-grid'},e(Input,{label:'Eating day',type:'date',value:date,min:batch?.date,onChange:setDate,required:true}),e(Select,{label:'Mealtime',value:slot,onChange:setSlot,options:SLOTS})),e(Input,{label:'Portions',type:'number',min:1,step:1,value:n,onChange:setN}),
+  e('p',{className:'muted'},'You can plan this before cooking. When the batch is prepared, its portions connect to this meal.'));
+}
+mealStatus=function workflowMealStatus(m){
+ if(m.status==='skipped')return 'Skipped';
+ if(m.status==='cooked')return m.prepOnly?'Prepared': 'Eaten';
+ if(m.kind==='prep')return m.missing?.length?m.missing.length+' ingredients to check':'Prep · '+m.servings+' portions';
+ if(m.waitingForPrep)return 'Waiting for batch';
+ if(m.missing?.length)return m.missing.length+' ingredients to check';
+ return m.reservations?.length||m.touches?.length?'Ingredients linked':'Planned';
+};
+const originalUsageText=usageText;
+usageText=function workflowUsageText(x){return x.kind==='prep'?{title:x.name,sub:'Prepared batch · ingredients used'}:originalUsageText(x);};
+const originalWorkflowHistoryEditor=HistoryEditor;
+HistoryEditor=function connectedHistoryEditor(p){const ev=p.state.stockEvents.find(x=>x.id===p.dialog.id);return ev?.mealId?e(MealDetail,{...p,dialog:{type:'meal-detail',id:ev.mealId}}):e(originalWorkflowHistoryEditor,p);};
+MealDetail=function workflowMealDetail({state:s,dialog:d,setDialog,commit,onClose}){
+ const meal=s.mealEntries.find(x=>x.id===d.id),[err,setErr]=useState(''),[left,setLeft]=useState('0'),[date,setDate]=useState(isoDate(new Date())),[location,setLocation]=useState('Fridge'),[expiry,setExpiry]=useState(''),[frozen,setFrozen]=useState('0');
+ if(!meal)return null;
+ const recipe=s.recipes.find(r=>r.id===meal.recipeId),batch=s.mealEntries.find(x=>x.id===meal.preparedFrom),lots=preparedLots(s,meal.id),run=(fn,msg)=>commit(fn,msg).catch(x=>setErr(x.message));
+ const items=[...meal.reservations.map(r=>({name:r.name,amount:displayQty(r.amount,r.unit),id:r.sourceId})),...(meal.touches||[]).map(t=>({name:t.name,amount:t.recipe||'Used some · amount not measured',id:t.sourceId}))];
+ return e(Modal,{title:meal.name,kicker:prettyDate(meal.date)+' · '+(meal.kind==='prep'?'Preparation':(SLOTS.find(x=>x[0]===meal.slot)||[,'Meal'])[1]),onClose,wide:true},e('div',{className:'dialog-body form-stack'},
+  e(Badge,{tone:meal.status==='cooked'?'green':''},mealStatus(meal)),meal.notes&&e('p',null,meal.notes),
+  batch&&e('div',{className:'confirmation-box'},e('strong',null,'From '+batch.name),e('p',null,meal.waitingForPrep?'Prepare the batch before eating this meal.':'This meal uses ready portions.'),e(Btn,{small:true,onClick:()=>setDialog({type:'meal-detail',id:batch.id})},'Open preparation batch')),
+  recipe?.steps&&e('details',{open:true},e('summary',null,'Recipe steps'),e('p',{className:'recipe-steps'},recipe.steps)),
+  items.length>0&&e('section',null,e('h3',null,meal.status==='cooked'?'Used from your stock':'Ingredients reserved'),items.map((x,i)=>e('div',{className:'summary-line',key:i},e('span',null,x.name),e('b',null,x.amount)))),
+  meal.missing.length>0&&e('section',{className:'confirmation-box'},e('h3',null,'Check these ingredients'),meal.missing.map((x,i)=>e('div',{className:'summary-line',key:i},e('span',null,x.name),e('b',null,displayQty(x.quantity,x.unit)))),e('p',null,'They may be at home with an unrecorded amount or another name.'),e('div',{className:'inline-actions'},recipe&&e(Btn,{onClick:()=>setDialog({type:'recipe',id:recipe.id})},'Link ingredients / amounts'),e(Btn,{onClick:()=>setDialog({type:'stock'})},'Add stock already at home'),e(Btn,{onClick:()=>run(st=>missingToList(st,meal.id),'Missing ingredients added to shopping')},'Add missing to shopping'))),
+  meal.status==='planned'&&e(React.Fragment,null,
+   e(Input,{label:meal.kind==='prep'?'Date prepared':'Date eaten',type:'date',value:date,onChange:setDate,required:true}),
+   meal.kind==='prep'?e(React.Fragment,null,e('div',{className:'form-grid'},e(Select,{label:'Store prepared portions in',value:location,onChange:setLocation,options:['Fridge','Freezer']}),e(Input,{label:'Storage/use-by date (from your label)',type:'date',value:expiry,onChange:setExpiry,min:date})),location==='Fridge'&&e(Input,{label:'Portions to freeze instead',type:'number',min:0,max:meal.servings,step:1,value:frozen,onChange:setFrozen}),e(Btn,{kind:'primary',disabled:!!meal.missing.length,onClick:()=>run(st=>prepareMeal(st,meal.id,{date,location,expiry,freezerServings:location==='Fridge'?Number(frozen)||0:0}),'Prepared · ingredients used once, portions added')},'Prepare this batch')):
+   e(React.Fragment,null,!meal.preparedFrom&&meal.servings>1&&e(Input,{label:'Portions saved for later',type:'number',min:0,max:meal.servings-1,step:1,value:left,onChange:setLeft}),e(Btn,{kind:'primary',disabled:meal.waitingForPrep||!!meal.missing.length,onClick:()=>run(st=>cookMeal(st,meal.id,Number(left)||0,false,{date}),'Eaten · stock and history updated')},'I ate this')),
+   e('div',{className:'inline-actions'},e(Btn,{onClick:()=>run(st=>refreshMeal(st,meal.id),'Ingredients checked again')},'Check stock again'),!meal.preparedFrom&&e(Btn,{onClick:()=>setDialog({type:meal.kind==='prep'?'prep-plan':'meal',id:meal.id})},meal.kind==='prep'?'Change batch':'Change meal'),e(Btn,{onClick:()=>run(st=>skipWorkflowMeal(st,meal.id),'Skipped · reservations released')},meal.kind==='prep'?'Skip batch and linked meals':'Skip'))),
+  lots.length>0&&e('section',{className:'prepared-summary'},e('h3',null,'Prepared portions'),lots.map(l=>e('div',{className:'summary-line',key:l.id},e('span',null,l.location+(l.expiry?' · '+prettyDate(l.expiry):' · storage date not recorded')),e('b',null,displayQty(l.remaining,l.unit)+' left'))),meal.prepOnly&&e(Btn,{onClick:()=>setDialog({type:'prepared-meal',batchId:meal.id})},'Plan a meal from this batch')),
+  meal.status==='cooked'&&e(Btn,{onClick:()=>run(st=>uneatMeal(st,meal.id),'Undone · stock restored')},meal.prepOnly?'Undo preparation':'Not eaten after all'),e(ErrorMessage,{error:err})),e(DialogFooter,{onClose,label:'Done'}));
+};
+function FoodPlanPanel({state:s,setDialog,act}){
+ const plan=s.foodPlan;if(!plan)return null;
+ const spent=ledger(s).filter(x=>x.date>=plan.start&&x.date<=plan.end&&x.type==='grocery').reduce((n,x)=>n+Math.round(x.amount*100),0),left=plan.budgetPence-spent;
+ return e('section',{className:'surface food-plan-panel'},e('div',{className:'section-heading'},e('div',null,e('h2',null,'Your food plan'),e('p',{className:'muted'},prettyDate(plan.start)+' – '+prettyDate(plan.end))),e('div',{className:'food-budget'},e('strong',null,pounds(left)),e('small',null,'grocery budget left'))),e('p',{className:'muted'},pounds(spent)+' food recorded of '+pounds(plan.budgetPence)+'. Household items are separate. '+(plan.budgetNote||'')),
+  e('div',{className:'food-priorities'},(plan.priorities||[]).map(t=>{
+   const rows=stockRows(s).filter(r=>(t.stockIds||[]).includes(r.id)),live=rows.filter(r=>r.remaining>0),done=t.action==='freeze'?live.length>0&&live.every(r=>r.location==='Freezer'):t.action==='use'&&rows.length>0&&!live.length;
+   const linked=s.mealEntries.find(m=>m.status==='planned'&&(m.reservations||[]).some(r=>t.stockIds?.includes(r.sourceId)));
+   return e('div',{className:'food-priority'+(done?' done':''),key:t.id},e('div',null,e('strong',null,t.label),e('small',null,done?'Done':t.note||'Check your food label')),e(Btn,{small:true,disabled:done,onClick:()=>t.action==='freeze'?act(st=>moveFoodStock(st,t.stockIds,'Freezer'),'Moved to freezer · stock preserved'):linked?setDialog({type:'meal-detail',id:linked.id}):live.length?setDialog({type:'stock-action',id:live[0].id}):setDialog({type:'stock'})},done?'Done':t.action==='freeze'?'I froze it':linked?'Open meal':'Check / use'));
+  })),
+  plan.assumptions?.length>0&&e('details',null,e('summary',null,'Amounts and purchases to check'),e('ul',null,plan.assumptions.map((x,i)=>e('li',{key:i},x))),e(Btn,{onClick:()=>setDialog({type:'stock'})},'Add / correct stock')));
+}
+MealsV2=function workflowMeals(p){
+ const s=p.state,view=p.route?.view||'week',m=p.selectedMonth,[query,setQuery]=useState(''),[readyOnly,setReadyOnly]=useState(false),[week,setWeek]=useState(()=>Math.max(0,getWeeks(m).findIndex(w=>w.some(d=>d.date===isoDate(new Date())))));
+ useEffect(()=>setWeek(Math.max(0,getWeeks(m).findIndex(w=>w.some(d=>d.date===isoDate(new Date()))))),[m]);
+ const tabs=e('div',{className:'page-tabs'},e(Segment,{label:'Meals view',value:view,onChange:v=>p.go({view:v}),options:[['week','Meal plan'],['prep','Meal prep'],['recipes','Recipes'],['original','Original calendar']]}));
+ const heading=e(PageHeading,{title:'Meals & recipes',action:e(Btn,{kind:'primary',onClick:()=>p.setDialog({type:view==='prep'?'prep-plan':view==='recipes'?'recipe':'meal'})},view==='prep'?'Plan a batch':view==='recipes'?'Add a recipe':'Add a meal')});
+ if(view==='prep'){
+  const batches=s.mealEntries.filter(m=>m.kind==='prep'&&m.status!=='skipped');
+  return e(React.Fragment,null,heading,tabs,e('div',{className:'workflow-tools'},e(Btn,{onClick:()=>p.go({view:'week'})},'Back to meal plan'),e(Btn,{onClick:()=>p.setDialog({type:'prepared-meal'})},'Use a prepared batch')),e('div',{className:'prep-grid'},batches.map(m=>{const lots=preparedLots(s,m.id),used=s.mealEntries.filter(x=>x.preparedFrom===m.id);return e('article',{className:'surface prep-card',key:m.id},e('h2',null,m.name),e('p',null,prettyDate(m.date)+' · '+m.servings+' portions · '+mealStatus(m)),lots.map(l=>e('p',{key:l.id},displayQty(l.remaining,l.unit)+' in '+l.location)),e('ul',null,used.map(x=>e('li',{key:x.id},prettyDate(x.date)+' · '+x.name+' · '+mealStatus(x)))),e(Btn,{kind:'primary',onClick:()=>p.setDialog({type:'meal-detail',id:m.id})},'Open batch'));})),!batches.length&&e('p',null,'Plan a batch, then link the meals that will use its portions.'));
+ }
+ if(view==='recipes'){
+  const recipes=s.recipes.filter(r=>!r.archived&&r.name.toLowerCase().includes(query.trim().toLowerCase())).map(r=>{let availability;try{availability=recipeAvailability(s,r);}catch{}return {r,availability};}).filter(x=>!readyOnly||x.availability?.ready);
+  return e(React.Fragment,null,heading,tabs,e('div',{className:'workflow-tools'},e(Input,{label:'Find a recipe',type:'search',value:query,onChange:setQuery}),e('label',{className:'checkbox-label'},e('input',{type:'checkbox',checked:readyOnly,onChange:ev=>setReadyOnly(ev.target.checked)}),'Ingredients free to use')),
+   e('div',{className:'prep-grid recipe-workflow-grid'},recipes.map(({r,availability:a})=>e('article',{className:'surface prep-card',key:r.id},e('h2',null,r.name),e('p',{className:'muted'},r.servings+(r.servings===1?' serving':' servings')+(r.minutes?' · '+r.minutes+' minutes':'')),e('p',{className:a?.ready?'success-text':'muted'},a?.ready?'Ingredients free for this recipe':'Reserved or not recorded: '+(a?.meal.missing||[]).map(i=>i.name).join(', ')),e('div',{className:'inline-actions'},e(Btn,{small:true,onClick:()=>p.setDialog({type:'recipe',id:r.id})},'Recipe / stock links'),e(Btn,{small:true,kind:'primary',onClick:()=>p.setDialog({type:'meal',recipeId:r.id})},'Plan meal'),r.servings>1&&e(Btn,{small:true,onClick:()=>p.setDialog({type:'prep-plan',recipeId:r.id})},'Plan batch'))))),!recipes.length&&e('p',null,'No recipes match this view.'));
+ }
+ if(view==='original')return e(React.Fragment,null,heading,tabs,e(Planner,p));
+ const weeks=getWeeks(m),days=weeks[Math.min(week,weeks.length-1)];
+ return e(React.Fragment,null,heading,tabs,e(FoodPlanPanel,p),e('div',{className:'week-toolbar'},e(Btn,{disabled:week===0,onClick:()=>setWeek(week-1)},'← Previous'),e('strong',null,prettyDate(days[0].date)+' — '+prettyDate(days[6].date)),e(Btn,{disabled:week===weeks.length-1,onClick:()=>setWeek(week+1)},'Next →'),e(Btn,{onClick:()=>p.setDialog({type:'copy-week',dates:days.map(d=>d.date)})},'Copy week')),e('div',{className:'meal-week'},days.map(day=>e(MealDay,{key:day.date,state:s,day,setDialog:p.setDialog}))),e(CupboardStarters,{state:s,month:m,setDialog:p.setDialog}));
+};
 
 ReactDOM.createRoot(document.getElementById("root")).render(e(PlannerErrorBoundary,null,e(App)));</script></body></html>

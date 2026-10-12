@@ -62,9 +62,9 @@ function WeeklyHistory(p){
  );
 }
 function HistoryLine({x,setDialog,ingredient=false}){
- const group=historyGroup(x),t=usageText(x),label=group==='used'?'Used':group==='waste'?'Waste':group==='kept'?'Kept thing':group==='returns'?'Returned':'Bottle update';
+ const group=historyGroup(x),t=usageText(x),label=x.kind==='prep'?'Prepared':group==='used'?'Used':group==='waste'?'Waste':group==='kept'?'Kept thing':group==='returns'?'Returned':'Bottle update';
  const editable=x.kind==='stock'&&(x.id.startsWith('used-')||['use','waste','open','half','low','touch','finish'].includes(x.action));
- return e('div',{className:'history-line '+group+(ingredient?' ingredient':'')},e('span',{className:'history-kind'},label),e('div',{className:'history-line-copy'},e('strong',null,t.title),e('small',null,t.sub),x.note&&e('small',null,x.note)),editable&&e('button',{type:'button',className:'history-edit','aria-label':'Edit '+t.title+' on '+x.date,onClick:()=>setDialog({type:'event-edit',id:x.id})},'Edit'));
+ return e('div',{className:'history-line '+group+(ingredient?' ingredient':'')},e('span',{className:'history-kind'},label),e('div',{className:'history-line-copy'},e('strong',null,t.title),e('small',null,t.sub),x.note&&e('small',null,x.note)),editable&&e('button',{type:'button',className:'history-edit','aria-label':'Edit '+t.title+' on '+x.date,onClick:()=>setDialog({type:'event-edit',id:x.id})},'Edit'),x.kind==='prep'&&e(Btn,{small:true,onClick:()=>setDialog({type:'meal-detail',id:x.mealId})},'Open batch'));
 }
 function WeekSnapshot({state:s,month,go,setDialog}){
  const r=weeklyUsage(s,historyAnchor(month));

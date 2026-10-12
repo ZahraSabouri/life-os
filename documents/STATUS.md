@@ -3,6 +3,8 @@
 **Updated 9 October 2026 by Claude Code** (the look); JobMap search reviewed 12 October by Codex; tech-only correction completed 11 October (see session notes). Branch: `stage/4b-one-look` (cut from `stage/4a-jobmap-refresh`, which was cut from `stage/3-study-hub`); none pushed; main untouched. Calendar is complete. Study hub and JobMap are live. The look (sub-apps as parts of Life OS, every style a whole design) has had two passes and waits for Xar's detailed check.
 
 ## Now
+**12 October night (Codex, requested Budget fix):** the attached Budget app now connects pasted/itemised receipts, recipe stock links, preparation batches and eating. The supplied food plan is saved; preparation uses ingredients once, later meals use ready portions, and history distinguishes the two. Estimated/unidentified payments stay visible for review. Build and 177 tests passed; browser consumption checks used an isolated copy. See `sessions/2026-10-12-codex-budget-meal-workflow.md` and `briefs/budget-fix-meal-workflow.md`. Her payment details, physical freezer counts and package dates remain to confirm; native Budget migration is not started.
+
 **Today, 12 October (Claude Code):** the Court and Today are the pages to work from and are live. Brief: `briefs/stage-2b-my-day.md` (CP1 to CP9 done). Notes: the five `sessions/2026-10-12-claude-code-stage-2b-*.md`. Codex entered the autumn study plan the same afternoon; a second Claude Code session reworked JobMap's first list; the three were coordinated in `COORDINATION_2026-10-12.md` and by messages.
 
 **What works right now** (12 October night; notes `sessions/2026-10-12-claude-code-stage-2c-focus-and-review.md` and `…-stage-2c-notices-planner-progress.md`)

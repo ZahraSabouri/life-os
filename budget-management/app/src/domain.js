@@ -607,7 +607,7 @@ function autoPaySubscriptions(s,today=isoDate(new Date())){
 function subscriptionsDue(s,month,today=isoDate(new Date())){return s.subscriptions.filter(x=>!x.paused).flatMap(x=>subscriptionDates(x,month).filter(d=>d>today||x.auto===false).map(d=>({sub:x,date:d}))).sort((a,b)=>a.date.localeCompare(b.date));}
 function monthlyCost(x){return x.paused?0:x.interval==='yearly'?x.costPence/12:x.interval==='weekly'?x.costPence*52/12:x.costPence;}
 function convertQty(n,from,to){
-  if(from===to)return n;const units={g:['mass',1],kg:['mass',1000],ml:['volume',1],mL:['volume',1],L:['volume',1000],l:['volume',1000]};
+  if(unitKey(from)===unitKey(to))return n;const units={g:['mass',1],kg:['mass',1000],ml:['volume',1],mL:['volume',1],L:['volume',1000],l:['volume',1000]};
   return units[from]&&units[to]&&units[from][0]===units[to][0]?n*units[from][1]/units[to][1]:null;
 }
 function planMeal(s,d){
@@ -618,11 +618,12 @@ function planMeal(s,d){
     let left=ing.quantity*servings/recipe.servings;
     // Oil, sauces, spices: the recipe says how much, the cupboard never subtracts it. Just note a little was used.
     const fits=ingredientMatcher(s,ing);
-    const lasting=rows.filter(r=>r.remaining>0&&r.tracking==='level'&&(fits(r)||itemKey(r.name)===itemKey(ing.name)||wordsIn(ing.name,r.name))).sort(bottleOrder(d.date));
+    const directLasting=rows.filter(r=>r.remaining>0&&r.tracking==='level'&&fits(r));
+    const lasting=(directLasting.length?directLasting:rows.filter(r=>r.remaining>0&&r.tracking==='level'&&!ing.sourceIds?.length&&!ing.itemId&&!ing.typeId&&wordsIn(ing.name,r.name))).sort(bottleOrder(d.date));
     if(lasting.length){if(!touches.some(t=>t.sourceId===lasting[0].id))touches.push({sourceId:lasting[0].id,name:lasting[0].name,recipe:+(+left).toFixed(2)+' '+ing.unit});continue;}
     const candidates=rows.filter(r=>r.remaining>0&&r.tracking!=='level'&&r.tracking!=='durable'&&!r.scheduledDate&&fits(r)).sort(stockOrder(d.date));
     for(const r of candidates){const one=convertQty(1,r.unit,ing.unit);if(!one)continue;const free=r.remaining-reservedAmount(s,r.id,d.id)-reserved.filter(x=>x.sourceId===r.id).reduce((n,x)=>n+x.amount,0);const amount=Math.min(Math.max(0,free),left/one);if(amount>0){reserved.push({sourceId:r.id,amount:+amount.toFixed(6),unit:r.unit,name:r.name,...(r.availableMonth&&r.availableMonth>dateMonth(d.date)?{fromMonth:r.availableMonth}:{})});left-=amount*one;}}
-    if(left>1e-6)missing.push({...ing,quantity:+left.toFixed(6)});
+    if(left>1e-6&&!ing.optional)missing.push({...ing,quantity:+left.toFixed(6)});
   }
   for(const pick of d.stock||[]){
     let pool=rows.filter(r=>(pick.ids||[]).includes(r.id)&&r.remaining>0);
@@ -891,6 +892,7 @@ function priceHistory(s,item){
 }
 // Which stock rows fit a recipe ingredient: the exact product, any product of the same general type, or the same name.
 function ingredientMatcher(s,ing){
+  if(ing.sourceIds?.length)return r=>ing.sourceIds.includes(r.id);
   const idx=itemIndex(s),key=itemKey(ing.name),wanted=ing.typeId?typeDescendants(s,ing.typeId):null;
   return r=>{const item=(r.itemId&&s.items.find(i=>i.id===r.itemId))||idx.get(itemKey(r.name));
     if(ing.itemId)return item?.id===ing.itemId||(!item&&itemKey(r.name)===key);

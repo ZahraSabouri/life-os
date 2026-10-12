@@ -46,6 +46,8 @@ New areas are welcome at any time (finance details, faith, volunteering, pets, a
 
 ## 2. Entry types (live registry: 49 types, six archetypes)
 
+**Attached Budget update, 12 October 2026:** receipt pasting/review and replacing a simple estimated payment; pending-payment review; recipes linked to stock; planned preparation batches and their later meals; fridge/freezer portions; ingredients used once at preparation, portions reduced when eaten; preparation and eating shown separately in history. Built in the attached app and checked in the browser with an isolated data copy; user review and actual stock/payment details remain open. See `briefs/budget-fix-meal-workflow.md`. This does not change the native Stage 5 migration status.
+
 Archetypes: **moment**, **commitment**, **workstream**, **collection**, **practice**, **anchor**. Source: `code/life-os/shared/entryTypes.js`.
 
 - **General:** note, event, task

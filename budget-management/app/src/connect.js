@@ -157,11 +157,12 @@ function IngredientRows({state:s,rows,setRows}){
  return e('div',{className:'ingredient-rows'},rows.map(r=>{
   const fits=r.name.trim()?ingredientMatcher(s,r):null,have=fits?stockRows(s).filter(x=>x.remaining>0&&fits(x)):[],level=have.some(x=>x.tracking==='level'),total=have.filter(x=>x.tracking!=='level').reduce((n,x)=>n+x.remaining,0);
   return e('div',{className:'ingredient-row',key:r.key},
-   e('div',{className:'ingredient-main'},e(Input,{label:'Ingredient',value:r.name,onChange:v=>patch(r.key,{name:v,itemId:undefined,typeId:undefined}),placeholder:'Pasta, chicken breast…',autoComplete:'off'}),
-    r.focus!==false&&!r.itemId&&!r.typeId&&e(ProductSuggestions,{state:s,query:r.name,onPick:i=>patch(r.key,{name:i.name,itemId:i.id,typeId:undefined,unit:r.unit||i.stockUnit||i.unit}),onPickType:t=>patch(r.key,{name:t.name,typeId:t.id,itemId:undefined})})),
+   e('div',{className:'ingredient-main'},e(Input,{label:'Ingredient',value:r.name,onChange:v=>patch(r.key,{name:v,itemId:undefined,typeId:undefined,sourceIds:undefined}),placeholder:'Pasta, chicken breast…',autoComplete:'off'}),
+    r.focus!==false&&!r.itemId&&!r.typeId&&!r.sourceIds?.length&&e(ProductSuggestions,{state:s,query:r.name,onPick:i=>patch(r.key,{name:i.name,itemId:i.id,typeId:undefined,unit:r.unit||i.stockUnit||i.unit}),onPickType:t=>patch(r.key,{name:t.name,typeId:t.id,itemId:undefined})})),
    e(Input,{label:'Amount',type:'number',min:'.000001',step:'any',value:r.quantity,onChange:v=>patch(r.key,{quantity:v})}),
    e(Input,{label:'Unit',value:r.unit,onChange:v=>patch(r.key,{unit:v}),placeholder:'g, ml, piece'}),
    e('button',{type:'button',className:'icon-button','aria-label':'Remove '+(r.name||'ingredient'),onClick:()=>setRows(rs=>rs.filter(x=>x.key!==r.key))},'×'),
+   e('div',{className:'ingredient-link'},e(Select,{label:'Link to cupboard stock',value:r.sourceIds?.length?r.sourceIds.join('|'):'',onChange:v=>{const ids=v.split('|').filter(Boolean),row=stockRows(s).find(x=>ids.includes(x.id));patch(r.key,{sourceIds:ids.length?ids:undefined,...(row&&row.tracking!=='level'?{unit:row.unit}:{})});},options:[['','Match by product or type'],...workflowStockGroups(s).map(g=>[g.ids.join('|'),g.name+' · '+displayQty(g.free,g.unit)])]}),e('label',{className:'checkbox-label'},e('input',{type:'checkbox',checked:!!r.optional,onChange:ev=>patch(r.key,{optional:ev.target.checked})}),'Optional')),
    r.name.trim()&&e('small',{className:'ingredient-status'+(have.length?' ok':'')},(r.itemId?'Your product · ':r.typeId?'Any '+String(typeNode(s,r.typeId)?.name||'').toLowerCase()+' · ':'')+(level?'long-lasting, at home':have.length?'at home: '+displayQty(+total.toFixed(2),have[0].unit):'not at home now')));
  }),e(Btn,{small:true,icon:'plus',onClick:()=>setRows(rs=>[...rs,blank()])},'Add ingredient'));
 }
