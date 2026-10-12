@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { hubRequest, reloadInSemester, session } from './session.js'
+import { SemesterRecords } from './SemesterRecords.jsx'
 
 const asLines = (value) => (Array.isArray(value) ? value.join('\n') : '')
 
@@ -244,6 +245,8 @@ export function SemesterSetup({ cards = [] }) {
           <button type="button" className="hub-primary hub-add-button" onClick={() => { setError(''); setNotice(''); setMode({ kind: 'add' }) }}>+ Add a module</button>
         )}
       </section>
+      {/* What an import brings in can also be added, changed and removed by hand. */}
+      <SemesterRecords />
     </div>
   )
 }

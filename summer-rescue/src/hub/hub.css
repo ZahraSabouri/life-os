@@ -97,3 +97,12 @@
 .app-sidebar .nav-item, .app-sidebar .sidebar-brand, .app-sidebar .mini-progress, .app-sidebar .sidebar-crest { min-width: 0; max-width: 100%; }
 .app-sidebar .nav-label { flex: 1 1 auto; }
 .brand-text small { overflow: hidden; text-overflow: ellipsis; }
+
+/* Classes, tests and deadlines, materials: the same list-and-form as modules. */
+.hub-records-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.hub-records-head h2 small { font-size: 0.8rem; font-weight: 500; opacity: 0.7; margin-left: 4px; }
+.hub-records-head h2 { flex: 1; }
+.hub-records-head input[type='search'] { font: inherit; font-size: 0.86rem; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--line, rgba(0, 0, 0, 0.16)); background: transparent; color: inherit; width: 11rem; }
+.hub-records-head select { font: inherit; font-size: 0.86rem; padding: 5px 8px; border-radius: 8px; border: 1px solid var(--line, rgba(0, 0, 0, 0.16)); background: transparent; color: inherit; }
+.hub-records .hub-add-button { margin: 4px 0 10px; }
+.hub-records .hub-list strong a { color: inherit; }
