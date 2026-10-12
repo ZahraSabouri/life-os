@@ -116,6 +116,7 @@ export default function CalendarView() {
       <div className="calendar-view-controls" aria-label="Calendar view">
         <button type="button" className="ghost-pill compact-pill" aria-pressed={view === 'month'} onClick={() => setView('month')}>Month</button>
         <button type="button" className="ghost-pill compact-pill" aria-pressed={view === 'agenda'} onClick={() => setView('agenda')}>Agenda</button>
+        <Link className="ghost-pill compact-pill" to={`/planner?week=${selectedDay}`}>Week</Link>
         <button type="button" className="ghost-pill compact-pill" onClick={calendar.refetch} disabled={calendar.loading}>Refresh</button>
         <span>{calendarDisplay(calendar, { areas, count: monthItems.length, noun: 'dated item' }).countLabel}</span>
       </div>

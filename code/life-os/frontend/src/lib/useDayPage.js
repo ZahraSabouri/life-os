@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 import { isDateKey, londonDateTime } from '../../../shared/calendar.js'
 import { apiFetch } from './api.js'
 import { tellStudyHub } from './studyHub.js'
+import { setPlanStatus } from './plans.js'
+import { isoWeekday, sayWeekdays } from '../../../shared/routines.js'
 import { addDays, filterCalendarItems, formatCalendarDay, isComplete, todayGroups } from './calendar.js'
 import { buildDay, noteTitle, parsePlan, splitThings } from './day.js'
 import { useCalendar, useLondonToday } from './useCalendar.js'
@@ -31,6 +33,10 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
   const [chosenDay, setDay] = useState('')
   const planDay = isDateKey(chosenDay) ? chosenDay : date
   const [text, setText] = useState('')
+  // A plan can come round: '' is once; 'daily', 'weekdays', 'weekly' (the weekday of its day) or 'custom' (chosen days).
+  const [repeat, setRepeat] = useState('')
+  const [repeatDays, setRepeatDays] = useState([])
+  const [until, setUntil] = useState('')
   const [lineState, setLineState] = useState('')
   const [savingId, setSavingId] = useState('')
   const [error, setError] = useState('')
@@ -47,10 +53,13 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
   const things = useMemo(() => splitThings(text), [text])
   const dayName = planDay === today ? 'today' : formatCalendarDay(planDay, { weekday: 'long' })
   const filed = area ? { area } : {}
+  const repeating = adding === 'plan' && Boolean(repeat)
+  const weekdays = repeat === 'daily' ? [1, 2, 3, 4, 5, 6, 7] : repeat === 'weekdays' ? [1, 2, 3, 4, 5] : repeat === 'weekly' ? [isoWeekday(planDay)] : [...repeatDays].sort()
   const hint = !text.trim() ? ''
     : adding === 'note' ? 'A note, kept on today and in the Ledger.'
       : adding === 'buy' ? (things.length ? `${things.length === 1 ? `“${things[0]}” goes` : `${things.length} things go`} on your shopping list in Budget.` : 'Say what to buy; commas separate several things.')
         : !plan.title ? 'Say what it is as well as when.'
+          : repeating ? (weekdays.length ? `“${plan.title}” ${sayWeekdays(weekdays)}${plan.start ? ` at ${plan.start}${plan.end ? ` to ${plan.end}` : ''}` : ', at any time of the day'}, from ${dayName}${until ? ` until ${formatCalendarDay(until)}` : ''}.` : 'Choose the days it comes round on.')
           : plan.start ? `“${plan.title}” at ${plan.start}${plan.end ? ` to ${plan.end}` : ''}, ${dayName}. It goes on the calendar too.`
             : `“${plan.title}”, any time ${dayName}. Type a time (17:30, 5pm) to place it.`
 
@@ -67,6 +76,12 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
       if (!things.length) { setError('Say what to buy.'); return }
       request = ['/api/home/shopping', { items: things, date: planDay }]
     } else if (!plan.title) { setError('Say what it is as well as when, for example “17:30 library”.'); return }
+    else if (repeating) {
+      if (!weekdays.length) { setError('Choose at least one day for it to come round on.'); return }
+      if (until && until < planDay) { setError('It cannot end before it starts.'); return }
+      request = ['/api/entries', { type: 'repeat', title: plan.title, status: 'active', start_at: planDay, ...(isDateKey(until) ? { end_at: until } : {}), all_day: true,
+        details: { weekdays: weekdays.join(','), ...(plan.start ? { start: plan.start } : {}), ...(plan.end ? { end: plan.end } : {}), ...(area ? { area } : {}) } }]
+    }
     else if (plan.start) {
       const start = londonDateTime(planDay, plan.start)
       if (!start) { setError('That clock time does not exist on this day (the clocks change). Try another time.'); return }
@@ -78,6 +93,7 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
     try {
       const saved = await apiFetch(request[0], { method: 'POST', body: JSON.stringify(request[1]) })
       setText('')
+      if (repeating) { setRepeat(''); setRepeatDays([]); setUntil('') }
       refetch()
       onSaved?.()
       if (adding === 'buy') setNotice(saved.added?.length ? `On “${saved.list.name}” in Budget: ${saved.added.join(', ')}.${saved.skipped?.length ? ` Already there: ${saved.skipped.join(', ')}.` : ''}` : `Already on “${saved.list.name}”: ${(saved.skipped ?? []).join(', ')}.`)
@@ -95,7 +111,7 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
     setSavingId(stop.key)
     setError('')
     try {
-      await apiFetch(`/api/entries/${encodeURIComponent(stop.entry.id)}`, { method: 'PATCH', body: JSON.stringify({ status, ...(stop.entry.revision === undefined ? {} : { revision: stop.entry.revision }) }) })
+      await setPlanStatus(stop, status)
       refetch()
     } catch (failure) { setError(`Could not change “${stop.title}”: ${failure.message}`) }
     finally { setSavingId('') }
@@ -128,11 +144,11 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
   }
 
   async function completeTask(item) {
-    if (savingId || item.area !== 'core' || item.meta?.type !== 'task' || !item.meta?.entryId) return
+    if (savingId || item.meta?.source !== 'core' || item.meta?.type !== 'task' || !item.meta?.entryId) return
     setSavingId(item.id)
     setError('')
     try {
-      await apiFetch(`/api/entries/${encodeURIComponent(item.meta.entryId)}`, { method: 'PATCH', body: JSON.stringify({ status: 'done', ...(item.meta.revision === undefined ? {} : { revision: item.meta.revision }) }) })
+      await setPlanStatus({ entry: { id: item.meta.entryId, revision: item.meta.revision, routine: item.meta.routine }, title: item.title }, 'done')
       calendar.refetch()
     } catch (failure) { setError(`Could not mark the task done: ${failure.message}`) }
     finally { setSavingId('') }
@@ -142,7 +158,8 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
     today, date, isToday, clock, dayName, calendar, day, data, items, groups, path, refetch,
     loading: calendar.loading || (day.loading && !data),
     unavailable: (id) => data?.sources.find((source) => source.id === id && source.status === 'unavailable')?.error,
-    line: { kind: adding, choose, text, setText, state: lineState, hint, save: saveLine, noteAllowed: isToday, area, setArea, fixedArea: Boolean(fixedArea), day: planDay, setDay },
+    line: { kind: adding, choose, text, setText, state: lineState, hint, save: saveLine, noteAllowed: isToday, area, setArea, fixedArea: Boolean(fixedArea), day: planDay, setDay,
+      repeat, setRepeat, repeatDays, toggleRepeatDay: (weekday) => setRepeatDays((current) => (current.includes(weekday) ? current.filter((value) => value !== weekday) : [...current, weekday])), until, setUntil },
     error, notice, savingId, completeTask, tickShopping, tickStudy,
     stopProps: { onDone: (stop) => setEntryStatus(stop, 'done'), onRemove: (stop) => setEntryStatus(stop, 'cancelled'), onStudy: tickStudy, busy: Boolean(savingId) },
   }

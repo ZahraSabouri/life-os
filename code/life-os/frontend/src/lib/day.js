@@ -76,7 +76,8 @@ export function parsePlan(text) {
 // Something she added to the day herself (a Life OS entry) can be ticked off or taken off the day there.
 function ownEntry(item) {
   if (item.meta?.source !== 'core' || !item.meta?.entryId) return null
-  return { id: item.meta.entryId, task: ['task', 'time-block'].includes(item.meta.type), revision: item.meta.revision }
+  // `routine` is there for one day of a repeating plan she has not acted on yet (it is not a stored entry).
+  return { id: item.meta.entryId, task: ['task', 'time-block'].includes(item.meta.type), revision: item.meta.revision, ...(item.meta.routine ? { routine: item.meta.routine } : {}) }
 }
 
 // "eggs, rice, 2 kg onions": commas (or new lines) separate the things to buy.

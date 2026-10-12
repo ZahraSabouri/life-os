@@ -65,6 +65,7 @@ export function mapEntries(value, range) {
     if (typeof details === 'string') { try { details = JSON.parse(details) } catch { details = {} } }
     if (inactive.has(stateOf(details.status)) || finished.has(stateOf(details.status))) continue
     const type = entry.type
+    if (type === 'repeat') continue   // a repeating plan: its days come as worked-out entries (shared/routines.js)
     // Filed under a room: the calendar area of that room when it has one, and the room's name either way.
     const room = type !== 'time-block' && typeof details.area === 'string' ? details.area : ''
     const base = {
@@ -74,7 +75,9 @@ export function mapEntries(value, range) {
           : ['assignment', 'academic-application'].includes(type) ? 'deadline' : 'plan',
       title: text(entry.title, text(details.title, text(details.name, 'Untitled entry'))),
       href: `/ledger#entry-${encodeURIComponent(entry.id)}`,
-      meta: { source: 'core', readonly: false, entryId: entry.id, type, status: entry.status, archetype: entry.archetype, ...(room ? { room } : {}), ...(done ? { completed: true } : {}) },
+      meta: { source: 'core', readonly: false, entryId: entry.id, type, status: entry.status, archetype: entry.archetype, ...(room ? { room } : {}), ...(done ? { completed: true } : {}),
+        // One day of a repeating plan that she has not acted on: what it takes to make it a real entry when she does.
+        ...(entry.virtual ? { routine: { id: details.routine, type, start_at: entry.start_at, end_at: entry.end_at ?? null, all_day: Boolean(entry.all_day), area: details.area ?? '' } } : {}) },
       ...(details.location || details.venue ? { location: text(details.location ?? details.venue, '') } : {}),
     }
     const start = entry.start_at || details.deadline || details.exam_date || (type === 'trip' && details.start)

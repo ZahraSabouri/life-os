@@ -258,3 +258,18 @@ test('an entry filed under a room takes that room: its calendar area when the ro
     ['ben', 'relationships', 'relationships', false], ['picnic', 'core', 'travel', false], ['forms', 'core', 'admin', true], ['jobs', 'career', null, false], ['plain', 'core', null, false],
   ])
 })
+
+test('a repeating plan is not a dated item; its worked-out days are, and carry what makes them real', async () => {
+  const { withRoutines } = await import('../../code/life-os/shared/routines.js')
+  const entries = withRoutines([
+    { id: 'r1', type: 'repeat', title: 'Job applications', status: 'active', start_at: '2026-10-26', details: JSON.stringify({ weekdays: '1', start: '17:45', end: '20:45', area: 'career' }) },
+    { id: 'r2', type: 'repeat', title: 'Laundry', status: 'active', start_at: '2026-10-26', details: { weekdays: '7', area: 'home' } },
+  ], '2026-10-26', '2026-11-01')
+  const items = mapEntries(entries, { from: '2026-10-26', to: '2026-11-01' })
+  assert.deepEqual(items.map(row => [row.id, row.area, row.all_day, row.meta.type]), [
+    ['core:entry:routine:r1:2026-10-26', 'career', false, 'time-block'],
+    ['core:entry:routine:r2:2026-11-01', 'home', true, 'task'],
+  ])
+  assert.deepEqual(items[0].meta.routine, { id: 'r1', type: 'time-block', start_at: '2026-10-26T17:45:00.000Z', end_at: '2026-10-26T20:45:00.000Z', all_day: false, area: 'career' })
+  assert.equal(items[1].meta.room, 'home')
+})

@@ -1,0 +1,51 @@
+/* The week, for planning: seven days side by side. Colours and type come from the chosen style. */
+
+.planner-hint { margin: 0; color: var(--m-muted); font-size: 0.84rem; }
+.planner-hint a { color: var(--m-accent-strong); }
+.planner-scroll { overflow-x: auto; padding-bottom: 0.3rem; }
+.planner-week { display: grid; grid-template-columns: repeat(7, minmax(10.5rem, 1fr)); gap: 0.6rem; align-items: start; min-width: 0; }
+
+.planner-day {
+  min-width: 0; display: flex; flex-direction: column; gap: 0.45rem; padding: 0.75rem 0.7rem 0.6rem; box-sizing: border-box; min-height: 14rem;
+  background: var(--m-card-fill, var(--m-surface)); border: var(--m-card-outline, 1px solid var(--m-line)); border-radius: var(--m-radius, 12px);
+}
+.planner-day.is-today { border-color: var(--m-accent); box-shadow: inset 0 3px 0 var(--m-accent); }
+.planner-day.is-past { opacity: 0.78; }
+.planner-day.is-over { outline: 2px dashed var(--m-accent); outline-offset: -3px; }
+.planner-day > header h2 { margin: 0; font: var(--m-title-weight, 600) 1rem/1.2 var(--m-title-font, var(--m-font)); color: var(--m-ink); }
+.planner-day > header h2 a { color: inherit; text-decoration: none; }
+.planner-day > header h2 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.planner-day > header h2 small { color: var(--m-accent-strong); font: 600 0.72rem/1 var(--m-font); }
+.planner-day > header p { margin: 0.15rem 0 0; min-height: 1.1em; color: var(--m-muted); font-size: 0.72rem; font-variant-numeric: tabular-nums; }
+.planner-day h3 { margin: 0.35rem 0 0; color: var(--m-faint, var(--m-muted)); font: 650 0.64rem/1.2 var(--m-label-font, var(--m-font)); letter-spacing: 0.08em; text-transform: uppercase; }
+.planner-empty { margin: 0; color: var(--m-faint, var(--m-muted)); font-size: 0.8rem; }
+
+.planner-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
+.planner-chip {
+  position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 0 0.15rem;
+  padding: 0.32rem 0.3rem 0.32rem 0.55rem; border-radius: var(--m-radius-sm, 6px); background: var(--m-sunken, transparent); border-left: 3px solid var(--item-accent, var(--m-accent));
+}
+.planner-chip.is-own { background: var(--m-accent-soft); cursor: grab; }
+.planner-chip.is-done { opacity: 0.6; cursor: default; }
+.planner-chip.is-done a span { text-decoration: line-through; }
+.planner-chip a { min-width: 0; display: grid; gap: 0.05rem; color: var(--m-ink); text-decoration: none; font-size: 0.8rem; line-height: 1.3; }
+.planner-chip a time { color: var(--m-muted); font-size: 0.7rem; font-variant-numeric: tabular-nums; }
+.planner-chip a span { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+.planner-chip a:hover span { text-decoration: underline; text-underline-offset: 2px; }
+.planner-repeats { grid-column: 1 / -1; color: var(--m-faint, var(--m-muted)); font-size: 0.66rem; }
+.app-shell .planner-more { border: 0; background: transparent; color: var(--m-muted); cursor: pointer; padding: 0 0.3rem; min-height: 0; font: 700 0.95rem/1.1 var(--m-font); letter-spacing: 0; border-radius: 4px; }
+.app-shell .planner-more:hover { color: var(--m-ink); background: var(--m-card-fill); }
+.planner-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; padding-top: 0.3rem; }
+.app-shell .planner-actions button, .planner-actions select {
+  border: 1px solid var(--m-line); border-radius: var(--m-radius-control, 6px); background: var(--m-card-fill); color: var(--m-ink); cursor: pointer;
+  padding: 0.2rem 0.45rem; min-height: 0; font: 600 0.72rem/1.2 var(--m-font); letter-spacing: 0; text-transform: none;
+}
+.planner-actions label { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--m-muted); font-size: 0.72rem; }
+
+.planner-add { margin-top: auto; padding-top: 0.3rem; }
+.planner-add input { width: 100%; box-sizing: border-box; border: 1px dashed var(--m-line); border-radius: var(--m-radius-control, 6px); background: transparent; color: var(--m-ink); padding: 0.35rem 0.5rem; font: inherit; font-size: 0.78rem; }
+.planner-add input:focus { border-style: solid; border-color: var(--m-accent); outline: none; background: var(--m-card-fill); }
+
+.planner-repeating > header h2 { margin: 0 0 0.5rem; color: var(--m-ink); font: var(--m-title-weight, 600) 1.2rem/1.2 var(--m-title-font, var(--m-font)); }
+.planner-repeating .day-list li > span { color: var(--m-ink); }
+.planner-repeating .day-list li > span b { font-weight: 600; }

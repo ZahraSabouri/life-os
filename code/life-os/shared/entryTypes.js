@@ -44,6 +44,19 @@ export const ENTRY_TYPES = {
       minutes: { type: 'number' }
     }
   },
+  repeat: {
+    archetype: 'commitment',
+    label: 'Repeating plan',
+    icon: 'Rp',
+    rooms: [],
+    desc: 'A plan that comes round: on these weekdays, at this clock time or at any time, from entry start_at to end_at. Its days are worked out, not stored (shared/routines.js).',
+    fields: {
+      weekdays: { type: 'string' },   // "1,3,5": Monday is 1, Sunday is 7
+      start: { type: 'string' },      // "17:45", or nothing for any time of the day
+      end: { type: 'string' },
+      area: { type: 'string' }
+    }
+  },
   workout: {
     archetype: 'moment',
     label: 'Workout',
@@ -618,6 +631,8 @@ export const ENTRY_AREAS = ['study', 'academia', 'career', 'growth', 'body', 'st
 const COMMON_DETAILS = {
   area: (value) => (typeof value === 'string' && ENTRY_AREAS.includes(value) ? value : undefined),
   note: (value) => (typeof value === 'string' && value.trim() ? value.trim().slice(0, 20000) : undefined),
+  // The repeating plan a dated entry is one day of (shared/routines.js).
+  routine: (value) => (typeof value === 'string' && value && value.length <= 100 ? value : undefined),
 }
 
 export function validateDetails(type, details = {}) {

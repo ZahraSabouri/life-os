@@ -5,6 +5,7 @@ import { addDays, dateKey, isDateKey } from '../../code/life-os/shared/calendar.
 import { expandScheduleForDate } from '../../summer-rescue/src/utils/schedule.js'
 // The list JobMap's own first screen shows, by JobMap's own rule.
 import { firstScreen, sectionName } from '../career/first-screen.mjs'
+import { withRoutines } from '../../code/life-os/shared/routines.js'
 
 const array = (value) => (Array.isArray(value) ? value : [])
 const plain = (value) => (value !== null && typeof value === 'object' && !Array.isArray(value) ? value : {})
@@ -256,7 +257,7 @@ export function createDayService({ loadStudy, loadPlans, loadCareer, loadBudget,
       return { workspace, plans }
     }, ({ workspace, plans }) => studyDay(workspace, plans, date), { blocks: [], panel: null })
     // Life OS's own entries are read once: the day's notes, and the hours set aside for jobs.
-    const entries = Promise.resolve().then(() => loadEntries()).catch(() => null)
+    const entries = Promise.resolve().then(() => loadEntries()).then((rows) => withRoutines(Array.isArray(rows) ? rows : rows?.entries, date, date)).catch(() => null)
     const jobs = read('jobs', 'JobMap', loadCareer, async (value) => {
       if (!Array.isArray(value) && !Array.isArray(value?.jobs)) throw new Error('unsupported')
       return jobsDay(value, date, (await entries) ?? [])

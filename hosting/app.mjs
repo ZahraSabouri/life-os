@@ -17,6 +17,7 @@ import { createDayRouter, createDayService } from './day/service.mjs'
 import { createStudyFocus, createStudyTick, createStudyTickHandler } from './study/hub/tick.mjs'
 import { createReviewRouter, createReviewService } from './review/service.mjs'
 import { createNoticesRouter, createNoticesService } from './notices/service.mjs'
+import { withRoutines } from '../code/life-os/shared/routines.js'
 import { createShopping, createShoppingRouter, loadBudgetRules } from './home/shopping.mjs'
 import { dateKey } from '../code/life-os/shared/calendar.js'
 import { createStudyRuntime } from './study/runtime.mjs'
@@ -141,24 +142,40 @@ export function createLifeOsApp(options = {}) {
     } catch (error) { next(error) }
   })
   app.use('/api/study', createStudyRouter({ repository: study.repository, imports: study.imports }))
+  // A page asks for the day, the calendar, the notices and the week at once, and each of those
+  // needs Study, JobMap and Budget. While one read of a part is under way, everyone who asks is
+  // given that same read, instead of starting another. Nothing is kept once it has answered,
+  // so the next request reads afresh.
+  const together = (load) => {
+    let running = null
+    return () => (running ??= Promise.resolve().then(load).finally(() => { running = null }))
+  }
+  const loadWorkspace = together(async () => {
+    if (!study.configured) throw new Error('Study state is unavailable')
+    return study.repository.workspace()
+  })
   const calendarLoaders = createCalendarLoaders({
     projectRoot, summerRoot, cardiffRoot, getBudgetPort, getJobMapPort,
     // The range filter happens in the provider so it can include spanning
     // events, type-specific deadlines and annual dates without the old cap.
-    loadEntries: () => db.prepare('SELECT * FROM entries').all(),
+    // With the days of her repeating plans in the stretch that is asked for.
+    loadEntries: (range) => withRoutines(db.prepare('SELECT * FROM entries').all(), range?.from, range?.to),
     loadPeople: () => db.prepare('SELECT * FROM people').all(),
-    loadStudy: async () => {
-      if (!study.configured) throw new Error('Study state is unavailable')
-      const nativeWorkspace = await study.repository.workspace()
+    loadStudy: together(async () => {
+      const nativeWorkspace = await loadWorkspace()
       // Each open semester's Study hub plan, for its study blocks. A plan that cannot be read
       // leaves the rest of Study on the calendar.
       const open = nativeWorkspace.semesters.filter((row) => !['completed', 'archived'].includes(String(row.status ?? '').toLowerCase()))
       const hubPlans = study.hub ? await Promise.all(open.map(async (row) => ({ semesterId: row.id, plan: await study.hub.plan(row.id).catch(() => ({})) }))) : []
       return { nativeWorkspace, hubPlans }
-    },
+    }),
     ...options.calendarLoaders,
   })
-  const calendarService = createCalendarService(calendarLoaders)
+  // JobMap's answer is five megabytes; Budget's is read by three services.
+  calendarLoaders.loadCareer = together(calendarLoaders.loadCareer)
+  calendarLoaders.loadBudget = together(calendarLoaders.loadBudget)
+  // A part gets eight seconds before the calendar says it could not be read (it was two and a half).
+  const calendarService = createCalendarService({ ...calendarLoaders, timeoutMs: 8000 })
   app.use('/api/calendar', createCalendarRouter(calendarService))
   // What a day needs beyond its dated items: study blocks with their cards, and the current
   // content of Study, Jobs, Home and Notes. Read only.
@@ -167,14 +184,11 @@ export function createLifeOsApp(options = {}) {
   // A focus session from the Life OS timer, added to the card it was spent on.
   app.post('/api/day/study/focus', createStudyTickHandler(options.studyFocus ?? createStudyFocus({ hub: study.hub }), (body) => ({ semester: body.semester, card: body.card, minutes: body.minutes })))
   const dayService = createDayService({
-    loadStudy: async () => {
-      if (!study.configured) throw new Error('Study state is unavailable')
-      return study.repository.workspace()
-    },
+    loadStudy: loadWorkspace,
     loadPlans: async (semesterId) => (study.hub ? study.hub.plan(semesterId) : {}),
     loadCareer: calendarLoaders.loadCareer,
     loadBudget: calendarLoaders.loadBudget,
-    loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('note', 'time-block')").all(),
+    loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('note', 'time-block', 'task', 'repeat')").all(),
     ...options.dayLoaders,
   })
   app.use('/api/day', createDayRouter({ express, service: dayService }))
@@ -188,15 +202,12 @@ export function createLifeOsApp(options = {}) {
   }) }))
   // A week looked back on across every part. Read only. "Spent" is Budget's own month rule.
   app.use('/api/review', createReviewRouter({ express, service: createReviewService({
-    loadStudy: async () => {
-      if (!study.configured) throw new Error('Study state is unavailable')
-      return study.repository.workspace()
-    },
+    loadStudy: loadWorkspace,
     loadPlans: async (semesterId) => (study.hub ? study.hub.plan(semesterId) : {}),
     loadEvents: async (semesterId) => (study.hub ? study.hub.recentEvents(semesterId, 1000) : []),
     loadCareer: calendarLoaders.loadCareer,
     loadBudget: calendarLoaders.loadBudget,
-    loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('note', 'task', 'event', 'time-block')").all(),
+    loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('note', 'task', 'event', 'time-block', 'repeat')").all(),
     budgetFigures,
     ...options.reviewLoaders,
   }) }))

@@ -6,6 +6,7 @@ import './styles/skins.css'
 import './styles/day.css'
 import './styles/focus.css'
 import './styles/review.css'
+import './styles/planner.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

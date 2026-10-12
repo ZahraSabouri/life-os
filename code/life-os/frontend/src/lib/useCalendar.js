@@ -46,6 +46,16 @@ export function useCalendar(from, to) {
     return () => controller.abort()
   }, [from, to, refresh])
 
+  // A part that could not be read is asked for again, twice at most, before the page says so for good.
+  const [tries, setTries] = useState({ key: '', count: 0 })
+  useEffect(() => {
+    const key = `${from}|${to}`
+    const count = tries.key === key ? tries.count : 0
+    if (loading || count >= 2 || !sources.some((source) => source.status === 'unavailable')) return undefined
+    const timer = window.setTimeout(() => { setTries({ key, count: count + 1 }); refetch() }, 2500)
+    return () => window.clearTimeout(timer)
+  }, [sources, loading, from, to, tries, refetch])
+
   useEffect(() => {
     const readChoices = () => setBrowserChoices(readCardiffChoices(() => window.localStorage))
     const onStorage = event => {

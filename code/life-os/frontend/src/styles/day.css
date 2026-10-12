@@ -299,3 +299,12 @@ button.day-tick:disabled { cursor: progress; }
 
 /* A card's steps inside the Study panel's list. */
 .day-list .day-steps { margin-top: 0.45rem; }
+
+/* A plan that comes round: its days and its last day, on a row of their own under the line. */
+.day-add-repeat { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.9rem; padding-top: 0.5rem; border-top: 1px solid var(--m-line); }
+.day-add-repeat > span:last-child { color: var(--m-faint); font-size: 0.78rem; }
+.day-page .day-note .day-add-repeat label { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--m-faint); font: 600 0.72rem/1.2 var(--m-font); letter-spacing: 0; text-transform: none; }
+.day-add-repeat input { border: 1px solid var(--m-line); border-radius: var(--m-radius-control); background: var(--m-card-fill); color: var(--m-ink); font: inherit; font-size: 0.8rem; padding: 0.3rem 0.45rem; }
+.day-add-days { display: inline-flex; gap: 0.2rem; }
+.app-shell .day-add-days button { border: 1px solid var(--m-line); border-radius: var(--m-radius-control); background: transparent; color: var(--m-muted); padding: 0.28rem 0.5rem; cursor: pointer; font: 600 0.74rem/1.2 var(--m-font); letter-spacing: 0; text-transform: none; min-height: 0; }
+.app-shell .day-add-days button[aria-pressed='true'] { background: var(--m-accent-soft); border-color: var(--m-accent); color: var(--m-accent-strong); }

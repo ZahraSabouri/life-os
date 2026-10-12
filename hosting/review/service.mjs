@@ -3,6 +3,7 @@
 // reads. Each part keeps its own records; this gathers them by day.
 import { addDays, dateKey, isDateKey } from '../../code/life-os/shared/calendar.js'
 import { expandScheduleRange } from '../../summer-rescue/src/utils/schedule.js'
+import { withRoutines } from '../../code/life-os/shared/routines.js'
 
 const array = (value) => (Array.isArray(value) ? value : [])
 const plain = (value) => (value !== null && typeof value === 'object' && !Array.isArray(value) ? value : {})
@@ -129,7 +130,8 @@ export function entriesReview(days, entries, { today }) {
     }
     target.plans.made += 1
     if (lower(entry.status) === 'done') target.plans.done += 1
-    else if (date < today && entry.type !== 'event') open.push({ id: entry.id, title: text(entry.title) || 'Plan', date, href: `/today?date=${date}` })
+    // A day of a repeating plan that went by untouched simply lapsed; only her one-off plans are "left".
+    else if (date < today && entry.type !== 'event' && !entry.virtual) open.push({ id: entry.id, title: text(entry.title) || 'Plan', date, href: `/today?date=${date}` })
   }
   return { open: { count: open.length, plans: open.sort((a, b) => a.date.localeCompare(b.date)).slice(0, 6) } }
 }
@@ -198,7 +200,7 @@ export function createReviewService({ loadStudy, loadPlans, loadEvents, loadCare
         return null
       }
     }
-    const entries = Promise.resolve().then(() => loadEntries()).catch(() => null)
+    const entries = Promise.resolve().then(() => loadEntries()).then((rows) => withRoutines(rows, from, to)).catch(() => null)
     const [study, jobs, own, home] = await Promise.all([
       part('study', 'Study hub', async () => {
         const workspace = await loadStudy()

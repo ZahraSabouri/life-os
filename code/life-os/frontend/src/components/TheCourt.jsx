@@ -1061,7 +1061,7 @@ export default function TheCourt() {
     // Time blocks are plans laid on the calendar (two weeks of job time at once), not things she filed.
     // …and "recently" means the last thirty days, so history brought in from elsewhere stays in the Ledger.
     const since = new Date(Date.now() - 30 * 86_400_000).toISOString()
-    return entries.filter((entry) => entry.type !== 'time-block' && entry.created_at >= since && !String(entry.details?.note ?? '').includes('Ref: summer-')).slice(0, 6).map((entry) => {
+    return entries.filter((entry) => entry.type !== 'time-block' && entry.type !== 'repeat' && entry.created_at >= since && !String(entry.details?.note ?? '').includes('Ref: summer-')).slice(0, 6).map((entry) => {
       const room = roomForEntry(entry, rooms)
 
       return {

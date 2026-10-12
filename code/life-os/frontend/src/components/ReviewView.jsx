@@ -196,7 +196,7 @@ export default function ReviewView() {
       <Slipped data={data} />
       <div className="today-page-controls">
         <Link className="ghost-pill compact-pill" to="/today">Today</Link>
-        <Link className="ghost-pill compact-pill" to={`/calendar?date=${from}`}>The week on the calendar</Link>
+        <Link className="ghost-pill compact-pill" to={thisWeek ? '/planner' : `/planner?week=${from}`}>Plan this week</Link>
         <Link className="ghost-pill compact-pill" to={hub('review')}>Study hub: Review</Link>
         <Link className="ghost-pill compact-pill" to={hub('progress')}>Study hub: Progress</Link>
         <Link className="ghost-pill compact-pill" to={hub('analytics')}>Study hub: Analytics</Link>

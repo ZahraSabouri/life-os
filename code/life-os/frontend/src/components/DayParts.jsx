@@ -29,12 +29,23 @@ export function AddLine({ page, id = 'day-add-input', fixedArea = false }) {
     <input id={id} value={line.text} onChange={(event) => line.setText(event.target.value)} aria-label={ADD[line.kind].label} placeholder={ADD[line.kind].placeholder(page.dayName)} autoComplete="off" maxLength={2000} />
     {line.kind === 'buy' ? null : <div className="day-add-filing">
       {line.kind === 'plan' ? <label>for<input type="date" value={line.day} onChange={(event) => line.setDay(event.target.value)} aria-label="The day the plan is for" /></label> : null}
+      {line.kind === 'plan' ? <label>repeat<select value={line.repeat} onChange={(event) => line.setRepeat(event.target.value)} aria-label="Whether the plan comes round">
+        <option value="">once</option><option value="daily">every day</option><option value="weekdays">weekdays</option>
+        <option value="weekly">every {formatCalendarDay(line.day, { weekday: 'long', day: undefined, month: undefined })}</option><option value="custom">choose days</option>
+      </select></label> : null}
       {fixedArea || line.fixedArea ? null : <label>under<select value={line.area} onChange={(event) => line.setArea(event.target.value)} aria-label="The area to file it under">
         <option value="">no area</option>
         {ENTRY_AREAS.map((slug) => <option key={slug} value={slug}>{roomName(slug)}</option>)}
       </select></label>}
     </div>}
     <button type="submit" disabled={!line.text.trim() || line.state === 'saving'}>{line.state === 'saving' ? 'Saving…' : line.state === 'saved' ? 'Saved' : ADD[line.kind].button}</button>
+    {line.kind === 'plan' && line.repeat ? <div className="day-add-repeat">
+      {line.repeat === 'custom' ? <span className="day-add-days" role="group" aria-label="The days it comes round on">
+        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((name, index) => <button key={name} type="button" aria-pressed={line.repeatDays.includes(index + 1)} onClick={() => line.toggleRepeatDay(index + 1)}>{name}</button>)}
+      </span> : null}
+      <label>until<input type="date" value={line.until} min={line.day} onChange={(event) => line.setUntil(event.target.value)} aria-label="The last day it comes round (optional)" /></label>
+      <span>Leave “until” empty for no end. Each day can be ticked or taken off by itself.</span>
+    </div> : null}
     {line.hint ? <p className="day-add-hint">{line.hint}{line.area && line.kind !== 'buy' ? ` Filed under ${roomName(line.area)}.` : ''}</p> : null}
     {!line.hint && page.notice ? <p className="day-add-hint day-add-done" role="status">{page.notice}</p> : null}
     {page.error ? <p className="day-add-hint day-warn" role="alert">{page.error}</p> : null}
@@ -74,6 +85,7 @@ function Stop({ stop, onDone, onRemove, onStudy, busy, compact }) {
         {stop.place ? <span>{stop.place}</span> : null}
         {stop.when === 'now' ? <span className="day-now-tag">Now</span> : null}
         {stop.choice === 'maybe' ? <span>Maybe</span> : null}
+        {stop.entry?.routine ? <span>repeats</span> : null}
         {card?.done ? <span className="day-done-tag">Done</span> : null}
         {compact && detailed ? <span>{card.steps.length ? `${card.stepsDone} of ${card.steps.length} steps` : 'planned'}{card.hours ? ` · ${hours(card.hours)}` : ''}</span> : null}
       </p>
