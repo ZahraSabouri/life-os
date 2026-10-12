@@ -15,7 +15,7 @@
 - "Life OS" in the top bar leads to the first page from everywhere; inside the Study hub the words "Life OS" on the save button do too.
 - Inside the Study hub, JobMap, Budget and Cardiff Life, a strip under the top bar says what today holds for that part; its first line links to the thing it names.
 - **Not yet:** ticking a study step from the day; job time after 25 October (single blocks, not a routine); progress, review, planner and the focus room for the whole app (TODO section K, not started); marking a job "applied" from the day.
-- **Known fault of the evening:** the Study hub page was blank for about eight minutes (about 18:05 to 18:13) after a rebuild without its address setting. Rebuilt correctly; an open hub tab was not affected. The right command is in `Build Life OS.cmd`.
+- **Known fault of the evening:** the Study hub page was blank for about four minutes (17:13 to 17:17, by the build files' own times) after a rebuild without its address setting. Rebuilt correctly; an open hub tab was not affected. The right command is in `Build Life OS.cmd`.
 
 **Today, what works right now**
 - Top bar → Today. The day is a path in clock order with a "now" marker: classes, and the Study hub's study blocks, each opened to its card, steps and "done when". Under it: "Any time today", and one slim row for renewals and deadlines.
