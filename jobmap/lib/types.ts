@@ -2,4 +2,4 @@ export type Job={addedOn?:string;advertisedOn?:string;id:string;availability?:'o
 export type Profile={skills:string;focus:string;maxHours:number};
 export type Match={score:number;label:string;matched:string[];software:boolean;data:boolean;early:boolean;unpaid:boolean;contractor:boolean;overHours:boolean;fulltime:boolean;closed:boolean;hours:string;parttime:boolean;loc:number;locLabel:string;effort:number;effortLabel:string;cvOnly:boolean;assessments:boolean;cover:boolean;cautions:string[];reasons:string[];preferred:number|null;coreCount:number};
 
-export type PriorityAssessment={group:number;urgency:number;days:number|null;personal:number;personalLabel:string;label:string;reason:string};
+export type PriorityAssessment={group:number;availability:number;urgency:number;days:number|null;personal:number;personalLabel:string;label:string;reason:string};

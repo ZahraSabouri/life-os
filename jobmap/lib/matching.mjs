@@ -55,7 +55,10 @@ export function assess(job,profile=DEFAULT_PROFILE,today=dayNow()){
  return {score,label,matched,software,data,early,unpaid,contractor,closed,hours,parttime,overHours,fulltime,loc,locLabel,effort,effortLabel,cvOnly,assessments,cover,cautions,reasons,preferred,coreCount:core.length};
 }
 // Priority is an order of actions, independent of the match score.
-// Exact imminent dates lead; personal priority breaks ties, rather than hiding deadlines.
+// Roles confirmed open lead, then ones to check, then ones never checked since they were saved.
+// Inside each, exact imminent dates lead; personal priority breaks ties, rather than hiding deadlines.
+// An "open" result is only true on the day of the check, so an old one asks for another look.
+export const OPEN_CHECK_DAYS=14;
 /** @param {ReturnType<typeof assess> | undefined} [match] */
 export function assessPriority(job,match=undefined,today=dayNow()){
  match??=assess(job,DEFAULT_PROFILE,today);
@@ -67,17 +70,24 @@ export function assessPriority(job,match=undefined,today=dayNow()){
  const agreement=match.overHours||match.fulltime;
  const group=match.closed?4:submitted?3:outside?2:agreement?1:0;
  const urgency=days!==null&&Number.isFinite(days)&&days>=0&&days<=7?days:8;
- let label=urgency===0?'Closes today':urgency===1?'Closes tomorrow':urgency<8?'Closes in '+days+' days':'Review next';
- let reason=urgency<8?'This saved deadline is imminent; it takes precedence over your personal priority.':days===null?'No saved deadline; ordered by your personal priority and match.':'No deadline in the next 7 days; ordered by your personal priority and match.';
+ const sinceCheck=job.checked?-daysUntil(job.checked,today):null;
+ const checked=!job.checked||!Number.isFinite(sinceCheck)?'':job.checked.slice(0,4)===today.slice(0,4)?dateLabel(job.checked).slice(0,-5):dateLabel(job.checked);
+ const fresh=sinceCheck!==null&&sinceCheck<=OPEN_CHECK_DAYS;
+ // 0 confirmed open, 1 needs a check, 2 never checked. Sent and closed jobs are not ordered by it.
+ const availability=group>2?0:job.availability==='open'&&fresh?0:job.availability==='open'||job.availability==='uncertain'?1:2;
+ const state=availability===0?'Open when checked'+(checked?' on '+checked:''):job.availability==='uncertain'?'Check it is still open':availability===1?'Open'+(checked?' on '+checked:' earlier')+'; check again':checked?'Not checked since '+checked:'Not checked yet';
+ const soon=urgency===0?'closes today':urgency===1?'closes tomorrow':urgency<8?'closes in '+days+' days':'';
+ let label=(availability===0?'Apply now':state)+(soon?' · '+soon:'');
+ let reason=availability===0?'The advert was open when last checked'+(checked?' on '+checked:'')+', so it comes before roles nobody has confirmed.':(job.availability==='uncertain'?'The last check'+(checked?' on '+checked:'')+' could not confirm the advert is open.':availability===1?'The advert was open'+(checked?' on '+checked:'')+', more than '+OPEN_CHECK_DAYS+' days ago.':'This advert has not been checked since it was saved'+(checked?' on '+checked:'')+'.')+' Availability needs checking on the original advert; it sits below roles confirmed open.';
+ reason+=urgency<8?' Its saved deadline is within 7 days, so it leads its group ahead of your personal priority.':days===null?' No saved deadline; ordered by your personal priority and match.':' No deadline in the next 7 days; ordered by your personal priority and match.';
  if(group===4){label='Closed';reason='The advert is closed or its saved deadline has passed; it is below jobs you can still pursue.';}
  else if(group===3){label='Application already sent';reason='An application is recorded as sent; it stays below unsent applications. Use Follow-ups for your next action.';}
- else if(group===2){label='Outside current search';reason='Graduate, unpaid or freelance evidence puts this below current paid employee leads, even with a near deadline.';}
- else if(group===1){label='Hours need agreement';reason='Advertised hours exceed your preference or are full-time; current part-time possibilities come first.';}
- if(group<2&&job.availability==='uncertain')reason+=' Availability needs checking on the original advert.';
- return {group,urgency,days,personal,personalLabel,label,reason};
+ else if(group===2){label='Outside current search · '+state.charAt(0).toLowerCase()+state.slice(1);reason='Graduate, unpaid or freelance evidence puts this below current paid employee leads, even with a near deadline.';}
+ else if(group===1){label='Hours need agreement · '+state.charAt(0).toLowerCase()+state.slice(1);reason='Advertised hours exceed your preference or are full-time; current part-time possibilities come first. '+(availability===0?'The advert was open when last checked'+(checked?' on '+checked:'')+'.':'Availability needs checking on the original advert.');}
+ return {group,availability,urgency,days,personal,personalLabel,label,reason};
 }
 function comparePriority(a,b){
- return a.priority.group-b.priority.group||a.priority.urgency-b.priority.urgency||a.priority.personal-b.priority.personal||b.match.score-a.match.score||Number(!!b.job.saved)-Number(!!a.job.saved)||(reviewDeadline(a.job)||'9999').localeCompare(reviewDeadline(b.job)||'9999');
+ return a.priority.group-b.priority.group||a.priority.availability-b.priority.availability||a.priority.urgency-b.priority.urgency||a.priority.personal-b.priority.personal||b.match.score-a.match.score||Number(!!b.job.saved)-Number(!!a.job.saved)||(reviewDeadline(a.job)||'9999').localeCompare(reviewDeadline(b.job)||'9999');
 }
 export function selectJobs(jobs,{view='all',scope='parttime',source='',search='',sort='priority',status=''},profile=DEFAULT_PROFILE,today=dayNow()){
  const q=search.toLowerCase().trim();

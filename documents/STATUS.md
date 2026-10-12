@@ -37,7 +37,7 @@ Active brief: `briefs/stage-4b-one-look.md` (CP1 to CP3 done and live; her detai
 **JobMap, what works right now**
 - The 12 October public search and subsequent 122-message Gmail review found no new verified qualifying additions. Both interfaces remain at 1,066 jobs, shared revision 30. Three application updates are in `sessions/2026-10-12-codex-jobmap-email-accounts-review.md`; Cardiff Outlook, Student Futures and signed-in portals remain unchecked after a browser URL-policy stop.
 - Searches are tech/data only. On 11 October one Dataspire software role was imported into each copy; six previously identified off-field leads were archived and unsaved reversibly. Personal progress was preserved. Details: `sessions/2026-10-11-codex-jobmap-tech-scope.md`.
-- Both JobMap apps hold the same 1,066 source records and shared feature code (checked 12 October). My priority is the default: imminent deadlines first among current part-time possibilities, then personal priority and match, with a reason on every row. Dates, filters and Life OS styles are retained.
+- Both JobMap apps hold the same 1,067 records and shared feature code (parity checked 12 October, shared revision 33). My priority is the default. Since 12 October it puts roles confirmed open first ("Apply now", an open check in the last 14 days), then roles to check, then ones not checked since they were saved; inside each, imminent deadlines first, then personal priority and match, with a reason on every row. The line above the list counts the roles ready to apply for (16 on 12 October). Details and four questions for Xar: `sessions/2026-10-12-claude-code-jobmap-open-first.md`. Dates, filters and Life OS styles are retained.
 - It holds the jobs and choices from both places JobMap was used (the standalone app and Life OS), each vacancy once.
 - It looks like the Study hub, and changes with the Style menu (Madder, Indigo, Paper, Modern) at once.
 
@@ -102,6 +102,7 @@ To try a change without touching her data: `node .runtime/hub-dev/copy-live-to-t
 - Original app, untouched: `Documents\Apply\…\Summer_Rescue_Campaign_2026\summer-rescue-plan-app`.
 
 ## Last five sessions
+- 2026-10-12 JobMap: My priority puts roles confirmed open first: `sessions/2026-10-12-claude-code-jobmap-open-first.md`
 - 2026-10-12 The Court as the working first page; today in every part; shopping and job time (2b CP5): `sessions/2026-10-12-claude-code-stage-2b-the-court-unified.md`
 - 2026-10-12 Light and dark, the to-do list, the day's connections (2b CP3, CP4): `sessions/2026-10-12-claude-code-stage-2b-dark-and-connections.md`
 - 2026-10-12 Check of Codex's autumn study plan: `sessions/2026-10-12-claude-code-study-plan-check.md`

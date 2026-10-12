@@ -11,6 +11,7 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 4. **C. Shopping, meals and money on the day:** the list exists and is added to from anywhere (12 October). Next: ticking as bought, recipes and tonight's meal, "left to spend".
 5. **D. The first pages:** the Modern Court is the working first page (12 October). Next: the same for Madder, Indigo and Paper, each in its own design.
 6. **F, G, H** as they come up; none blocks her this month except backups.
+7. **I. Applying now:** the order is fixed (12 October). Next: her four answers.
 
 ---
 
@@ -118,9 +119,21 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 - [ ] AI capture ("speak or type naturally"), voice, an MCP server over Life OS. Still the heart of the Vision; parked on purpose.
 - [ ] Motion, a moodboard, the app's real name.
 
+## I. Applying for the roles that are open, now
+> "I feel like the priorities are a bit messed up in the job app. I need to immidiately apply for the roles available soooo#" (12 October; the message was cut off)
+
+- [x] **My priority puts roles confirmed open first** (12 October, both JobMap copies): "Apply now" for an open check in the last 14 days, then "Check it is still open", then "Not checked since 13 Sept". Deadlines lead inside each. The line above the list counts the roles ready to apply for.
+- [ ] **(Xar)** The rest of her sentence: what else about the order feels wrong.
+- [ ] **(Xar)** High/Low/Later on the first 980 jobs come from the September workbook, not from her (she has set none). Clear them, so the setting only means hers?
+- [ ] **(Xar)** 9 confirmed-open roles are full-time or over her hours; 8 of them are not in "Part-time leads" (they are in Shortlist, under "Hours need agreement"). Show them in the first list?
+- [ ] **(Xar)** Two vacancies are saved twice, from two sites (Cardiff University's Professional Specialist; Admiral Money's Senior Software Engineer). Archive the second copy of each?
+- [ ] **(Xar)** 12 part-time leads from September were never checked. Have a search check them, or archive them?
+- [ ] The same order on Today's Jobs panel (B: "Jobs panel as a work list"). It now only lists closing dates.
+
 ## Waiting on Xar, gathered
 1. Nothing is waiting on her from 12 October's six questions; all were answered that day.
 2. The summer study data still keeps aside what is not study: 131 life and admin cards, 100 schedule rules, the interview module, 6 notes. She said the study part "has nothing to do with anything other than studying". Where do these go: Life OS tasks and notes, or an archive file?
 3. Job time after 25 October: keep adding two weeks at a time, or make it a repeating routine?
 4. Her detailed check of the look, and of the new Court.
+5. JobMap, four questions in section I: the September settings, full-time roles in the first list, the doubled vacancies, the unchecked September leads.
 

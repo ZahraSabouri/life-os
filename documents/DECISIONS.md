@@ -4,6 +4,14 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 12 October 2026 (late afternoon) — JobMap: roles confirmed open come first (Xar with Claude Code)
+
+- **Xar:** "I feel like the priorities are a bit messed up in the job app. I need to immidiately apply for the roles available soooo#" (cut off there).
+- **What was wrong:** My priority ordered by deadline and never by whether a role is open. Of the first 50 rows, 27 had not been checked since the September import.
+- **Now:** among current part-time possibilities, roles confirmed open in the last 14 days lead ("Apply now"), then roles to check, then ones never checked. This sits above the 9 October rule (closing today, tomorrow, within 7 days; then her setting, match, shortlist), which is otherwise unchanged. Both copies.
+- **Mine, not hers (to be confirmed):** the 14 days; keeping part-time possibilities above confirmed-open full-time roles; keeping deadline before fit among the open roles.
+- **Not decided:** whether to clear the September workbook's High/Low/Later (she has set none herself), and three more questions in `TODO.md` section I.
+
 ## 12 October 2026 (afternoon) — The Court itself is the working first page; no borders between the parts (Xar with Claude Code)
 
 - **Xar:** "i still cannot see any meaningful changes for what i asked you initially in case of unifying all apps and making it genuinely functioning as a life os." And, to my question of which page opens first: "court. but today can be also shortly or minorly [embedded] in the court! why are you stuck to these questions and this specific way of implementation and design and sorta borders?"
