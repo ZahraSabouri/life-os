@@ -1,21 +1,24 @@
 // The Guide's diagrams: drawn by the page from the style's own colours, so they follow the
-// style and dark mode. Each is named by a step's `figure` in guide/chapters.js.
+// style and dark mode. Each is named by a step's `figure` in guide/chapters.js. Their boxes
+// are links: to the part's page in the Guide, or to the page of the app itself.
+import { Link } from 'react-router-dom'
 
 // What each part keeps, and where in Life OS it then shows.
 function PartsMap() {
   const rows = [
-    ['Study hub', 'cards, study blocks, classes, tests', ['Today: the day’s path and Study', 'Calendar', 'Review and Analysis', 'The bell']],
-    ['JobMap', 'jobs to apply for, closing dates, follow-ups', ['Today: Jobs', 'Calendar', 'Review and Analysis', 'The bell']],
-    ['Budget', 'shopping lists, meals, food at home, money', ['Today: Home', 'Calendar (renewals)', 'Review and Analysis', 'The bell']],
-    ['Cardiff Life', 'events you chose or added', ['Calendar', 'Today: “Also today”', 'Court: Ahead']],
-    ['Life OS itself', 'your plans, notes, repeating plans, focus time', ['Court, Today, Plan the week', 'Ledger', 'Review and Analysis']],
+    ['Study hub', 'cards, study blocks, classes, tests', ['Today: the day’s path and Study', 'Calendar', 'Review and Analysis', 'The bell'], 'study'],
+    ['JobMap', 'jobs to apply for, closing dates, follow-ups', ['Today: Jobs', 'Calendar', 'Review and Analysis', 'The bell'], 'jobmap'],
+    ['Budget', 'shopping lists, meals, food at home, money', ['Today: Home', 'Calendar (renewals)', 'Review and Analysis', 'The bell'], 'budget'],
+    ['Cardiff Life', 'events you chose or added', ['Calendar', 'Today: “Also today”', 'Court: Ahead'], 'cardiff'],
+    ['Life OS itself', 'your plans, notes, journal, people, focus time', ['Court, Today, Plan the week', 'Journal and People', 'Review and Analysis'], 'court'],
   ]
+  const page = (words) => (/^Today/.test(words) ? '/today' : /^Calendar/.test(words) ? '/calendar' : /^Review/.test(words) ? '/review' : /^Court/.test(words) ? '/court' : /^Journal/.test(words) ? '/journal' : /bell/.test(words) ? '/guide/focus' : '/guide')
   return <div className="guide-figure guide-map" role="img" aria-label={`What each part gives to Life OS: ${rows.map(([part, gives, shows]) => `${part} gives ${gives}, shown on ${shows.join(', ')}`).join('. ')}`}>
     <div className="guide-map-heads" aria-hidden="true"><span>Where it is kept</span><span>What flows in</span><span>Where you see it in Life OS</span></div>
-    {rows.map(([part, gives, shows]) => <div className="guide-map-row" key={part} aria-hidden="true">
-      <div className="guide-box is-part">{part}</div>
-      <div className="guide-arrow"><span>{gives}</span></div>
-      <ul className="guide-box is-pages">{shows.map((page) => <li key={page}>{page}</li>)}</ul>
+    {rows.map(([part, gives, shows, id]) => <div className="guide-map-row" key={part}>
+      <Link className="guide-box is-part" to={`/guide/${id}`} title={`How ${part} works`}>{part}</Link>
+      <div className="guide-arrow" aria-hidden="true"><span>{gives}</span></div>
+      <ul className="guide-box is-pages">{shows.map((words) => <li key={words}><Link to={page(words)}>{words}</Link></li>)}</ul>
     </div>)}
   </div>
 }
@@ -43,7 +46,7 @@ const DAY = [
   { when: 'Now and then', title: 'Analysis', note: 'Look at weeks of data, or take it as a file.' },
 ]
 const STUDY = [
-  { title: 'A card', note: 'Made in the Study hub (“Add card”), or by your agents.' },
+  { title: 'A card', note: 'Made in the Study hub with “Add card”.' },
   { title: 'Time on the plan', note: 'A study block on a day, in the hub’s planner.' },
   { title: 'Steps ticked', note: 'On Today or in the hub. Both stay in step.' },
   { title: 'Focus time', note: 'The timer adds its minutes to the card.' },

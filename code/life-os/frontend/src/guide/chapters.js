@@ -1,4 +1,5 @@
-// The Guide's words. Each chapter is one part of Life OS; each step says what to do and shows it:
+// The Guide's words, written for the person using Life OS. Each chapter is one part of Life OS,
+// shown on a page of its own; each step says what to do and shows it:
 // with a picture taken from the running app (`image`), or with a diagram drawn by the page
 // (`figure`). `marks` name the numbered circles drawn on a picture, in order.
 // The pictures are taken by scripts/guide-shots.mjs, which has one recipe for every `image`
@@ -9,13 +10,13 @@ export const CHAPTERS = [
     steps: [
       { title: 'How the parts fit together', figure: 'map', text: 'The four apps on the left keep what belongs to them. What matters today flows into the pages of Life OS on the right. You can add and change things on either side.' },
       { title: 'A day with Life OS', figure: 'day', text: 'A way to use it from morning to night. None of it is required; each step is one click from the top bar.' },
-      { title: 'Where to add what', figure: 'where', text: 'Anything your agents or files add, you can add by hand too. This is where each kind of thing is added, and where it shows afterwards.' },
+      { title: 'Where to add what', figure: 'where', text: 'Everything in Life OS can be added by hand. This is where each kind of thing is added, and where it shows afterwards.' },
     ],
   },
   {
     id: 'top-bar', title: 'Finding your way', intro: 'The bar at the top is on every page. Everything in Life OS is one click from it.',
     steps: [
-      { title: 'The top bar', image: 'topbar.jpg', marks: ['“Life OS” goes to the Court from anywhere', 'The pages of Life OS itself', 'The four apps inside', 'The bell: notices from every part', 'Focus: the timer', 'This Guide', 'Style, and Light or Dark', 'Divan: the opening page'], text: 'On a narrower window the date steps aside and Style and Light/Dark show only their marks, so the bar stays on one line.' },
+      { title: 'The top bar', image: 'topbar.jpg', marks: ['“Life OS” goes to the Court from anywhere', 'The pages of Life OS itself: Court, Today, Calendar, Review, Journal, People', 'The four apps inside', 'The bell: notices from every part', 'Focus: the timer', 'This Guide', 'Style, and Light or Dark', 'Divan: the opening page'], text: 'On a narrower window the date steps aside and Style and Light/Dark show only their marks, so the bar stays on one line.' },
       { title: 'The strip under the bar', image: 'strip.jpg', text: 'Inside one of the four apps, a strip says what matters there today: what is due, what closes, what is next. Its first line is a link to the thing it names. “The whole day” on its right opens Today.' },
     ],
   },
@@ -51,7 +52,23 @@ export const CHAPTERS = [
     id: 'calendar', title: 'Calendar', intro: 'Every dated thing from every part in one calendar.',
     steps: [
       { title: 'One calendar for everything', image: 'calendar.jpg', marks: ['Month, a list (“Agenda”), or the week', 'What each kind of mark means'], text: 'Study blocks, classes, tests, job deadlines, time set aside, your plans, Cardiff events you chose or added, and renewals from Budget. Click a thing to open it where it lives.' },
+      { title: 'Add an event to the calendar', image: 'calendar-add.jpg', text: 'On the Calendar page, “Add a Life OS event” takes a title and a day: a trip, a seminar, an appointment, a date to remember. A plan with a time added anywhere else (“dinner at 8pm”) is on the calendar too, and so is every birthday from People.' },
       { title: 'An area’s own page', image: 'room.jpg', text: 'Every area (Relationships, Travel, Home, Life admin and the rest) has a page: what is coming up, what has no day yet, what is done. A plan filed “under” an area shows here.' },
+    ],
+  },
+  {
+    id: 'journal', title: 'Journal', intro: 'A page for a day, in your own words, with a mood and pictures if you like.',
+    steps: [
+      { title: 'Write a page', image: 'journal.jpg', marks: ['The day the page is for (today, or an earlier day)', 'How it felt, in a word (optional)', 'The page itself', 'Add pictures from your computer or phone', 'Save the page'], text: 'Open Journal in the top bar. A page needs words or a picture, nothing more.' },
+      { title: 'Read back, change, add pictures', image: 'journal-pages.jpg', text: 'Pages are listed by month, newest first. Under each page: “Change” (its words, mood and day), “Add pictures”, and “Remove”. Click a picture to see it large; “Remove this picture” is under the large picture. “Find” looks for words in any page.' },
+      { title: 'All your pictures', image: 'journal-pictures.jpg', text: '“Pictures” shows every picture from every page, newest first, each with its day.' },
+    ],
+  },
+  {
+    id: 'people', title: 'People', intro: 'The people in your life, and what you want to remember about them.',
+    steps: [
+      { title: 'Add a person', image: 'people.jpg', marks: ['Only a name is needed', 'A birthday goes on your calendar every year', 'How you know them, and how to reach them', 'Notes: gift ideas, what they like'], text: 'Open People in the top bar.' },
+      { title: 'Birthdays coming up, and everyone', image: 'people-list.jpg', text: '“Birthdays in the next two months” lists who is next and how old they turn. Under it is everyone, with “Change” and “Remove”. A birthday also shows on the Calendar, on Today, and in the bell on the day and the day before.' },
     ],
   },
   {
@@ -73,7 +90,7 @@ export const CHAPTERS = [
     ],
   },
   {
-    id: 'ledger', title: 'Ledger', intro: 'Everything you filed in Life OS itself: notes, plans, tasks, repeating plans, meals.',
+    id: 'ledger', title: 'Ledger', intro: 'Everything you filed in Life OS itself: notes, plans, tasks, repeating plans, journal pages, meals. Open it from the Journal page.',
     steps: [
       { title: 'File and find', image: 'ledger.jpg', marks: ['Type here to file a note', 'Show one kind of entry, or find words', '“Change” and “Remove” on every entry'], text: 'The Ledger lists every entry, newest first, sixty at a time.' },
       { title: 'Change or remove an entry', image: 'ledger-change.jpg', text: '“Change” opens the entry in place: its title, text, day, clock time and state. “Remove” asks once more, then removes it for good.' },
@@ -84,7 +101,7 @@ export const CHAPTERS = [
     steps: [
       { title: 'Focus', image: 'focus.jpg', text: 'Click Focus in the top bar. Say what the time is for, choose the minutes, and start. It keeps running while you move between pages and apps. A study card can be chosen, and the time is then added to that card. Sound: paste a link from YouTube or another site and it plays while you work.' },
       { title: 'The bell', image: 'notices.jpg', text: 'The bell lists what needs you from every part: what is on now or soon, tests coming, cards due tomorrow, cards that have waited too long, jobs closing, plans left over, money. The number on the bell is how many are new.' },
-      { title: 'Notices from Windows, with no Life OS page open', figure: 'notices', text: 'When no Life OS page is open in your browser, Windows itself shows a small box in the corner of the screen, under the name “Life OS”. Clicking it opens Life OS. It works for as long as Life OS is running on this computer. The switch for it is at the bottom of the bell’s panel.' },
+      { title: 'Notices when Life OS is not open', figure: 'notices', text: 'When Life OS is not open in your browser, Windows shows a small box in the corner of your screen. Clicking it opens Life OS. The switch for it is at the bottom of the bell’s panel.' },
     ],
   },
   {
@@ -110,12 +127,12 @@ export const CHAPTERS = [
     ],
   },
   {
-    id: 'cardiff', title: 'Cardiff Life', intro: 'Events and communities in Cardiff: the ones your agents researched, and the ones you add.',
+    id: 'cardiff', title: 'Cardiff Life', intro: 'Events and communities in Cardiff: a researched list to choose from, and the events you add yourself.',
     steps: [
       { title: 'A week in Cardiff', image: 'cardiff.jpg', marks: ['The pages of Cardiff Life', 'Move between weeks', 'Add an event of your own', 'Show or hide what else is on'], text: '“Maybe” keeps an event open; “Plan to go” puts it in your plan and on the Life OS calendar.' },
       { title: 'Add my own event', image: 'cardiff-add.jpg', text: 'Only the name is needed; day, time, place, kind, cost, link and notes can be filled in later. It is kept in Life OS and shows on your calendar.' },
       { title: 'Change or remove it', image: 'cardiff-detail.jpg', text: 'Open an event you added to see “Change this event” and “Remove this event”. A note of your own can be kept with any event you chose.' },
-      { title: 'All choices', image: 'cardiff-choices.jpg', text: 'Every researched event, with filters by kind, date, source and price, and a search. “Saved” shows only what you chose.' },
+      { title: 'All choices', image: 'cardiff-choices.jpg', text: 'Every event on the list, with filters by kind, date, source and price, and a search. “Saved” shows only what you chose.' },
       { title: 'Communities', image: 'cardiff-communities.jpg', text: 'Clubs, societies and groups worth knowing, each with a link.' },
     ],
   },
@@ -146,4 +163,45 @@ export const CHAPTERS = [
   },
 ]
 
+// Where "Open …" on a part's page leads: a page of the app, or one of the two panels of the top bar.
+export const PART_OPENS = {
+  'top-bar': ['/court', 'Open the Court'], court: ['/court', 'Open the Court'], today: ['/today', 'Open Today'], planner: ['/planner', 'Open Plan the week'],
+  calendar: ['/calendar', 'Open the Calendar'], journal: ['/journal', 'Open the Journal'], people: ['/people', 'Open People'], review: ['/review', 'Open Review'],
+  analysis: ['/review?view=analysis', 'Open Analysis'], ledger: ['/ledger', 'Open the Ledger'], focus: ['panel:focus', 'Open the timer'],
+  study: ['/study', 'Open the Study hub'], cardiff: ['/cardiff-life', 'Open Cardiff Life'], budget: ['/budget', 'Open Budget'], jobmap: ['/jobmap', 'Open JobMap'],
+}
+// A step that has a place of its own, by its picture.
+export const STEP_OPENS = {
+  'notices.jpg': ['panel:notices', 'Open the bell'], 'focus.jpg': ['panel:focus', 'Open the timer'], 'room.jpg': ['/room/home', 'Open the Home area'],
+  'study-schedule.jpg': ['/study#/schedule', 'Open the schedule'], 'study-planner.jpg': ['/study#/planner', 'Open the hub’s planner'], 'study-progress.jpg': ['/study#/progress', 'Open Progress'], 'study-setup.jpg': ['/study#/setup', 'Open Semester setup'],
+  'review-eight.jpg': ['/review', 'Open Review'], 'analysis-files.jpg': ['/review?view=analysis', 'Open Analysis'], 'planner-repeating.jpg': ['/planner', 'Open Plan the week'],
+}
+
+// "How do I…?": the things people come to do, each answered in a few steps, with the picture that
+// shows it and a button that goes to the place. `part` is the chapter that says more.
+export const TASKS = [
+  { id: 'add-plan', q: 'Add a plan for today or another day', part: 'court', open: ['/today', 'Do it on Today'], images: ['court-add.jpg'], steps: ['On the Court or Today, find the line at the top and keep “Plan” chosen.', 'Type it the way you would say it: “17:30 library”, “dinner at 8pm”, “Lidl”.', 'Under “for”, choose the day. Under “under”, choose the area it belongs to, if you like.', 'Press Add. It is on that day and on the calendar.'] },
+  { id: 'repeat-plan', q: 'Make a plan that repeats every week', part: 'court', open: ['/today', 'Do it on Today'], images: ['court-repeat.jpg', 'planner-repeating.jpg'], steps: ['Type the plan in the add line, with its time: “18:00 gym”.', 'Under “repeat”, choose every day, weekdays, one weekday, or “choose days” and press the days.', '“until” is the last day; leave it empty for no end.', 'To change or stop it later: Plan the week → Repeating plans → Change, or Stop after today.'] },
+  { id: 'to-buy', q: 'Put something on my shopping list', part: 'court', open: ['/today', 'Do it on Today'], images: ['court-add.jpg', 'today-home.jpg'], steps: ['In the add line, choose “To buy”.', 'Type the things with commas between: “eggs, rice, 2 kg onions”.', 'Press Add. Each becomes a line on your shopping list in Budget.', 'Tick it off on Today (the Home panel) or in Budget when you have it. No price is needed.'] },
+  { id: 'journal-page', q: 'Write in my journal, with a picture', part: 'journal', open: ['/journal', 'Open the Journal'], images: ['journal.jpg', 'journal-pages.jpg'], steps: ['Open Journal in the top bar.', 'Write in the large box. “How it felt” takes one word, if you like.', 'Press “Add pictures” and choose one or more from your computer or phone.', 'Press “Save the page”. It appears under the box, with its pictures.'] },
+  { id: 'add-person', q: 'Add a person and their birthday', part: 'people', open: ['/people', 'Open People'], images: ['people.jpg', 'people-list.jpg'], steps: ['Open People in the top bar.', 'Type the name. Add the birthday if you know it.', 'Press Add.', 'The birthday is now on your calendar every year, and the bell tells you the day before and on the day.'] },
+  { id: 'add-event', q: 'Add an event or a date to the calendar', part: 'calendar', open: ['/calendar', 'Open the Calendar'], images: ['calendar-add.jpg'], steps: ['Open Calendar in the top bar.', 'In “Add a Life OS event”, type the title and choose the day.', 'Press the button beside it. The event is on that day.', 'For something with a clock time, the add line on Today is quicker: “dentist 14:30”, with the day under “for”.'] },
+  { id: 'move-plan', q: 'Move a plan to another day, or change it', part: 'planner', open: ['/planner', 'Open Plan the week'], images: ['planner-menu.jpg', 'today-change.jpg'], steps: ['Open Plan the week (from Review or Today).', 'Drag the plan to another day, or press its ⋯ and choose the day under “Move to”.', 'To change its words or time, press “Change” in the same menu, or under the plan on Today.'] },
+  { id: 'tick-study', q: 'Tick a study step, or finish a card', part: 'today', open: ['/today', 'Open Today'], images: ['today-path.jpg'], steps: ['On Today, find the study block in “Your day”.', 'Tick each step as you finish it.', 'Press “Card done” when the whole card is finished.', 'The Study hub shows the same ticks; nothing has to be entered twice.'] },
+  { id: 'add-study', q: 'Add a study card, a class or a test', part: 'study', open: ['/study#/setup', 'Open Semester setup'], images: ['study-addcard.jpg', 'study-setup.jpg'], steps: ['Open the Study hub.', 'For a card: press “Add card” at the top and fill in its title, module and dates.', 'For a class, a test or a deadline: open “Semester setup” in the hub’s menu and press the add button of that list.', 'Classes and tests then show on the Calendar and on Today.'] },
+  { id: 'job-applied', q: 'Mark a job as applied, or rejected', part: 'jobmap', open: ['/today', 'Do it on Today'], images: ['today-jobs.jpg', 'jobmap-details.jpg'], steps: ['On Today, find the job in the Jobs panel and press “I applied”.', 'The line that confirms it has “Undo”.', 'For any other status (Interview, Offer, Rejected): open the job in JobMap and choose it under “Status”.'] },
+  { id: 'job-files', q: 'Keep my CV and other files with a job', part: 'jobmap', open: ['/jobmap', 'Open JobMap'], images: ['jobmap-application.jpg'], steps: ['Open the job in JobMap.', 'Open “My application: files, folder and links”.', 'Press “Add files” and choose the CV you sent, the cover letter, the advert.', 'They stay with the job. Click one to open it; “Remove” takes it off.'] },
+  { id: 'job-categories', q: 'Sort jobs with my own categories', part: 'jobmap', open: ['/jobmap', 'Open JobMap'], images: ['jobmap-details.jpg', 'jobmap.jpg'], steps: ['Open a job in JobMap.', 'In “My categories”, type your own words with commas between: “NHS, remote”.', 'Each becomes a label on the job.', 'Above the list, a filter with your categories appears; choose one to see only those jobs.'] },
+  { id: 'cardiff-event', q: 'Add an event of my own in Cardiff Life', part: 'cardiff', open: ['/cardiff-life', 'Open Cardiff Life'], images: ['cardiff-add.jpg', 'cardiff-detail.jpg'], steps: ['Open Cardiff Life and press “+ Add my own event”.', 'Type its name. Day, time, place and the rest can wait.', 'Press “Add it to my plan”.', 'It is in your week there and on the Life OS calendar. Open it again to change or remove it.'] },
+  { id: 'bought', q: 'Record what I bought', part: 'budget', open: ['/budget', 'Open Budget'], images: ['budget-shopping.jpg', 'budget-receipts.jpg'], steps: ['Open Budget → Shopping.', 'Tick the lines you have. For the prices, press “Record what I bought”.', 'The receipt is under Shopping → Receipts, and the month’s spending follows it.'] },
+  { id: 'focus-timer', q: 'Start a focus timer, with sound', part: 'focus', open: ['panel:focus', 'Open the timer'], images: ['focus.jpg'], steps: ['Press Focus in the top bar.', 'Say what the time is for, or choose a study card.', 'Choose the minutes and start. It keeps counting on every page.', 'For sound, paste a link under Sound and press play.'] },
+  { id: 'what-now', q: 'See what needs me right now', part: 'focus', open: ['panel:notices', 'Open the bell'], images: ['notices.jpg'], steps: ['Press the bell in the top bar.', 'The list is in order: on now, soon, asked of today, slipped, close ahead.', 'Click a line to go to the thing itself.'] },
+  { id: 'look-back', q: 'Look back on my week', part: 'review', open: ['/review', 'Open Review'], images: ['review.jpg', 'review-days.jpg'], steps: ['Open Review in the top bar.', 'The five tiles compare this week with the week before.', '“Day by day” has every measure for each day; “What slipped” lists what was left.', '“The week before” moves back a week.'] },
+  { id: 'my-data', q: 'Take my data as a file', part: 'analysis', open: ['/review?view=analysis', 'Open Analysis'], images: ['analysis-files.jpg'], steps: ['Open Review, then “Analysis”.', 'Choose the stretch of days at the top.', 'At the bottom, under “Take the data”, press the file you want.'] },
+  { id: 'change-filed', q: 'Change or remove something I filed', part: 'ledger', open: ['/ledger', 'Open the Ledger'], images: ['ledger.jpg', 'ledger-change.jpg'], steps: ['Open Journal, then “the Ledger”.', 'Find it with “Kind” or “Find”.', 'Press “Change” to edit it in place, or “Remove”, which asks once more.'] },
+  { id: 'look', q: 'Change how Life OS looks', part: 'styles', open: null, images: ['styles.jpg'], steps: ['Press “Style” in the top bar.', 'Choose Madder, Indigo, Paper or Modern.', 'In Modern, the button beside it switches between Light and Dark.'] },
+]
+
 export const GUIDE_IMAGES = CHAPTERS.flatMap((chapter) => chapter.steps.filter((step) => step.image).map((step) => step.image))
+// The parts in the groups the Guide's first page shows them in.
+export const GROUPS = [['Start here', ['big-picture', 'top-bar']], ['Your days', ['court', 'today', 'planner', 'calendar']], ['Your life', ['journal', 'people', 'ledger']], ['Looking back', ['review', 'analysis']], ['Everywhere', ['focus', 'styles']], ['The apps inside', ['study', 'cardiff', 'budget', 'jobmap']]]

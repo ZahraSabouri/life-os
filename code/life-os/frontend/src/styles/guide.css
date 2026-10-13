@@ -107,3 +107,72 @@
   .guide-notices { grid-template-columns: minmax(0, 1fr); }
   .guide-flow-branch { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ---- The Guide in parts: a first page that finds things, and a page for each part ---- */
+.guide-page > .day-panel > header { display: block; margin: 0 0 0.9rem; }
+.guide-page > .day-panel > header h2 { margin: 0 0 0.2rem; color: var(--m-ink); font: var(--m-title-weight, 600) 1.3rem/1.2 var(--m-title-font, var(--m-font)); }
+.guide-page > .day-panel > header p { margin: 0; color: var(--m-muted); font: 400 0.9rem/1.5 var(--m-font); }
+.guide-find label { display: grid; gap: 0.4rem; }
+.guide-find label > span { color: var(--m-ink); font: var(--m-title-weight, 600) 1.15rem/1.3 var(--m-title-font, var(--m-font)); }
+.guide-find input { width: 100%; box-sizing: border-box; padding: 0.75rem 1rem; border: 1px solid var(--m-line-strong, var(--m-line)); border-radius: var(--m-radius-control, 8px); background: var(--m-surface); color: var(--m-ink); font: 400 1.05rem/1.4 var(--m-font); }
+.guide-find input:focus-visible { outline: 2px solid var(--m-accent); outline-offset: 1px; }
+.guide-found { margin: 0.5rem 0 0; color: var(--m-muted); font: 400 0.86rem/1.4 var(--m-font); }
+.guide-sub { margin: 1.2rem 0 0.5rem; color: var(--m-muted); font: 600 0.74rem/1.3 var(--m-font); letter-spacing: 0.06em; text-transform: uppercase; }
+.guide-group:first-of-type .guide-sub { margin-top: 0.2rem; }
+/* How do I…? */
+.guide-tasks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); gap: 0 2rem; }
+.guide-task { border-top: 1px solid var(--m-line); min-width: 0; }
+.guide-task[open] { grid-column: 1 / -1; padding-bottom: 1rem; }
+.guide-task summary { cursor: pointer; padding: 0.7rem 0; color: var(--m-ink); font: 600 0.95rem/1.35 var(--m-font); list-style-position: outside; }
+.guide-task summary:hover { color: var(--m-accent-strong); }
+.guide-task-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.8rem 2rem; align-items: start; padding-left: 0.2rem; }
+.guide-task-body ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 0.4rem; color: var(--m-ink); font: 400 0.92rem/1.55 var(--m-font); max-width: 44rem; }
+.guide-task-body ol li::marker { color: var(--m-accent-strong); font-weight: 650; }
+.guide-task-side { display: grid; gap: 0.6rem; justify-items: start; }
+.guide-task-pictures { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: flex-start; }
+.app-shell .guide-picture.is-small { margin: 0; max-width: min(100%, 30rem); }
+.app-shell .guide-picture.is-small img { max-height: 15rem; width: auto; }
+.guide-more { color: var(--m-accent-strong); font: 500 0.82rem/1.4 var(--m-font); }
+.app-shell .guide-go { display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid var(--m-accent); border-radius: var(--m-radius-control, 8px); background: transparent; color: var(--m-ink); cursor: pointer; padding: 0.42rem 0.9rem; min-height: 0; font: 600 0.84rem/1.2 var(--m-font); letter-spacing: 0; text-transform: none; white-space: nowrap; }
+.app-shell .guide-go.is-primary { background: var(--m-accent); color: var(--m-on-accent, #fff); }
+.app-shell .guide-go:hover { filter: brightness(0.95); }
+.guide-step-go { margin: 0.6rem 0 0; }
+.guide-step-links { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 0.2rem 1.5rem; }
+.guide-step-links li { display: grid; padding: 0.35rem 0; }
+.guide-step-links a { color: var(--m-ink); font: 600 0.9rem/1.35 var(--m-font); }
+.guide-step-links small { color: var(--m-muted); font-size: 0.76rem; }
+/* The parts, as cards with their first picture. */
+.guide-parts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0.9rem; }
+.guide-part-card { display: grid; grid-template-rows: auto auto 1fr auto; gap: 0.3rem; height: 100%; box-sizing: border-box; padding: 0 0 0.8rem; border: 1px solid var(--m-line); border-radius: var(--m-radius, 12px); background: var(--m-surface); color: inherit; text-decoration: none; overflow: hidden; }
+.guide-part-card:hover { border-color: var(--m-accent); }
+.guide-part-card img, .guide-part-blank { display: block; width: 100%; height: 7.5rem; object-fit: cover; object-position: top left; border-bottom: 1px solid var(--m-line); background: var(--m-accent-soft); }
+.guide-part-card b { padding: 0.5rem 0.8rem 0; color: var(--m-ink); font: var(--m-title-weight, 600) 1.02rem/1.3 var(--m-title-font, var(--m-font)); }
+.guide-part-card b i { margin-left: 0.4rem; color: var(--m-accent-strong); font-style: normal; font-size: 0.86rem; }
+.guide-part-card span { padding: 0 0.8rem; color: var(--m-muted); font: 400 0.82rem/1.45 var(--m-font); }
+.guide-part-card small { padding: 0.2rem 0.8rem 0; color: var(--m-accent-strong); font: 600 0.74rem/1.3 var(--m-font); }
+/* A part's own page. */
+.guide-crumbs { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem; color: var(--m-muted); font: 500 0.86rem/1.4 var(--m-font); }
+.guide-crumbs a { color: var(--m-accent-strong); }
+.guide-crumbs b { color: var(--m-ink); }
+.guide-count { margin-left: auto; font-size: 0.78rem; }
+.guide-part-actions { margin-top: 0.7rem; }
+.guide-chapter .guide-up { display: none; }
+.guide-turn { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 0.8rem; align-items: stretch; }
+.guide-turn a { display: grid; gap: 0.1rem; padding: 0.7rem 1rem; border: 1px solid var(--m-line); border-radius: var(--m-radius, 12px); background: var(--m-card-fill, var(--m-surface)); text-decoration: none; }
+.guide-turn a:hover { border-color: var(--m-accent); }
+.guide-turn a.is-next { text-align: right; }
+.guide-turn small { color: var(--m-muted); font: 500 0.74rem/1.3 var(--m-font); }
+.guide-turn b { color: var(--m-ink); font: 600 0.95rem/1.3 var(--m-font); }
+.app-shell .guide-read { align-self: center; border: 1px solid var(--m-line-strong, var(--m-line)); border-radius: 999px; background: transparent; color: var(--m-ink); cursor: pointer; padding: 0.45rem 1rem; min-height: 0; font: 600 0.82rem/1.2 var(--m-font); letter-spacing: 0; text-transform: none; }
+.app-shell .guide-read[aria-pressed='true'] { border-color: var(--m-accent); background: var(--m-accent-soft); }
+.guide-maintain { color: var(--m-muted); font: 400 0.8rem/1.5 var(--m-font); }
+.app-shell .guide-maintain button { border: 1px solid var(--m-line); border-radius: 6px; background: transparent; color: var(--m-ink); cursor: pointer; padding: 0.2rem 0.6rem; min-height: 0; font: 600 0.78rem/1.2 var(--m-font); }
+a.guide-box.is-part { display: block; text-decoration: none; }
+a.guide-box.is-part:hover { filter: brightness(0.96); }
+.guide-box.is-pages a { color: inherit; text-decoration: none; }
+.guide-box.is-pages a:hover { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 760px) {
+  .guide-task-body { grid-template-columns: minmax(0, 1fr); }
+  .guide-turn { grid-template-columns: minmax(0, 1fr); }
+  .guide-turn a.is-next { text-align: left; }
+}

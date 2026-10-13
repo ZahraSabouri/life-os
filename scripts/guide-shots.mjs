@@ -120,9 +120,36 @@ const budget = async () => { const frame = await frameOf(/apps\/budget/, 'body')
 const jobmap = () => frameOf(/apps\/jobmap/, '.job-row')
 const budgetMenu = async (frame, name) => { await frame.locator('nav button, nav a, aside button, aside a').filter({ hasText: new RegExp(`^\\s*${name}\\s*$`) }).first().click({ timeout: 8000 }); await settle(1500) }
 
+// Example records for pictures of pages that would otherwise be empty: answered inside this
+// browser in place of the real list, so nothing is saved and nothing of hers is replaced.
+async function withExamples(patterns, work) {
+  const added = []
+  for (const [pattern, answer] of patterns) { const handler = (route) => (route.request().method() === 'GET' ? answer(route) : route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })); await context.route(pattern, handler); added.push([pattern, handler]) }
+  try { return await work() } finally { for (const [pattern, handler] of added) await context.unroute(pattern, handler) }
+}
+const json = (value) => (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(value) })
+const EXAMPLE_PEOPLE = [
+  { id: 'p1', name: 'Sara', birthday: `1996-${dayAfter(9).slice(5)}`, relation: 'Friend', contact: 'sara@example.org', notes: 'Likes film cameras. Gift idea: a roll of Portra.' },
+  { id: 'p2', name: 'Ben', birthday: `1994-${dayAfter(31).slice(5)}`, relation: 'Classmate', contact: '', notes: 'Statistics study partner.' },
+  { id: 'p3', name: 'Maman', birthday: '1968-03-21', relation: 'Family', contact: '', notes: '' },
+]
+const EXAMPLE_PAGES = [
+  { id: 'j1', type: 'journal', title: 'Walked along the Taff', start_at: today, all_day: true, created_at: `${today}T18:00:00.000Z`, details: { mood: 'Calm', body: 'Walked along the Taff after the lecture. The light on the water was gold, and the statistics finally made sense on the way home.' }, files: [{ id: 'example-1', mime_type: 'image/jpeg', size: 1 }, { id: 'example-2', mime_type: 'image/jpeg', size: 1 }] },
+  { id: 'j2', type: 'journal', title: 'First mock done', start_at: dayAfter(-2), all_day: true, created_at: `${dayAfter(-2)}T20:00:00.000Z`, details: { mood: 'Proud', body: 'First mock done. Two questions wrong, both on conditional probability. Tomorrow: redo them by hand.' }, files: [] },
+]
+const examplePicture = async (route) => { const picture = await page.request.get(`${base}/intro-hero.jpg`); return route.fulfill({ status: 200, contentType: 'image/jpeg', body: await picture.body() }) }
+const journalExamples = [['**/api/entries?limit=5000', json(EXAMPLE_PAGES)], ['**/api/files/example-*', examplePicture]]
+
 const RECIPES = {
   // ---- Finding your way
   'topbar.jpg': async () => { await go('/court', '.court-topbar'); await part('topbar.jpg', page.locator('header.court-topbar'), { pad: 4, marks: ['text:Life OS', 'text:Court', 'text:Study hub', '.notice-bell', '.focus-button', '.guide-link', '.style-switch-trigger', 'text:Divan'] }) },
+  // ---- Journal and People, with examples
+  'journal.jpg': async () => { await go('/journal', '.journal-write'); await page.locator('.journal-write textarea').fill('Walked along the Taff after the lecture. The light on the water was gold.'); await page.locator('.journal-mood input').fill('Calm'); await part('journal.jpg', page.locator('.journal-write'), { pad: 14, marks: ['.journal-write input[type="date"]', '.journal-mood input', '.journal-write textarea', '.journal-add-pictures', '.journal-save'] }) },
+  'journal-pages.jpg': () => withExamples(journalExamples, async () => { await go('/journal', '.journal-page'); await settle(1500); await part('journal-pages.jpg', page.locator('.journal-month').first()) }),
+  'journal-pictures.jpg': () => withExamples(journalExamples, async () => { await go('/journal', '.journal-page'); await page.locator('.journal-tools button', { hasText: 'Pictures' }).click(); await settle(1500); await part('journal-pictures.jpg', page.locator('.journal-gallery')) }),
+  'people.jpg': async () => { await go('/people', '.people-form'); await page.locator('.people-form input').first().fill('Sara'); await page.locator('.people-form input[type="date"]').fill('1996-03-14'); await page.locator('.people-form input').nth(2).fill('Friend'); await part('people.jpg', page.locator('.people-form').first(), { pad: 16, marks: ['.people-form input', '.people-form input[type="date"]', '.people-form input##2', '.people-form textarea'] }) },
+  'people-list.jpg': () => withExamples([['**/api/people', json(EXAMPLE_PEOPLE)]], async () => { await go('/people', '.people-list'); await settle(800); await page.locator('#people-coming-heading').evaluate((element) => element.scrollIntoView({ block: 'start' })); await page.evaluate(() => window.scrollBy(0, -30)); await settle(300); await view('people-list.jpg') }),
+  'calendar-add.jpg': async () => { await go('/calendar', '.calendar-explicit-capture'); await page.locator('.calendar-explicit-capture input').first().fill('Seminar: Bayesian methods'); await settle(300); await part('calendar-add.jpg', page.locator('.calendar-explicit-capture'), { pad: 14 }) },
   'strip.jpg': async () => { await go('/jobmap', '.area-today'); await settle(2500); await part('strip.jpg', page.locator('aside.area-today'), { pad: 4 }) },
   // ---- The Court
   'court.jpg': async () => { await go('/court', '.court-ahead'); await view('court.jpg', { marks: ['form.day-note', '.court-ahead'] }) },
