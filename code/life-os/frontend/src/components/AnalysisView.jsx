@@ -241,12 +241,12 @@ function TakeData({ from, to }) {
     setState({ busy: format, error: '' })
     try { await apiDownload(`/api/review/analysis/export?${new URLSearchParams({ from, to, format })}`); setState({ busy: '', error: '' }) } catch (failure) { setState({ busy: '', error: `The file could not be made: ${failure.message}` }) }
   }
-  return <Block id="files" title="Take the data" lead="The rows behind this page, to analyse yourself. Days are the stretch shown; jobs and study cards are all of them. The files are made now, from what each part holds.">
+  return <Block id="files" title="Take the data" lead="The numbers behind this page as files, for a spreadsheet or your own analysis. Days cover the stretch shown; jobs and study cards are all of them.">
     <ul className="analysis-files">{FILES.map(([format, name, what]) => <li key={format}>
       <button type="button" disabled={Boolean(state.busy)} onClick={() => take(format)}>{state.busy === format ? 'Making…' : `${name} (${format === 'json' ? 'JSON' : 'CSV'})`}</button><span>{what}</span>
     </li>)}</ul>
     {state.error ? <p className="day-quiet day-warn" role="alert">{state.error}</p> : null}
-    <p className="analysis-code">In Python: <code>pd.read_csv("life-os-days-{from}-to-{to}.csv", parse_dates=["date"])</code>. Minutes are whole minutes; money is in pence; <code>elapsed</code> is 0 for a day still to come.</p>
+    <p className="analysis-code">The CSV files open in Excel, Numbers, Google Sheets, Python or R. Time is in whole minutes and money in pence. In the days files, <code>elapsed</code> is 0 for a day still to come.</p>
   </Block>
 }
 

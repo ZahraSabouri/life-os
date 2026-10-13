@@ -75,16 +75,16 @@ export function NoticePanel() {
         </label>
         <label className="notice-desktop">
           <input type="checkbox" checked={notices.whenClosed} onChange={(event) => notices.setWhenClosed(event.target.checked)} />
-          <span>Tell me through Windows when no Life OS tab is open</span>
+          <span>Tell me through Windows when Life OS is not open</span>
         </label>
         {notices.desktop || notices.whenClosed ? <label className="notice-before"><span>before something starts</span>
           <select value={notices.minutesBefore} onChange={(event) => notices.setMinutesBefore(event.target.value)}>{[5, 10, 15, 30].map((minutes) => <option key={minutes} value={minutes}>{minutes} min</option>)}</select>
         </label> : null}
         <p className="focus-note">{blocked ? 'This browser has notifications blocked for Life OS. Allow them in the address bar (the padlock) to switch this on.'
           : notices.permission === 'unsupported' ? 'This browser cannot show notifications.'
-            : notices.desktop ? 'A notification appears a few minutes before a class, a study block or a plan starts, once a day for what today asks for, and when a focus session ends. Life OS has to be open in a tab.'
+            : notices.desktop ? 'A notification appears a few minutes before a class, a study block or a plan starts, once a day for what today asks for, and when a focus session ends.'
               : 'Switch this on to get a notification before a class, a study block or a plan starts, even when Life OS is in another tab.'}</p>
-        <p className="focus-note">{notices.whenClosed ? 'With no Life OS tab open, Windows shows the same things in a small box at the corner of the screen, under the name “Life OS”, for as long as Life OS itself is running. Clicking one opens Life OS.' : 'With no Life OS tab open, nothing is shown.'}</p>
+        <p className="focus-note">{notices.whenClosed ? 'With no Life OS tab open, Windows shows the same things in a small box at the corner of your screen. Clicking one opens Life OS.' : 'With no Life OS tab open, nothing is shown.'}</p>
       </section>
     </aside>
   )

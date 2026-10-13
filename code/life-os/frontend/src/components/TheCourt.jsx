@@ -328,9 +328,15 @@ function CourtNav({ navigate, quiet = false }) {
       <button type="button" onClick={() => navigate('/today')}>Today</button>
       <button type="button" onClick={() => navigate('/calendar')}>Calendar</button>
       <button type="button" onClick={() => navigate('/review')}>Review</button>
-      <button className="redesign-search-button" type="button">Search <kbd>⌘K</kbd></button>
+      <button type="button" onClick={() => navigate('/journal')}>Journal</button>
+      <button type="button" onClick={() => navigate('/people')}>People</button>
+      <button type="button" onClick={() => navigate('/study')}>Study hub</button>
+      <button type="button" onClick={() => navigate('/cardiff-life')}>Cardiff Life</button>
+      <button type="button" onClick={() => navigate('/budget')}>Budget</button>
+      <button type="button" onClick={() => navigate('/jobmap')}>JobMap</button>
       <NoticeBell className="redesign-focus-button" />
       <FocusButton className="redesign-focus-button" />
+      <button type="button" className="redesign-focus-button" onClick={() => navigate('/guide')} title="Guide: how each part works" aria-label="Guide">?</button>
       <StyleSwitch className="redesign-ground-button" compact />
     </nav>
   )
@@ -550,7 +556,7 @@ function PaperCourt(props) {
         <CourtNav navigate={navigate} quiet />
 
         <section className="paper-greeting" aria-label="Court greeting">
-          <h1>{greeting}, Xar.</h1>
+          <h1>{greeting}.</h1>
           <p>{props.dayLine}</p>
         </section>
 
@@ -707,7 +713,7 @@ function MadderCourt(props) {
         </header>
 
         <section className="madder-greeting" aria-label="Court greeting">
-          <h1>{greeting}, Xar.</h1>
+          <h1>{greeting}.</h1>
           <p>{props.dayLine}</p>
         </section>
 
@@ -836,7 +842,7 @@ function IndigoCourt(props) {
         <div className="indigo-workspace">
           <aside className="indigo-rail">
             <section className="indigo-rail-greeting">
-              <p>{greeting}, Xar.</p>
+              <p>{greeting}.</p>
               <span>{weekdayLabel} · {clockLabel}{props.nextLine ? ` · ${props.nextLine}` : ''}</span>
             </section>
 
@@ -977,7 +983,7 @@ function ModernCourt(props) {
     <section className="modern-court day-page" aria-label="Home">
       <header className="modern-court-heading">
         <p className="modern-eyebrow">{weekdayLabel} · {jalaliDateLabel}</p>
-        <h1>{greeting}, Xar.</h1>
+        <h1>{greeting}.</h1>
         {props.dayLine ? <p className="modern-day-line">{props.dayLine}</p> : null}
       </header>
 
