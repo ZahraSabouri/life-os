@@ -38,3 +38,72 @@
   .guide-contents ol { grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); }
   .app-shell .guide-picture, .guide-missing { margin-left: 0; }
 }
+
+/* ---- The numbers on a picture, named under the step's words. The circles on the picture itself are
+   drawn in the same colour by scripts/guide-shots.mjs. ---- */
+.guide-marks { list-style: none; margin: 0.6rem 0 0; padding: 0; display: grid; gap: 0.3rem; }
+.guide-marks li { display: grid; grid-template-columns: 1.4rem minmax(0, 1fr); gap: 0.5rem; align-items: start; color: var(--m-ink); font: 400 0.88rem/1.45 var(--m-font); }
+.guide-marks i { display: grid; place-items: center; width: 1.35rem; height: 1.35rem; margin-top: 0.05rem; border-radius: 999px; background: #c2255c; color: #fff; font: 700 0.72rem/1 system-ui, sans-serif; font-style: normal; font-variant-numeric: tabular-nums; }
+
+/* ---- Retake the pictures ---- */
+.guide-pictures-note { margin-top: 0.9rem; padding-top: 0.8rem; border-top: 1px solid var(--m-line); display: grid; gap: 0.5rem; }
+.guide-contents .guide-pictures-note p { margin: 0; padding: 0; border: 0; }
+.app-shell .guide-pictures-note button { justify-self: start; border: 1px solid var(--m-accent); border-radius: var(--m-radius-control, 8px); background: transparent; color: var(--m-ink); cursor: pointer; padding: 0.4rem 0.8rem; min-height: 0; font: 600 0.8rem/1.2 var(--m-font); letter-spacing: 0; text-transform: none; }
+.app-shell .guide-pictures-note button:hover { background: var(--m-accent-soft); }
+.app-shell .guide-pictures-note button:disabled { opacity: 0.6; cursor: progress; }
+
+/* ---- Diagrams (components/GuideFigures.jsx) ---- */
+.guide-figure { margin: 0 0 0 2.7rem; max-width: 62rem; font-family: var(--m-font); }
+.guide-box { margin: 0; padding: 0.6rem 0.8rem; border: 1px solid var(--m-line-strong, var(--m-line)); border-radius: var(--m-radius-control, 8px); background: var(--m-surface); color: var(--m-ink); font: 500 0.86rem/1.4 var(--m-font); }
+/* The map: a part, what flows from it, where it shows. */
+.guide-map { display: grid; gap: 0.55rem; }
+.guide-map-heads, .guide-map-row { display: grid; grid-template-columns: minmax(7rem, 10rem) minmax(9rem, 1fr) minmax(12rem, 1.25fr); gap: 0.7rem; align-items: center; }
+.guide-map-heads span { color: var(--m-muted); font: 600 0.72rem/1.3 var(--m-font); letter-spacing: 0.04em; text-transform: uppercase; }
+.guide-box.is-part { background: var(--m-accent-soft); border-color: var(--m-accent); font-weight: 650; text-align: center; }
+.guide-box.is-pages { list-style: none; display: flex; flex-wrap: wrap; gap: 0.3rem 0.4rem; padding: 0.5rem 0.6rem; }
+.guide-box.is-pages li { padding: 0.12rem 0.6rem; border-radius: 999px; background: color-mix(in srgb, var(--m-ink) 6%, transparent); font-size: 0.82rem; }
+.guide-arrow { position: relative; padding: 0 0.9rem 0.5rem 0; color: var(--m-muted); font: 400 0.8rem/1.35 var(--m-font); text-align: center; }
+.guide-arrow::before { content: ''; position: absolute; left: 0; right: 0.45rem; bottom: 0.15rem; border-top: 2px solid var(--m-accent); }
+.guide-arrow::after { content: ''; position: absolute; right: 0; bottom: calc(0.15rem - 4px); border: 5px solid transparent; border-left: 8px solid var(--m-accent); border-right: 0; }
+/* A flow: boxes in a row with an arrow between each pair. */
+/* On a wide page every step is on one row, so each arrow points at the next step. */
+.guide-flow ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--steps, 6), minmax(0, 1fr)); gap: 0.8rem 1.3rem; }
+@media (max-width: 1250px) { .guide-flow ol { grid-template-columns: repeat(auto-fit, minmax(8.2rem, 1fr)); } .guide-flow li > i { display: none; } }
+.guide-flow li { position: relative; display: grid; align-content: start; gap: 0.2rem; padding: 0.65rem 0.75rem; border: 1px solid var(--m-line-strong, var(--m-line)); border-radius: var(--m-radius-control, 8px); background: var(--m-surface); min-width: 0; }
+.guide-flow li small { color: var(--m-accent-strong); font: 600 0.68rem/1.2 var(--m-font); letter-spacing: 0.05em; text-transform: uppercase; }
+.guide-flow li b { color: var(--m-ink); font: 650 0.92rem/1.25 var(--m-font); }
+.guide-flow li span { color: var(--m-muted); font: 400 0.8rem/1.4 var(--m-font); }
+.guide-flow li > i { position: absolute; right: -1.15rem; top: 1.1rem; width: 0.9rem; border-top: 2px solid var(--m-accent); }
+.guide-flow li > i::after { content: ''; position: absolute; right: -2px; top: -5px; border: 4px solid transparent; border-left: 6px solid var(--m-accent); border-right: 0; }
+.guide-flow-branch { margin-top: 0.8rem; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.8rem; align-items: start; }
+.guide-flow-branch > span { padding-top: 0.7rem; color: var(--m-muted); font: 600 0.72rem/1.3 var(--m-font); letter-spacing: 0.04em; text-transform: uppercase; }
+.guide-flow-branch ol { grid-template-columns: repeat(auto-fit, minmax(11rem, 16rem)); }
+.guide-flow-branch li { border-style: dashed; }
+/* Where to add what. */
+.guide-where table { width: 100%; border-collapse: collapse; font: 400 0.86rem/1.45 var(--m-font); }
+.guide-where :is(th, td) { padding: 0.5rem 0.7rem; text-align: left; vertical-align: top; border-top: 1px solid var(--m-line); color: var(--m-ink); }
+.guide-where thead th { border-top: 0; color: var(--m-muted); font: 600 0.72rem/1.3 var(--m-font); letter-spacing: 0.04em; text-transform: uppercase; }
+.guide-where tbody th { font-weight: 650; }
+.guide-where td:nth-child(2) { color: var(--m-accent-strong); font-weight: 600; }
+/* The notices Windows shows: an illustration, and when each comes. */
+.guide-notices { display: grid; grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr); gap: 1.4rem; align-items: start; }
+.guide-desktop { position: relative; display: grid; gap: 0.6rem; justify-items: end; padding: 2.2rem 0.9rem 0.9rem; border-radius: var(--m-radius, 12px); background: linear-gradient(160deg, #31506e, #1c2c40); }
+.guide-desktop-label { position: absolute; top: 0.6rem; left: 0.9rem; color: #c9d6e4; font: 500 0.7rem/1.2 system-ui, sans-serif; }
+.guide-toast { width: min(100%, 19rem); padding: 0.7rem 0.85rem; border-radius: 8px; background: #23272e; color: #f1f3f5; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4); font: 400 0.8rem/1.4 'Segoe UI', system-ui, sans-serif; text-align: left; }
+.guide-toast p { margin: 0; color: #cfd4da; }
+.guide-toast .guide-toast-app { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.3rem; color: #aab2bb; font-size: 0.72rem; }
+.guide-toast .guide-toast-app i { width: 0.8rem; height: 0.8rem; border-radius: 3px; background: #2f8f76; }
+.guide-toast .guide-toast-title { color: #fff; font-weight: 600; font-size: 0.86rem; }
+.guide-when { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+.guide-when li { display: grid; gap: 0.1rem; padding-left: 0.8rem; border-left: 3px solid var(--m-accent); }
+.guide-when b { color: var(--m-ink); font: 650 0.9rem/1.3 var(--m-font); }
+.guide-when span { color: var(--m-muted); font: 400 0.84rem/1.45 var(--m-font); }
+@media (max-width: 900px) {
+  .guide-figure { margin-left: 0; }
+  .guide-map-heads { display: none; }
+  .guide-map-row { grid-template-columns: minmax(0, 1fr); gap: 0.3rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--m-line); }
+  .guide-arrow { text-align: left; padding: 0.1rem 0 0.1rem 0.2rem; }
+  .guide-arrow::before, .guide-arrow::after, .guide-flow li > i { display: none; }
+  .guide-notices { grid-template-columns: minmax(0, 1fr); }
+  .guide-flow-branch { grid-template-columns: minmax(0, 1fr); }
+}

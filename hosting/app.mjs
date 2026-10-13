@@ -22,6 +22,7 @@ import { createDesktopNotifier, windowsToast } from './notices/desktop.mjs'
 import { withRoutines } from '../code/life-os/shared/routines.js'
 import { createOwnEvents, createOwnEventsRouter } from './cardiff/own-events.mjs'
 import { createJobMark, createJobMarkHandler } from './career/mark.mjs'
+import { createGuideRouter } from './guide.mjs'
 import { createShopping, createShoppingRouter, loadBudgetRules } from './home/shopping.mjs'
 import { dateKey } from '../code/life-os/shared/calendar.js'
 import { createStudyRuntime } from './study/runtime.mjs'
@@ -101,6 +102,8 @@ export function createLifeOsApp(options = {}) {
     write: (list) => db.prepare("INSERT INTO settings (key, value, updated_at) VALUES ('cardiff-own-events', ?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at").run(JSON.stringify(list), new Date().toISOString()),
   })
   app.use(`${CARDIFF_PATH}api/own-events`, createOwnEventsRouter({ express, events: ownEvents }))
+  // "Retake the pictures" on the Guide page.
+  app.use('/api/guide', createGuideRouter({ express, projectRoot, origin: options.origin ?? 'http://127.0.0.1:47850' }))
   // The Guide's pictures: taken from the running app by scripts/guide-shots.mjs. They show her
   // own records, so the folder is not in git.
   app.use('/guide-shots', express.static(options.guideShots ?? path.join(projectRoot, 'guide-shots'), { fallthrough: false, maxAge: 0 }), (_error, _req, res, _next) => res.status(404).json({ error: 'No such picture' }))

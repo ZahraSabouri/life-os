@@ -1,5 +1,6 @@
 // Takes the Guide's pictures from the running Life OS and puts them in guide-shots/ (which git
-// leaves alone: they show her own records). Run it while Life OS is running:
+// leaves alone: they show her own records). Run it while Life OS is running, or press "Retake
+// the pictures" on the Guide page, which runs it for her:
 //
 //   node scripts/guide-shots.mjs                 every picture
 //   node scripts/guide-shots.mjs --only court.jpg,today.jpg
@@ -8,12 +9,13 @@
 // It only looks: every request that would change something is answered inside the browser and
 // never reaches Life OS. One recipe for each picture named in the Guide's words
 // (code/life-os/frontend/src/guide/chapters.js); a picture whose recipe fails is reported and
-// the rest are still taken.
+// the rest are still taken. A recipe may draw numbered circles on its picture ("marks"): the
+// Guide's words name them in the same order.
 import fs from 'node:fs'
 import path from 'node:path'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
-import { GUIDE_IMAGES } from '../code/life-os/frontend/src/guide/chapters.js'
+import { CHAPTERS, GUIDE_IMAGES } from '../code/life-os/frontend/src/guide/chapters.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const require = createRequire(path.join(root, 'summer-rescue/package.json'))
@@ -39,6 +41,7 @@ const context = await open()
 const page = await context.newPage()
 const taken = {}
 const failed = []
+const notes = []
 const settle = (ms = 900) => page.waitForTimeout(ms)
 const go = async (route, wait) => { await page.goto(`${base}${route}`, { waitUntil: 'domcontentloaded' }); if (wait) await page.locator(wait).first().waitFor(); await settle() }
 const frameOf = async (pattern, wait) => {
@@ -49,13 +52,50 @@ const frameOf = async (pattern, wait) => {
   }
   throw new Error(`no frame for ${pattern}`)
 }
+
+// ---- Numbered circles on a picture ---------------------------------------------------------
+// Each mark is a place: a CSS selector, or "text:Words" for the first visible thing that starts
+// with those words; "##2" after either picks the third match. Drawn at the place's top left
+// corner, in the colour the Guide's legend uses, inside the page or the app's own frame.
+const DRAW = (list) => {
+  const seen = (element) => { const box = element.getBoundingClientRect(); return box.width > 0 && box.height > 0 && box.bottom > 0 && box.top < innerHeight && box.right > 0 && box.left < innerWidth }
+  const find = (spec) => {
+    const [place, nth] = spec.split('##')
+    const all = place.startsWith('text:')
+      ? [...document.querySelectorAll('button, a, summary, h1, h2, h3, label, [role="tab"], span, b, strong, p')].filter((element) => { const words = element.textContent.trim().replace(/\s+/g, ' '); return words.startsWith(place.slice(5)) && words.length < place.length + 36 })
+      : [...document.querySelectorAll(place)]
+    return all.filter(seen)[Number(nth) || 0] ?? null
+  }
+  const missing = []
+  list.forEach((spec, at) => {
+    const element = spec ? find(spec) : null
+    if (!element) { missing.push(at + 1); return }
+    const box = element.getBoundingClientRect()
+    const mark = document.createElement('div')
+    mark.className = 'guide-mark'
+    mark.textContent = String(at + 1)
+    mark.style.cssText = `position:fixed;left:${Math.max(2, Math.min(innerWidth - 26, box.left - 9))}px;top:${Math.max(2, Math.min(innerHeight - 26, box.top - 9))}px;z-index:2147483647;width:24px;height:24px;border-radius:50%;background:#c2255c;color:#fff;font:700 13px/24px system-ui,sans-serif;text-align:center;box-shadow:0 0 0 2px #fff,0 2px 7px rgba(0,0,0,.4);pointer-events:none;letter-spacing:0`
+    document.body.appendChild(mark)
+  })
+  return missing
+}
+const CLEAR = () => document.querySelectorAll('.guide-mark').forEach((mark) => mark.remove())
+async function withMarks(name, marks, on, shoot) {
+  // The pointer is put aside, so nothing in the picture looks pointed at.
+  await page.mouse.move(1, VIEW.height - 1).catch(() => {})
+  if (!marks?.length) return shoot()
+  const missing = await on.evaluate(DRAW, marks)
+  if (missing.length) notes.push(`${name}: no place found for mark ${missing.join(', ')}`)
+  await page.waitForTimeout(120)
+  try { return await shoot() } finally { await on.evaluate(CLEAR).catch(() => {}) }
+}
 // The whole window as it stands.
-async function view(name, target = page) {
-  await target.screenshot({ path: path.join(out, name), type: 'jpeg', quality: 88 })
+async function view(name, { marks, on = page, tab = page } = {}) {
+  await withMarks(name, marks, on, () => tab.screenshot({ path: path.join(out, name), type: 'jpeg', quality: 88 }))
   taken[name] = { ...VIEW }
 }
 // One part of the page, with a little air round it, cut off at the height of the window.
-async function part(name, locator, { pad = 10, maxHeight = VIEW.height - 20 } = {}) {
+async function part(name, locator, { pad = 10, maxHeight = VIEW.height - 20, marks, on = page } = {}) {
   const target = locator.first()
   await target.waitFor()
   await target.evaluate((element) => element.scrollIntoView({ block: 'start', inline: 'nearest' }))
@@ -66,33 +106,66 @@ async function part(name, locator, { pad = 10, maxHeight = VIEW.height - 20 } = 
   const x = Math.max(0, Math.floor(box.x - pad))
   const y = Math.max(0, Math.floor(box.y - pad))
   const clip = { x, y, width: Math.min(VIEW.width - x, Math.ceil(box.width + pad * 2)), height: Math.min(VIEW.height - y, maxHeight, Math.ceil(box.height + pad * 2)) }
-  await page.screenshot({ path: path.join(out, name), type: 'jpeg', quality: 88, clip })
+  await withMarks(name, marks, on, () => page.screenshot({ path: path.join(out, name), type: 'jpeg', quality: 88, clip }))
   taken[name] = { width: clip.width, height: clip.height }
 }
 const panel = (label) => page.locator(`section.day-panel[aria-label="${label}"]`)
 const block = (id) => page.locator('section.analysis-block', { has: page.locator(`#analysis-${id}`) })
+const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(new Date())
+const dayAfter = (count) => new Date(Date.parse(`${today}T12:00:00Z`) + count * 86_400_000).toISOString().slice(0, 10)
+// The apps inside, each in its own frame.
+const hub = (wait = '.sidebar-head') => frameOf(/apps\/summer-rescue/, wait)
+const cardiff = (wait = '#week-grid') => frameOf(/apps\/cardiff-life/, wait)
+const budget = async () => { const frame = await frameOf(/apps\/budget/, 'body'); await settle(2000); return frame }
+const jobmap = () => frameOf(/apps\/jobmap/, '.job-row')
+const budgetMenu = async (frame, name) => { await frame.locator('nav button, nav a, aside button, aside a').filter({ hasText: new RegExp(`^\\s*${name}\\s*$`) }).first().click({ timeout: 8000 }); await settle(1500) }
 
 const RECIPES = {
   // ---- Finding your way
-  'topbar.jpg': async () => { await go('/court', '.court-topbar'); await part('topbar.jpg', page.locator('header.court-topbar'), { pad: 4 }) },
+  'topbar.jpg': async () => { await go('/court', '.court-topbar'); await part('topbar.jpg', page.locator('header.court-topbar'), { pad: 4, marks: ['text:Life OS', 'text:Court', 'text:Study hub', '.notice-bell', '.focus-button', '.guide-link', '.style-switch-trigger', 'text:Divan'] }) },
   'strip.jpg': async () => { await go('/jobmap', '.area-today'); await settle(2500); await part('strip.jpg', page.locator('aside.area-today'), { pad: 4 }) },
   // ---- The Court
-  'court.jpg': async () => { await go('/court', '.court-ahead'); await view('court.jpg') },
+  'court.jpg': async () => { await go('/court', '.court-ahead'); await view('court.jpg', { marks: ['form.day-note', '.court-ahead'] }) },
   'court-add.jpg': async () => {
     await go('/court', 'form.day-note')
     await page.locator('form.day-note input').first().fill('17:30 library')
     await settle(500)
-    await part('court-add.jpg', page.locator('form.day-note'))
+    await part('court-add.jpg', page.locator('form.day-note'), { pad: 14, marks: ['.day-add-kind', 'form.day-note input', '.day-add-filing', '.day-add-hint'] })
+  },
+  'court-repeat.jpg': async () => {
+    await go('/court', 'form.day-note')
+    await page.locator('form.day-note input').first().fill('18:00 gym')
+    await page.locator('select[aria-label="Whether the plan comes round"]').first().selectOption('custom')
+    await page.locator('.day-add-days button').first().waitFor()
+    for (const index of [0, 2, 4]) await page.locator('.day-add-days button').nth(index).click()
+    await settle(400)
+    await part('court-repeat.jpg', page.locator('form.day-note'), { pad: 14 })
   },
   'court-ahead.jpg': async () => { await go('/court', '.court-ahead'); await part('court-ahead.jpg', page.locator('.court-ahead')) },
   // ---- Today
-  'today.jpg': async () => { await go('/today', '.day-path'); await settle(2500); await view('today.jpg') },
-  'today-path.jpg': async () => { await go('/today', '.day-path'); await settle(2500); await part('today-path.jpg', page.locator('.day-path')) },
+  'today.jpg': async () => { await go('/today', '.day-path'); await panel('Jobs').locator('.day-figure').waitFor({ timeout: 20_000 }).catch(() => {}); await settle(1500); await view('today.jpg', { marks: ['.day-nav', 'form.day-note', '.day-path', 'section.day-panel[aria-label="Study"]', 'section.day-panel[aria-label="Jobs"]', 'section.day-panel[aria-label="Home"]'] }) },
+  'today-path.jpg': async () => { await go('/today', '.day-path'); await settle(2500); await part('today-path.jpg', page.locator('.day-path'), { marks: ['.day-stop-time', '.day-card', 'text:Card done'] }) },
+  'today-change.jpg': async () => {
+    // The first day from today that has a plan of hers.
+    for (let ahead = 0; ahead < 10; ahead += 1) {
+      await go(`/today?date=${dayAfter(ahead)}`, '.day-path')
+      await settle(2000)
+      const change = page.locator('.day-stop-actions button', { hasText: 'Change' })
+      if (!(await change.count())) continue
+      const title = await page.locator('li.day-stop', { has: change.first() }).first().locator('.day-stop-title').innerText()
+      await change.first().click()
+      const stop = page.locator('li.day-stop', { hasText: title }).first()
+      await stop.locator('.entry-editor').waitFor()
+      await part('today-change.jpg', stop)
+      return
+    }
+    throw new Error('no plan of hers in the next ten days')
+  },
   'today-study.jpg': async () => { await go('/today', '.day-path'); await panel('Study').locator('.day-figure, .day-quiet').first().waitFor(); await part('today-study.jpg', panel('Study')) },
-  'today-jobs.jpg': async () => { await go('/today', '.day-path'); await panel('Jobs').locator('.day-figure').waitFor({ timeout: 20_000 }); await part('today-jobs.jpg', panel('Jobs')) },
+  'today-jobs.jpg': async () => { await go('/today', '.day-path'); await panel('Jobs').locator('.day-figure').waitFor({ timeout: 20_000 }); await part('today-jobs.jpg', panel('Jobs'), { pad: 14, marks: ['section.day-panel[aria-label="Jobs"] .day-figure', 'section.day-panel[aria-label="Jobs"] .day-list a', 'section.day-panel[aria-label="Jobs"] .day-mark'] }) },
   'today-home.jpg': async () => { await go('/today', '.day-path'); await panel('Home').locator('h3').first().waitFor({ timeout: 20_000 }); await part('today-home.jpg', panel('Home')) },
   // ---- Plan the week
-  'planner.jpg': async () => { await go('/planner', '.planner-week'); await page.locator('.planner-chip').first().waitFor({ timeout: 20_000 }).catch(() => {}); await settle(); await view('planner.jpg') },
+  'planner.jpg': async () => { await go('/planner', '.planner-week'); await page.locator('.planner-chip').first().waitFor({ timeout: 20_000 }).catch(() => {}); await settle(); await view('planner.jpg', { marks: ['.planner-day.is-today', '.planner-day.is-today .planner-add', '.planner-more'] }) },
   'planner-menu.jpg': async () => {
     await go('/planner', '.planner-week')
     const more = page.locator('.planner-more').first()
@@ -108,13 +181,14 @@ const RECIPES = {
     await part('planner-repeating.jpg', page.locator('.planner-repeating'))
   },
   // ---- Calendar
-  'calendar.jpg': async () => { await go('/calendar', '.calendar-layout'); await settle(4000); await view('calendar.jpg') },
+  'calendar.jpg': async () => { await go('/calendar', '.calendar-layout'); await settle(4000); await view('calendar.jpg', { marks: ['.calendar-view-controls', '.calendar-kind-legend'] }) },
+  'room.jpg': async () => { await go('/room/home'); await settle(3000); await view('room.jpg') },
   // ---- Review
-  'review.jpg': async () => { await go('/review', '.review-tiles'); await settle(1500); await view('review.jpg') },
+  'review.jpg': async () => { await go('/review', '.review-tiles'); await settle(1500); await view('review.jpg', { marks: ['.analysis-views', '.day-nav', '.review-tiles'] }) },
   'review-days.jpg': async () => { await go('/review', '.review-days'); await part('review-days.jpg', page.locator('.review-days')) },
   'review-eight.jpg': async () => { await go('/review', '.review-progress'); await settle(2500); await part('review-eight.jpg', page.locator('.review-progress')) },
   // ---- Analysis
-  'analysis-stats.jpg': async () => { await go('/review?view=analysis', '.analysis-block'); await view('analysis-stats.jpg') },
+  'analysis-stats.jpg': async () => { await go('/review?view=analysis', '.analysis-block'); await view('analysis-stats.jpg', { marks: ['.analysis-range', '.analysis-table'] }) },
   'analysis-burn.jpg': async () => { await go('/review?view=analysis', '.analysis-block'); await part('analysis-burn.jpg', block('burn')) },
   'analysis-hours.jpg': async () => {
     await go('/review?view=analysis', '.analysis-block')
@@ -126,7 +200,7 @@ const RECIPES = {
   'analysis-jobs.jpg': async () => { await go('/review?view=analysis', '.analysis-block'); await part('analysis-jobs.jpg', block('jobs')) },
   'analysis-files.jpg': async () => { await go('/review?view=analysis', '.analysis-block'); await part('analysis-files.jpg', block('files')) },
   // ---- Ledger
-  'ledger.jpg': async () => { await go('/ledger', '.ledger-entry'); await view('ledger.jpg') },
+  'ledger.jpg': async () => { await go('/ledger', '.ledger-entry'); await view('ledger.jpg', { marks: ['.ledger-capture', '.ledger-find', '.ledger-entry-actions'] }) },
   'ledger-change.jpg': async () => {
     await go('/ledger', '.ledger-entry')
     await page.selectOption('.ledger-find select', 'time-block').catch(() => {})
@@ -156,72 +230,84 @@ const RECIPES = {
       await tab.goto(`${base}/court`, { waitUntil: 'domcontentloaded' })
       await tab.locator('.court-ahead').first().waitFor({ timeout: 20_000 })
       await tab.waitForTimeout(1500)
-      await view(name, tab)
+      await view(name, { tab })
     } finally { await other.close() }
   }])),
   // ---- Study hub
-  'study.jpg': async () => { await go('/study'); await frameOf(/apps\/summer-rescue/, '.sidebar-head'); await settle(2000); await view('study.jpg') },
-  'study-semester.jpg': async () => { await go('/study'); const hub = await frameOf(/apps\/summer-rescue/, '.sidebar-head'); await part('study-semester.jpg', hub.locator('.sidebar-head'), { pad: 14 }) },
+  'study.jpg': async () => { await go('/study'); const frame = await hub(); await settle(2000); await view('study.jpg', { on: frame, marks: ['.sidebar-semester-switch', 'text:Today', 'text:Add card', 'button[aria-label*="otif" i], button[title*="otif" i], button[aria-label*="eminder" i]'] }) },
+  'study-addcard.jpg': async () => {
+    await go('/study')
+    const frame = await hub()
+    await frame.locator('button', { hasText: 'Add card' }).first().click()
+    await settle(1200)
+    await view('study-addcard.jpg')
+  },
+  'study-schedule.jpg': async () => { await go('/study#/schedule'); await hub(); await settle(2500); await view('study-schedule.jpg') },
+  'study-planner.jpg': async () => { await go('/study#/planner'); await hub(); await settle(2500); await view('study-planner.jpg') },
+  'study-progress.jpg': async () => { await go('/study#/progress'); await hub(); await settle(2500); await view('study-progress.jpg') },
   'study-setup.jpg': async () => {
     await go('/study#/setup')
-    const hub = await frameOf(/apps\/summer-rescue/, '.hub-records')
+    const frame = await hub('.hub-records')
     // The heading of the first list, with its add button, clear of the hub's own bar at the top.
-    await hub.locator('.hub-records h2').first().evaluate((element) => element.scrollIntoView({ block: 'center' }))
+    await frame.locator('.hub-records h2').first().evaluate((element) => element.scrollIntoView({ block: 'center' }))
     await settle(600)
     await view('study-setup.jpg')
   },
   // ---- Cardiff Life
-  'cardiff.jpg': async () => { await go('/cardiff-life'); await frameOf(/apps\/cardiff-life/, '#week-grid'); await view('cardiff.jpg') },
+  'cardiff.jpg': async () => { await go('/cardiff-life'); const frame = await cardiff(); await view('cardiff.jpg', { on: frame, marks: ['[data-view="week"]', '#week-label', '#add-own', '#show-options'] }) },
   'cardiff-add.jpg': async () => {
     await go('/cardiff-life')
-    const cardiff = await frameOf(/apps\/cardiff-life/, '#add-own')
-    await cardiff.locator('#add-own').click()
-    await cardiff.locator('#own-form [name=name]').fill('Picnic in Bute Park')
+    const frame = await cardiff('#add-own')
+    await frame.locator('#add-own').click()
+    await frame.locator('#own-form [name=name]').fill('Picnic in Bute Park')
     await settle(400)
-    await part('cardiff-add.jpg', cardiff.locator('#own-dialog'))
+    await part('cardiff-add.jpg', frame.locator('#own-dialog'))
   },
   'cardiff-detail.jpg': async () => {
     // An example of an event of hers, shown to this browser only: nothing is saved.
-    const example = { event_id: 'own-example', name: 'Picnic in Bute Park (an example)', date: new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(new Date()), start_time: '13:00', end_time: '15:00', location: 'Bute Park, by the bridge', activity: 'social', organiser: 'Added by you', cost: 'Free', description: 'Bring a blanket.', source_url: '', status: 'upcoming', own: true, category: '', booking_required: '', experience: '', recurring: '', last_checked: '' }
+    const example = { event_id: 'own-example', name: 'Picnic in Bute Park (an example)', date: today, start_time: '13:00', end_time: '15:00', location: 'Bute Park, by the bridge', activity: 'social', organiser: 'Added by you', cost: 'Free', description: 'Bring a blanket.', source_url: '', status: 'upcoming', own: true, category: '', booking_required: '', experience: '', recurring: '', last_checked: '' }
     const serve = (route) => (route.request().method() === 'GET' ? route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, events: [example] }) }) : route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }))
     await context.route('**/apps/cardiff-life/api/own-events', serve)
     try {
       await go('/cardiff-life')
-      const cardiff = await frameOf(/apps\/cardiff-life/, '#week-grid')
-      await cardiff.locator('[data-detail="own-example"]').first().click()
+      const frame = await cardiff()
+      await frame.locator('[data-detail="own-example"]').first().click()
       await settle(500)
-      await part('cardiff-detail.jpg', cardiff.locator('#event-detail'))
+      await part('cardiff-detail.jpg', frame.locator('#event-detail'))
     } finally { await context.unroute('**/apps/cardiff-life/api/own-events', serve) }
   },
+  'cardiff-choices.jpg': async () => { await go('/cardiff-life'); const frame = await cardiff(); await frame.locator('[data-view="explore"]').click(); await settle(800); await view('cardiff-choices.jpg') },
+  'cardiff-communities.jpg': async () => { await go('/cardiff-life'); const frame = await cardiff(); await frame.locator('[data-view="communities"]').click(); await settle(800); await view('cardiff-communities.jpg') },
   // ---- Budget
-  'budget.jpg': async () => { await go('/budget'); await frameOf(/apps\/budget/, 'body'); await settle(2500); await view('budget.jpg') },
-  'budget-shopping.jpg': async () => {
-    await go('/budget')
-    const budget = await frameOf(/apps\/budget/, 'body')
-    await settle(2000)
-    const entry = budget.locator('button, a, [role="tab"]').filter({ hasText: /^\s*Shopping/i }).first()
-    await entry.click({ timeout: 8000 })
-    await settle(1500)
-    await view('budget-shopping.jpg')
-  },
+  'budget.jpg': async () => { await go('/budget'); const frame = await budget(); await view('budget.jpg', { on: frame, marks: ['text:My everyday', 'select', 'text:Add payment'] }) },
+  'budget-shopping.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Shopping'); await view('budget-shopping.jpg', { on: frame, marks: ['text:My lists', 'text:By list', 'input[placeholder^="Add an item"]', 'text:Record what I bought'] }) },
+  'budget-category.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Shopping'); await frame.locator('button', { hasText: /^\s*By category\s*$/ }).first().click(); await settle(1200); await view('budget-category.jpg') },
+  'budget-receipts.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Shopping'); await frame.locator('button, [role="tab"]').filter({ hasText: /^\s*Receipts\s*$/ }).first().click(); await settle(1200); await view('budget-receipts.jpg') },
+  'budget-food.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Food & supplies'); await view('budget-food.jpg') },
+  'budget-meals.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Meals & recipes'); await view('budget-meals.jpg') },
+  'budget-money.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Money & saving'); await view('budget-money.jpg') },
+  'budget-settings.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Settings & backups'); await view('budget-settings.jpg') },
   // ---- JobMap
-  'jobmap.jpg': async () => { await go('/jobmap'); await frameOf(/apps\/jobmap/, '.job-row'); await view('jobmap.jpg') },
+  'jobmap.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await view('jobmap.jpg', { on: frame, marks: ['text:All jobs', '.search-box', 'select[aria-label="Filter by source"]', 'select[aria-label="Sort jobs"]', '.scope-tabs', '.save-job'] }) },
   'jobmap-details.jpg': async () => {
     await go('/jobmap')
-    const jobmap = await frameOf(/apps\/jobmap/, '.job-row')
-    await jobmap.locator('.job-row .job-open').first().click()
-    await jobmap.locator('aside.detail').waitFor()
+    const frame = await jobmap()
+    await frame.locator('.job-row .job-open').first().click()
+    await frame.locator('aside.detail').waitFor()
     await settle(600)
     await view('jobmap-details.jpg')
   },
   'jobmap-application.jpg': async () => {
     await go('/jobmap')
-    const jobmap = await frameOf(/apps\/jobmap/, '.job-row')
-    await jobmap.locator('.job-row .job-open').first().click()
-    const section = jobmap.locator('aside.detail details', { hasText: 'My application: files, folder and links' })
+    const frame = await jobmap()
+    await frame.locator('.job-row .job-open').first().click()
+    const section = frame.locator('aside.detail details', { hasText: 'My application: files, folder and links' })
     if (!(await section.evaluate((element) => element.open))) await section.locator('summary').click()
     await part('jobmap-application.jpg', section, { pad: 14 })
   },
+  'jobmap-add.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await frame.locator('button', { hasText: 'Add job' }).first().click(); await settle(800); await view('jobmap-add.jpg') },
+  'jobmap-shortlist.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await frame.locator('.sidebar button, .sidebar a', { hasText: 'Shortlist' }).first().click(); await settle(1000); await view('jobmap-shortlist.jpg') },
+  'jobmap-preferences.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await frame.locator('.sidebar button, .sidebar a', { hasText: 'Preferences' }).first().click(); await settle(1000); await view('jobmap-preferences.jpg') },
 }
 
 const missing = GUIDE_IMAGES.filter((name) => !RECIPES[name])
@@ -237,13 +323,18 @@ for (const name of wanted) {
   }
 }
 await browser.close()
+// A mark the words name but the page did not have is a picture that misleads: say so.
+const expected = Object.fromEntries(CHAPTERS.flatMap((chapter) => chapter.steps).filter((step) => step.image && step.marks).map((step) => [step.image, step.marks.length]))
+for (const note of notes) console.log(`  NOTE    ${note}`)
 
 // The page reads this to know which pictures exist and when they were taken.
 const manifestFile = path.join(out, 'manifest.json')
 let before = {}
 try { before = JSON.parse(fs.readFileSync(manifestFile, 'utf8')).shots ?? {} } catch { before = {} }
-const shots = Object.fromEntries(Object.entries({ ...before, ...taken }).filter(([name]) => fs.existsSync(path.join(out, name))))
+// A picture the Guide no longer names is taken away, so the folder holds only what is shown.
+for (const name of Object.keys(before)) if (!GUIDE_IMAGES.includes(name) && /^[\w-]+\.jpg$/.test(name)) fs.rmSync(path.join(out, name), { force: true })
+const shots = Object.fromEntries(Object.entries({ ...before, ...taken }).filter(([name]) => GUIDE_IMAGES.includes(name) && fs.existsSync(path.join(out, name))))
 fs.writeFileSync(manifestFile, JSON.stringify({ takenAt: new Date().toISOString(), base, shots }, null, 2))
 const size = Object.keys(shots).reduce((sum, name) => sum + fs.statSync(path.join(out, name)).size, 0)
-console.log(`${Object.keys(taken).length} taken now, ${Object.keys(shots).length} of ${GUIDE_IMAGES.length} in the Guide, ${(size / 1_048_576).toFixed(1)} MB in ${out}`)
-if (failed.length) { console.log(`Not taken: ${failed.join(', ')}`); process.exitCode = 1 }
+console.log(`${Object.keys(taken).length} taken now, ${GUIDE_IMAGES.filter((name) => shots[name]).length} of ${GUIDE_IMAGES.length} in the Guide (${Object.keys(expected).length} with numbered marks), ${(size / 1_048_576).toFixed(1)} MB in ${out}`)
+if (failed.length || notes.length) { if (failed.length) console.log(`Not taken: ${failed.join(', ')}`); process.exitCode = 1 }
