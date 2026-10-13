@@ -6,6 +6,7 @@ import { Store } from './lib/store.mjs';
 import { createInbox } from './lib/inbox.mjs';
 import { workspaceConnection, ensureWorkspaceService } from './lib/workspace.mjs';
 import { openFolder } from './lib/folders.mjs';
+import { JobFiles } from './lib/files.mjs';
 const root=path.dirname(fileURLToPath(import.meta.url));
 const port=Number(process.env.JOBMAP_PORT||47841);
 const origin=`http://127.0.0.1:${port}`;
@@ -13,7 +14,7 @@ const base=JSON.parse((await readFile(path.join(root,'data/jobs.json'),'utf8')).
 const connection=await workspaceConnection(root,{isolated:!!(process.env.JOBMAP_DATA_DIR||process.env.JOBMAP_INBOX_DIR)});
 if(connection.shared&&!connection.proxy&&port!==Number(new URL(connection.apiOrigin).port||80))throw new Error('The shared workspace owner must use its configured port.');
 const dataDirectory=process.env.JOBMAP_DATA_DIR||path.join(root,'data/workspace');
-let store=null,inboxes=[],ready;
+let store=null,files=null,inboxes=[],ready;
 // Scheduled searches drop batch files here; they cannot reach this loopback API themselves.
 let connecting=null;
 async function connected(){connecting??=ensureWorkspaceService(connection).finally(()=>{connecting=null;});await connecting;}
@@ -45,6 +46,14 @@ const server=http.createServer(async(req,res)=>{
   if(url.pathname==='/api/discoveries'&&req.method==='POST'){const b=await body(req);json(res,await store.ingest(b.batch,b.revision,b.dryRun===true));return;}
   if(url.pathname==='/api/inbox'&&req.method==='GET'){const folders=await Promise.all(inboxes.map(inbox=>inbox.status()));json(res,{...folders[0],folders,waiting:folders.flatMap(f=>f.waiting)});return;}
   if(url.pathname==='/api/inbox/scan'&&req.method==='POST'){await body(req);const scans=await Promise.all(inboxes.map(inbox=>inbox.scan()));json(res,{busy:scans.some(s=>s.busy),results:scans.flatMap(s=>s.results)});return;}
+  // Files kept with a job: add one, open one, remove one.
+  const kept=/^\/api\/jobs\/([^/]+)\/files(?:\/([\w-]+))?$/.exec(url.pathname);
+  if(kept){
+   const jobId=decodeURIComponent(kept[1]),fileId=kept[2];
+   if(req.method==='POST'&&!fileId){const b=await body(req);store.check(b.revision);if(!store.jobs().some(j=>j.id===jobId)){json(res,{error:'Job not found.'},404);return;}const meta=await files.save(jobId,b.file);try{json(res,{...await store.attach(jobId,meta,b.revision),file:meta},201);}catch(error){await files.remove(jobId,meta.id).catch(()=>{});throw error;}return;}
+   if(req.method==='GET'&&fileId){const meta=store.jobs().find(j=>j.id===jobId)?.files?.find(f=>f.id===fileId);if(!meta){json(res,{error:'File not found.'},404);return;}const content=await files.read(jobId,meta.id);res.writeHead(200,{...headers,'Content-Type':files.typeOf(meta.name),'Content-Length':content.byteLength,'Content-Disposition':`${files.inline(meta.name)?'inline':'attachment'}; filename*=UTF-8''${encodeURIComponent(meta.name)}`});res.end(content);return;}
+   if(req.method==='DELETE'&&fileId){const b=await body(req);const result=await store.detach(jobId,fileId,b.revision);await files.remove(jobId,fileId).catch(()=>{});json(res,result);return;}
+  }
   if(url.pathname==='/api/jobs'&&req.method==='GET'){json(res,{jobs:store.jobs(),revision:store.state.revision,updatedAt:store.state.updatedAt,preferences:store.state.preferences});return;}
   if(url.pathname==='/api/preferences'&&req.method==='PUT'){const b=await body(req);json(res,await store.preferences(b.preferences,b.revision));return;}
   if(url.pathname==='/api/jobs'&&req.method==='POST'){const b=await body(req);json(res,await store.add(b.job,b.revision),201);return;}
@@ -67,6 +76,7 @@ ready=(async()=>{
  if(connection.proxy)await connected();
  else{
   store=await new Store(base,dataDirectory).init();
+  files=new JobFiles(path.join(dataDirectory,'files'));
   inboxes=await Promise.all(connection.inboxRoots.map(folder=>createInbox(store,process.env.JOBMAP_INBOX_DIR||path.join(folder,'data/inbox'),folder===root?path.join(dataDirectory,'import-log.md'):path.join(folder,'data/workspace/import-log.md'))));
  }
  console.log(`JobMap Local: ${origin}/`);

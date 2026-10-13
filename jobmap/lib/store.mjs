@@ -4,6 +4,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { DEFAULT_PROFILE } from './matching.mjs';
 import {planImport,validateObservation} from './discovery.mjs';
 import {calendarDay,isDate} from './job-dates.mjs';
+import {validFiles,MAX_FILES_PER_JOB} from './files.mjs';
 import legacyDates from './legacy-dates.json' with {type:'json'};
 
 export const STATUSES = ['To review','Check details','Preparing','Applied','Interview','Offer','Rejected','Archived'];
@@ -34,7 +35,7 @@ export class Store {
   if(!object(state)||state.schemaVersion!==1||!Number.isSafeInteger(state.revision)||state.revision<0||!object(state.overrides)||!Array.isArray(state.customJobs)||state.customJobs.length>20000)throw new Error('This is not a valid JobMap backup.');
   const ids=new Set(this.base.map(j=>j.id));
   for(const j of state.customJobs){if(!object(j)||typeof j.id!=='string'||!/^CUSTOM-[\w-]+$/.test(j.id)||ids.has(j.id))throw new Error('Invalid added job.');ids.add(j.id);validatePatch({role:j.role,company:j.company,url:j.url||'',location:j.location||'',salary:j.salary||'',deadline:j.deadline||'',hours:j.hours||''});if(typeof j.description!=='string'||j.description.length>100000)throw new Error('Invalid job description.');}
-  for(const [id,override] of Object.entries(state.overrides)){if(!ids.has(id)||!object(override))throw new Error('Unknown job in backup.');const {history,...fields}=override;validatePatch(fields);if(history!==undefined&&(!Array.isArray(history)||history.length>100||history.some(e=>!object(e)||typeof e.at!=='string'||typeof e.label!=='string'||e.label.length>200)))throw new Error('Invalid activity history.');}
+  for(const [id,override] of Object.entries(state.overrides)){if(!ids.has(id)||!object(override))throw new Error('Unknown job in backup.');const {history,files,...fields}=override;validatePatch(fields);if(!validFiles(files))throw new Error('Invalid kept files.');if(history!==undefined&&(!Array.isArray(history)||history.length>100||history.some(e=>!object(e)||typeof e.at!=='string'||typeof e.label!=='string'||e.label.length>200)))throw new Error('Invalid activity history.');}
   if(state.observations!==undefined){if(!object(state.observations))throw new Error('Invalid vacancy observations.');for(const [id,entry]of Object.entries(state.observations)){if(!ids.has(id))throw new Error('Unknown observed job.');validateObservation(entry,validatePatch);}}
   if(state.importRuns!==undefined&&(!Array.isArray(state.importRuns)||state.importRuns.length>200||state.importRuns.some(r=>!object(r)||typeof r.id!=='string'||typeof r.at!=='string'||!['added','updated','skipped'].every(k=>Number.isSafeInteger(r[k])&&r[k]>=0))))throw new Error('Invalid search history.');
   for(const j of state.customJobs){
@@ -47,7 +48,7 @@ export class Store {
   for(const j of result.customJobs)if(!j.addedOn&&legacyDates.customJobs[j.id])j.addedOn=legacyDates.customJobs[j.id].addedOn;
   return result;
  }
- jobs(){const baseIds=new Set(this.base.map(j=>j.id));return [...this.base,...this.state.customJobs].map(j=>({...j,addedOn:j.addedOn||(baseIds.has(j.id)&&this.fingerprint===legacyDates.sourceFingerprint?legacyDates.sourceAddedOn:''),advertisedOn:j.advertisedOn||'',status:j.status==='Open'?'To review':j.status,saved:false,nextStep:'',followUp:'',cv:'',coverLetter:'',tags:'',folder:'',attachments:'',hours:j.hours||'',notes:j.notes||'',applied:j.applied?.slice(0,10)||'',deadline:j.deadline?.slice(0,10)||'',...this.state.observations?.[j.id],...this.state.overrides[j.id],userEditedDeadline:Object.hasOwn(this.state.overrides[j.id]||{},'deadline')}));}
+ jobs(){const baseIds=new Set(this.base.map(j=>j.id));return [...this.base,...this.state.customJobs].map(j=>({...j,addedOn:j.addedOn||(baseIds.has(j.id)&&this.fingerprint===legacyDates.sourceFingerprint?legacyDates.sourceAddedOn:''),advertisedOn:j.advertisedOn||'',status:j.status==='Open'?'To review':j.status,saved:false,nextStep:'',followUp:'',cv:'',coverLetter:'',tags:'',folder:'',attachments:'',files:[],hours:j.hours||'',notes:j.notes||'',applied:j.applied?.slice(0,10)||'',deadline:j.deadline?.slice(0,10)||'',...this.state.observations?.[j.id],...this.state.overrides[j.id],userEditedDeadline:Object.hasOwn(this.state.overrides[j.id]||{},'deadline')}));}
  ingest(raw,revision,dryRun=false){return this.run(async()=>{this.check(revision);const {state,...result}=planImport(this.state,this.base,raw,validatePatch);if(!dryRun&&!result.repeated)await this.persist(state,'search');return {...result,dryRun,revision:this.state.revision};});}
  run(action){const next=this.queue.then(action);this.queue=next.catch(()=>{});return next;}
  preferences(raw,revision){return this.run(async()=>{this.check(revision);const preferences=validateProfile(raw);const next=structuredClone(this.state);next.preferences=preferences;await this.persist(next);return {preferences,revision:this.state.revision};});}
@@ -69,6 +70,18 @@ export class Store {
   if(patch.status&&patch.status!==current.status)history.push({at:new Date().toISOString(),label:`${current.status} → ${patch.status}`});
   next.overrides[id]={...existing,...patch,history:history.slice(-100)};
   await this.persist(next);return {job:this.jobs().find(j=>j.id===id),revision:this.state.revision,previous};
+ });}
+ // A file kept with a job: the store keeps its name, size and date; lib/files.mjs keeps the file.
+ attach(id,file,revision){return this.run(async()=>{
+  this.check(revision);if(!this.jobs().some(j=>j.id===id))throw new Error('Job not found.');if(!validFiles([file]))throw new Error('Invalid kept file.');
+  const next=structuredClone(this.state);const existing=next.overrides[id]||{};const files=[...(existing.files||[])];
+  if(files.length>=MAX_FILES_PER_JOB)throw new Error(`A job keeps up to ${MAX_FILES_PER_JOB} files. Remove one first.`);
+  next.overrides[id]={...existing,files:[...files,file]};await this.persist(next);return {job:this.jobs().find(j=>j.id===id),revision:this.state.revision};
+ });}
+ detach(id,fileId,revision){return this.run(async()=>{
+  this.check(revision);const next=structuredClone(this.state);const existing=next.overrides[id];
+  if(!existing?.files?.some(f=>f.id===fileId)){const e=new Error('File not found.');e.status=404;throw e;}
+  next.overrides[id]={...existing,files:existing.files.filter(f=>f.id!==fileId)};await this.persist(next);return {job:this.jobs().find(j=>j.id===id),revision:this.state.revision};
  });}
  add(raw,revision){return this.run(async()=>{
   this.check(revision);if(!object(raw))throw new Error('Invalid job.');const {description='',...values}=raw;const p=validatePatch(values);if(!p.role?.trim()||!p.company?.trim())throw new Error('Role and company are required.');if(typeof description!=='string'||description.length>100000)throw new Error('Description is too long.');

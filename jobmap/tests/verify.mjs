@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {Store,validatePatch,validDate,localDay} from '../lib/store.mjs';
 import {assess,selectJobs,tagsOf,daysUntil,reviewDeadline} from '../lib/matching.mjs';
 import {openFolder} from '../lib/folders.mjs';
+import {JobFiles,cleanName,validFiles} from '../lib/files.mjs';
 const base=JSON.parse(await readFile(new URL('../data/jobs.json',import.meta.url),'utf8'));
 assert.equal(base.length,980);assert.equal(new Set(base.map(j=>j.id)).size,980);
 const sf=base.filter(j=>j.source==='Student Futures');assert.equal(sf.length,772);assert(sf.every(j=>j.description.length>50&&j.deadline&&j.url));assert.equal(base.filter(j=>j.url).length,963);
@@ -53,4 +54,19 @@ assert(selectJobs(base,{scope:'parttime'}).every(x=>!x.match.early&&!x.match.unp
  await assert.rejects(openFolder('relative/folder',{run:()=>{throw new Error('must not run')}}),e=>e.status===400);
  await assert.rejects(openFolder(path.join(kept,'nothing-here'),{run:()=>{throw new Error('must not run')}}),e=>e.status===404);
  await assert.rejects(openFolder('',{}),e=>e.status===400);}
+// A real file is kept with a job: the copy on disk, its name and size with the job, and both go together.
+{const kept=await mkdtemp(fileURLToPath(new URL('../data/test-workspace-',import.meta.url)));const mine=await new Store(base,kept).init();const files=new JobFiles(path.join(kept,'files'));
+ const words=Buffer.from('My CV, as sent.');const meta=await files.save('SF-333ZL',{name:'C:\\Users\\me\\CV final.pdf',data:words.toString('base64')});
+ assert.deepEqual([meta.name,meta.size,meta.type,files.inline(meta.name),files.inline('page.html'),files.typeOf('macro.docm')],['CV final.pdf',words.byteLength,'application/pdf',true,false,'application/octet-stream']);
+ const saved=await mine.attach('SF-333ZL',meta,0);assert.deepEqual(saved.job.files,[meta]);assert.deepEqual(mine.jobs().find(j=>j.id==='IMP-001').files,[]);
+ assert.deepEqual(await files.read('SF-333ZL',meta.id),words);
+ // A change to the job keeps its files; a restart reads them back.
+ assert.deepEqual((await mine.patch('SF-333ZL',{status:'Applied'},1)).job.files,[meta]);assert.deepEqual((await new Store(base,kept).init()).jobs().find(j=>j.id==='SF-333ZL').files,[meta]);
+ await assert.rejects(mine.attach('NO-SUCH-JOB',meta,2));await assert.rejects(mine.attach('SF-333ZL',meta,0),e=>e.status===409);
+ await assert.rejects(files.save('SF-333ZL',{name:'empty.txt',data:''}),e=>e.status===400);await assert.rejects(files.save('SF-333ZL',{name:'../',data:'QQ=='}),e=>e.status===400);await assert.rejects(files.save('SF-333ZL',{name:'x.txt',data:'not base64!'}),e=>e.status===400);
+ await assert.rejects(files.save('SF-333ZL',{name:'big.bin',data:Buffer.alloc(10*1024*1024+1).toString('base64')}),e=>e.status===413);
+ assert.deepEqual([cleanName('  notes\u0000.txt '),cleanName('a/b\\c.pdf')],['notes.txt','c.pdf']);assert.throws(()=>cleanName('..'));
+ assert.equal(validFiles([{...meta,id:'../../etc'}]),false);await assert.rejects(Promise.resolve().then(()=>files.read('SF-333ZL','../../progress.json')),e=>e.status===404);
+ const gone=await mine.detach('SF-333ZL',meta.id,2);assert.deepEqual(gone.job.files,[]);await files.remove('SF-333ZL',meta.id);await assert.rejects(files.read('SF-333ZL',meta.id));await assert.rejects(mine.detach('SF-333ZL',meta.id,3),e=>e.status===404);
+ await files.remove('SF-333ZL',meta.id);}
 console.log(JSON.stringify({result:'PASS',records:980,studentFutures:772,links:963,persistence:'restart, backup restore, invalid restore, conflict protection',matching:'skills, location, hours, missing core language, graduate, unpaid, date gates',testDirectory:directory}));

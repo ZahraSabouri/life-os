@@ -17,3 +17,8 @@ button.my-tag{cursor:pointer;color:var(--blue)}button.my-tag:hover{border-color:
 .tag-suggest{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:-4px 0 4px;font-size:13px;color:var(--muted)}
 .kept-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:-4px 0 12px}
 .kept-list{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:6px}.kept-list li{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;min-width:0;overflow-wrap:anywhere}.kept-list a{color:var(--blue);font-weight:600}
+
+/* Files kept with a job. */
+.kept-files{display:grid;gap:8px;margin:0 0 14px}.kept-title{font-size:14px;font-weight:600;color:var(--ink)}
+.file-add{position:relative;display:inline-flex;align-items:center;justify-self:start;cursor:pointer;overflow:hidden}.file-add input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}.file-add.is-busy{opacity:.6;cursor:progress}
+.kept-list .caption{margin:0}.text-button.danger{color:#b3261e}
