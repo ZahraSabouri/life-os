@@ -16,6 +16,7 @@ import { createCalendarRouter } from './calendar-route.mjs'
 import { createDayRouter, createDayService } from './day/service.mjs'
 import { createStudyFocus, createStudyTick, createStudyTickHandler } from './study/hub/tick.mjs'
 import { createReviewRouter, createReviewService } from './review/service.mjs'
+import { createAnalysisRouter, createAnalysisService, MAX_ANALYSIS_DAYS } from './review/analysis.mjs'
 import { createNoticesRouter, createNoticesService } from './notices/service.mjs'
 import { withRoutines } from '../code/life-os/shared/routines.js'
 import { createOwnEvents, createOwnEventsRouter } from './cardiff/own-events.mjs'
@@ -214,7 +215,8 @@ export function createLifeOsApp(options = {}) {
     loadBudget: calendarLoaders.loadBudget, budgetFigures,
   }) }))
   // A week looked back on across every part. Read only. "Spent" is Budget's own month rule.
-  app.use('/api/review', createReviewRouter({ express, service: createReviewService({
+  // What the review and the analysis read: the same loaders, so their numbers agree.
+  const reviewLoaders = {
     loadStudy: loadWorkspace,
     loadPlans: async (semesterId) => (study.hub ? study.hub.plan(semesterId) : {}),
     loadEvents: async (semesterId) => (study.hub ? study.hub.recentEvents(semesterId, 1000) : []),
@@ -223,7 +225,10 @@ export function createLifeOsApp(options = {}) {
     loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('note', 'task', 'event', 'time-block', 'repeat')").all(),
     budgetFigures,
     ...options.reviewLoaders,
-  }) }))
+  }
+  // The analysis of a longer stretch, and its rows as files. Mounted before the week's review.
+  app.use('/api/review/analysis', createAnalysisRouter({ express, service: options.analysis ?? createAnalysisService({ ...reviewLoaders, review: createReviewService({ ...reviewLoaders, maxDays: MAX_ANALYSIS_DAYS }) }) }))
+  app.use('/api/review', createReviewRouter({ express, service: createReviewService(reviewLoaders) }))
   // Things to buy, added from anywhere in Life OS, go into Budget's own shopping list.
   app.use('/api/home/shopping', createShoppingRouter({ express, shopping: options.shopping ?? createShopping({ budgetRoot, getBudgetPort, today: () => dateKey(new Date()) }) }))
   app.use('/api', (_req, res) => res.status(404).json({ error: 'not found' }))

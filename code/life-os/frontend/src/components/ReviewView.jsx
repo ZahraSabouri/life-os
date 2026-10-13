@@ -9,6 +9,7 @@ import { addDays, formatCalendarDay } from '../lib/calendar.js'
 import { useSetting } from '../lib/settings.js'
 import { useLondonToday } from '../lib/useCalendar.js'
 import { count, pounds } from './DayParts.jsx'
+import AnalysisView from './AnalysisView.jsx'
 
 const mondayOf = (date) => addDays(date, -((new Date(`${date}T12:00:00Z`).getUTCDay() + 6) % 7))
 // 75 -> "1 h 15", 40 -> "40 min"
@@ -250,6 +251,20 @@ export default function ReviewView() {
   const [storedAims, setAims] = useSetting('targets', null)
   const aims = { applicationsPerWeek: Number(storedAims?.applicationsPerWeek) > 0 ? Number(storedAims.applicationsPerWeek) : 0, focusMinutesPerDay: Number(storedAims?.focusMinutesPerDay) > 0 ? Number(storedAims.focusMinutesPerDay) : 0 }
   const show = (monday) => setParams(monday === mondayOf(today) ? {} : { week: monday })
+  // Two views of the same records: one week in words and tiles, or a longer stretch as data.
+  const analysing = params.get('view') === 'analysis'
+  const views = <nav className="analysis-views" aria-label="Which view">
+    <button type="button" aria-pressed={!analysing} onClick={() => setParams(asked ? { week: asked } : {})}>The week</button>
+    <button type="button" aria-pressed={analysing} onClick={() => setParams({ view: 'analysis' })}>Analysis</button>
+  </nav>
+  if (analysing) return <section className="today-layout unified-today day-page review-page" aria-label="Analysis of your days">
+    <header className="ledger-header">
+      <div className="ledger-brandline"><h1>Analysis</h1><span /></div>
+      <div className="today-date-stack"><time dateTime={today}>Your days as data</time></div>
+    </header>
+    {views}
+    <AnalysisView today={today} />
+  </section>
   const data = review.data
   const hub = (view) => `/study#/${view}${data?.study?.semesterId ? `?semester=${encodeURIComponent(data.study.semesterId)}` : ''}`
 
@@ -258,6 +273,7 @@ export default function ReviewView() {
       <div className="ledger-brandline"><h1>{thisWeek ? 'This week' : 'The week'}</h1><span /></div>
       <div className="today-date-stack"><time dateTime={from}>{formatCalendarDay(from, { weekday: 'long' })} to {formatCalendarDay(to, { weekday: 'long', year: 'numeric' })}</time></div>
     </header>
+    {views}
     <nav className="day-nav" aria-label="Choose a week">
       <button type="button" onClick={() => show(addDays(from, -7))}>‹ The week before</button>
       <button type="button" onClick={() => show(mondayOf(today))} aria-pressed={thisWeek}>This week</button>

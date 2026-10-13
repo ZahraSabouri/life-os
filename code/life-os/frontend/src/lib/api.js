@@ -17,3 +17,20 @@ export async function apiFetch(path, options = {}) {
 
   return response.json()
 }
+
+// Asks for a file and hands it to the browser to save, under the name the server gives it.
+export async function apiDownload(path) {
+  const response = await fetch(path, { headers: { Authorization: `Bearer ${TOKEN}` } })
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}))
+    throw new Error(body.error || `Request failed with ${response.status}`)
+  }
+  const name = /filename="([^"]+)"/.exec(response.headers.get('Content-Disposition') ?? '')?.[1] ?? 'life-os-data'
+  const url = URL.createObjectURL(await response.blob())
+  const link = Object.assign(document.createElement('a'), { href: url, download: name })
+  document.body.append(link)
+  link.click()
+  link.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 10_000)
+  return name
+}

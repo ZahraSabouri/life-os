@@ -181,10 +181,10 @@ async function bounded(load, timeoutMs) {
   } finally { clearTimeout(timer) }
 }
 
-export function createReviewService({ loadStudy, loadPlans, loadEvents, loadCareer, loadBudget, loadEntries, budgetFigures, today = () => dateKey(new Date()), timeoutMs = 8000 } = {}) {
+export function createReviewService({ loadStudy, loadPlans, loadEvents, loadCareer, loadBudget, loadEntries, budgetFigures, today = () => dateKey(new Date()), timeoutMs = 8000, maxDays = MAX_DAYS } = {}) {
   return async function reviewOf({ from, to } = {}) {
     if (!isDateKey(from) || !isDateKey(to) || to < from) throw Object.assign(new Error('Use two valid dates (YYYY-MM-DD), the first not after the second'), { status: 400 })
-    if (to > addDays(from, MAX_DAYS - 1)) throw Object.assign(new Error(`Look back on at most ${MAX_DAYS} days at once`), { status: 400 })
+    if (to > addDays(from, maxDays - 1)) throw Object.assign(new Error(`Look back on at most ${maxDays} days at once`), { status: 400 })
     const range = { from, to, today: today() }
     const days = new Map()
     for (let date = from; date <= to; date = addDays(date, 1)) days.set(date, emptyDay(date))
