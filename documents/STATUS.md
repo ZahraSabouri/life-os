@@ -3,6 +3,8 @@
 **Updated 9 October 2026 by Claude Code** (the look); JobMap search reviewed 12 October by Codex; tech-only correction completed 11 October (see session notes). Branch: `stage/4b-one-look` (cut from `stage/4a-jobmap-refresh`, which was cut from `stage/3-study-hub`); none pushed; main untouched. Calendar is complete. Study hub and JobMap are live. The look (sub-apps as parts of Life OS, every style a whole design) has had two passes and waits for Xar's detailed check.
 
 ## Now
+**13 October afternoon (Claude Code):** a job keeps real files (JobMap → a job → My application → Add files); "Change" on a plan on Today and in the planner; the top bar stays on one line down to 1110 pixels; Windows notices are filed under "Life OS"; the Guide has 59 pictures, numbered circles, six diagrams and "Retake the pictures". Commits `[jobmap-cp7]`, `[2d-cp11]`, `[2d-cp12]`.
+
 **13 October (Claude Code, stage 2d: everything hers):** brief `briefs/stage-2d-everything-hers.md`, note `sessions/2026-10-13-claude-code-stage-2d-add-anything-analysis-guide.md`, her words in `TODO.md` section N. Live and committed on `stage/4b-one-look` (`[2d-cp4]` to `[2d-cp10]`, `[jobmap-cp6]`):
 - **Add, change, remove by hand** where only agents and files could before: Cardiff Life events of her own; JobMap categories, application folder and own links on every job; the Ledger changes or removes any entry; a repeating plan is changed in the week planner. (Study hub classes, tests and materials: 12 October night.)
 - **Today:** "I applied" / "Rejected" on a job, saved by JobMap, with Undo.

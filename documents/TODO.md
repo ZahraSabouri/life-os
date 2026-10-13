@@ -161,7 +161,7 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 - [ ] A person as more than an area: "see Ben" tied to Ben's own page (people exist in the core; the add line does not link to them yet).
 - [x] **Repeating plans** (12 October night): on the add line choose Plan, then "repeat" (every day, weekdays, one weekday, or the days you choose), with an optional last day. Each day can be ticked or taken off by itself. They are listed, with Stop and Remove, under "Plan the week".
 - [x] **Editing a plan after it is made** (13 October): Ledger → Change opens any entry in place (title, text, day, clock time, state, the fields of its kind); a repeating plan is changed under "Plan the week" (its days, clock time, first and last day).
-- [ ] "Change" on a single plan directly on Today and in the week planner (today it is done from the Ledger; the day and the planner move, tick and take off).
+- [x] **"Change" on a single plan on Today and in the week planner** (13 October afternoon): beside Done and Take off the day; one day of a repeating plan opens the repeating plan and says so.
 
 ## K. Progress, review and focus for the whole of Life OS
 > "it had amazing features, like kind of like tracking the progress and stuff in the study hub. We would call those … analytics or progress or planner, review and stuff. I need all those perfect … features inside the whole LifeOS app, not necessarily inside the study hub."
@@ -203,15 +203,20 @@ Brief: `briefs/stage-2d-everything-hers.md`. Session note: `sessions/2026-10-13-
 - [x] **The data as files:** the days (one row a day, or tidy), every job, every study card as CSV; the whole analysis as JSON.
 - [x] **The Study hub opens the running semester**; "Change semester" under the semester's name goes back to the list.
 - [x] **A Guide** (the ? in the top bar): 14 chapters, 42 steps, each with a picture taken from her own running app. `node scripts/guide-shots.mjs` retakes them (they stay on this computer, outside git).
-- [ ] The Guide, deeper, one part at a time as she asked: each page of the Study hub (planner, cards, review, progress, analytics, focus room), each section of Budget (food and supplies, meals and recipes, money and saving, receipts), JobMap's add-a-job, preferences and archive, the calendar's views, the area pages.
-- [ ] Retake the Guide's pictures after a page changes (one command; nothing does it by itself yet).
+- [x] **The Guide with more to look at** (13 October afternoon; her answer: "i need screenshots or infographics or more visuals"): 15 chapters, 65 steps, 59 pictures (16 with numbered circles that the words name), 6 diagrams (how the parts fit together, a day with Life OS, where to add what, a study card's path, a job's path, the notices Windows shows). Each page of the four apps inside has a step.
+- [ ] The Guide, still to add: the Study hub's review, analytics, focus room, notes and a module's page; Budget's catalogue, shops and weekly history; JobMap's archive and follow-ups; a phone-width set of pictures.
+- [x] **"Retake the pictures"** on the Guide page takes all of them again (about four minutes, changes nothing). It is still her press, or an agent's, after a page changes; nothing does it by itself.
 - [x] **Add things myself, Study hub:** classes, tests and deadlines, material links: add, change, remove (Semester setup). Cards could already be added.
 - [x] **Add things myself, Cardiff Life:** "+ Add my own event"; change it, remove it; it is on the Life OS calendar without having to choose it.
 - [x] **JobMap, on every job:** her own categories (a filter above the list, a label on the row), the folder with her files for the job ("Open folder", "Copy path"), her own links and files one per line. Notes, status (Applied, Interview, Rejected and the rest), priority, next step, follow-up and date applied were already there. Both copies carry it.
 - [x] **Mark a job from the day:** "I applied" on a job to apply for, "Rejected" on an interview or a follow-up, with Undo.
 - [x] **The Ledger:** every entry (it showed the last 100), found by kind or words, changed in place, removed in two steps.
 - [x] **Budget, walked through as a user** (13 October, read only): every section already adds, changes and removes (lists and lines, stock, meals, payments, categories, export). Nothing was changed there; Codex is working in it.
-- [ ] Not yet, found on the way: a real file kept inside Life OS for a job (today the job keeps where the file is, not the file); people (add, change) from the main app; a single plan's "Change" on Today and in the planner (section J); the top bar wraps to two lines under about 1280 pixels wide.
+- [x] **A real file kept with a job** (13 October afternoon): JobMap → a job → "My application" → "Add files". A copy is kept inside JobMap (10 MB each, 30 for a job), opened in a tab or downloaded, removed in two steps. JobMap's "Back up workspace" file holds the names, not the files; the files are in `data/workspace/files`.
+- [x] **The top bar on one line** down to a 1110-pixel window, in all four styles.
+- [x] **Notices under the name "Life OS"** (her answer: "im not sure im understanding what you're talking about"): explained in the Guide with an illustration; Windows now files them under Life OS, not Windows PowerShell.
+- [x] Cardiff Life's three tests that held one day's event count now hold the rule; all ten pass.
+- [ ] Not yet: people (add, change) from the main app; notices when Life OS itself is not running (it would have to start with Windows); keeping a job's files inside JobMap's backup file.
 - [x] **Fault of 13 October, fixed:** after a restart Life OS could answer while Budget and JobMap did not load. The launcher now waits for the old server to go, and Life OS starts either one again by itself within about 15 seconds if it stops answering.
 
 ## L. Everything leads somewhere

@@ -33,8 +33,14 @@
 - Every change was read with her real records, in more than one style, before it went live.
 
 ## What is left
-- The Guide in more depth, one part at a time (the four apps inside first).
-- "Change" on a single plan on Today and in the planner.
-- A real file kept with a job; people from the main app.
-- Notices when Life OS itself is not running (it would need to start with Windows).
-- Her answers: which part of the Guide first; whether the Windows notices are welcome.
+- The Guide's remaining pages: the Study hub's review, analytics, focus room, notes and a module's page; Budget's catalogue, shops and weekly history; JobMap's archive and follow-ups.
+- People (add, change) from the main app.
+- Notices when Life OS itself is not running (it would have to start with Windows).
+- A job's files inside JobMap's own backup file.
+
+## Added the same afternoon, from her next message
+| Checkpoint | What | Where |
+|---|---|---|
+| `[jobmap-cp7]` | Real files kept with a job | `jobmap/lib/files.mjs`, `store.mjs`, `server.mjs`, `app/page.tsx` |
+| `[2d-cp11]` | "Change" on a plan where it is shown; top bar on one line; notices named Life OS | `components/ChangePlan.jsx`, `styles/skins.css`, `hosting/notices/desktop.mjs` |
+| `[2d-cp12]` | The Guide: 59 pictures, numbered circles, 6 diagrams, "Retake the pictures" | `src/guide/chapters.js`, `components/GuideFigures.jsx`, `scripts/guide-shots.mjs`, `hosting/guide.mjs` |

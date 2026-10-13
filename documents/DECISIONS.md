@@ -14,6 +14,11 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 - **Life OS keeps the apps inside it running** (`hosting/keep-up.mjs`): every 15 seconds it starts Budget or JobMap again if one stopped answering. "Stopped" in the launcher means the old server process has gone, not that its port closed.
 - **Notices with no tab open come from the server through Windows**, only from the real server (not a try-out), only when no tab asked for the notices in the last six minutes, and what was shown is handed to the browser so it is not repeated. On by default because she asked for it twice; one switch turns it off.
 - **Budget was assessed, not changed:** a read-only walk found add, change and remove in every section, and Codex was working there the same days.
+- **A job's files are stored under ids JobMap makes up** (`jobmap/lib/files.mjs`), in a folder named from a hash of the job's id; the name she gave is only shown and sent back, never used as a path. Kinds a browser shows safely (PDF, images, plain text) open in a tab; every other kind is handed over as a download.
+- **The Guide's numbered circles are drawn into the pictures by the script**, in the page or the inner app's own frame, from the same list the words name; a circle with no place on the page is reported, because a picture whose numbers do not match its words misleads.
+- **The Guide's diagrams are drawn by the page** from the style's colours, not kept as images, so they follow the style and dark mode.
+- **The server can run the picture script** (`hosting/guide.mjs`, "Retake the pictures"): one run at a time, its output in `.runtime/guide-shots.log`.
+- **Life OS has its own name for Windows notices:** one key in her own part of the registry (`HKCU\SOFTWARE\Classes\AppUserModelId\LifeOS.Notices`, DisplayName "Life OS"), made the first time a notice is shown. Removing the key undoes it.
 
 ## 12 October 2026 (late night) — The Court without the day; notices; plans that repeat (Xar with Claude Code)
 

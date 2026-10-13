@@ -48,5 +48,13 @@ Everything in Xar's messages of 12 October night and 13 October (quoted in `TODO
 - "Rejected" from the day is offered on interviews and follow-ups only; any status can be set in JobMap.
 - Which part should the Guide go deeper into first?
 
+## Second part of the day (her message: "do the parts that are not done or perfect"; "i need screenshots or infographics or more visuals"; "im not sure im understanding what you're talking about")
+- `b955a66` [jobmap-cp7] real files kept with a job (both copies, parity PASS, JobMap's tests pass).
+- `f83055c` [2d-cp11] "Change" on a plan on Today and in the planner (new `GET /api/entries/:id`); the top bar on one line down to 1110 pixels in all four styles; notices filed under "Life OS"; Cardiff Life's three stale tests.
+- `dcd1f3c` [2d-cp12] the Guide: 15 chapters, 65 steps, 59 pictures (16 with numbered circles), 6 diagrams, "Retake the pictures".
+- Checked: files on the try-out's copy of JobMap, reached through Life OS (add, open, a 3 MB file, reload, remove); "Change" on the live app with the write caught (the payload was right, nothing saved); the top bar measured at five widths in four styles; one real notice sent, and Windows listed it under "Life OS"; the retake route run from start to finish (59 pictures, 205 seconds, exit 0); the Guide page with every picture loading at 1440, 1180 and 400 pixels.
+- Data touched: none of hers. One registry key for the notices' name (see DECISIONS). The live JobMap servers were restarted once, gracefully, to load the file routes (1,115 jobs before and after).
+- Not done: people from the main app; notices when Life OS itself is not running; a job's files inside JobMap's backup file; the rest of the Guide listed in `TODO.md` section N.
+
 ## Next step
-Ask her the two questions above. Then the Guide in depth for the Study hub (its planner, cards, review, progress, analytics, focus room), adding recipes to `scripts/guide-shots.mjs` and steps to `src/guide/chapters.js`; then "Change" on a single plan on Today.
+Ask her to read the Guide and say what is still unclear. Then the Guide's remaining pages (`TODO.md` section N), and people from the main app.
