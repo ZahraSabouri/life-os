@@ -160,7 +160,8 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 - [x] Done things stay on the calendar, marked done.
 - [ ] A person as more than an area: "see Ben" tied to Ben's own page (people exist in the core; the add line does not link to them yet).
 - [x] **Repeating plans** (12 October night): on the add line choose Plan, then "repeat" (every day, weekdays, one weekday, or the days you choose), with an optional last day. Each day can be ticked or taken off by itself. They are listed, with Stop and Remove, under "Plan the week".
-- [ ] Editing a plan after it is made (its time, day, area, words) without the Ledger.
+- [x] **Editing a plan after it is made** (13 October): Ledger → Change opens any entry in place (title, text, day, clock time, state, the fields of its kind); a repeating plan is changed under "Plan the week" (its days, clock time, first and last day).
+- [ ] "Change" on a single plan directly on Today and in the week planner (today it is done from the Ledger; the day and the planner move, tick and take off).
 
 ## K. Progress, review and focus for the whole of Life OS
 > "it had amazing features, like kind of like tracking the progress and stuff in the study hub. We would call those … analytics or progress or planner, review and stuff. I need all those perfect … features inside the whole LifeOS app, not necessarily inside the study hub."
@@ -181,9 +182,37 @@ The Study hub has all of these for study cards only: Review (a day looked back o
 
 - [x] **A bell in the top bar of every page.** What is on now, what starts within the hour, what today asks for (study cards due, jobs closing, things to buy, her plans, birthdays and renewals), what slipped (late cards, follow-ups, over budget, plans left unticked), and what is close (a test within a week, jobs closing tomorrow). Each line leads to the thing; "seen" is remembered.
 - [x] **"Also tell me on this computer"** (in the bell's list; off until she switches it on): a notification 5 to 30 minutes before a class, a study block or a plan starts, once a day for what today asks for, and when a focus session ends.
-- [ ] It only works while Life OS is open in a tab. Notices with the browser closed need something running in the background.
-- [ ] The Study hub's own reminders (its bell shows 7) are not in the Life OS bell yet.
+- [x] **Notices with no tab open** (13 October): while Life OS itself is running, Windows shows what is about to start and, once a day from eight o'clock, what today asks for. A switch in the bell's panel turns it off. Windows files them under "Windows PowerShell". Not covered: when Life OS itself is not running.
+- [x] **The Study hub's own reminders in the Life OS bell** (13 October): cards due tomorrow, and cards that have waited two days or more, joined the ones already there (due today, past their date, the next test).
 - [ ] **(Xar)** Which notices are noise? Each kind can be switched off once she has lived with them for a few days.
+
+## N. Different pages, more analysis, a guide, and adding anything myself
+> "I don't understand how it is that we have Today in the [Court] and exactly the same modules in the Today tab. Between the [Court] and Today tab should be differences, should be actual, genuine differences."
+> "I love review tab can get even more analytical. I love to see so many analytical things, especially that I'm a data science student and I need to use the data in all sorts of ways."
+> "I need in the study hub to go to autumn to current semester by default, but then also be able to come back to this choosing thing … I need to be able to go back to choose the semester."
+> "a kind of guide part in the app to explain different parts of the app by images … go through the app, take screenshots on how it should be used thoroughly on different parts of it, every … little different part in great details. And it's okay if you … hit your limits. We're gonna do it one by one, step by step."
+> "I need to be able to add events, add specific things myself … anything that is added by my agents or by my files … like cards to the study hub. I believe I can add cards to that, but like in Cardiff Life, I don't really know."
+> "in the job map, I need to be able to put notes on jobs. I need to be able to categorize them. I need to be able to … attach different things or put a directory kind of address to it if I applied already, if I got rejected already. I need to be able to do so many different things to anything, any entity I have on this app."
+> "take my small words and even … things I don't mention … for such an app to be complete and work as a total customer, as a total user yourself, and elevate and update and make better our Live OS app."
+> "do also what's not done in your todolist" · "not just cardiff life. you gotta assess and use all mini apps!" (12 October night and 13 October)
+
+Brief: `briefs/stage-2d-everything-hers.md`. Session note: `sessions/2026-10-13-claude-code-stage-2d-add-anything-analysis-guide.md`.
+
+- [x] **The Court and Today are different pages.** The Court adds and looks ahead ("Ahead": the next two weeks, day by day). Today is the day: its path and Study, Jobs, Home, Notes.
+- [x] **Review → Analysis.** 4 to 26 weeks, or any two dates up to 190 days apart: summary statistics for every measure (total, mean, median, standard deviation, best day, days with any), study plan against done, the shape of a week, hours of the day by weekday, each module, the job pipeline with its sources and closing dates ahead, spending by kind and by shop, Pearson's r between pairs of measures (from ten days up, always with the number of days). Every chart has its numbers as a table.
+- [x] **The data as files:** the days (one row a day, or tidy), every job, every study card as CSV; the whole analysis as JSON.
+- [x] **The Study hub opens the running semester**; "Change semester" under the semester's name goes back to the list.
+- [x] **A Guide** (the ? in the top bar): 14 chapters, 42 steps, each with a picture taken from her own running app. `node scripts/guide-shots.mjs` retakes them (they stay on this computer, outside git).
+- [ ] The Guide, deeper, one part at a time as she asked: each page of the Study hub (planner, cards, review, progress, analytics, focus room), each section of Budget (food and supplies, meals and recipes, money and saving, receipts), JobMap's add-a-job, preferences and archive, the calendar's views, the area pages.
+- [ ] Retake the Guide's pictures after a page changes (one command; nothing does it by itself yet).
+- [x] **Add things myself, Study hub:** classes, tests and deadlines, material links: add, change, remove (Semester setup). Cards could already be added.
+- [x] **Add things myself, Cardiff Life:** "+ Add my own event"; change it, remove it; it is on the Life OS calendar without having to choose it.
+- [x] **JobMap, on every job:** her own categories (a filter above the list, a label on the row), the folder with her files for the job ("Open folder", "Copy path"), her own links and files one per line. Notes, status (Applied, Interview, Rejected and the rest), priority, next step, follow-up and date applied were already there. Both copies carry it.
+- [x] **Mark a job from the day:** "I applied" on a job to apply for, "Rejected" on an interview or a follow-up, with Undo.
+- [x] **The Ledger:** every entry (it showed the last 100), found by kind or words, changed in place, removed in two steps.
+- [x] **Budget, walked through as a user** (13 October, read only): every section already adds, changes and removes (lists and lines, stock, meals, payments, categories, export). Nothing was changed there; Codex is working in it.
+- [ ] Not yet, found on the way: a real file kept inside Life OS for a job (today the job keeps where the file is, not the file); people (add, change) from the main app; a single plan's "Change" on Today and in the planner (section J); the top bar wraps to two lines under about 1280 pixels wide.
+- [x] **Fault of 13 October, fixed:** after a restart Life OS could answer while Budget and JobMap did not load. The launcher now waits for the old server to go, and Life OS starts either one again by itself within about 15 seconds if it stops answering.
 
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
@@ -207,4 +236,5 @@ The Study hub has all of these for study cards only: Review (a day looked back o
 6. "Use common sense": which change did she mean (section C)?
 7. "When I click on a schedule": where (section L)?
 8. Section K: her targets (applications a week, focus hours a day), so the review can say "on track" instead of only counting.
+9. Section N: which part should the Guide go deeper into first? And: are the notices through Windows welcome, or noise?
 

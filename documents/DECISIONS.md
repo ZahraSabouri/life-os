@@ -4,6 +4,17 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 13 October 2026 — everything hers (stage 2d)
+
+- **What she adds by hand is kept by the part it belongs to.** An event of her own in Cardiff Life is kept in Life OS (one setting, `cardiff-own-events`), beside the researched `events.csv` that her agents write, and is drawn by the same page. JobMap keeps her categories, folder and links as three more fields of its own job record, through its own save route, in both copies.
+- **A job keeps where her files are, not the files.** "Open folder" asks JobMap's own local server to show an existing folder in the file manager; nothing in it is run. Keeping the file itself inside Life OS is a later step.
+- **One editor for any entry of the core** (`EntryEditor`), built from each kind's declared fields, used by the Ledger and the week planner. Fields the app writes by itself (a focus session's minutes) are not offered.
+- **The analysis reads what the week's review reads.** `hosting/review/analysis.mjs` uses the same loaders, so a number on one page is the same number on the other. Statistics are over the days that have happened; r is only worked out from ten days up and always shown with the number of days.
+- **The Guide's pictures are not in git.** They are screenshots of her own records, in `guide-shots/`, remade by `scripts/guide-shots.mjs`, which only looks (every write is answered inside the browser). The words are in git (`src/guide/chapters.js`), one recipe for each picture.
+- **Life OS keeps the apps inside it running** (`hosting/keep-up.mjs`): every 15 seconds it starts Budget or JobMap again if one stopped answering. "Stopped" in the launcher means the old server process has gone, not that its port closed.
+- **Notices with no tab open come from the server through Windows**, only from the real server (not a try-out), only when no tab asked for the notices in the last six minutes, and what was shown is handed to the browser so it is not repeated. On by default because she asked for it twice; one switch turns it off.
+- **Budget was assessed, not changed:** a read-only walk found add, change and remove in every section, and Codex was working there the same days.
+
 ## 12 October 2026 (late night) — The Court without the day; notices; plans that repeat (Xar with Claude Code)
 
 - **Xar:** "remove today from court and keep in the today tab." **Decided:** the day hour by hour lives on Today only. *This changes the afternoon's decision* ("the Court itself is the working first page", which put the path on it): the Court keeps the add line and the Study, Jobs, Home and Notes panels. Read narrowly on purpose: she said "today", and the block on the Court was titled "Today".

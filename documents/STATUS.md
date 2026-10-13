@@ -3,6 +3,15 @@
 **Updated 9 October 2026 by Claude Code** (the look); JobMap search reviewed 12 October by Codex; tech-only correction completed 11 October (see session notes). Branch: `stage/4b-one-look` (cut from `stage/4a-jobmap-refresh`, which was cut from `stage/3-study-hub`); none pushed; main untouched. Calendar is complete. Study hub and JobMap are live. The look (sub-apps as parts of Life OS, every style a whole design) has had two passes and waits for Xar's detailed check.
 
 ## Now
+**13 October (Claude Code, stage 2d: everything hers):** brief `briefs/stage-2d-everything-hers.md`, note `sessions/2026-10-13-claude-code-stage-2d-add-anything-analysis-guide.md`, her words in `TODO.md` section N. Live and committed on `stage/4b-one-look` (`[2d-cp4]` to `[2d-cp10]`, `[jobmap-cp6]`):
+- **Add, change, remove by hand** where only agents and files could before: Cardiff Life events of her own; JobMap categories, application folder and own links on every job; the Ledger changes or removes any entry; a repeating plan is changed in the week planner. (Study hub classes, tests and materials: 12 October night.)
+- **Today:** "I applied" / "Rejected" on a job, saved by JobMap, with Undo.
+- **Review → Analysis:** a longer stretch of days as data, with the rows as CSV or JSON.
+- **Guide** (the ? in the top bar): 42 pictures of her own app in 14 chapters; `node scripts/guide-shots.mjs` retakes them into `guide-shots/` (not in git).
+- **Notices:** the Study hub's own reminders are in the bell; with no tab open Windows shows them while Life OS runs.
+- **Restart fault fixed:** Life OS keeps Budget and JobMap up and a restart no longer loses them (`hosting/keep-up.mjs`, `launch.mjs`).
+- **Not yet:** the Guide in more depth for the four apps inside; "Change" on a single plan on Today; a real file kept with a job; notices when Life OS itself is not running.
+
 **13 October (Codex, Budget correction):** shopping supports undated wishes, weeks and specific days. The user's wishes and this week's essentials are separated; only the weekly essentials appear in current Home shopping. The imported food-use instruction cards are gone; My food plan is editable settings. New plans start empty, with dates/settings derived from the user rather than the old personal template. Build, 181 Budget tests and 37 Home/day/calendar tests passed; live and isolated-start browser checks passed. See `sessions/2026-10-13-codex-budget-generic-shopping.md` (CP2). This does not implement student account registration.
 
 **12 October night (Codex, requested Budget fix):** the attached Budget app now connects pasted/itemised receipts, recipe stock links, preparation batches and eating. The supplied food plan is saved; preparation uses ingredients once, later meals use ready portions, and history distinguishes the two. Estimated/unidentified payments stay visible for review. Build and 177 tests passed; browser consumption checks used an isolated copy. See `sessions/2026-10-12-codex-budget-meal-workflow.md` and `briefs/budget-fix-meal-workflow.md`. Her payment details, physical freezer counts and package dates remain to confirm; native Budget migration is not started.
@@ -25,7 +34,7 @@
 - **Repeating plans:** the add line has "repeat"; job time runs to 27 December as repeating plans.
 - **Plan the week** (Today → Plan the week, or Calendar → Week): seven days side by side; her own plans can be added, ticked, taken off and moved.
 - **Review:** also eight weeks of charts and what she aims at.
-- **Not yet:** marking a job "applied" from the day; notices with the browser closed; editing a repeating plan in place.
+- ~~Not yet: marking a job "applied" from the day; notices with the browser closed; editing a repeating plan in place.~~ All three done 13 October (see the top of this section).
 - **Known fault of the evening:** the Study hub page was blank for about four minutes (17:13 to 17:17, by the build files' own times) after a rebuild without its address setting. Rebuilt correctly; an open hub tab was not affected. The right command is in `Build Life OS.cmd`.
 
 **Today, what works right now**
