@@ -2,8 +2,9 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { createLifeOsApp, projectRoot } from './app.mjs'
 import db from '../code/life-os/backend/src/db.js'
-import { startBudget } from './budget.mjs'
-import { startJobMap } from './jobmap.mjs'
+import { budgetAnswers, startBudget } from './budget.mjs'
+import { jobMapAnswers, startJobMap } from './jobmap.mjs'
+import { keepUp } from './keep-up.mjs'
 
 const envPath = path.join(projectRoot, 'code/life-os/backend/.env')
 if (fs.existsSync(envPath)) process.loadEnvFile(envPath)
@@ -16,8 +17,8 @@ function stop() {
   if (stopping) return
   stopping = true
   server.close(async () => {
-    await budget?.stop().catch(() => {})
-    await jobmap?.stop().catch(() => {})
+    await budgetKeeper.stop()
+    await jobmapKeeper.stop()
     await app.locals.studyRuntime?.close().catch(() => {})
     db.close()
     process.exit(0)
@@ -30,12 +31,15 @@ const app = createLifeOsApp({
   getBudgetPort: () => budget?.port ?? null,
   getJobMapPort: () => jobmap?.port ?? null,
 })
-startBudget({ root: path.join(projectRoot, 'budget-management') })
-  .then((value) => { budget = value; console.log(`Budget Management ready behind /apps/budget/ (port ${value.port})`) })
-  .catch((error) => console.error(`Budget Management: ${error.message}`))
-startJobMap({ root: path.join(projectRoot, 'jobmap') })
-  .then((value) => { jobmap = value; console.log(`JobMap ready behind /apps/jobmap/ (port ${value.port})`) })
-  .catch((error) => console.error(`JobMap: ${error.message}`))
+// Each is started, and started again if it ever stops answering (hosting/keep-up.mjs).
+const budgetKeeper = keepUp({
+  name: 'Budget Management behind /apps/budget/', start: () => startBudget({ root: path.join(projectRoot, 'budget-management') }),
+  alive: (handle) => budgetAnswers(handle.port), onChange: (value) => { budget = value },
+})
+const jobmapKeeper = keepUp({
+  name: 'JobMap behind /apps/jobmap/', start: () => startJobMap({ root: path.join(projectRoot, 'jobmap') }),
+  alive: (handle) => jobMapAnswers(handle.port), onChange: (value) => { jobmap = value },
+})
 server = app.listen(port, '127.0.0.1', () => console.log(`Life OS ready at http://127.0.0.1:${port}/`))
 server.on('error', (error) => { console.error(error.message); process.exit(1) })
 process.on('SIGINT', stop)

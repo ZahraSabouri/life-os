@@ -38,8 +38,11 @@ async function main() {
       signal: AbortSignal.timeout(5000),
     })
     if (!response.ok) throw new Error('Could not stop this Life OS service safely.')
-    for (let i = 0; i < 50; i++) {
-      if (!await health()) { console.log('Life OS stopped.'); return }
+    // The port closes before the old server has stopped Budget and JobMap. A start made in
+    // that gap would adopt them and lose them a moment later, so wait for the process itself.
+    const gone = () => { try { process.kill(saved.pid, 0); return false } catch (error) { return error.code !== 'EPERM' } }
+    for (let i = 0; i < 150; i++) {
+      if (!await health() && (!Number.isInteger(saved.pid) || gone())) { console.log('Life OS stopped.'); return }
       await new Promise(resolve => setTimeout(resolve, 100))
     }
     throw new Error('Life OS is still finishing requests. Retry Stop Life OS shortly.')

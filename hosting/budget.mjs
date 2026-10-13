@@ -34,6 +34,8 @@ async function health(port) {
   } catch { return null }
 }
 
+export const budgetAnswers = async (port) => (await health(port))?.app === BUDGET_IDENTITY
+
 export async function startBudget({ root, port = BUDGET_INTERNAL_PORT } = {}) {
   const appDir = path.join(root, 'app')
   const existing = await health(port)

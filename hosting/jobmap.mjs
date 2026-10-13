@@ -25,6 +25,8 @@ async function stopJobMap(port) {
   } catch {}
 }
 
+export const jobMapAnswers = async (port) => (await health(port))?.app === 'jobmap-local'
+
 export async function startJobMap({ root, port = JOBMAP_INTERNAL_PORT } = {}) {
   const existing = await health(port)
   if (existing) {
