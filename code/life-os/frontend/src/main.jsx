@@ -7,6 +7,7 @@ import './styles/day.css'
 import './styles/focus.css'
 import './styles/review.css'
 import './styles/planner.css'
+import './styles/entry-editor.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

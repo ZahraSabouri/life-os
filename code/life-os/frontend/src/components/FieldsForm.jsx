@@ -24,9 +24,9 @@ function valueFor(details, name, schema) {
   return schema.type === 'boolean' ? false : ''
 }
 
-export default function FieldsForm({ details, onChange, type }) {
+export default function FieldsForm({ details, onChange, type, skip = [] }) {
   const fields = ENTRY_TYPES[type]?.fields || {}
-  const fieldEntries = Object.entries(fields)
+  const fieldEntries = Object.entries(fields).filter(([name]) => !skip.includes(name))
 
   if (!fieldEntries.length || type === 'note') return null
 

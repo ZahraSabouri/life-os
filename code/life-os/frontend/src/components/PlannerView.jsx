@@ -10,6 +10,7 @@ import { apiFetch } from '../lib/api.js'
 import { addDays, calendarArea, filterCalendarItems, formatCalendarDay, isComplete, itemOverlaps } from '../lib/calendar.js'
 import { clockOf, parsePlan } from '../lib/day.js'
 import { movePlan, removeEntry, setPlanStatus, stopRepeating } from '../lib/plans.js'
+import EntryEditor from './EntryEditor.jsx'
 import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
 import { useDayPage } from '../lib/useDayPage.js'
 import { CalendarStatus } from './CalendarItems.jsx'
@@ -79,6 +80,7 @@ function DayColumn({ date, today, items, days, busy, onStatus, onMove, onAdd }) 
 function RepeatingPlans({ today, turn, onChanged }) {
   const [state, setState] = useState({ rows: [], loading: true, error: '' })
   const [sure, setSure] = useState('')
+  const [editing, setEditing] = useState('')
   useEffect(() => {
     let off = false
     apiFetch('/api/entries?limit=5000').then((entries) => { if (!off) setState({ rows: entries.filter((entry) => entry.type === 'repeat' && !entry.archived), loading: false, error: '' }) })
@@ -96,10 +98,12 @@ function RepeatingPlans({ today, turn, onChanged }) {
         const details = row.details ?? {}
         const from = String(row.start_at).slice(0, 10)
         const until = row.end_at ? String(row.end_at).slice(0, 10) : ''
+        if (editing === row.id) return <li key={row.id}><EntryEditor entry={row} onCancel={() => setEditing('')} onSaved={() => { setEditing(''); onChanged() }} /></li>
         return <li key={row.id}>
           <span><b>{row.title}</b> {sayWeekdays(details.weekdays)}{details.start ? `, ${details.start}${details.end ? ` to ${details.end}` : ''}` : ', any time'}</span>
           <small>{from > today ? `from ${formatCalendarDay(from)}` : `since ${formatCalendarDay(from)}`}{until ? ` until ${formatCalendarDay(until)}` : ', with no end'}{details.area ? ` · ${roomName(details.area) || details.area}` : ''}</small>
           <p className="day-stop-actions">
+            <button type="button" onClick={() => { setEditing(row.id); setSure('') }}>Change</button>
             {from <= today ? <button type="button" onClick={() => act(stopRepeating(row.id, today))}>Stop after today</button> : null}
             {sure === row.id ? <button type="button" onClick={() => { setSure(''); act(removeEntry(row.id)) }} onBlur={() => setSure('')}>Remove for good</button>
               : <button type="button" onClick={() => setSure(row.id)}>Remove</button>}

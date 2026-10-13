@@ -1,9 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { ENTRY_TYPES } from '@shared/entryTypes.js'
+import { sayWeekdays } from '@shared/routines.js'
 import { apiFetch } from '../lib/api.js'
+import { formatCalendarDay } from '../lib/calendar.js'
+import { clockOf } from '../lib/day.js'
 import { poemForDate } from '../lib/poems.js'
 import { useEntries } from '../lib/useEntries.js'
+import { removeEntry } from '../lib/plans.js'
+import EntryEditor from './EntryEditor.jsx'
 
 const TYPE_TONES = {
   task: 'var(--g-acc)',
@@ -56,8 +61,22 @@ function dayLabel(value) {
   return new Intl.DateTimeFormat(undefined, { weekday: 'long' }).format(date)
 }
 
+// When a dated entry is, in words: the day and the clock time, or how a repeating plan comes round.
+function whenLine(entry) {
+  const day = (value) => (String(value).length <= 10 ? String(value) : new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(new Date(value)))
+  if (!entry.start_at) return ''
+  if (entry.type === 'repeat') {
+    const details = entry.details ?? {}
+    return `${sayWeekdays(details.weekdays)}${details.start ? `, ${details.start}${details.end ? ` to ${details.end}` : ''}` : ', any time'} · from ${formatCalendarDay(day(entry.start_at))}${entry.end_at ? ` until ${formatCalendarDay(day(entry.end_at))}` : ', with no end'}`
+  }
+  const timed = !entry.all_day && String(entry.start_at).length > 10
+  const state = entry.status === 'done' ? ' · done' : entry.status === 'cancelled' ? ' · taken off the day' : ''
+  return `${formatCalendarDay(day(entry.start_at), { year: 'numeric' })}${timed ? ` · ${clockOf(entry.start_at)}${entry.end_at ? ` to ${clockOf(entry.end_at)}` : ''}` : ''}${state}`
+}
+
 function detailLine(entry) {
   if (entry.details?.body) return entry.details.body
+  if (['task', 'time-block', 'repeat', 'meal'].includes(entry.type) && whenLine(entry)) return whenLine(entry)
   if (entry.type === 'event' && entry.start_at) return entry.all_day ? 'all day' : timeLabel(entry.start_at)
   if (entry.type === 'task') return entry.status || 'open'
   if (entry.type === 'book') return [entry.details?.author, entry.details?.status].filter(Boolean).join(' - ')
@@ -81,7 +100,27 @@ export default function LedgerView() {
   const [captureText, setCaptureText] = useState('')
   const [status, setStatus] = useState('idle')
   const [actionError, setActionError] = useState('')
-  const recentEntries = useEntries('?limit=100')
+  const recentEntries = useEntries('?limit=600')
+  // Finding one: by its kind, by words in it. Changing or removing one: in place.
+  const [kind, setKind] = useState('')
+  const [words, setWords] = useState('')
+  const [shown, setShown] = useState(60)
+  const [editing, setEditing] = useState('')
+  const [sure, setSure] = useState('')
+  const kinds = useMemo(() => {
+    const counts = new Map()
+    for (const entry of recentEntries.entries) counts.set(entry.type, (counts.get(entry.type) ?? 0) + 1)
+    return [...counts].map(([type, count]) => ({ type, count, label: ENTRY_TYPES[type]?.label || type })).sort((a, b) => a.label.localeCompare(b.label))
+  }, [recentEntries.entries])
+  const found = useMemo(() => {
+    const asked = words.toLowerCase().trim().split(/\s+/).filter(Boolean)
+    return recentEntries.entries.filter((entry) => (!kind || entry.type === kind) && (!asked.length || asked.every((word) => `${entry.title ?? ''} ${entry.details?.body ?? ''} ${entry.details?.note ?? ''} ${entry.details?.area ?? ''}`.toLowerCase().includes(word))))
+  }, [recentEntries.entries, kind, words])
+  async function remove(entry) {
+    setSure('')
+    setActionError('')
+    try { await removeEntry(entry.id); await recentEntries.refetch() } catch (failure) { setActionError(`Could not remove “${entryTitle(entry)}”: ${failure.message}`) }
+  }
   const location = useLocation()
   const dailyPoem = useMemo(() => poemForDate(new Date()), [])
   const error = actionError || recentEntries.error
@@ -126,7 +165,7 @@ export default function LedgerView() {
           <h1>Life OS</h1>
           <span />
         </div>
-        <p>The ledger - {recentEntries.entries.length} recent entries</p>
+        <p>The ledger - {found.length === recentEntries.entries.length ? `${recentEntries.entries.length} entries` : `${found.length} of ${recentEntries.entries.length} entries`}</p>
       </header>
 
       <form className="ledger-capture" onSubmit={handleCaptureSubmit}>
@@ -139,12 +178,20 @@ export default function LedgerView() {
         <button className="capture-orb" type="submit" aria-label="File ledger entry" disabled={!captureText.trim() || status === 'saving'} />
       </form>
 
+      {recentEntries.entries.length ? <div className="ledger-find" role="search">
+        <label><span>Kind</span><select value={kind} onChange={(event) => { setKind(event.target.value); setShown(60) }}>
+          <option value="">Everything ({recentEntries.entries.length})</option>
+          {kinds.map((row) => <option key={row.type} value={row.type}>{row.label} ({row.count})</option>)}
+        </select></label>
+        <label className="ledger-find-words"><span>Find</span><input type="search" value={words} onChange={(event) => { setWords(event.target.value); setShown(60) }} placeholder="Words in the title or the text" /></label>
+      </div> : null}
+
       {error ? <p className="form-error">{error}</p> : null}
       {!recentEntries.loading && location.hash.startsWith('#entry-') && !recentEntries.entries.some(entry => `#entry-${entry.id}` === location.hash) ? <p className="empty-state">This entry is outside the recent list.</p> : null}
 
-      {recentEntries.entries.length ? (
+      {found.length ? (
         <ol className="ledger-entry-list">
-          {recentEntries.entries.map((entry) => {
+          {found.slice(0, shown).map((entry) => {
             const tone = TYPE_TONES[entry.type] || 'var(--g-acc)'
             const media = mediaLabel(entry)
 
@@ -156,20 +203,29 @@ export default function LedgerView() {
                 </aside>
                 <div className="ledger-entry-body">
                   <h2>{entryTitle(entry)}</h2>
-                  {detailLine(entry) ? <p>{detailLine(entry)}</p> : null}
+                  {detailLine(entry) && editing !== entry.id ? <p>{detailLine(entry)}</p> : null}
                   {media ? (
                     <div className="ledger-media">
                       <span>{media}</span>
                     </div>
                   ) : null}
+                  {editing === entry.id
+                    ? <EntryEditor entry={entry} onCancel={() => setEditing('')} onSaved={() => { setEditing(''); recentEntries.refetch() }} />
+                    : <p className="ledger-entry-actions">
+                      <button type="button" onClick={() => { setEditing(entry.id); setSure('') }}>Change</button>
+                      {sure === entry.id
+                        ? <><button type="button" className="is-danger" onClick={() => remove(entry)}>Remove for good</button><button type="button" onClick={() => setSure('')}>Keep it</button></>
+                        : <button type="button" onClick={() => setSure(entry.id)}>Remove</button>}
+                    </p>}
                 </div>
               </li>
             )
           })}
         </ol>
       ) : (
-        <p className="empty-state">No entries filed yet.</p>
+        <p className="empty-state">{recentEntries.entries.length ? 'Nothing matches. Choose “Everything” or clear the words.' : recentEntries.loading ? 'Loading…' : 'No entries filed yet.'}</p>
       )}
+      {found.length > shown ? <p className="ledger-more"><button type="button" onClick={() => setShown((count) => count + 60)}>Show {Math.min(60, found.length - shown)} more</button> <span>{found.length - shown} older ones are not shown yet.</span></p> : null}
 
       <footer className="ledger-poem" aria-label="Poem of the day">
         <div lang="fa" dir="rtl">
