@@ -1,0 +1,40 @@
+/* The Guide: chapters at the side, each step's words above its picture. */
+.guide-layout { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 1rem; align-items: start; }
+.guide-contents { position: sticky; top: 1rem; }
+.guide-contents h2 { margin: 0 0 0.6rem; color: var(--m-muted); font: 600 0.78rem/1.3 var(--m-font); letter-spacing: 0.04em; text-transform: uppercase; }
+.guide-contents ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.1rem; }
+.guide-contents a { display: block; padding: 0.3rem 0; color: var(--m-ink); font: 500 0.9rem/1.35 var(--m-font); text-decoration: none; }
+.guide-contents a:hover { color: var(--m-accent-strong); text-decoration: underline; text-underline-offset: 3px; }
+.guide-contents p { margin: 0.9rem 0 0; padding-top: 0.8rem; border-top: 1px solid var(--m-line); color: var(--m-muted); font: 400 0.76rem/1.5 var(--m-font); }
+.guide-chapters { display: grid; gap: 1rem; min-width: 0; }
+.guide-chapter { scroll-margin-top: 1rem; }
+.guide-chapter > header { display: block; position: relative; margin: 0 0 1.1rem; }
+.guide-up { position: absolute; top: 0.2rem; right: 0; color: var(--m-accent-strong); font: 600 0.78rem/1.3 var(--m-font); text-decoration: none; }
+.guide-up:hover { text-decoration: underline; text-underline-offset: 3px; }
+.guide-contents { scroll-margin-top: 5rem; }
+.guide-chapter > header h2 { margin: 0 0 0.3rem; color: var(--m-ink); font: var(--m-title-weight, 600) 1.45rem/1.2 var(--m-title-font, var(--m-font)); }
+.guide-chapter > header p { margin: 0; color: var(--m-muted); font: 400 0.95rem/1.5 var(--m-font); max-width: 46rem; }
+.guide-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.9rem; }
+.guide-steps > li { display: grid; gap: 0.8rem; min-width: 0; }
+.guide-words { display: grid; grid-template-columns: 1.9rem minmax(0, 1fr); gap: 0.8rem; align-items: start; max-width: 50rem; }
+.guide-words > span { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 999px; background: var(--m-accent-soft); color: var(--m-ink); font: 650 0.86rem/1 var(--m-font); font-variant-numeric: tabular-nums; }
+.guide-words h3 { margin: 0.2rem 0 0.25rem; color: var(--m-ink); font: 600 1rem/1.3 var(--m-font); letter-spacing: 0; text-transform: none; }
+.guide-words p { margin: 0; color: var(--m-ink); font: 400 0.92rem/1.6 var(--m-font); }
+.app-shell .guide-picture { display: block; width: fit-content; max-width: 100%; margin: 0 0 0 2.7rem; padding: 0; border: 1px solid var(--m-line); border-radius: var(--m-radius, 12px); background: var(--m-surface); overflow: hidden; cursor: zoom-in; min-height: 0; box-shadow: var(--m-shadow-1, none); }
+.guide-picture img { display: block; max-width: 100%; height: auto; }
+.app-shell .guide-picture:hover { border-color: var(--m-accent); }
+.app-shell .guide-picture:focus-visible { outline: 2px solid var(--m-accent); outline-offset: 2px; }
+.guide-missing { margin: 0 0 0 2.7rem; padding: 0.7rem 0.9rem; border: 1px dashed var(--m-line-strong, var(--m-line)); border-radius: var(--m-radius-control, 8px); color: var(--m-muted); font: 400 0.84rem/1.4 var(--m-font); width: fit-content; }
+.guide-large { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 1.2rem; background: color-mix(in srgb, #000 72%, transparent); cursor: zoom-out; }
+.guide-large figure { margin: 0; max-width: min(96vw, 1500px); max-height: 94vh; display: grid; grid-template-rows: minmax(0, 1fr) auto; background: var(--m-surface); border-radius: var(--m-radius, 12px); overflow: hidden; cursor: default; }
+.guide-large img { display: block; max-width: 100%; max-height: calc(94vh - 3.2rem); object-fit: contain; margin: 0 auto; }
+.guide-large figcaption { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.6rem 0.9rem; color: var(--m-ink); font: 400 0.9rem/1.3 var(--m-font); border-top: 1px solid var(--m-line); }
+.app-shell .guide-large button { border: 1px solid var(--m-line-strong, var(--m-line)); border-radius: var(--m-radius-control, 8px); background: transparent; color: var(--m-ink); cursor: pointer; padding: 0.35rem 0.9rem; min-height: 0; font: 600 0.82rem/1.2 var(--m-font); letter-spacing: 0; text-transform: none; }
+/* The "?" in the top bar. */
+.app-shell .court-topbar .guide-link { min-width: 1.9rem; padding-inline: 0.55rem; font-weight: 700; }
+@media (max-width: 900px) {
+  .guide-layout { grid-template-columns: minmax(0, 1fr); }
+  .guide-contents { position: static; }
+  .guide-contents ol { grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); }
+  .app-shell .guide-picture, .guide-missing { margin-left: 0; }
+}

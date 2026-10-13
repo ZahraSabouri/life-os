@@ -111,6 +111,7 @@ export default function CourtLayout() {
             </button>
             <NoticeBell />
             <FocusButton />
+            <button type="button" className={`guide-link${location.pathname === '/guide' ? ' active' : ''}`} onClick={() => navigate('/guide')} title="Guide: how each part works, with pictures" aria-label="Guide">?</button>
             <StyleSwitch />
             <ModeSwitch />
             <button type="button" onClick={goDivan}>Divan</button>

@@ -21,6 +21,9 @@ dist/
 local-data/
 migration/backups/
 
+# The Guide's pictures are screenshots of personal records (remade by scripts/guide-shots.mjs)
+/guide-shots/
+
 # Headless-browser scratch profiles
 .chrome*/
 

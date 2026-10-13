@@ -8,6 +8,7 @@ import TodayView from './components/TodayView.jsx'
 import LedgerView from './components/LedgerView.jsx'
 import PlannerView from './components/PlannerView.jsx'
 import ReviewView from './components/ReviewView.jsx'
+import GuideView from './components/GuideView.jsx'
 import RoomView from './components/RoomView.jsx'
 import StudyHub from './components/study/StudyHub.jsx'
 import { FocusProvider } from './lib/focus.jsx'
@@ -120,6 +121,7 @@ function AppRoutes() {
           <Route path="/review" element={<ReviewView />} />
           <Route path="/planner" element={<PlannerView />} />
           <Route path="/ledger" element={<LedgerView />} />
+          <Route path="/guide" element={<GuideView />} />
           <Route path="/room/:slug" element={<RoomView />} />
           <Route path="/study" element={<StudyRoute />} />
           <Route path="/cardiff-life" element={<CardiffLifeRoute />} />

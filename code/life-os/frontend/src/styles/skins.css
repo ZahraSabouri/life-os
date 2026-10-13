@@ -282,7 +282,7 @@ button.modern-room:hover { transform: translateY(-1px); border-color: var(--m-li
 .app-shell[data-ground='modern'] .calendar-explicit-capture input[type='date'] { color-scheme: var(--m-scheme); }
 
 /* On a smaller laptop the top bar keeps to one line: the date gives way (every page says it below). */
-@media (min-width: 1101px) and (max-width: 1420px) {
+@media (min-width: 1101px) and (max-width: 1500px) {
   .app-shell[data-ground] .court-topbar .date-line { display: none; }
   .app-shell[data-ground] .court-topbar { grid-template-columns: auto 1fr; }
   /* …and the menu stays beside the name instead of taking a row of its own. */
