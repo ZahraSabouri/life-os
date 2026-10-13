@@ -86,3 +86,13 @@ CREATE TABLE IF NOT EXISTS settings (
   value TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
+
+-- Where a person of hers could later be tied to a real account in a network of Life OS
+-- users (provider: which network; external_id: who there). Nothing writes to it yet.
+CREATE TABLE IF NOT EXISTS person_identities (
+  person_id TEXT NOT NULL REFERENCES people(id),
+  provider TEXT NOT NULL,
+  external_id TEXT NOT NULL,
+  linked_at TEXT NOT NULL,
+  PRIMARY KEY (person_id, provider)
+);

@@ -16,6 +16,10 @@ db.exec('PRAGMA foreign_keys = ON;')
 const migrations = fs.readFileSync(path.join(__dirname, 'migrations.sql'), 'utf8')
 db.exec(migrations)
 
+// What is known of a person beyond a name and a birthday.
+const peopleColumns = db.prepare('PRAGMA table_info(people)').all().map((column) => column.name)
+for (const column of ['relation', 'contact']) if (!peopleColumns.includes(column)) db.exec(`ALTER TABLE people ADD COLUMN ${column} TEXT`)
+
 const entryColumns = db.prepare('PRAGMA table_info(entries)').all().map((column) => column.name)
 if (!entryColumns.includes('archetype')) {
   db.exec('ALTER TABLE entries ADD COLUMN archetype TEXT')

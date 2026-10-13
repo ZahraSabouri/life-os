@@ -1,0 +1,52 @@
+/* The Journal and People pages. Cards, type and colour come from the chosen style. */
+.journal-write { display: grid; gap: 0.7rem; }
+.journal-write-top { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; }
+.journal-write label { display: grid; gap: 0.25rem; color: var(--m-muted); font: 600 0.74rem/1.3 var(--m-font); }
+.journal-write :is(input:not([type='file']), textarea) { box-sizing: border-box; padding: 0.5rem 0.7rem; border: 1px solid var(--m-line-strong, var(--m-line)); border-radius: min(var(--m-radius-control, 8px), 14px); background: var(--m-surface); color: var(--m-ink); font: 400 0.95rem/1.5 var(--m-font); }
+.journal-write textarea { width: 100%; resize: vertical; min-height: 8rem; font-size: 1rem; line-height: 1.6; }
+.journal-mood input { min-width: 13rem; }
+.journal-write-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; color: var(--m-accent-strong); font: 500 0.84rem/1.4 var(--m-font); }
+.app-shell .journal-save { border: 1px solid var(--m-accent); border-radius: var(--m-radius-control, 8px); background: var(--m-accent); color: var(--m-on-accent, #fff); cursor: pointer; padding: 0.5rem 1.1rem; min-height: 0; font: 600 0.86rem/1.2 var(--m-font); letter-spacing: 0; text-transform: none; }
+.app-shell .journal-save:disabled { opacity: 0.5; cursor: default; }
+/* "Add pictures": the words are the control; the browser's own file box sits over them, unseen. */
+.journal-add-pictures, .journal-more { position: relative; display: inline-flex !important; align-items: center; overflow: hidden; cursor: pointer; }
+.journal-write .journal-add-pictures { padding: 0.5rem 0.9rem; border: 1px dashed var(--m-line-strong, var(--m-line)); border-radius: var(--m-radius-control, 8px); color: var(--m-ink); font: 600 0.84rem/1.2 var(--m-font); }
+:is(.journal-add-pictures, .journal-more) input { position: absolute; inset: 0; opacity: 0; cursor: pointer; font-size: 0; }
+.day-stop-actions .journal-more { color: var(--m-accent-strong); font: 600 0.78rem/1.3 var(--m-font); }
+.day-stop-actions .journal-more:hover { text-decoration: underline; text-underline-offset: 3px; }
+.journal-tools { display: flex; flex-wrap: wrap; align-items: end; gap: 0.6rem 1.2rem; }
+.journal-find { display: grid; gap: 0.2rem; color: var(--m-muted); font: 600 0.74rem/1.3 var(--m-font); }
+.journal-find input { min-width: 14rem; box-sizing: border-box; padding: 0.42rem 0.7rem; border: 1px solid var(--m-line-strong, var(--m-line)); border-radius: var(--m-radius-control, 8px); background: var(--m-surface); color: var(--m-ink); font: 400 0.88rem/1.4 var(--m-font); }
+.journal-ledger { margin-left: auto; color: var(--m-accent-strong); font: 500 0.82rem/1.4 var(--m-font); }
+.journal-month { display: grid; gap: 0.8rem; }
+.journal-month-name { margin: 0.6rem 0 0; color: var(--m-muted); font: 600 0.78rem/1.3 var(--m-font); letter-spacing: 0.06em; text-transform: uppercase; }
+.journal-page > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.9rem; margin: 0 0 0.5rem; }
+.journal-page > header h2 { margin: 0; color: var(--m-ink); font: var(--m-title-weight, 600) 1.15rem/1.25 var(--m-title-font, var(--m-font)); }
+.journal-mood-said { padding: 0.1rem 0.6rem; border-radius: 999px; background: var(--m-accent-soft); color: var(--m-ink); font: 500 0.78rem/1.5 var(--m-font); }
+.journal-text { margin: 0; max-width: 46rem; color: var(--m-ink); font: 400 1rem/1.7 var(--m-font); white-space: pre-wrap; overflow-wrap: anywhere; }
+.journal-pictures, .journal-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: 0.5rem; margin-top: 0.8rem; }
+.journal-gallery { margin-top: 0; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); }
+.journal-gallery figure { margin: 0; display: grid; gap: 0.25rem; }
+.journal-gallery figcaption { color: var(--m-muted); font: 400 0.76rem/1.3 var(--m-font); }
+.app-shell .picture { display: block; aspect-ratio: 4 / 3; padding: 0; border: 1px solid var(--m-line); border-radius: var(--m-radius-control, 8px); background: color-mix(in srgb, var(--m-ink) 5%, transparent); overflow: hidden; min-height: 0; }
+.app-shell button.picture { cursor: zoom-in; }
+.picture img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.picture-large { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 1.2rem; background: color-mix(in srgb, #000 78%, transparent); }
+.picture-large figure { margin: 0; max-width: min(96vw, 1400px); max-height: 94vh; display: grid; grid-template-rows: minmax(0, 1fr) auto; background: var(--m-surface); border-radius: var(--m-radius, 12px); overflow: hidden; }
+.picture-large img { display: block; max-width: 100%; max-height: calc(94vh - 3.2rem); object-fit: contain; margin: 0 auto; }
+.picture-large figcaption { display: flex; justify-content: space-between; gap: 1rem; padding: 0.6rem 0.9rem; border-top: 1px solid var(--m-line); }
+.app-shell .picture-large button { border: 1px solid var(--m-line-strong, var(--m-line)); border-radius: var(--m-radius-control, 8px); background: transparent; color: var(--m-ink); cursor: pointer; padding: 0.35rem 0.9rem; min-height: 0; font: 600 0.82rem/1.2 var(--m-font); letter-spacing: 0; text-transform: none; }
+.app-shell .picture-large button.is-quiet { border-color: transparent; color: var(--m-red); }
+
+/* People */
+.people-form { margin-top: 0; }
+.people-page .day-panel > header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 0.5rem 1rem; }
+.people-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr)); gap: 0.2rem 2rem; }
+.people-list > li { padding: 0.8rem 0; border-top: 1px solid var(--m-line); min-width: 0; }
+.people-list > li:has(.people-form) { grid-column: 1 / -1; }
+.people-who { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.7rem; }
+.people-who b { color: var(--m-ink); font: var(--m-title-weight, 600) 1.02rem/1.3 var(--m-title-font, var(--m-font)); }
+.people-who span { padding: 0.05rem 0.55rem; border-radius: 999px; background: var(--m-accent-soft); color: var(--m-ink); font: 500 0.74rem/1.5 var(--m-font); }
+.people-facts { margin: 0.2rem 0 0; color: var(--m-muted); font: 400 0.84rem/1.45 var(--m-font); overflow-wrap: anywhere; }
+.people-notes { margin: 0.3rem 0 0; color: var(--m-ink); font: 400 0.88rem/1.5 var(--m-font); white-space: pre-wrap; overflow-wrap: anywhere; }
+.people-coming li span b { font-weight: 650; }

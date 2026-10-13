@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import entriesRouter from '../code/life-os/backend/src/routes/entries.js'
 import peopleRouter from '../code/life-os/backend/src/routes/people.js'
 import settingsRouter from '../code/life-os/backend/src/routes/settings.js'
+import filesRouter from '../code/life-os/backend/src/routes/files.js'
 import { createLocalTrackerApi } from '../summer-rescue/src/server/localTrackerApi.js'
 import { BUDGET_PATH, budgetProxy } from './budget.mjs'
 import { budgetBrowserRoutes } from './budget-browser-data.mjs'
@@ -135,6 +136,7 @@ export function createLifeOsApp(options = {}) {
   app.use('/api/entries', entriesRouter)
   app.use('/api/people', peopleRouter)
   app.use('/api/settings', settingsRouter)
+  app.use('/api/files', filesRouter)
   app.post('/api/study/uploads', async (req, res, next) => {
     try { res.status(201).json(await saveStudyUpload(projectRoot, req.body, study.repository)) }
     catch (error) { next(error) }

@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { Router } from 'express'
 import db from '../db.js'
+import { picturesOf, removePictureFile } from './files.js'
 import { archetypeOf, typeExists, validateDetails } from '../../../shared/entryTypes.js'
 import { buildEntriesQuery } from '../query.js'
 
@@ -70,14 +71,17 @@ function cleanOptionalDate(value, fieldName) {
   return value.trim()
 }
 
-function serializeEntry(row) {
+function serializeEntry(row, pictures = picturesOf([row.id])) {
   return {
     ...row,
     all_day: Boolean(row.all_day),
     favorite: Boolean(row.favorite),
-    details: parseDetails(row.details)
+    details: parseDetails(row.details),
+    files: pictures.get(row.id) ?? []
   }
 }
+// A list is given its pictures with one question to the database, not one for each entry.
+const serializeEntries = (rows) => { const pictures = picturesOf(rows.length <= 400 ? rows.map((row) => row.id) : null); return rows.map((row) => serializeEntry(row, pictures)) }
 
 function cleanDetailsForType(type, details) {
   const result = validateDetails(type, details ?? {})
@@ -181,12 +185,12 @@ router.get('/', (req, res) => {
         limit: Math.max(limit, 100)
       })
       const rows = db.prepare(query.sql).all(...query.params)
-      return res.json(rows.map(serializeEntry))
+      return res.json(serializeEntries(rows))
     }
 
     const rows = db.prepare('SELECT * FROM entries ORDER BY created_at DESC LIMIT ?').all(limit)
 
-    res.json(rows.map(serializeEntry))
+    res.json(serializeEntries(rows))
   } catch (error) {
     res.status(400).json({ error: error.message })
   }
@@ -245,15 +249,16 @@ router.delete('/:id', (req, res) => {
   try {
     const existing = selectEntryById.get(req.params.id)
     if (!existing) return res.status(404).json({ error: 'not found' })
-    if (db.prepare('SELECT 1 FROM files WHERE entry_id = ? LIMIT 1').get(req.params.id)) {
-      return res.status(409).json({ error: 'This entry has files. Remove them first.' })
-    }
+    // Its pictures go with it: the rows here, the files once the rows are gone.
+    const pictures = db.prepare('SELECT path FROM files WHERE entry_id = ?').all(req.params.id)
     db.exec('BEGIN')
     try {
       for (const table of ['entry_tags', 'entry_people', 'entry_places']) db.prepare(`DELETE FROM ${table} WHERE entry_id = ?`).run(req.params.id)
       db.prepare('DELETE FROM entry_links WHERE from_entry_id = ? OR to_entry_id = ?').run(req.params.id, req.params.id)
+      db.prepare('DELETE FROM files WHERE entry_id = ?').run(req.params.id)
       db.prepare('DELETE FROM entries WHERE id = ?').run(req.params.id)
       db.exec('COMMIT')
+      for (const picture of pictures) removePictureFile(picture.path)
     } catch (error) {
       db.exec('ROLLBACK')
       throw error

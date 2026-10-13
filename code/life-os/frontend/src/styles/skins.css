@@ -283,7 +283,7 @@ button.modern-room:hover { transform: translateY(-1px); border-color: var(--m-li
 
 /* Narrower than a 1280 window: Style and Light/Dark keep their marks and drop their words (still read
    out, still in the tooltip), so the bar stays on one line. */
-@media (min-width: 1101px) and (max-width: 1279px) {
+@media (min-width: 1101px) and (max-width: 1349px) {
   .app-shell[data-ground] .court-topbar :is(.style-switch-label, .mode-switch-label) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .app-shell[data-ground] .court-topbar .court-nav button { padding-inline: 0.3rem; }
 }

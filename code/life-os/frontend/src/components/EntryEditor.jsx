@@ -9,7 +9,7 @@ import { entryForm, entryPatch, STATES, TICKED, WEEKDAYS } from '../lib/entryPat
 import FieldsForm from './FieldsForm.jsx'
 
 // Filled in by the focus timer when it files the time spent; not for her to type.
-const WRITTEN_BY_THE_APP = ['focus', 'minutes']
+const WRITTEN_BY_THE_APP = ['focus', 'minutes', 'body']
 
 export default function EntryEditor({ entry, onSaved, onCancel }) {
   const repeating = entry.type === REPEAT

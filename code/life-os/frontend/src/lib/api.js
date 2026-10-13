@@ -34,3 +34,10 @@ export async function apiDownload(path) {
   setTimeout(() => URL.revokeObjectURL(url), 10_000)
   return name
 }
+
+// A file kept by Life OS (a picture), read with the same token as everything else.
+export async function apiBlob(path) {
+  const response = await fetch(path, { headers: { Authorization: `Bearer ${TOKEN}` } })
+  if (!response.ok) throw new Error(`Request failed with ${response.status}`)
+  return response.blob()
+}

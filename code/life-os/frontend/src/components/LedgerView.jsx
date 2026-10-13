@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { ENTRY_TYPES } from '@shared/entryTypes.js'
 import { sayWeekdays } from '@shared/routines.js'
 import { apiFetch } from '../lib/api.js'
@@ -165,7 +165,7 @@ export default function LedgerView() {
           <h1>Life OS</h1>
           <span />
         </div>
-        <p>The ledger - {found.length === recentEntries.entries.length ? `${recentEntries.entries.length} entries` : `${found.length} of ${recentEntries.entries.length} entries`}</p>
+        <p><Link to="/journal">Journal</Link> · The ledger - {found.length === recentEntries.entries.length ? `${recentEntries.entries.length} entries` : `${found.length} of ${recentEntries.entries.length} entries`}</p>
       </header>
 
       <form className="ledger-capture" onSubmit={handleCaptureSubmit}>

@@ -66,6 +66,7 @@ export function mapEntries(value, range) {
     if (inactive.has(stateOf(details.status)) || finished.has(stateOf(details.status))) continue
     const type = entry.type
     if (type === 'repeat') continue   // a repeating plan: its days come as worked-out entries (shared/routines.js)
+    if (type === 'journal') continue  // a page of the journal: read in the Journal, not a thing to do on its day
     // Filed under a room: the calendar area of that room when it has one, and the room's name either way.
     const room = type !== 'time-block' && typeof details.area === 'string' ? details.area : ''
     const base = {

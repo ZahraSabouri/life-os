@@ -78,8 +78,11 @@ export default function CourtLayout() {
             >
               Review
             </button>
-            <button type="button" onClick={() => navigate('/ledger')} className={location.pathname === '/ledger' ? 'active' : undefined}>
-              Ledger
+            <button type="button" onClick={() => navigate('/journal')} className={['/journal', '/ledger'].includes(location.pathname) ? 'active' : undefined}>
+              Journal
+            </button>
+            <button type="button" onClick={() => navigate('/people')} className={location.pathname === '/people' ? 'active' : undefined}>
+              People
             </button>
             <button
               className={location.pathname === '/study' ? 'active' : undefined}
@@ -111,7 +114,7 @@ export default function CourtLayout() {
             </button>
             <NoticeBell />
             <FocusButton />
-            <button type="button" className={`guide-link${location.pathname === '/guide' ? ' active' : ''}`} onClick={() => navigate('/guide')} title="Guide: how each part works, with pictures" aria-label="Guide">?</button>
+            <button type="button" className={`guide-link${location.pathname.startsWith('/guide') ? ' active' : ''}`} onClick={() => navigate('/guide')} title="Guide: how each part works, with pictures" aria-label="Guide">?</button>
             <StyleSwitch />
             <ModeSwitch />
             <button type="button" onClick={goDivan}>Divan</button>

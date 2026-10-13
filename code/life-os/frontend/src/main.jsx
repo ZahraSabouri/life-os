@@ -9,6 +9,7 @@ import './styles/review.css'
 import './styles/planner.css'
 import './styles/entry-editor.css'
 import './styles/guide.css'
+import './styles/journal.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

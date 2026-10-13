@@ -8,6 +8,9 @@ dist/
 # Runtime state of the local host (pid, control token, server log)
 .runtime/
 
+# Pictures she uploads (journal, memories) are personal records
+/code/life-os/backend/data/files/
+
 # Secrets and databases
 .env
 *.db
