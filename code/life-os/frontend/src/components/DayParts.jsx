@@ -1,4 +1,5 @@
-import { Fragment } from 'react'
+import ChangePlan from './ChangePlan.jsx'
+import { Fragment, useState } from 'react'
 // The pieces a day is drawn with, shared by the Court, Today and the strip inside each part:
 // the line that adds to the day, the day's path, and the Study, Jobs, Home and Notes panels.
 import { Link } from 'react-router-dom'
@@ -68,7 +69,8 @@ function Steps({ card, limit = 6, onStudy, busy, doneWhen = true }) {
   </>
 }
 
-function Stop({ stop, onDone, onRemove, onStudy, busy, compact }) {
+function Stop({ stop, onDone, onRemove, onStudy, onChanged, busy, compact }) {
+  const [changing, setChanging] = useState(false)
   const area = calendarArea(stop.area)
   const card = stop.card
   const detailed = card && !card.done && (card.steps.length || card.doneWhen)
@@ -96,10 +98,12 @@ function Stop({ stop, onDone, onRemove, onStudy, busy, compact }) {
       {card && onStudy && card.hubCardId && card.semesterId ? <p className="day-stop-actions">
         <button type="button" onClick={() => onStudy(card, null, !card.done)} disabled={busy}>{card.done ? 'Not done after all' : 'Card done'}</button>
       </p> : null}
-      {stop.entry ? <p className="day-stop-actions">
+      {stop.entry && !changing ? <p className="day-stop-actions">
         {stop.entry.task ? <button type="button" onClick={() => onDone(stop)} disabled={busy}>Done</button> : null}
+        <button type="button" onClick={() => setChanging(true)} disabled={busy}>Change</button>
         <button type="button" onClick={() => onRemove(stop)} disabled={busy}>Take off the day</button>
       </p> : null}
+      {stop.entry && changing ? <ChangePlan entry={stop.entry} onCancel={() => setChanging(false)} onSaved={() => { setChanging(false); onChanged?.() }} /> : null}
     </div>
   </li>
 }

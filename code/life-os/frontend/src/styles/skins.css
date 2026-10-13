@@ -281,6 +281,12 @@ button.modern-room:hover { transform: translateY(-1px); border-color: var(--m-li
 }
 .app-shell[data-ground='modern'] .calendar-explicit-capture input[type='date'] { color-scheme: var(--m-scheme); }
 
+/* Narrower than a 1280 window: Style and Light/Dark keep their marks and drop their words (still read
+   out, still in the tooltip), so the bar stays on one line. */
+@media (min-width: 1101px) and (max-width: 1279px) {
+  .app-shell[data-ground] .court-topbar :is(.style-switch-label, .mode-switch-label) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .app-shell[data-ground] .court-topbar .court-nav button { padding-inline: 0.3rem; }
+}
 /* On a smaller laptop the top bar keeps to one line: the date gives way (every page says it below). */
 @media (min-width: 1101px) and (max-width: 1500px) {
   .app-shell[data-ground] .court-topbar .date-line { display: none; }

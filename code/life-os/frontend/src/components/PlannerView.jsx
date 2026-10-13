@@ -11,6 +11,7 @@ import { addDays, calendarArea, filterCalendarItems, formatCalendarDay, isComple
 import { clockOf, parsePlan } from '../lib/day.js'
 import { movePlan, removeEntry, setPlanStatus, stopRepeating } from '../lib/plans.js'
 import EntryEditor from './EntryEditor.jsx'
+import ChangePlan from './ChangePlan.jsx'
 import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
 import { useDayPage } from '../lib/useDayPage.js'
 import { CalendarStatus } from './CalendarItems.jsx'
@@ -22,7 +23,7 @@ const minutesOf = (item) => (item.end && !item.all_day ? Math.max(0, Math.round(
 const isOwn = (item) => item.meta?.source === 'core' && Boolean(item.meta?.entryId)
 const ownEntry = (item) => ({ id: item.meta.entryId, revision: item.meta.revision, ...(item.meta.routine ? { routine: item.meta.routine } : {}) })
 
-function Chip({ item, days, date, busy, onStatus, onMove }) {
+function Chip({ item, days, date, busy, onStatus, onMove, onChange }) {
   const [open, setOpen] = useState(false)
   const area = calendarArea(item.area)
   const own = isOwn(item)
@@ -39,6 +40,7 @@ function Chip({ item, days, date, busy, onStatus, onMove }) {
     {item.meta?.routine ? <small className="planner-repeats">repeats</small> : null}
     {open && own && !done ? <div className="planner-actions">
       {tickable ? <button type="button" disabled={busy} onClick={() => onStatus(item, 'done')}>Done</button> : null}
+      <button type="button" disabled={busy} onClick={() => { setOpen(false); onChange(item) }}>Change</button>
       <button type="button" disabled={busy} onClick={() => onStatus(item, 'cancelled')}>Take off</button>
       <label>Move to<select value="" disabled={busy} onChange={(event) => { if (event.target.value) onMove(item, event.target.value) }}>
         <option value="">…</option>
@@ -48,7 +50,7 @@ function Chip({ item, days, date, busy, onStatus, onMove }) {
   </li>
 }
 
-function DayColumn({ date, today, items, days, busy, onStatus, onMove, onAdd }) {
+function DayColumn({ date, today, items, days, busy, onStatus, onMove, onAdd, onChange }) {
   const [text, setText] = useState('')
   const [over, setOver] = useState(false)
   const timed = items.filter((item) => !item.all_day).sort((a, b) => String(a.start).localeCompare(String(b.start)))
@@ -67,8 +69,8 @@ function DayColumn({ date, today, items, days, busy, onStatus, onMove, onAdd }) 
       <h2><Link to={`/today?date=${date}`}>{formatCalendarDay(date, { weekday: 'short', month: undefined })}</Link>{date === today ? <small> today</small> : null}</h2>
       <p>{[study ? `Study ${span(study)}` : '', jobs ? `Jobs ${span(jobs)}` : ''].filter(Boolean).join(' · ') || ' '}</p>
     </header>
-    {timed.length ? <ul className="planner-list">{timed.map((item) => <Chip key={item.id} item={item} days={days} date={date} busy={busy} onStatus={onStatus} onMove={onMove} />)}</ul> : null}
-    {anytime.length ? <><h3>Any time, and due</h3><ul className="planner-list">{anytime.map((item) => <Chip key={item.id} item={item} days={days} date={date} busy={busy} onStatus={onStatus} onMove={onMove} />)}</ul></> : null}
+    {timed.length ? <ul className="planner-list">{timed.map((item) => <Chip key={item.id} item={item} days={days} date={date} busy={busy} onStatus={onStatus} onMove={onMove} onChange={onChange} />)}</ul> : null}
+    {anytime.length ? <><h3>Any time, and due</h3><ul className="planner-list">{anytime.map((item) => <Chip key={item.id} item={item} days={days} date={date} busy={busy} onStatus={onStatus} onMove={onMove} onChange={onChange} />)}</ul></> : null}
     {!items.length ? <p className="planner-empty">Nothing yet.</p> : null}
     <form className="planner-add" onSubmit={add}>
       <input value={text} onChange={(event) => setText(event.target.value)} placeholder="+ 17:30 library" aria-label={`Add a plan to ${formatCalendarDay(date, { weekday: 'long' })}`} maxLength={300} />
@@ -125,6 +127,7 @@ export default function PlannerView() {
   const days = useMemo(() => Array.from({ length: 7 }, (_value, index) => addDays(from, index)), [from])
   const calendar = useCalendar(from, to)
   const [turn, setTurn] = useState(0)
+  const [changing, setChanging] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const refetch = () => { calendar.refetch(); setTurn((value) => value + 1) }
@@ -169,10 +172,14 @@ export default function PlannerView() {
     {error ? <p className="form-error" role="alert">{error}</p> : null}
     {calendar.error ? <p className="form-error" role="alert">The week could not be read: {calendar.error}</p> : null}
     <CalendarStatus calendar={calendar} />
+    {changing ? <section className="day-panel planner-changing" aria-label={`Change ${changing.title}`}>
+      <header><h2>Change: {changing.title}</h2></header>
+      <ChangePlan entry={ownEntry(changing)} onCancel={() => setChanging(null)} onSaved={() => { setChanging(null); refetch() }} />
+    </section> : null}
     <p className="planner-hint">Drag one of your own plans to another day, or use its ⋯ menu. Study blocks are moved in the <Link to="/study#/planner">Study hub’s planner</Link>.</p>
     <div className="planner-scroll">
       <div className="planner-week">
-        {days.map((date) => <DayColumn key={date} date={date} today={today} days={days} busy={busy} onStatus={onStatus} onMove={onMove} onAdd={onAdd}
+        {days.map((date) => <DayColumn key={date} date={date} today={today} days={days} busy={busy} onStatus={onStatus} onMove={onMove} onAdd={onAdd} onChange={setChanging}
           items={items.filter((item) => (item.all_day ? itemOverlaps(item, date, date) : dateKey(item.start) === date))} />)}
       </div>
     </div>

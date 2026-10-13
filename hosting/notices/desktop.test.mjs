@@ -52,6 +52,9 @@ test('the notification is written for Windows with every character made safe', a
   assert.match(script, /<text>Dinner at Ben&apos;s &lt;8pm&gt; &amp; after<\/text><text>Starts now<\/text><text>&quot;Bring wine&quot;<\/text>/)
   assert.match(script, /launch="http:\/\/127\.0\.0\.1:47850\/today\?date=2026-10-13&amp;x=1"/)
   assert.equal(/LoadXml\('[^']*'\)/.test(script), true)
+  // Filed under Life OS's own name, which it gives itself once.
+  assert.equal(script.includes("AppUserModelId\\LifeOS.Notices' -Name DisplayName -Value 'Life OS'"), true)
+  assert.equal(script.includes("CreateToastNotifier('LifeOS.Notices')"), true)
   // Asked of Windows through PowerShell, with the script encoded so no quoting can break it.
   const calls = []
   const show = windowsToast({ platform: 'win32', run: (command, args) => { calls.push([command, args]); return { on(event, done) { if (event === 'exit') setImmediate(() => done(0)) } } } })

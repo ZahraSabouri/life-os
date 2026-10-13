@@ -84,7 +84,7 @@ export function NoticePanel() {
           : notices.permission === 'unsupported' ? 'This browser cannot show notifications.'
             : notices.desktop ? 'A notification appears a few minutes before a class, a study block or a plan starts, once a day for what today asks for, and when a focus session ends. Life OS has to be open in a tab.'
               : 'Switch this on to get a notification before a class, a study block or a plan starts, even when Life OS is in another tab.'}</p>
-        <p className="focus-note">{notices.whenClosed ? 'With no Life OS tab open, Windows shows the same things (under the name “Windows PowerShell”) for as long as Life OS itself is running. Clicking one opens Life OS.' : 'With no Life OS tab open, nothing is shown.'}</p>
+        <p className="focus-note">{notices.whenClosed ? 'With no Life OS tab open, Windows shows the same things in a small box at the corner of the screen, under the name “Life OS”, for as long as Life OS itself is running. Clicking one opens Life OS.' : 'With no Life OS tab open, nothing is shown.'}</p>
       </section>
     </aside>
   )

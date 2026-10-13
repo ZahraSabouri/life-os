@@ -6,14 +6,19 @@ import { spawn } from 'node:child_process'
 import { CALENDAR_TIME_ZONE } from '../../code/life-os/shared/calendar.js'
 
 const xml = (value) => String(value ?? '').replace(/[<>&"']/g, (char) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' })[char])
-// Windows files a notification under an app it knows. PowerShell is on every Windows.
-const APP = '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\WindowsPowerShell\\v1.0\\powershell.exe'
+// Windows files a notification under an app it knows by an id. Life OS gives itself one, with
+// its own name, in her own part of the registry (one key, made the first time a notice is
+// shown; removing the key undoes it). Without it the notices are filed under "Windows PowerShell".
+export const APP = 'LifeOS.Notices'
+const APP_KEY = `HKCU:\\SOFTWARE\\Classes\\AppUserModelId\\${APP}`
 
 // The PowerShell that shows one notification. Clicking it opens `url` in her browser.
 export function toastScript(title, body, url) {
   const lines = String(body ?? '').split('\n').map((line) => line.trim()).filter(Boolean).slice(0, 3)
   const toast = `<toast activationType="protocol" launch="${xml(url)}"><visual><binding template="ToastGeneric"><text>${xml(String(title).slice(0, 120))}</text>${lines.map((line) => `<text>${xml(line.slice(0, 160))}</text>`).join('')}</binding></visual></toast>`
   return [
+    `if (-not (Test-Path '${APP_KEY}')) { New-Item -Path '${APP_KEY}' -Force | Out-Null }`,
+    `if ((Get-ItemProperty -Path '${APP_KEY}' -Name DisplayName -ErrorAction SilentlyContinue).DisplayName -ne 'Life OS') { New-ItemProperty -Path '${APP_KEY}' -Name DisplayName -Value 'Life OS' -PropertyType String -Force | Out-Null }`,
     '[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null',
     '[Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null',
     '$xml = New-Object Windows.Data.Xml.Dom.XmlDocument',

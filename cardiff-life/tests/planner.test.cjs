@@ -17,12 +17,13 @@ test('Monday weeks survive year boundaries and British clock changes',()=>{
  assert.equal(P.monday('2026-03-29'),'2026-03-23');
 });
 test('catalogue includes researched sports independently of shortlist ranking',()=>{
- assert.equal(P.filter(data.events,{scope:'all'}, {},today,data.ranked).length,30);
+ // Counts follow the researched file, which grows with every search: the rule is tested, not one day's total.
+ assert.equal(P.filter(data.events,{scope:'all'}, {},today,data.ranked).length,data.events.length);
  const sport=P.filter(data.events,{scope:'all',category:'sport'}, {},today,data.ranked);
- assert.equal(sport.length,7);
+ assert.equal(sport.length,data.events.filter(e=>e.activity==='sport').length);assert(sport.length>0);
  assert(sport.some(e=>e.event_id==='su-43429'));
  assert(!data.ranked.includes('su-43429'));
- assert.equal(P.filter(data.events,{scope:'shortlist'}, {},today,data.ranked).length,20);
+ assert.equal(P.filter(data.events,{scope:'shortlist'}, {},today,data.ranked).length,data.ranked.length);assert(data.ranked.length>0);
  assert.deepEqual(P.filter(data.events,{scope:'shortlist'}, {},today,data.ranked).map(e=>e.event_id),data.ranked);
 });
 test('free filter does not treat free membership or member-only tickets as free entry',()=>{
@@ -88,7 +89,9 @@ function boot(payload=data,saved=null){
 test('generated UI boots, saves a choice/note and retains it through refreshed data',()=>{
  const app=boot();
  assert.equal((app.ids.get('week-grid').innerHTML.match(/class="day /g)||[]).length,7);
- assert.equal((app.ids.get('event-grid').innerHTML.match(/<article/g)||[]).length,30);
+ // The page opens on what is still to come, by its own clock: as many cards as its own rule gives for today.
+ const now=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/London'}).format(new Date());
+ assert.equal((app.ids.get('event-grid').innerHTML.match(/<article/g)||[]).length,P.filter(data.events,{scope:'all',category:'all',search:'',when:'all',source:'all',free:false,date:'',week:P.monday(now)},{},now,data.ranked).length);
  app.click({detail:'su-43429'});assert(app.ids.get('event-detail').open);
  app.click({choice:'maybe',id:'su-43429'});
  app.ids.get('personal-note').value='Bring water';
@@ -114,7 +117,7 @@ test('cancelled and missing saved listings remain visible after an update',()=>{
  const other=boot(cancelled,backup);other.click({scope:'saved'});assert.match(other.ids.get('event-grid').innerHTML,/cancelled/);
 });
 test('standalone HTML embeds data and script, without network dependencies',()=>{
- assert.equal(data.events.length,30);assert.equal(data.communities.length,26);
+ assert(data.events.length>0);assert.equal(new Set(data.events.map(e=>e.event_id)).size,data.events.length);assert(data.communities.length>0);
  assert(!/__CARDIFF_(DATA|SCRIPT)__/.test(html));
  assert(!/<script[^>]+src=/i.test(html));assert(!/<link[^>]+stylesheet/i.test(html));
  assert(!/url\s*\(/i.test(html.match(/<style>([\s\S]*?)<\/style>/)[1]));

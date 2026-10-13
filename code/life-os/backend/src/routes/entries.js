@@ -192,6 +192,13 @@ router.get('/', (req, res) => {
   }
 })
 
+// One entry by its id, for changing it from the page that shows it.
+router.get('/:id', (req, res) => {
+  const existing = selectEntryById.get(req.params.id)
+  if (!existing) return res.status(404).json({ error: 'not found' })
+  res.json(serializeEntry(existing))
+})
+
 router.patch('/:id', (req, res) => {
   try {
     const existing = selectEntryById.get(req.params.id)

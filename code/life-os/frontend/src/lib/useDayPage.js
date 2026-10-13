@@ -177,6 +177,6 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
       repeat, setRepeat, repeatDays, toggleRepeatDay: (weekday) => setRepeatDays((current) => (current.includes(weekday) ? current.filter((value) => value !== weekday) : [...current, weekday])), until, setUntil },
     error, notice, savingId, completeTask, tickShopping, tickStudy, markJob, jobMark,
     undoJobMark: () => (jobMark?.previous?.status ? markJob(jobMark, jobMark.previous.status, jobMark.previous) : undefined),
-    stopProps: { onDone: (stop) => setEntryStatus(stop, 'done'), onRemove: (stop) => setEntryStatus(stop, 'cancelled'), onStudy: tickStudy, busy: Boolean(savingId) },
+    stopProps: { onDone: (stop) => setEntryStatus(stop, 'done'), onRemove: (stop) => setEntryStatus(stop, 'cancelled'), onStudy: tickStudy, onChanged: refetch, busy: Boolean(savingId) },
   }
 }

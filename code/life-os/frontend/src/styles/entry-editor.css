@@ -34,3 +34,9 @@
 .app-shell .ledger-entry-actions button.is-danger { color: var(--m-red); }
 .ledger-more { margin: 1.2rem 0 0; color: var(--m-muted); font: 400 0.84rem/1.4 var(--m-font); }
 .planner-repeating .entry-editor { margin-top: 0.2rem; }
+
+/* "Change" on a plan where it is shown: the day's path, the week planner. */
+.change-plan-note { margin: 0.5rem 0 0; color: var(--m-muted); font: 400 0.82rem/1.45 var(--m-font); max-width: 44rem; }
+.day-stop-body .entry-editor { margin-top: 0.5rem; }
+.planner-changing > header h2 { margin: 0 0 0.2rem; color: var(--m-ink); font: var(--m-title-weight, 600) 1.1rem/1.25 var(--m-title-font, var(--m-font)); }
+.planner-changing .entry-editor { border: 0; padding: 0; background: transparent; }
