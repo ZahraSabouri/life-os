@@ -17,6 +17,7 @@ function stop() {
   if (stopping) return
   stopping = true
   server.close(async () => {
+    app.locals.desktopNotifier?.stop()
     await budgetKeeper.stop()
     await jobmapKeeper.stop()
     await app.locals.studyRuntime?.close().catch(() => {})
@@ -27,6 +28,8 @@ function stop() {
 }
 const app = createLifeOsApp({
   controlToken: process.env.LIFE_OS_CONTROL_TOKEN,
+  desktopNotices: true,
+  origin: `http://127.0.0.1:${port}`,
   onStop: stop,
   getBudgetPort: () => budget?.port ?? null,
   getJobMapPort: () => jobmap?.port ?? null,

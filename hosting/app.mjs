@@ -18,6 +18,7 @@ import { createStudyFocus, createStudyTick, createStudyTickHandler } from './stu
 import { createReviewRouter, createReviewService } from './review/service.mjs'
 import { createAnalysisRouter, createAnalysisService, MAX_ANALYSIS_DAYS } from './review/analysis.mjs'
 import { createNoticesRouter, createNoticesService } from './notices/service.mjs'
+import { createDesktopNotifier, windowsToast } from './notices/desktop.mjs'
 import { withRoutines } from '../code/life-os/shared/routines.js'
 import { createOwnEvents, createOwnEventsRouter } from './cardiff/own-events.mjs'
 import { createJobMark, createJobMarkHandler } from './career/mark.mjs'
@@ -212,11 +213,22 @@ export function createLifeOsApp(options = {}) {
   let budgetRules
   const budgetFigures = (state, month) => { budgetRules ??= loadBudgetRules(budgetRoot); return budgetRules.forecast(state, month) }
   // Notices for the whole app: what is on now, starts soon, is asked of today, has slipped, is close ahead. Read only.
-  app.use('/api/notices', createNoticesRouter({ express, service: options.notices ?? createNoticesService({
+  const noticesService = options.notices ?? createNoticesService({
     dayOf: dayService, calendarOf: calendarService,
     loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('task', 'time-block')").all(),
     loadBudget: calendarLoaders.loadBudget, budgetFigures,
-  }) }))
+  })
+  // While a tab is open the browser tells her; when none is, the server asks Windows to
+  // (hosting/notices/desktop.mjs). Only the real server does this, not a try-out.
+  // Started as if a tab had just asked: after a restart an open tab gets six minutes to ask again
+  // before Windows is used, so a restart does not tell her what her tab already shows.
+  let browserSeenAt = Date.now()
+  const notifier = options.desktopNotices ? createDesktopNotifier({
+    load: noticesService, show: options.showToast ?? windowsToast(), origin: options.origin ?? 'http://127.0.0.1:47850', browserSeenAt: () => browserSeenAt,
+    prefs: () => { try { return JSON.parse(db.prepare("SELECT value FROM settings WHERE key = 'notices'").get()?.value ?? '{}') ?? {} } catch { return {} } },
+  }) : null
+  app.locals.desktopNotifier = notifier
+  app.use('/api/notices', (_req, _res, next) => { browserSeenAt = Date.now(); next() }, createNoticesRouter({ express, service: async () => { const result = await noticesService(); return { ...result, told: notifier?.told(result.today) ?? [] } } }))
   // A week looked back on across every part. Read only. "Spent" is Budget's own month rule.
   // What the review and the analysis read: the same loaders, so their numbers agree.
   const reviewLoaders = {

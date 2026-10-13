@@ -104,3 +104,18 @@ test('a setting has a plain name and a value that fits', () => {
   assert.throws(() => settingText('targets', undefined), (error) => error.status === 400)
   assert.throws(() => settingText('big', 'x'.repeat(300 * 1024)), (error) => error.status === 413)
 })
+
+test('from the Study hub\'s own reminders: cards due tomorrow, and cards that have waited two days or more', () => {
+  const study = {
+    today: [], overdue: { count: 0, cards: [] }, next: null,
+    tomorrow: [{ id: 'a', title: 'Hypothesis tests', href: '/study#/today?card=a' }],
+    waiting: { count: 2, cards: [{ id: 'w1', title: 'Ask about the formula sheet', days: 4, href: '/study#/today?card=w1' }, { id: 'w2', title: 'Portfolio brief', days: 2, href: '/study#/today?card=w2' }] },
+  }
+  const { notices } = buildNotices({ day: { date: TODAY, study }, items: [], now: NOW })
+  assert.deepEqual(notices.map((notice) => [notice.id, notice.level, notice.title, notice.detail, notice.href]), [
+    [`study:waiting:${TODAY}`, 'late', '2 study cards waiting for two days or more', 'Ask about the formula sheet (4 days); Portfolio brief (2 days)', '/study'],
+    [`study:tomorrow:${TODAY}`, 'ahead', '1 study card due tomorrow', 'Hypothesis tests', '/study#/today?card=a'],
+  ])
+  // Nothing due tomorrow and nothing waiting: neither notice is made.
+  assert.deepEqual(buildNotices({ day: { date: TODAY, study: { today: [], overdue: { count: 0, cards: [] }, next: null, tomorrow: [], waiting: { count: 0, cards: [] } } }, items: [], now: NOW }).notices, [])
+})

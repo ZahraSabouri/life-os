@@ -48,6 +48,10 @@ export function buildNotices({ day, items, open, money, now = new Date() } = {})
     const due = array(study.today).filter((card) => !card.done)
     if (due.length) add({ id: `study:due:${today}`, level: 'today', area: 'study', title: `${plural(due.length, 'study card')} due today`, detail: listed(due.map((card) => card.title)), href: due.length === 1 ? due[0].href : '/study' })
     if (study.overdue?.count) add({ id: `study:late:${today}`, level: 'late', area: 'study', title: `${plural(study.overdue.count, 'study card')} past ${study.overdue.count === 1 ? 'its' : 'their'} date`, detail: listed(array(study.overdue.cards).map((card) => card.title)), href: study.overdue.count === 1 ? study.overdue.cards[0]?.href ?? '/study' : '/review' })
+    // From the Study hub's own reminders: what is due tomorrow, and what has waited too long.
+    const tomorrow = array(study.tomorrow)
+    if (tomorrow.length) add({ id: `study:tomorrow:${today}`, level: 'ahead', area: 'study', title: `${plural(tomorrow.length, 'study card')} due tomorrow`, detail: listed(tomorrow.map((card) => card.title)), href: tomorrow.length === 1 ? tomorrow[0].href : '/study' })
+    if (study.waiting?.count) add({ id: `study:waiting:${today}`, level: 'late', area: 'study', title: `${plural(study.waiting.count, 'study card')} waiting for two days or more`, detail: listed(array(study.waiting.cards).map((card) => `${card.title} (${card.days} days)`)), href: study.waiting.count === 1 ? array(study.waiting.cards)[0]?.href ?? '/study' : '/study' })
     if (study.next && study.next.days <= 7) add({
       id: `study:test:${study.next.id ?? study.next.title}:${today}`, level: study.next.days === 0 ? 'today' : 'ahead', area: 'study',
       title: study.next.days === 0 ? `${study.next.title} is today` : `${study.next.title} is ${study.next.days === 1 ? 'tomorrow' : `in ${study.next.days} days`}`,

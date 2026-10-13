@@ -9,7 +9,7 @@ import { useSetting } from './settings.js'
 const FIRED_KEY = 'life-os.notices.fired'      // what the computer has already said, per browser
 const DESKTOP_KEY = 'life-os.notices.desktop'  // a copy of her choice that other code can read at once
 const EMPTY = { notices: [], upcoming: [], today: '' }
-const PREFS = { seen: {}, desktop: false, minutesBefore: 10 }
+const PREFS = { seen: {}, desktop: false, minutesBefore: 10, whenClosed: true }
 
 export const NOTICE_GROUPS = [['now', 'On now'], ['soon', 'Within the hour'], ['today', 'Today'], ['late', 'Slipped'], ['ahead', 'Coming up']]
 
@@ -88,6 +88,7 @@ export function NoticesProvider({ children }) {
     setPermission(allowed)
     setStored({ ...prefs, desktop: Boolean(wanted) && allowed === 'granted' })
   }, [prefs, setStored])
+  const setWhenClosed = useCallback((wanted) => setStored({ ...prefs, whenClosed: Boolean(wanted) }), [prefs, setStored])
   const setMinutesBefore = useCallback((minutes) => setStored({ ...prefs, minutesBefore: Math.max(1, Math.min(60, Math.round(Number(minutes)) || 10)) }), [prefs, setStored])
 
   useEffect(() => { try { window.localStorage.setItem(DESKTOP_KEY, prefs.desktop ? '1' : '0') } catch { /* this visit only */ } }, [prefs.desktop])
@@ -97,14 +98,16 @@ export function NoticesProvider({ children }) {
     if (!prefs.desktop || permission !== 'granted' || !data.today) return undefined
     const check = () => {
       const now = Date.now()
+      // What Windows already showed while no tab was open is not said again.
+      const told = new Set(data.told ?? [])
       for (const item of data.upcoming) {
         const wait = Date.parse(item.startsAt) - now
-        if (wait <= prefs.minutesBefore * 60_000 && wait > -60_000 && fire(item.id, data.today)) {
+        if (wait <= prefs.minutesBefore * 60_000 && wait > -60_000 && !told.has(item.id) && fire(item.id, data.today)) {
           desktopNotice(item.title, wait > 60_000 ? `Starts at ${item.at}, in ${Math.round(wait / 60_000)} minutes` : `Starts now (${item.at})`, { tag: item.id, onClick: () => goTo.current(item.href || '/today') })
         }
       }
       const asked = data.notices.filter((notice) => ['today', 'late'].includes(notice.level) && !seen[notice.id])
-      if (asked.length && fire(`summary:${data.today}`, data.today)) {
+      if (asked.length && !told.has(`summary:${data.today}`) && fire(`summary:${data.today}`, data.today)) {
         desktopNotice(`Life OS: ${asked.length} ${asked.length === 1 ? 'thing' : 'things'} for today`, asked.slice(0, 4).map((notice) => notice.title).join('\n'), { tag: `summary:${data.today}`, onClick: () => goTo.current('/today') })
       }
     }
@@ -116,6 +119,7 @@ export function NoticesProvider({ children }) {
   const value = useMemo(() => ({
     open, setOpen, toggle, notices: data.notices, unseen, seen, markSeen, refetch,
     desktop: prefs.desktop, minutesBefore: prefs.minutesBefore, permission, setDesktop, setMinutesBefore,
-  }), [open, toggle, data.notices, unseen, seen, markSeen, refetch, prefs.desktop, prefs.minutesBefore, permission, setDesktop, setMinutesBefore])
+    whenClosed: prefs.whenClosed !== false, setWhenClosed,
+  }), [open, toggle, data.notices, unseen, seen, markSeen, refetch, prefs.desktop, prefs.minutesBefore, prefs.whenClosed, permission, setDesktop, setMinutesBefore, setWhenClosed])
   return <NoticesContext.Provider value={value}>{children}</NoticesContext.Provider>
 }

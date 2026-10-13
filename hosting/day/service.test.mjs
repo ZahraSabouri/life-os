@@ -186,3 +186,20 @@ test('what was ticked off a shopping list this day stays in sight, and a list wi
   ] } }, DATE)
   assert.deepEqual(home.lists.map(list => [list.id, list.items.map(item => item.name), list.got.map(item => item.name)]), [['open', ['Shampoo'], ['Soap']], ['done', [], ['Milk']]])
 })
+
+test('the study part also tells what is due tomorrow and what has waited two days or more', () => {
+  const workspace = {
+    semesters: [{ id: 's', status: 'active' }], modules: [], assessments: [],
+    cards: [
+      { id: 'a', semester_id: 's', title: 'Due tomorrow', status: 'planned', end_date: '2026-10-14', updated_at: '2026-10-13T09:00:00.000Z', data: {} },
+      { id: 'b', semester_id: 's', title: 'Due tomorrow, done', status: 'done', end_date: '2026-10-14', data: {} },
+      { id: 'c', semester_id: 's', title: 'Waiting four days', status: 'blocked', updated_at: '2026-10-09T10:00:00.000Z', data: {} },
+      { id: 'd', semester_id: 's', title: 'Waiting since yesterday', status: 'blocked', updated_at: '2026-10-12T10:00:00.000Z', data: {} },
+      { id: 'e', semester_id: 's', title: 'Waiting two days', status: 'blocked', end_date: '2026-10-20', updated_at: '2026-10-11T23:30:00.000Z', data: {} },
+    ],
+  }
+  const { panel } = studyDay(workspace, [], '2026-10-13')
+  assert.deepEqual(panel.tomorrow.map((card) => card.title), ['Due tomorrow'])
+  // 23:30 UTC on the 11th is 00:30 on the 12th in London, so that card has waited one day, not two.
+  assert.deepEqual([panel.waiting.count, panel.waiting.cards.map((card) => [card.title, card.days])], [1, [['Waiting four days', 4]]])
+})

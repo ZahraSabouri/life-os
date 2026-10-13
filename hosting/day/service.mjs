@@ -46,6 +46,8 @@ function cardSummary(card, modules) {
     priority: text(data.priority, 40),
     done: lower(card.status) === 'done' || data.done === true,
     waiting: lower(card.status) === 'blocked',
+    // The day it was last changed: for a waiting card, about when it began to wait.
+    changed: day(dateKey(card.updated_at)),
     steps,
     stepsDone: steps.filter((step) => step.done).length,
     doneWhen: text(data.doneCondition, 600),
@@ -83,6 +85,11 @@ export function studyDay(workspace, plans, date) {
   const dueToday = cards.filter((card) => card.due === date)
   const running = cards.filter((card) => !card.done && card.due > date && card.start && card.start <= date)
   const overdue = cards.filter((card) => !card.done && card.due && card.due < date)
+  // The two reminders the Study hub's own bell gives that a day would otherwise not show: what is
+  // due tomorrow, and what has waited two days or more (the hub's own rule, utils/notifications.js).
+  const tomorrow = cards.filter((card) => !card.done && card.due === addDays(date, 1))
+  const stuck = cards.filter((card) => !card.done && card.waiting && card.changed && daysBetween(card.changed, date) >= 2)
+    .map((card) => ({ ...card, days: daysBetween(card.changed, date) })).sort((a, b) => b.days - a.days)
 
   const assessments = array(workspace?.assessments).filter((row) => open.has(row.semester_id) && !STUDY_OVER.has(lower(row.status))
     && !['done', 'submitted', 'passed'].includes(lower(row.status)))
@@ -98,6 +105,8 @@ export function studyDay(workspace, plans, date) {
       today: dueToday.map((card) => ({ ...card, inBlock: inBlock.has(card.id) })),
       running: running.slice(0, 6),
       overdue: { count: overdue.length, cards: overdue.sort((a, b) => a.due.localeCompare(b.due)).slice(0, 4) },
+      tomorrow: tomorrow.slice(0, 6),
+      waiting: { count: stuck.length, cards: stuck.slice(0, 4) },
       hoursToday: Math.round(dueToday.reduce((sum, card) => sum + card.hours, 0) * 100) / 100,
       next,
       undated: assessments.filter((row) => !row.date).map((row) => row.title).slice(0, 4),
