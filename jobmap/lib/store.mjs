@@ -5,6 +5,7 @@ import { DEFAULT_PROFILE } from './matching.mjs';
 import {planImport,validateObservation} from './discovery.mjs';
 import {calendarDay,isDate} from './job-dates.mjs';
 import {validFiles,MAX_FILES_PER_JOB} from './files.mjs';
+import {validDocuments} from './documents.mjs';
 import legacyDates from './legacy-dates.json' with {type:'json'};
 
 export const STATUSES = ['To review','Check details','Preparing','Applied','Interview','Offer','Rejected','Archived'];
@@ -36,6 +37,7 @@ export class Store {
   const ids=new Set(this.base.map(j=>j.id));
   for(const j of state.customJobs){if(!object(j)||typeof j.id!=='string'||!/^CUSTOM-[\w-]+$/.test(j.id)||ids.has(j.id))throw new Error('Invalid added job.');ids.add(j.id);validatePatch({role:j.role,company:j.company,url:j.url||'',location:j.location||'',salary:j.salary||'',deadline:j.deadline||'',hours:j.hours||''});if(typeof j.description!=='string'||j.description.length>100000)throw new Error('Invalid job description.');}
   for(const [id,override] of Object.entries(state.overrides)){if(!ids.has(id)||!object(override))throw new Error('Unknown job in backup.');const {history,files,...fields}=override;validatePatch(fields);if(!validFiles(files))throw new Error('Invalid kept files.');if(history!==undefined&&(!Array.isArray(history)||history.length>100||history.some(e=>!object(e)||typeof e.at!=='string'||typeof e.label!=='string'||e.label.length>200)))throw new Error('Invalid activity history.');}
+  if(!validDocuments(state.documents))throw new Error('Invalid documents folder.');
   if(state.observations!==undefined){if(!object(state.observations))throw new Error('Invalid vacancy observations.');for(const [id,entry]of Object.entries(state.observations)){if(!ids.has(id))throw new Error('Unknown observed job.');validateObservation(entry,validatePatch);}}
   if(state.importRuns!==undefined&&(!Array.isArray(state.importRuns)||state.importRuns.length>200||state.importRuns.some(r=>!object(r)||typeof r.id!=='string'||typeof r.at!=='string'||!['added','updated','skipped'].every(k=>Number.isSafeInteger(r[k])&&r[k]>=0))))throw new Error('Invalid search history.');
   for(const j of state.customJobs){
@@ -71,6 +73,8 @@ export class Store {
   next.overrides[id]={...existing,...patch,history:history.slice(-100)};
   await this.persist(next);return {job:this.jobs().find(j=>j.id===id),revision:this.state.revision,previous};
  });}
+ // The documents folder she connected, and the file in it that is her main CV.
+ documents(raw,revision){return this.run(async()=>{this.check(revision);const documents={root:String(raw?.root??'').trim().replace(/^"(.*)"$/,'$1'),mainCv:String(raw?.mainCv??'')};if(!validDocuments(documents))throw new Error('Give the full path of a folder on this computer, starting from the drive.');const next=structuredClone(this.state);next.documents=documents;await this.persist(next);return {documents,revision:this.state.revision};});}
  // A file kept with a job: the store keeps its name, size and date; lib/files.mjs keeps the file.
  attach(id,file,revision){return this.run(async()=>{
   this.check(revision);if(!this.jobs().some(j=>j.id===id))throw new Error('Job not found.');if(!validFiles([file]))throw new Error('Invalid kept file.');

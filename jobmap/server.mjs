@@ -6,7 +6,8 @@ import { Store } from './lib/store.mjs';
 import { createInbox } from './lib/inbox.mjs';
 import { workspaceConnection, ensureWorkspaceService } from './lib/workspace.mjs';
 import { openFolder } from './lib/folders.mjs';
-import { JobFiles } from './lib/files.mjs';
+import { JobFiles, MAX_FILE_BYTES } from './lib/files.mjs';
+import { listDocuments, readDocument } from './lib/documents.mjs';
 const root=path.dirname(fileURLToPath(import.meta.url));
 const port=Number(process.env.JOBMAP_PORT||47841);
 const origin=`http://127.0.0.1:${port}`;
@@ -50,7 +51,7 @@ const server=http.createServer(async(req,res)=>{
   const kept=/^\/api\/jobs\/([^/]+)\/files(?:\/([\w-]+))?$/.exec(url.pathname);
   if(kept){
    const jobId=decodeURIComponent(kept[1]),fileId=kept[2];
-   if(req.method==='POST'&&!fileId){const b=await body(req);store.check(b.revision);if(!store.jobs().some(j=>j.id===jobId)){json(res,{error:'Job not found.'},404);return;}const meta=await files.save(jobId,b.file);try{json(res,{...await store.attach(jobId,meta,b.revision),file:meta},201);}catch(error){await files.remove(jobId,meta.id).catch(()=>{});throw error;}return;}
+   if(req.method==='POST'&&!fileId){const b=await body(req);store.check(b.revision);if(!store.jobs().some(j=>j.id===jobId)){json(res,{error:'Job not found.'},404);return;}const meta=await files.save(jobId,typeof b.from==='string'?await readDocument(store.state.documents?.root,b.from,MAX_FILE_BYTES):b.file);try{json(res,{...await store.attach(jobId,meta,b.revision),file:meta},201);}catch(error){await files.remove(jobId,meta.id).catch(()=>{});throw error;}return;}
    if(req.method==='GET'&&fileId){const meta=store.jobs().find(j=>j.id===jobId)?.files?.find(f=>f.id===fileId);if(!meta){json(res,{error:'File not found.'},404);return;}const content=await files.read(jobId,meta.id);res.writeHead(200,{...headers,'Content-Type':files.typeOf(meta.name),'Content-Length':content.byteLength,'Content-Disposition':`${files.inline(meta.name)?'inline':'attachment'}; filename*=UTF-8''${encodeURIComponent(meta.name)}`});res.end(content);return;}
    if(req.method==='DELETE'&&fileId){const b=await body(req);const result=await store.detach(jobId,fileId,b.revision);await files.remove(jobId,fileId).catch(()=>{});json(res,result);return;}
   }
@@ -60,6 +61,9 @@ const server=http.createServer(async(req,res)=>{
   if(url.pathname.startsWith('/api/jobs/')&&req.method==='PATCH'){const b=await body(req);json(res,await store.patch(decodeURIComponent(url.pathname.slice(10)),b.patch,b.revision));return;}
   if(url.pathname==='/api/backup'&&req.method==='GET'){res.setHeader('Content-Disposition',`attachment; filename="JobMap-backup-${new Date().toISOString().slice(0,10)}.json"`);json(res,store.export());return;}
   if(url.pathname==='/api/restore'&&req.method==='POST'){const b=await body(req);json(res,await store.restore(b.backup,b.revision));return;}
+  // Her documents folder: what is in it, and which folder and main CV she chose.
+  if(url.pathname==='/api/documents'&&req.method==='GET'){const documents=store.state.documents||{root:'',mainCv:''};let listing=null,problem='';if(documents.root){try{listing=await listDocuments(documents.root,url.searchParams.get('dir')||'');}catch(error){problem=error.message;}}json(res,{documents,listing,problem,revision:store.state.revision});return;}
+  if(url.pathname==='/api/documents'&&req.method==='PUT'){const b=await body(req);json(res,await store.documents(b.documents,b.revision));return;}
   if(url.pathname==='/api/open-folder'&&req.method==='POST'){const b=await body(req);json(res,await openFolder(b.path));return;}
   if(url.pathname.startsWith('/api/')){json(res,{error:'Not found.'},404);return;}
   if(!['GET','HEAD'].includes(req.method)){json(res,{error:'Method not allowed.'},405);return;}

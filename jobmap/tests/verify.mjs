@@ -6,6 +6,8 @@ import {Store,validatePatch,validDate,localDay} from '../lib/store.mjs';
 import {assess,selectJobs,tagsOf,daysUntil,reviewDeadline} from '../lib/matching.mjs';
 import {openFolder} from '../lib/folders.mjs';
 import {JobFiles,cleanName,validFiles} from '../lib/files.mjs';
+import {listDocuments,readDocument,inside,validDocuments} from '../lib/documents.mjs';
+import {mkdir,writeFile} from 'node:fs/promises';
 const base=JSON.parse(await readFile(new URL('../data/jobs.json',import.meta.url),'utf8'));
 assert.equal(base.length,980);assert.equal(new Set(base.map(j=>j.id)).size,980);
 const sf=base.filter(j=>j.source==='Student Futures');assert.equal(sf.length,772);assert(sf.every(j=>j.description.length>50&&j.deadline&&j.url));assert.equal(base.filter(j=>j.url).length,963);
@@ -69,4 +71,14 @@ assert(selectJobs(base,{scope:'parttime'}).every(x=>!x.match.early&&!x.match.unp
  assert.equal(validFiles([{...meta,id:'../../etc'}]),false);await assert.rejects(Promise.resolve().then(()=>files.read('SF-333ZL','../../progress.json')),e=>e.status===404);
  const gone=await mine.detach('SF-333ZL',meta.id,2);assert.deepEqual(gone.job.files,[]);await files.remove('SF-333ZL',meta.id);await assert.rejects(files.read('SF-333ZL',meta.id));await assert.rejects(mine.detach('SF-333ZL',meta.id,3),e=>e.status===404);
  await files.remove('SF-333ZL',meta.id);}
+// Her documents folder: read, never written, never left; a file from it can be kept with a job.
+{const kept=await mkdtemp(fileURLToPath(new URL('../data/test-workspace-',import.meta.url)));const docs=path.join(kept,'My documents');await mkdir(path.join(docs,'Applications','Acme'),{recursive:true});
+ await writeFile(path.join(docs,'CV_Example.pdf'),'%PDF cv');await writeFile(path.join(docs,'Applications','Acme','Cover letter.docx'),'letter');await writeFile(path.join(docs,'.hidden'),'x');await writeFile(path.join(kept,'secret.txt'),'outside');
+ const top=await listDocuments(docs);assert.deepEqual([top.path,top.folders,top.files.map(f=>[f.name,f.kind,f.size])],['',[{name:'Applications'}],[['CV_Example.pdf','cv',7]]]);
+ const inner=await listDocuments(docs,'Applications/Acme');assert.deepEqual([inner.parts,inner.files.map(f=>[f.name,f.kind])],[['Applications','Acme'],[['Cover letter.docx','letter']]]);
+ assert.throws(()=>inside(docs,'../secret.txt'),e=>e.status===400);assert.throws(()=>inside('', 'x'),e=>e.status===400);await assert.rejects(listDocuments(docs,'Nowhere'),e=>e.status===404);await assert.rejects(readDocument(docs,'../secret.txt',100),e=>e.status===400);
+ assert.deepEqual(await readDocument(docs,'CV_Example.pdf',100),{name:'CV_Example.pdf',data:Buffer.from('%PDF cv').toString('base64')});await assert.rejects(readDocument(docs,'CV_Example.pdf',3),e=>e.status===413);await assert.rejects(readDocument(docs,'Applications',100),e=>e.status===400);
+ assert.deepEqual([validDocuments({root:docs,mainCv:'CV_Example.pdf'}),validDocuments({root:'relative/folder',mainCv:''}),validDocuments({root:'',mainCv:''}),validDocuments({root:docs,mainCv:'',extra:1}),validDocuments(undefined)],[true,false,true,false,true]);
+ const mine=await new Store(base,kept).init();const saved=await mine.documents({root:'"'+docs+'"',mainCv:'CV_Example.pdf'},0);assert.deepEqual(saved.documents,{root:docs,mainCv:'CV_Example.pdf'});await assert.rejects(mine.documents({root:'not/absolute',mainCv:''},1));
+ assert.deepEqual((await new Store(base,kept).init()).state.documents,{root:docs,mainCv:'CV_Example.pdf'});}
 console.log(JSON.stringify({result:'PASS',records:980,studentFutures:772,links:963,persistence:'restart, backup restore, invalid restore, conflict protection',matching:'skills, location, hours, missing core language, graduate, unpaid, date gates',testDirectory:directory}));

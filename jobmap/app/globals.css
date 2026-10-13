@@ -22,3 +22,17 @@ button.my-tag{cursor:pointer;color:var(--blue)}button.my-tag:hover{border-color:
 .kept-files{display:grid;gap:8px;margin:0 0 14px}.kept-title{font-size:14px;font-weight:600;color:var(--ink)}
 .file-add{position:relative;display:inline-flex;align-items:center;justify-self:start;cursor:pointer;overflow:hidden}.file-add input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}.file-add.is-busy{opacity:.6;cursor:progress}
 .kept-list .caption{margin:0}.text-button.danger{color:#b3261e}
+
+/* My documents: the connected folder, the main CV, previous applications. */
+.modal:has(.documents){width:min(820px,calc(100vw - 28px))}
+.documents{display:grid;gap:22px}.documents h3{margin:0 0 6px;font-size:16px}.documents section>.caption{margin:0 0 8px}
+.documents-root{display:flex;flex-wrap:wrap;gap:8px}.documents-root input{flex:1 1 260px;min-width:0}
+.documents-main{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:0}
+.documents-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 6px;font-size:14px}
+.documents-list,.documents-applied{list-style:none;margin:0;padding:0;display:grid;max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.documents-list li,.documents-applied li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;padding:8px 12px;border-top:1px solid var(--line);min-width:0}
+.documents-list li:first-child,.documents-applied li:first-child{border-top:0}.documents-list li.is-main{background:color-mix(in srgb,var(--blue) 7%,transparent)}
+.documents-folder,.documents-job{display:inline-flex;align-items:center;gap:8px;border:0;background:none;padding:0;color:var(--ink);font:inherit;font-weight:600;cursor:pointer;text-align:left}
+.documents-folder:hover,.documents-job:hover b{text-decoration:underline}.documents-job{display:grid;gap:0;flex:1 1 220px}.documents-job span{font-weight:400;color:var(--muted);font-size:14px}
+.documents-file{flex:1 1 220px;min-width:0;overflow-wrap:anywhere}.documents-file em{margin-left:8px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);font-style:normal;font-size:11px;font-weight:600;color:var(--muted)}.documents-file em.main{border-color:var(--blue);color:var(--blue)}
+.documents .caption{margin:0}.kept-main{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 14px}
