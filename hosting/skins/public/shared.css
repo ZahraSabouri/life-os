@@ -52,3 +52,26 @@ html[data-life-os-ground] textarea { border-radius: min(var(--m-radius-control),
 
 /* Under the Life OS top bar the app is a part of Life OS: no second logo. */
 html[data-life-os-frame] [data-life-os-hide] { display: none !important; }
+
+/* ---- Inside Life OS, a part is a section of Life OS, not an app of its own -------------------
+   The Study hub, Cardiff Life, Budget and JobMap each came with a brand, a menu and titles in a
+   style of their own. Shown inside Life OS they share one: no brand (the top bar says where you
+   are), one menu, one page title, one small line above it. Opened by itself, an app keeps its own. */
+html[data-life-os-frame] :is(.brand, .v2-brand, .workspace-label) { display: none !important; }
+html[data-life-os-frame] .sidebar-brand :is(strong, .brand-mark) { display: none !important; }
+html[data-life-os-frame] .sidebar-brand small { color: var(--m-ink) !important; font: 600 0.86rem/1.35 var(--m-font) !important; letter-spacing: 0 !important; white-space: normal !important; }
+
+/* One menu: on the page's own ground, a hairline beside it, the same items in every part. */
+html[data-life-os-frame] :is(.sidebar, .v2-sidebar) { background: transparent !important; border-right: var(--m-rule, 1px solid var(--m-line)) !important; box-shadow: none !important; }
+html[data-life-os-frame] :is(.sidebar .nav, .v2-sidebar .side-link, .sidebar-nav a, .sidebar-nav button) { font-family: var(--m-font) !important; font-size: 0.9rem !important; font-weight: 500 !important; letter-spacing: 0 !important; text-transform: none !important; border-radius: var(--m-radius-nav, 10px) !important; color: var(--m-muted) !important; border-color: transparent !important; box-shadow: none !important; }
+html[data-life-os-frame] :is(.sidebar .nav, .v2-sidebar .side-link, .sidebar-nav a, .sidebar-nav button):hover { color: var(--m-ink) !important; background: color-mix(in srgb, var(--m-ink) 5%, transparent) !important; }
+html[data-life-os-frame] :is(.sidebar .nav.active, .v2-sidebar .side-link.active, .sidebar-nav .active, .sidebar-nav [aria-current='page'], .sidebar .nav[aria-current='page']) { background: var(--m-accent-soft) !important; color: var(--m-ink) !important; font-weight: 600 !important; }
+html[data-life-os-frame] .nav-label { font: 600 0.7rem/1.3 var(--m-font) !important; letter-spacing: 0.08em !important; text-transform: uppercase !important; color: var(--m-muted) !important; }
+
+/* One page title, and one small line above it: the display face and size of a Life OS page. */
+html[data-life-os-frame] :is(h1, .topbar-title, .page-heading) { font-family: var(--m-display, var(--m-font)) !important; font-weight: var(--m-heading-weight, 600) !important; font-size: clamp(1.8rem, 2.5vw, 2.3rem) !important; line-height: 1.12 !important; letter-spacing: var(--m-heading-tracking, -0.01em) !important; text-transform: none !important; color: var(--m-ink) !important; }
+html[data-life-os-frame] :is(.eyebrow, .topbar-sub) { font-family: var(--m-font) !important; font-size: 0.72rem !important; font-weight: 600 !important; letter-spacing: 0.08em !important; text-transform: uppercase !important; color: var(--m-muted) !important; text-decoration: none !important; }
+
+/* Cardiff Life's pages (My week, All choices, …) are a row of views, like the views of a Life OS page. */
+html[data-life-os-frame] button[data-view] { border: 1px solid var(--m-line) !important; border-radius: var(--m-radius-control, 8px) !important; background: var(--m-card-fill, transparent) !important; color: var(--m-ink) !important; font: 600 0.84rem/1.2 var(--m-font) !important; letter-spacing: 0 !important; text-transform: none !important; padding: 0.45rem 0.95rem !important; box-shadow: none !important; }
+html[data-life-os-frame] button[data-view][aria-current='page'] { border-color: var(--m-accent) !important; background: var(--m-accent-soft) !important; }
