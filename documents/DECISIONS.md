@@ -4,6 +4,14 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 14 October 2026 — food you can use (Budget fix, `briefs/budget-food-flow.md`)
+
+- **Food stays in Budget, beside the stock it uses; Body & Health shows it.** Xar asked whether meals and health should leave Budget for a Health app ("they should necessarily be connected … because we want the resources to be linked"). Recipes and meals need the cupboard, receipts and shopping lists, which are Budget's, so the food was not moved. The Body & Health area (already the place for appointments, training and plans) shows the day's food and links into Budget. If Health becomes a part of its own later, the food part moves with it as a whole.
+- **A recipe ingredient means a food, not one pack.** A pack linked by hand is used first; once it is used up, any pack of the same product (or name) counts. This makes a recipe a template that works after the next shop.
+- **Cooking now comes before plans; planning ahead respects them.** "Cook this now" takes what is at home even if another planned meal had set it aside, and that meal then says what it needs. Planning a future day only counts what is free.
+- **"Finished, date not known" keeps the day it was noted, with a flag**, and is left out of the day-by-day history and of the rates worked out from it. It can be undone like any other record.
+- **The app does not write notes of its own into her records.** The 12 October import's sentences were taken out of 18 meals and 17 recipes through Budget's API (revision 106 → 107); the one note that is a step of her plan (the bolognese batch) was kept.
+
 ## 14 October 2026 — a product for customers (stage 2e)
 
 - **The app speaks to the person using it, never to the people building it** (Xar, 13 October: "I'm not the customer. I'm developing this with you for another audience"). No one's name in the code (the Court greeted "Xar"), no notes about how pages are maintained, no control that does nothing. Maintenance tools stay out of a user's pages: retaking the Guide's pictures is at `/guide?maintain`.

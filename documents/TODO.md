@@ -289,6 +289,23 @@ What existed and what did not (checked in the documents and the code before buil
 - [ ] When the date of MAT022 Test 2 (Week 5) is published: lay the blocks out around it.
 - [ ] A place in the app for announcements of her own (now a note): a page of them per module, if the notes are not enough.
 
+## R. Food: what to eat, recipes as templates, food at home (14 October, 17:00)
+Brief: `briefs/budget-food-flow.md`. Her words, each with what it becomes:
+- [x] "when I click on the chicken and avocado salad bowl … it should go to the same card and open the card, but it just goes to Budget app first page": a meal on the calendar, Today, the Court and the strip opens its own card in Budget.
+- [x] "it's not really accessible. You want to know what you should eat": Meals & recipes opens on **Now**: what is planned for this mealtime, what is ready to eat, what you can cook from what is at home; reachable from Today, the Court and Body & Health.
+- [x] "in the meals and recipes. It's a little bit not user-friendly … work on the user experience": plain words on every meal and recipe; a recipe can be read, not only edited; one main action per card.
+- [x] "halloumi salad ingredients linked. There is no recipe. There is nothing written": a meal without a recipe says what is in it and that no method is written, with "Write how to make it" (it becomes a recipe).
+- [x] "from the shared two-week plan, plan only, no food has been marked consumed … pre-written AI-generated thing": the pre-written notes taken out of her meals and recipes; the app stops writing notes of its own.
+- [x] "I need each of these to be entities … entities of foods and recipes … templates of each recipe": a recipe is a template (its ingredients mean a food, not one pack); a food's page lists the recipes that use it; any meal can be saved as a recipe; a recipe can be copied.
+- [x] "each time I have some ingredients, it should smartly show": recipes ranked by what is at home, what is missing (one thing missing is shown apart), and what should be used soon.
+- [x] "act like it's lunchtime and you want to prepare something with what you have in the fridge, or you want to plan the days ahead": both walked through with her real data before it is called done.
+- [x] "Maybe we can have another app for health … doctor appointments, tests, and gym sessions and exercises, and also food recipes … they should necessarily be connected": Body & Health (an area that already holds appointments, training and plans) shows today's food from Budget; the food stays with the stock it uses. A separate Health app is not built (see the brief).
+- [x] "make things more accessible in foods and supplies": What's left grouped by place, a compact list, what to use soon first.
+- [x] "mark things done without dates … consumed but haven't tracked … not necessarily today": several things ticked at once and marked finished, with "date not known"; they stay out of the day-by-day history.
+- [x] "do your research on similar apps for meals and recipes": Grocy, SuperCook, Mealie, Paprika, Samsung Food, Mela, pantry apps (what was taken from each is in the brief).
+- [ ] **(Xar)** Meals & recipes → Now asks "Did you eat these?" about five meals of 12 to 14 October; only she knows. "Eat soon" lists fridge food bought 8 to 21 September that may be long gone: "Finished" (or "Choose several") with "date not known".
+- [ ] Later: recipes as their own collection in Life OS (Roadmap stage 5); a cooking view with one step at a time; a recipe from a web page.
+
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
 > "when you click on [Life OS] … Click on the name above. It should, like directly direct to the main page, main URL. And if you click on a specific job role … on the today page … I should be able to kind of be directed to the same component … in the job map app." (12 October evening)
