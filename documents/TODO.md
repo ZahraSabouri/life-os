@@ -278,6 +278,17 @@ What existed and what did not (checked in the documents and the code before buil
 **Security**
 - [ ] One fixed access key, answering this computer only. Real sign-in and HTTPS before anyone else uses it.
 
+## Q. The study plan from today (14 October, 12:46)
+- [x] "reset the whole study plan, that if I'm starting from today. But it still should be a perfect plan": rebuilt; Codex's cards kept, blocks laid out again.
+- [x] "study for both modules … mainly focus on the one that I have an exam for … apply for jobs as well": MAT022 first to Test 1, CMT309 every week, job time untouched.
+- [x] "tomorrow I am going to uni … on Friday I'm gonna go to uni, and then on Saturday and Sunday … free, but only before six": next week follows it.
+- [x] "the week after that and the other weeks, I'm gonna probably have to go to uni every day … have my timetable in mind": later blocks keep clear of classes and job time.
+- [x] "I also added some new files for the modules … more files are gonna come": 17 files in, cards for them, the folders watched, a weekly look on Fridays.
+- [x] "announcements and news … Something that I am adding and I can edit, and it's not a part of the app": a note on the Study hub's Notes page (Announcements); the practical's room and 16:20 start in the classes.
+- [x] "reset everything, even not useful notifications": hub notifications cleared, old job time cancelled, the date-watch card is an action.
+- [ ] When the date of MAT022 Test 2 (Week 5) is published: lay the blocks out around it.
+- [ ] A place in the app for announcements of her own (now a note): a page of them per module, if the notes are not enough.
+
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
 > "when you click on [Life OS] … Click on the name above. It should, like directly direct to the main page, main URL. And if you click on a specific job role … on the today page … I should be able to kind of be directed to the same component … in the job map app." (12 October evening)
