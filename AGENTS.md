@@ -72,6 +72,10 @@ Older documents (the Blueprint, the July architecture and Taxonomy, the Implemen
 
 ---
 
+## JobMap: maintain both copies
+
+User instruction, 8 October 2026: scheduled/manual job updates and future JobMap development cover both `C:\Users\ctrlz\Documents\Personal\Projects\Life_OS\jobmap` and `C:\Users\ctrlz\Documents\JobMap\Career Agent\JobMap App`, unless the user explicitly limits a task. Read `jobmap/AGENTS.md` and `jobmap/SCHEDULED_SEARCH.md`. Research once; validate, queue and verify each destination independently. Preserve the shared personal workspace, historical recovery snapshots and the current Life OS integration; never overwrite whole app or data folders. Port shared fixes/features to both and check each. Report any partial result explicitly. This does not broaden work to unrelated Life OS modules or imply UI/stage acceptance.
+
 ## Imported Claude Cowork project instructions
 
 *The section below is the July Cowork project instructions, kept for context. Its "Current leanings" are out of date; the current choices are in `documents/DECISIONS.md`.*
@@ -120,3 +124,7 @@ Any of these can be overturned by a good argument or a change in my situation.
 - Use the task-list tool for multi-step work.
 - Remember I'm learning as I build — explain non-obvious choices briefly, teach when it's cheap to do so.
 - Match my energy: this project should be exciting. Bring ideas, not just execution.
+
+## Shared JobMap workspace (12 October 2026)
+
+Zahra asked to fix the different saved content between the two interfaces. JobMap now uses one owning workspace through data/workspace-connection.json in both copies. The standalone service is its only writer; Life OS forwards JobMap APIs and keeps its styles. The Life OS old progress file is retained as a historical snapshot. Personal choices, notes, dates and preferences are shared; do not restore the historical file or copy data folders to align them. Search discovery/inbox files and receipts remain per-copy, and feature development still covers both copies. Initial reconciliation preserves compatible explicit choices, backs up both originals and rejects conflicts.
