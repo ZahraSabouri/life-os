@@ -118,6 +118,7 @@ const hub = (wait = '.sidebar-head') => frameOf(/apps\/summer-rescue/, wait)
 const cardiff = (wait = '#week-grid') => frameOf(/apps\/cardiff-life/, wait)
 const budget = async () => { const frame = await frameOf(/apps\/budget/, 'body'); await settle(2000); return frame }
 const jobmap = () => frameOf(/apps\/jobmap/, '.job-row')
+const hubMenu = async (frame, words) => { await frame.locator('.sidebar-nav a, .sidebar-nav button').filter({ hasText: words }).first().click({ timeout: 8000 }); await settle(2200) }
 const budgetMenu = async (frame, name) => { await frame.locator('nav button, nav a, aside button, aside a').filter({ hasText: new RegExp(`^\\s*${name}\\s*$`) }).first().click({ timeout: 8000 }); await settle(1500) }
 
 // Example records for pictures of pages that would otherwise be empty: answered inside this
@@ -170,7 +171,7 @@ const RECIPES = {
   },
   'court-ahead.jpg': async () => { await go('/court', '.court-ahead'); await part('court-ahead.jpg', page.locator('.court-ahead')) },
   // ---- Today
-  'today.jpg': async () => { await go('/today', '.day-path'); await panel('Jobs').locator('.day-figure').waitFor({ timeout: 20_000 }).catch(() => {}); await settle(1500); await view('today.jpg', { marks: ['.day-nav', 'form.day-note', '.day-path', 'section.day-panel[aria-label="Study"]', 'section.day-panel[aria-label="Jobs"]', 'section.day-panel[aria-label="Home"]'] }) },
+  'today.jpg': async () => { await go('/today', '.day-path'); await panel('Jobs').locator('.day-figure').waitFor({ timeout: 20_000 }).catch(() => {}); await settle(1500); await view('today.jpg', { marks: ['.day-nav', 'form.day-note', '.day-path', 'section.day-panel[aria-label="Study"]', 'section.day-panel[aria-label="Jobs"]'] }) },
   'today-path.jpg': async () => { await go('/today', '.day-path'); await settle(2500); await part('today-path.jpg', page.locator('.day-path'), { marks: ['.day-stop-time', '.day-card', 'text:Card done'] }) },
   'today-change.jpg': async () => {
     // The first day from today that has a plan of hers.
@@ -269,9 +270,15 @@ const RECIPES = {
     await settle(1200)
     await view('study-addcard.jpg')
   },
-  'study-schedule.jpg': async () => { await go('/study#/schedule'); await hub(); await settle(2500); await view('study-schedule.jpg') },
-  'study-planner.jpg': async () => { await go('/study#/planner'); await hub(); await settle(2500); await view('study-planner.jpg') },
-  'study-progress.jpg': async () => { await go('/study#/progress'); await hub(); await settle(2500); await view('study-progress.jpg') },
+  'study-schedule.jpg': async () => { await go('/study'); const frame = await hub(); await hubMenu(frame, 'Schedule'); await view('study-schedule.jpg') },
+  'study-planner.jpg': async () => { await go('/study'); const frame = await hub(); await hubMenu(frame, 'Planner'); await view('study-planner.jpg') },
+  'study-progress.jpg': async () => { await go('/study'); const frame = await hub(); await hubMenu(frame, 'Progress'); await view('study-progress.jpg') },
+  'study-module.jpg': async () => { await go('/study'); const frame = await hub(); await hubMenu(frame, 'Foundations of Statistics'); await view('study-module.jpg') },
+  'study-board.jpg': async () => { await go('/study'); const frame = await hub(); await hubMenu(frame, 'Columns'); await view('study-board.jpg') },
+  'study-review.jpg': async () => { await go('/study'); const frame = await hub(); await hubMenu(frame, 'Review'); await view('study-review.jpg') },
+  'study-analytics.jpg': async () => { await go('/study'); const frame = await hub(); await hubMenu(frame, 'Analytics'); await view('study-analytics.jpg') },
+  'study-rescue.jpg': async () => { await go('/study'); const frame = await hub(); await hubMenu(frame, 'Rescue Lane'); await view('study-rescue.jpg') },
+  'study-notes.jpg': async () => { await go('/study'); const frame = await hub(); await hubMenu(frame, 'Notes'); await view('study-notes.jpg') },
   'study-setup.jpg': async () => {
     await go('/study#/setup')
     const frame = await hub('.hub-records')
@@ -310,6 +317,9 @@ const RECIPES = {
   'budget-shopping.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Shopping'); await view('budget-shopping.jpg', { on: frame, marks: ['text:My lists', 'text:By list', 'input[placeholder^="Add an item"]', 'text:Record what I bought'] }) },
   'budget-category.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Shopping'); await frame.locator('button', { hasText: /^\s*By category\s*$/ }).first().click(); await settle(1200); await view('budget-category.jpg') },
   'budget-receipts.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Shopping'); await frame.locator('button, [role="tab"]').filter({ hasText: /^\s*Receipts\s*$/ }).first().click(); await settle(1200); await view('budget-receipts.jpg') },
+  'budget-catalogue.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Shopping'); await frame.locator('button, [role="tab"]').filter({ hasText: /^\s*Catalogue\s*$/ }).first().click(); await settle(1200); await view('budget-catalogue.jpg') },
+  'budget-shops.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Shopping'); await frame.locator('button, [role="tab"]').filter({ hasText: /^\s*Shops\s*$/ }).first().click(); await settle(1200); await view('budget-shops.jpg') },
+  'budget-history.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Weekly history'); await view('budget-history.jpg') },
   'budget-food.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Food & supplies'); await view('budget-food.jpg') },
   'budget-meals.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Meals & recipes'); await view('budget-meals.jpg') },
   'budget-money.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Money & saving'); await view('budget-money.jpg') },
@@ -334,6 +344,8 @@ const RECIPES = {
   },
   'jobmap-add.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await frame.locator('button', { hasText: 'Add job' }).first().click(); await settle(800); await view('jobmap-add.jpg') },
   'jobmap-shortlist.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await frame.locator('.sidebar button, .sidebar a', { hasText: 'Shortlist' }).first().click(); await settle(1000); await view('jobmap-shortlist.jpg') },
+  'jobmap-documents.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await frame.locator('.sidebar button', { hasText: 'My documents' }).click(); await frame.locator('.documents-list li, .documents-root').first().waitFor(); await settle(1200); await view('jobmap-documents.jpg', { on: frame, marks: ['.documents-root input', '.documents-main', '.documents-list', '.documents-applied'] }) },
+  'jobmap-archive.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await frame.locator('.sidebar button', { hasText: 'Archive' }).first().click(); await settle(1000); await view('jobmap-archive.jpg') },
   'jobmap-preferences.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await frame.locator('.sidebar button, .sidebar a', { hasText: 'Preferences' }).first().click(); await settle(1000); await view('jobmap-preferences.jpg') },
 }
 
