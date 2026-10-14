@@ -31,6 +31,8 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 - [ ] **(Xar)** Only she can find out, and the plan has cards for them: is a calculator allowed, is the formula sheet handed out, the exact start time on the 23rd, the date of test 2, and joining a project group of five.
 - [ ] After each mock (20 and 21 October): the plan says to repair the two largest errors; nothing in the app prompts that yet (see B6, marking a card done).
 
+- [x] **The plan starts on 14 October** (her words: "reset everything from today. Today is the day I'm going to start using the app"): Statistics 14 to 19 October laid out again from today; nothing dated before today. Study a day: Wed 3h, Thu 3.5h, Fri 1.5h, Sat 3h, Sun 4h, Mon 5h, then the mock days as planned.
+
 ## B. One day that reaches everything
 > "I look at Life OS and see it has lots of features for planning days, but JobMap isn't like that. We want to connect JobMap to Study Hub, to the Life OS calendar."
 > "there is this Job app that is separate somewhere for itself, and this Study hub that is separate somewhere else. I want a connection so I can access all of these from my day."
