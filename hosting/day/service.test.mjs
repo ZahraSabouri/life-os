@@ -90,6 +90,7 @@ test('home shows lists that still have something to buy, meals for the day, stoc
   } }, DATE)
   assert.deepEqual(home.lists.map(list => [list.name, list.items.map(item => item.name), list.bought]), [['Lidl', ['Eggs'], 1]])
   assert.deepEqual(home.meals.map(meal => [meal.slot, meal.name, meal.cooked]), [['breakfast', 'Oats', true], ['dinner', 'Lentil soup', false]])
+  assert.equal(home.meals[1].href, `/budget#/meals/week?m=${DATE.slice(0, 7)}&meal=m1`, 'a meal opens its own card in Budget')
   assert.deepEqual(home.stock, { total: 3, places: [{ place: 'Fridge', count: 2 }, { place: 'Cupboard', count: 1 }] })
   assert.deepEqual(home.budget, { month: '2026-10', totalPence: 25000 })
   assert.equal(homeDay({ state: {} }, DATE).budget, null)

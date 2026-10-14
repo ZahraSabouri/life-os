@@ -42,10 +42,12 @@ function homeLine(day) {
   if (!home) return ['Budget could not be read.']
   const toBuy = home.lists.reduce((sum, list) => sum + list.items.length, 0)
   const first = home.lists.find((list) => list.items.length > 0)
-  const dinner = home.meals.find((meal) => meal.slot === 'dinner') ?? home.meals[0]
+  // What is eaten tonight, not the batch cooked for it; the link opens that meal's card.
+  const eaten = home.meals.filter((meal) => !meal.prep)
+  const dinner = eaten.find((meal) => meal.slot === 'dinner') ?? eaten[0]
   return [
     toBuy ? { to: '/budget#/shopping', text: `${count(toBuy, 'thing')} to buy (${first.items.slice(0, 3).map((item) => item.name).join(', ')}${first.items.length > 3 ? '…' : ''})` } : 'Nothing on a shopping list',
-    dinner ? `${dinner.slot === 'dinner' ? 'Dinner' : 'Planned'}: ${dinner.name}` : 'no meal planned today',
+    dinner ? { to: dinner.href ?? '/budget#/meals/now', text: `${dinner.slot === 'dinner' ? 'Dinner' : 'Planned'}: ${dinner.name}` } : { to: '/budget#/meals/now', text: 'No meal planned today' },
     home.budget ? `${pounds(home.budget.totalPence)} this month` : '',
   ]
 }

@@ -194,6 +194,8 @@ export function jobsDay(value, date, entries = []) {
 
 // ---- Home (shopping, meals, what is at home, the month's budget) ------------------------
 const MEAL_ORDER = ['breakfast', 'lunch', 'dinner', 'snack']
+// A meal opens its own card in Budget, over the week it is in.
+export const budgetMealHref = (id, date) => `/budget#/meals/week?m=${String(date).slice(0, 7)}&meal=${encodeURIComponent(id)}`
 
 export function homeDay(value, date) {
   const state = plain(value?.state ?? value)
@@ -211,7 +213,7 @@ export function homeDay(value, date) {
   }).filter((list) => list.items.length > 0 || list.got.length > 0)
     .sort((a, b) => Number(!a.items.length) - Number(!b.items.length) || (a.date || '9999').localeCompare(b.date || '9999') || a.name.localeCompare(b.name))
   const meals = array(state.mealEntries).filter((meal) => meal && day(meal.date) === date && !['skipped', 'cancelled'].includes(lower(meal.status)))
-    .map((meal) => ({ id: text(meal.id, 80), slot: lower(meal.slot), name: text(meal.name, 200) || 'Meal', cooked: lower(meal.status) === 'cooked' }))
+    .map((meal) => ({ id: text(meal.id, 80), slot: lower(meal.slot), name: text(meal.name, 200) || 'Meal', cooked: lower(meal.status) === 'cooked', prep: meal.kind === 'prep', href: budgetMealHref(text(meal.id, 80), date) }))
     .sort((a, b) => MEAL_ORDER.indexOf(a.slot) - MEAL_ORDER.indexOf(b.slot))
   const places = new Map()
   for (const lot of array(state.lots)) {

@@ -75,7 +75,8 @@ const DRAW = (list) => {
     mark.className = 'guide-mark'
     mark.textContent = String(at + 1)
     mark.style.cssText = `position:fixed;left:${Math.max(2, Math.min(innerWidth - 26, box.left - 9))}px;top:${Math.max(2, Math.min(innerHeight - 26, box.top - 9))}px;z-index:2147483647;width:24px;height:24px;border-radius:50%;background:#c2255c;color:#fff;font:700 13px/24px system-ui,sans-serif;text-align:center;box-shadow:0 0 0 2px #fff,0 2px 7px rgba(0,0,0,.4);pointer-events:none;letter-spacing:0`
-    document.body.appendChild(mark)
+    // An open modal dialog is drawn above everything else on the page, so its marks go inside it.
+    ;(element.closest('dialog[open]') ?? document.body).appendChild(mark)
   })
   return missing
 }
@@ -320,8 +321,25 @@ const RECIPES = {
   'budget-catalogue.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Shopping'); await frame.locator('button, [role="tab"]').filter({ hasText: /^\s*Catalogue\s*$/ }).first().click(); await settle(1200); await view('budget-catalogue.jpg') },
   'budget-shops.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Shopping'); await frame.locator('button, [role="tab"]').filter({ hasText: /^\s*Shops\s*$/ }).first().click(); await settle(1200); await view('budget-shops.jpg') },
   'budget-history.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Weekly history'); await view('budget-history.jpg') },
-  'budget-food.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Food & supplies'); await view('budget-food.jpg') },
-  'budget-meals.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Meals & recipes'); await view('budget-meals.jpg') },
+  'budget-food.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Food & supplies'); await view('budget-food.jpg', { on: frame, marks: ['.food-place .food-group-head', 'text:Choose several', '.food-home-line .button##1'] }) },
+  'budget-finish.jpg': async () => {
+    await go('/budget#/food'); const frame = await budget()
+    await frame.getByRole('button', { name: 'Choose several' }).click(); await settle(400)
+    for (const box of (await frame.locator('.food-home-line input[type="checkbox"]').all()).slice(0, 2)) await box.check()
+    await frame.getByRole('button', { name: 'Finished · date not known' }).click(); await settle(800)
+    await view('budget-finish.jpg', { on: frame, marks: ['dialog[open] .segments', 'dialog[open] .food-when'] })
+  },
+  'budget-meals.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Meals & recipes'); await view('budget-meals.jpg', { on: frame, marks: ['.page-tabs .segments button', '.food-now-head .segments', '.food-meal-card .button.primary, .food-empty .button.primary'] }) },
+  'budget-meal.jpg': async () => {
+    await go('/budget#/meals/week'); const frame = await budget()
+    await frame.locator('.meal-note.planned').first().click(); await settle(900)
+    await view('budget-meal.jpg', { on: frame, marks: ['text:What is in it', 'text:How to make it'] })
+  },
+  'budget-recipe.jpg': async () => {
+    await go('/budget#/meals/recipes'); const frame = await budget()
+    await frame.locator('.food-recipe-title').first().click(); await settle(900)
+    await view('budget-recipe.jpg', { on: frame, marks: ['dialog[open] .food-servings', 'dialog[open] .food-ingredients li', 'dialog[open] .food-steps, dialog[open] .food-empty-method'] })
+  },
   'budget-money.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Money & saving'); await view('budget-money.jpg') },
   'budget-settings.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Settings & backups'); await view('budget-settings.jpg') },
   // ---- JobMap

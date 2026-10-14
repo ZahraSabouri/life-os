@@ -233,8 +233,9 @@ export function HomePanel({ home, today = true, compact = false, onTick, savingI
     </div>) : <p className="day-quiet">Nothing on a shopping list. Choose “To buy” in the line at the top and type what you need.</p>}
     {compact && toBuy.length > 1 ? <p className="day-more">and {count(toBuy.length - 1, 'more list')}</p> : null}
     <h3>Eating {today ? 'today' : 'that day'}</h3>
-    {home.meals.length ? <ul className="day-list">{home.meals.map((meal) => <li key={meal.id} className={meal.cooked ? 'is-done' : undefined}><span>{meal.name}</span><small>{MEAL_NAMES[meal.slot] ?? 'Meal'}{meal.cooked ? ' · eaten' : ''}</small></li>)}</ul>
-      : <p className="day-quiet">Nothing planned to eat.{home.recipes ? '' : ' No recipes are saved yet.'} <Link to="/budget">Plan a meal in Budget</Link>.</p>}
+    {home.meals.length ? <ul className="day-list">{home.meals.map((meal) => <li key={meal.id} className={meal.cooked ? 'is-done' : undefined}>{meal.href ? <Link to={meal.href}>{meal.prep ? `Cook: ${meal.name}` : meal.name}</Link> : <span>{meal.name}</span>}<small>{MEAL_NAMES[meal.slot] ?? 'Meal'}{meal.cooked ? (meal.prep ? ' · cooked' : ' · eaten') : ''}</small></li>)}</ul>
+      : <p className="day-quiet">Nothing planned to eat.{home.recipes ? '' : ' No recipes are saved yet.'} <Link to="/budget#/meals/week">Plan a meal in Budget</Link>.</p>}
+    {today ? <p className="day-more"><Link to="/budget#/meals/now">What can I eat now?</Link>{home.recipes ? <> · <Link to="/budget#/meals/recipes">{count(home.recipes, 'recipe')}</Link></> : null}</p> : null}
     <dl className="day-facts">
       <div><dt>At home</dt><dd>{home.stock.total ? <>{count(home.stock.total, 'thing')}<small>{home.stock.places.map((place) => `${place.place} ${place.count}`).join(' · ')}</small></> : 'Nothing recorded'}</dd></div>
       <div><dt>{home.budget ? formatCalendarDay(`${home.budget.month}-01`, { weekday: undefined, day: undefined, month: 'long' }) : 'This month'}</dt><dd>{home.budget ? <>{pounds(home.budget.totalPence)} budget<small><Link to="/budget">See what is left in My month</Link></small></> : 'No budget set'}</dd></div>

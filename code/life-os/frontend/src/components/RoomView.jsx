@@ -12,7 +12,20 @@ import { useDayPage } from '../lib/useDayPage.js'
 import { useEntries } from '../lib/useEntries.js'
 import { AddLine, count } from './DayParts.jsx'
 
-const PARTS = { study: ['/study', 'Study hub'], career: ['/jobmap', 'JobMap'], home: ['/budget', 'Budget'] }
+const PARTS = { study: ['/study', 'Study hub'], career: ['/jobmap', 'JobMap'], home: ['/budget', 'Budget'], body: ['/budget#/meals/now', 'Meals & recipes'] }
+const MEAL_NAMES = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' }
+
+// Body & Health: the day's food, kept in Budget beside the food at home it uses.
+function FoodToday({ page }) {
+  const home = page.data?.home
+  return <section className="day-panel room-food" aria-labelledby="room-food">
+    <header><h2 id="room-food">Food today</h2><span><Link to="/budget#/meals/now">What can I eat now?</Link></span></header>
+    {home ? (home.meals.length ? <ul className="day-list">{home.meals.map((meal) => <li key={meal.id} className={meal.cooked ? 'is-done' : undefined}><Link to={meal.href ?? '/budget#/meals/now'}>{meal.prep ? `Cook: ${meal.name}` : meal.name}</Link><small>{MEAL_NAMES[meal.slot] ?? 'Meal'}{meal.cooked ? (meal.prep ? ' · cooked' : ' · eaten') : ''}</small></li>)}</ul>
+      : <p className="day-quiet">Nothing planned to eat today. <Link to="/budget#/meals/week">Plan a meal</Link>.</p>)
+      : <p className="day-quiet">{page.loading ? 'Reading…' : 'Meals could not be read from Budget.'}</p>}
+    <p className="day-more"><Link to="/budget#/meals/recipes">Recipes</Link> · <Link to="/budget#/meals/week">This week’s meals</Link> · <Link to="/budget#/food">Food at home</Link></p>
+  </section>
+}
 const OVER = new Set(['done', 'completed', 'complete'])
 const GONE = new Set(['cancelled', 'canceled', 'archived'])
 const status = (entry) => String(entry.status ?? '').toLowerCase()
@@ -80,6 +93,7 @@ export default function RoomView() {
     <AddLine page={page} id="room-add-input" fixedArea />
     {error ? <p className="form-error" role="alert">This area could not be read: {error}</p> : null}
     {failure ? <p className="form-error" role="alert">{failure}</p> : null}
+    {slug === 'body' ? <FoodToday page={page} /> : null}
     <div className="room-grid">
       <section className="day-panel" aria-labelledby="room-coming">
         <header><h2 id="room-coming">Coming up</h2><span>{coming.length ? count(coming.length, 'plan') : ''}</span></header>

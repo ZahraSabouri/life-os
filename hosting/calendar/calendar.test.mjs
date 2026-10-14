@@ -121,6 +121,7 @@ test('home emits only actual dated planned shopping and meals; no stock/receipt 
     receipts: [{ date: '2026-10-05' }], lots: [{ expires: '2026-10-05' }],
   }
   assert.deepEqual(mapHome({ state }, october).map(row => row.id), ['home:shopping:shop', 'home:meal:meal'])
+  assert.equal(mapHome({ state }, october).find(row => row.id === 'home:meal:meal').href, '/budget#/meals/week?m=2026-10&meal=meal', 'a meal opens its own card in Budget')
 })
 
 test('Money month starts come only from configured budget month keys', () => {

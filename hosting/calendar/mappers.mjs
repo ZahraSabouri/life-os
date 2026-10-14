@@ -231,8 +231,9 @@ export function mapHome(value, range) {
   }
   for (const meal of array(state.mealEntries)) {
     if (!id(meal?.id) || !available(meal) || meal.status !== 'planned') continue
+    // The meal's own card in Budget, over the week it is in (the same link as Today's).
     const mapped = item({ id: `home:meal:${meal.id}`, area: 'home', kind: 'plan', title: text(meal.name, 'Meal plan'), start: meal.date,
-      href: '/budget', meta: { source: 'budget', readonly: true, mealId: meal.id, slot: meal.slot },
+      href: `/budget#/meals/week?m=${String(meal.date).slice(0, 7)}&meal=${encodeURIComponent(meal.id)}`, meta:{ source: 'budget', readonly: true, mealId: meal.id, slot: meal.slot },
     }, range)
     if (mapped) output.push(mapped)
   }
