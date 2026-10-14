@@ -211,8 +211,8 @@ function SpendingCalendar({state:s,month:m,onAdd,onOpen}){
 }
 // The address bar follows you: #/food/used, #/meals, #/food/item/<item>?m=2026-10. Back and forward work.
 const TAB_SLUG={home:'everyday',shopping:'shopping',stock:'food',meals:'meals',money:'money',history:'history',settings:'settings'},SLUG_TAB=Object.fromEntries(Object.entries(TAB_SLUG).map(([k,v])=>[v,k]));
-function readRoute(){const raw=(typeof location!=='undefined'?location.hash:'').replace(/^#\/?/,''),[path,query='']=raw.split('?'),parts=path.split('/').filter(Boolean),q=new URLSearchParams(query),at=parts.indexOf('item');let view=parts[1]||'',item='';if(at>0){item=decodeURIComponent(parts.slice(at+1).join('/'));view=at===1?'':parts[1];}return {tab:SLUG_TAB[parts[0]]||'home',view:decodeURIComponent(view),item,month:q.get('m')||'',week:q.get('w')||''};}
-function routeHash(r){const q=new URLSearchParams();if(r.month)q.set('m',r.month);if(r.week)q.set('w',r.week);return '#/'+(TAB_SLUG[r.tab]||'everyday')+(r.view?'/'+encodeURIComponent(r.view):'')+(r.item?'/item/'+encodeURIComponent(r.item):'')+(q.size?'?'+q:'');}
+function readRoute(){const raw=(typeof location!=='undefined'?location.hash:'').replace(/^#\/?/,''),[path,query='']=raw.split('?'),parts=path.split('/').filter(Boolean),q=new URLSearchParams(query),at=parts.indexOf('item');let view=parts[1]||'',item='';if(at>0){item=decodeURIComponent(parts.slice(at+1).join('/'));view=at===1?'':parts[1];}return {tab:SLUG_TAB[parts[0]]||'home',view:decodeURIComponent(view),item,month:q.get('m')||'',week:q.get('w')||'',meal:q.get('meal')||''};}
+function routeHash(r){const q=new URLSearchParams();if(r.month)q.set('m',r.month);if(r.week)q.set('w',r.week);if(r.meal)q.set('meal',r.meal);return '#/'+(TAB_SLUG[r.tab]||'everyday')+(r.view?'/'+encodeURIComponent(r.view):'')+(r.item?'/item/'+encodeURIComponent(r.item):'')+(q.size?'?'+q:'');}
 function useLocalPref(key,init){const [v,setV]=useState(()=>{try{return localStorage.getItem(key)||init;}catch{return init;}});return [v,x=>{setV(x);try{localStorage.setItem(key,x);}catch{}}];}
 function EntryRow({state:s,g,m,setDialog}){
  const f=entryFacts(g),name=entryName(g),level=f.tracking==='level',live=g.rows.filter(r=>r.remaining>0),bottle=level?currentBottle(g):null,info=bottle?lastingInfo(bottle):null,open=()=>setDialog({type:'item-page',key:g.key});
@@ -222,12 +222,13 @@ function EntryRow({state:s,g,m,setDialog}){
 function App(){
  const [state,setState]=useState(null),[setup,setSetup]=useState(null),[fatal,setFatal]=useState(''),[status,setStatus]=useState('Loading'),[route,setRoute]=useState(readRoute),[dialog,setDialog]=useState(null),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[conflict,setConflict]=useState(false);
  const [inventory,setInventory]=useState({category:'all',scope:'month',status:'all',search:'',mode:'map'});
- const revision=React.useRef(0),current=React.useRef(null),locked=React.useRef(false),undoRef=React.useRef(null);
- useEffect(()=>{const on=()=>setRoute(readRoute());window.addEventListener('hashchange',on);if(!location.hash)history.replaceState(null,'',routeHash(readRoute()));return ()=>window.removeEventListener('hashchange',on);},[]);
+ const revision=React.useRef(0),current=React.useRef(null),locked=React.useRef(false),undoRef=React.useRef(null),routeRef=React.useRef(readRoute());
+ // Moving to another page, or a link that names a meal, closes whatever dialog was open.
+ useEffect(()=>{const on=()=>{const r=readRoute(),was=routeRef.current;routeRef.current=r;setRoute(r);if(r.tab!==was.tab||r.view!==was.view||r.meal&&r.meal!==was.meal)setDialog(null);};window.addEventListener('hashchange',on);if(!location.hash)history.replaceState(null,'',routeHash(readRoute()));return ()=>window.removeEventListener('hashchange',on);},[]);
  const tab=route.tab,month=/^\d{4}-(0[1-9]|1[0-2])$/.test(route.month)?route.month:initialMonth(),pushedItem=React.useRef(false);
- const go=(patch,opts={})=>{const h=routeHash({...readRoute(),...patch});if(h===location.hash)return;if(opts.replace){history.replaceState(null,'',h);setRoute(readRoute());}else location.hash=h;};
- const setTab=id=>{go({tab:id,view:'',item:'',week:''});try{window.scrollTo(0,0);}catch{}},setMonth=v=>go({month:v===initialMonth()?'':v,week:''});
- const openDialog=d=>{if(d&&d.type==='item-page'){pushedItem.current=true;go({item:d.key});return;}setDialog(d);};
+ const go=(patch,opts={})=>{const h=routeHash({...readRoute(),...patch});if(h===location.hash)return;if(opts.replace){history.replaceState(null,'',h);const r=readRoute();routeRef.current=r;setRoute(r);}else location.hash=h;};
+ const setTab=id=>{go({tab:id,view:'',item:'',week:'',meal:''});try{window.scrollTo(0,0);}catch{}},setMonth=v=>go({month:v===initialMonth()?'':v,week:''});
+ const openDialog=d=>{if(d&&d.type==='item-page'){setDialog(null);pushedItem.current=true;go({item:d.key});return;}setDialog(d);};
  const closeItem=()=>{if(pushedItem.current){pushedItem.current=false;history.back();}else go({item:''},{replace:true});};
  useEffect(()=>{try{document.title=({home:'My everyday',shopping:'Shopping',stock:'Food & supplies',meals:'Meals & recipes',money:'Money & saving',history:'Weekly history',settings:'Settings'}[tab]||'Everyday')+' · Everyday';}catch{}},[tab]);
  useEffect(()=>{try{window.scrollTo(0,0);}catch{}},[route.tab,route.view]);
@@ -264,7 +265,9 @@ function App(){
    e('main',{id:'main-content',className:'v2-main',tabIndex:-1},conflict&&e('div',{className:'alert',role:'alert'},'Another tab has saved a newer copy. Your current view has been kept.',e(Btn,{onClick:()=>Download(state)},'Export this view'),e(Btn,{onClick:load},'Reload saved copy')),
      tab==='home'&&e(HomeV2,p),tab==='history'&&e(HistoryV3,p),tab==='shopping'&&e(ShoppingV2,p),tab==='stock'&&e(StockV2,p),tab==='meals'&&e(MealsV2,p),tab==='money'&&e(MoneyV2,p),tab==='settings'&&e(SettingsV2,p),e('footer',{className:'v2-footer'},null,e('button',{className:'photo-credits-button',onClick:()=>setDialog({type:'art-gallery'})},'Images'),e('span',null,'Local & private · '+monthLabel(month))))),
   notice&&e('div',{className:'toast',role:'status'},e('span',null,notice),undoRef.current&&e('button',{disabled:busy||conflict,onClick:()=>commit(undoRef.current,'Undone',{noUndo:true}).catch(()=>{})},'Undo'),e('button',{'aria-label':'Dismiss notification',onClick:()=>setNotice('')},'×')),
-  (dialog||route.item)&&e(ProductDialog,dialog?{...p,key:dialog.type+'-'+(dialog.id||dialog.listId||'')}:{...p,dialog:{type:'item-page',key:route.item},onClose:closeItem,key:'item-page-'+route.item}));
+  (dialog||route.item)&&e(ProductDialog,dialog?{...p,key:dialog.type+'-'+(dialog.id||dialog.listId||'')}:{...p,dialog:{type:'item-page',key:route.item},onClose:closeItem,key:'item-page-'+route.item}),
+  // A link from Life OS (the calendar, Today) names one meal: its card opens over the meal plan.
+  !dialog&&!route.item&&route.meal&&state.mealEntries.some(x=>x.id===route.meal)&&e(ProductDialog,{...p,dialog:{type:'meal-detail',id:route.meal},onClose:()=>go({meal:''},{replace:true}),key:'meal-'+route.meal}));
 }
 ICONS.bag='M5 7h14l2 14H3Zm4 0V5a3 3 0 0 1 6 0v2';
 function Stat({label,value,detail,tone=''}){return e('div',{className:'v2-stat '+tone},e('span',null,label),e('strong',null,value),detail&&e('small',null,detail));}
@@ -376,7 +379,7 @@ function usageText(x){
 // A month of what was used, opened, thrown away or eaten.
 function UsageCalendar({state:s,month:m,setDialog}){
  const today=isoDate(new Date()),[picked,setPicked]=useState(()=>dateMonth(today)===m?today:null);
- const log=usageLog(s).filter(x=>dateMonth(x.date)===m&&x.action!=='plan'&&x.action!=='correct'),byDay={};for(const x of log)(byDay[x.date]=byDay[x.date]||[]).push(x);
+ const log=usageLog(s).filter(x=>!x.undated&&dateMonth(x.date)===m&&x.action!=='plan'&&x.action!=='correct'),byDay={};for(const x of log)(byDay[x.date]=byDay[x.date]||[]).push(x);
  const weeks=getWeeks(m),items=log.filter(x=>x.kind==='stock'&&['use','finish'].includes(x.action)).length,meals=log.filter(x=>x.kind==='meal').length,borrowed=log.filter(x=>x.fromMonth).length,wasted=log.filter(x=>x.action==='waste').length;
  const dayRows=picked?(byDay[picked]||[]):[];
  return e('section',{className:'surface calendar-panel usage-panel'},
@@ -437,7 +440,6 @@ function StockV2(p){
  const reset=()=>{setSearch('');setShop('');setCategoryId('');setGroup('all');setTypeId('');setDeep(false);setPeriod('all');setFrom('');setTo('');setFilter('available');setFilterTouched(false);setScope('all');};
  const goType=id=>{setTypeId(id);setDeep(false);};
  return e(React.Fragment,null,e(PageHeading,{title:'Food & supplies',action:e(Btn,{kind:'primary',icon:'plus',onClick:()=>setDialog({type:'stock',prefill:typeId?{typeId,categoryId:typeNode(s,typeId)?.categoryId}:{}})},'Add stock')}),e('div',{className:'page-tabs'},e(Segment,{label:'Stock view',value:view,onChange:setView,options:[['left','What’s left'],['cupboard','Browse by category'],['history','Weekly history'],['used','Monthly history'],['plan','Monthly plan']]})),
- e('p',{className:'stock-source-note'},'What you own, including portions saved for later months. Catalogue references do not add stock.'),
  view==='left'?e(RemainingStock,p):view==='plan'?e(AllocationPlan,p):view==='history'?e(WeeklyHistory,{...p,key:m+'-'+(p.route.week||'')}):view==='used'?e(UsageCalendar,{state:s,month:m,setDialog,key:m}):
  e(React.Fragment,null,e('div',{className:'cupboard-tools'},
   e(CategoryShelf,{state:s,value:group,onChange:v=>{setGroup(v);setCategoryId('');goType('');}}),

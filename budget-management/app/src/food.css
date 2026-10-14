@@ -1,0 +1,99 @@
+/* Food you can use: Now, recipes, the meal card, What's left by place. */
+.food-now{display:grid;gap:1.1rem}
+.food-now-head{display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:1.1rem 1.3rem}
+.food-now-head h2{margin:.2rem 0 0;font-size:2rem}
+.food-now-planned{display:grid;gap:.8rem}
+.food-empty{display:grid;gap:.6rem;padding:1.1rem 1.3rem}.food-empty p{margin:0}
+.food-next{margin:.2rem .2rem 0}
+.food-line{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.7rem 0;border-top:1px solid #e3dfd2}
+.food-line:first-of-type{border-top:0}
+section>.food-line:first-child,.surface.food-line{border-top:0}
+.surface.food-line{padding:.9rem 1.2rem}
+.food-line>div:first-child,.food-line-main{display:grid;gap:.2rem;min-width:0}
+.food-line small,.food-line-main small{color:#737a6c;line-height:1.4;overflow-wrap:anywhere}
+.food-line-main{appearance:none;background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer;display:grid;gap:.15rem}
+.food-line-main:hover strong{text-decoration:underline;text-underline-offset:3px}
+.food-open,.food-ready,.food-soon{padding:1.1rem 1.3rem}
+.food-open .section-heading,.food-ready .section-heading,.food-soon .section-heading{margin-bottom:.4rem}
+.food-cook{display:grid;gap:.7rem}
+.food-group-head{display:flex;align-items:center;gap:.5rem;margin:.6rem 0 0;font-size:.95rem}
+.food-group-head span{font-size:.75rem;font-weight:600;color:#737a6c;background:#eeefe3;border-radius:99px;padding:.1rem .5rem}
+.food-recipe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.8rem}
+.food-recipe-card{display:grid;gap:.55rem;align-content:start;padding:1rem 1.1rem}
+.food-recipe-title{appearance:none;background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer;display:grid;gap:.15rem}
+.food-recipe-title h3{margin:0;font-family:Georgia,serif;font-weight:400;font-size:1.2rem}
+.food-recipe-title:hover h3{text-decoration:underline;text-underline-offset:3px}
+.food-recipe-title small{color:#737a6c}
+.food-recipe-card p{margin:0;font-size:.85rem;line-height:1.45}
+.food-chips{display:flex;flex-wrap:wrap;gap:.3rem;list-style:none;margin:0;padding:0}
+.food-chips li{font-size:.75rem;line-height:1.2;padding:.22rem .5rem;border-radius:99px;border:1px solid #d7dbce;background:#fffcf6;color:#36503f}
+.food-chips li.have{background:#e1eddb;border-color:#cddcc4;color:#36503f}
+.food-chips li.have::before{content:'✓ ';font-weight:700}
+.food-chips li.short{background:#f3e6c9;border-color:#e6d3a8;color:#8b6630}
+.food-chips li.missing{background:#fffcf6;border-style:dashed;color:#a44935}
+.food-chips li.optional{color:#737a6c;border-style:dashed}
+.food-soon-note{color:#8b6630}
+.food-meal-card{display:grid;gap:.6rem;padding:1.2rem 1.3rem}
+.food-meal-card.done{opacity:.75}
+.food-meal-top{display:flex;justify-content:space-between;gap:1rem;align-items:start}
+.food-meal-top h3{margin:0;font-family:Georgia,serif;font-weight:400;font-size:1.5rem}
+.food-meal-top small{color:#737a6c}
+.food-parts{margin:0;color:#36503f}
+.food-steps{margin:0;padding-left:1.3rem;display:grid;gap:.45rem;line-height:1.5}
+.food-steps li::marker{color:#3d604c;font-weight:700}
+.food-steps.compact{gap:.2rem;font-size:.9rem;color:#4b5a4f}
+.food-recipe-page,.food-meal-detail{gap:1rem}
+.food-recipe-status{display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap}
+.food-servings{display:inline-flex;align-items:center;gap:.5rem;border:1px solid #d7dbce;border-radius:99px;padding:.15rem .25rem}
+.food-servings button{width:2rem;height:2rem;border-radius:99px;border:0;background:#eeefe3;color:#36503f;font-size:1.1rem;cursor:pointer}
+.food-servings button:disabled{opacity:.4;cursor:default}
+.food-servings span{min-width:6.5rem;text-align:center;font-weight:600;font-size:.9rem}
+.food-recipe-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:1.4rem;align-items:start}
+.food-recipe-columns section{display:grid;gap:.6rem;align-content:start}
+.food-ingredients{list-style:none;margin:0;padding:0;display:grid}
+.food-ingredients li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;column-gap:.6rem;row-gap:.05rem;align-items:baseline;padding:.5rem 0;border-bottom:1px solid #ece8dc}
+.food-ingredients li>i{width:.55rem;height:.55rem;border-radius:99px;background:#3d604c;align-self:center}
+.food-ingredients li.short>i{background:#b8873a}
+.food-ingredients li.missing>i{background:transparent;border:1.5px solid #a44935}
+.food-ingredients li.optional>i{background:transparent;border:1.5px dashed #737a6c}
+.food-ingredients li>b{font-weight:600;font-size:.9rem;white-space:nowrap}
+.food-ingredients .food-ing-home{grid-column:2/-1;color:#737a6c;font-size:.78rem}
+.food-ingredients li.missing .food-ing-home{color:#a44935}
+.food-ingredients .text-link{padding:0;text-align:left;font:inherit;color:inherit;text-decoration:underline;text-decoration-color:#c9cdbf;text-underline-offset:3px}
+.food-empty-method{display:grid;gap:.5rem;padding:.9rem;border:1px dashed #d7dbce;border-radius:10px}
+.food-empty-method p{margin:0}
+.food-recipe-notes{margin:0;font-size:.85rem}
+.food-recipe-history{display:grid;gap:.35rem;border-top:1px solid #e3dfd2;padding-top:.8rem}
+.food-plain-list{margin:.2rem 0;padding-left:1.2rem;line-height:1.6}
+.food-act{display:grid;gap:.7rem;padding:1rem;border-radius:10px;background:#f3f4ea}
+.food-more{border-top:1px solid #e3dfd2;padding-top:.8rem}
+.food-week-missing{margin:.6rem 0}
+.food-recipe-tools{display:grid;gap:.8rem;padding:1rem 1.2rem;margin-bottom:1rem}
+.food-intro{margin:0 0 .8rem}
+.food-uses{display:grid;gap:.5rem;margin:.4rem 0 1rem}
+.food-uses-list{display:flex;flex-wrap:wrap;gap:.4rem}
+.food-chip-button{appearance:none;border:1px solid #cddcc4;background:#e1eddb;color:#36503f;border-radius:99px;padding:.35rem .75rem;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer}
+.food-chip-button:hover{background:#d3e2cb}
+.food-when{border:0;padding:0;margin:0;display:grid;gap:.45rem}
+.radio-label{display:flex;gap:.55rem;align-items:baseline;cursor:pointer}
+.radio-label small{color:#737a6c}
+.food-layout-toggle{display:flex;justify-content:flex-end}
+.food-home-tools{display:grid;gap:.8rem;padding:1rem 1.2rem;margin-bottom:.8rem}
+.food-home-row{display:flex;align-items:end;justify-content:space-between;gap:.8rem;flex-wrap:wrap}
+.food-home-row>:first-child{flex:1 1 260px}
+.food-pick-bar{position:sticky;top:.5rem;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap;padding:.7rem 1rem;margin-bottom:.8rem;border-radius:12px;background:#fffdf7;border:2px solid #3d604c;box-shadow:0 6px 18px #24362922}
+.food-place{padding:.6rem 1.2rem 1rem;margin-bottom:.8rem}
+.food-place .food-group-head{margin:.4rem 0 .3rem}
+.food-home-line{display:flex;align-items:center;gap:.7rem;padding:.5rem 0;border-top:1px solid #ece8dc}
+.food-home-line.picked{background:#eef3e7;border-radius:8px}
+.food-home-line>input{width:1.15rem;height:1.15rem;flex:none;margin-left:.3rem}
+.food-home-line .food-line-main{display:flex;align-items:center;gap:.7rem;flex:1;min-width:0}
+.food-home-line .food-line-main>span{display:grid;gap:.1rem;min-width:0}
+.food-home-art{width:2.6rem;height:2.6rem;border-radius:8px;object-fit:cover;flex:none}
+.food-home-art.art-fallback{display:grid;place-items:center;background:#eeefe3}
+@media(max-width:760px){
+ .food-recipe-columns{grid-template-columns:1fr}
+ .food-line,.food-home-line{flex-wrap:wrap}
+ .food-home-line .inline-actions{width:100%;justify-content:flex-end}
+ .food-now-head h2{font-size:1.6rem}
+}

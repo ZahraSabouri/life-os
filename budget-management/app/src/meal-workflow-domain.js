@@ -35,7 +35,7 @@ cookMeal = function connectedMealConsumption(s,id,leftovers=0,force=false,option
   const before=new Set(s.lots.map(l=>l.id));
   s={...s,mealEntries:s.mealEntries.map(x=>x.id===id?{...x,date}:x)};
   let next=baseCookMeal(s,id,leftovers,force);
-  next={...next,lots:next.lots.map(l=>!before.has(l.id)&&l.mealId===id?{...l,prepared:true,preparedDate:date,location:options.location||'Fridge',expiry:options.expiry||'',expiryType:options.expiry?'use-by':'best-before',notes:'Prepared portions. Ingredients were used once when this batch was cooked. Storage date is entered by you.'}:l),mealEntries:next.mealEntries.map(x=>x.id===id?{...x,cookedDate:date,prepOnly:!!options.preparing}:x)};
+  next={...next,lots:next.lots.map(l=>!before.has(l.id)&&l.mealId===id?{...l,prepared:true,preparedDate:date,location:options.location||'Fridge',expiry:options.expiry||'',expiryType:options.expiry?'use-by':'best-before',notes:''}:l),mealEntries:next.mealEntries.map(x=>x.id===id?{...x,cookedDate:date,prepOnly:!!options.preparing}:x)};
   if(options.preparing&&options.freezerServings){
     const frozen=Number(options.freezerServings);need(Number.isInteger(frozen)&&frozen>0&&frozen<=leftovers,'Choose how many whole portions to freeze.');
     next={...next,lots:next.lots.flatMap(l=>!before.has(l.id)&&l.mealId===id?[...(frozen<leftovers?[{...l,quantity:leftovers-frozen,remaining:leftovers-frozen,location:'Fridge'}]:[]),{...l,id:frozen<leftovers?uid('lot'):l.id,quantity:frozen,remaining:frozen,location:'Freezer',expiry:'',expiryType:'best-before'}]:[l])};

@@ -291,14 +291,14 @@ function entryHistory(s,g){
 function lastingLives(s,keys){
   const names={};for(const r of s.resources)names[r.id]=r.name;for(const l of s.lots)names[l.id]=l.name;
   const opened={},finished={};
-  for(const ev of s.stockEvents){const k=itemKey(ev.name||names[ev.sourceId]);if(!keys.has(k))continue;if(ev.action==='open'&&!opened[ev.sourceId])opened[ev.sourceId]=ev.date;if(ev.action==='finish')finished[ev.sourceId]=ev.date;}
+  for(const ev of s.stockEvents){const k=itemKey(ev.name||names[ev.sourceId]);if(!keys.has(k))continue;if(ev.action==='open'&&!opened[ev.sourceId])opened[ev.sourceId]=ev.date;if(ev.action==='finish'&&!ev.undated)finished[ev.sourceId]=ev.date;}
   for(const [id,meta] of Object.entries(s.resourceMeta||{}))if(meta.opened&&!opened[id]&&keys.has(itemKey(names[id])))opened[id]=meta.opened;
   for(const l of s.lots)if(l.opened&&!opened[l.id]&&keys.has(itemKey(l.name)))opened[l.id]=l.opened;
   return Object.keys(finished).filter(id=>opened[id]&&finished[id]>opened[id]).map(id=>daysBetween(opened[id],finished[id])/30.44);
 }
 function entryInsights(s,g,history,facts,today=isoDate(new Date())){
   const out={};
-  const uses=history.filter(x=>x.kind==='stock'&&['use','finish'].includes(x.action)&&x.amount>0&&unitKey(x.unit)===unitKey(facts.unit));
+  const uses=history.filter(x=>x.kind==='stock'&&!x.undated&&['use','finish'].includes(x.action)&&x.amount>0&&unitKey(x.unit)===unitKey(facts.unit));
   if(uses.length>=2){const first=uses[uses.length-1].date,days=Math.max(14,daysBetween(first,today)),total=uses.reduce((n,x)=>n+x.amount,0);out.perDay=total/days;if(facts.left>0&&out.perDay>0)out.runOut=addDays(today,Math.round(facts.left/out.perDay));}
   const buys=history.filter(x=>x.kind==='bought');
   if(buys.length){out.buys=buys.length;out.lastBought=buys[0].date;out.lastUnitPence=Math.round(buys[0].pence/(buys[0].amount||1));const shops=buys.map(b=>b.merchant).filter(Boolean);if(shops.length){out.shop=buys[0].merchant||mostCommon(shops);out.usualShop=mostCommon(shops);}}
@@ -643,7 +643,7 @@ function cookMeal(s,id,leftovers=0,force=false){
   const m=s.mealEntries.find(x=>x.id===id);need(m?.status==='planned','This meal is already completed.');need(force||!m.missing.length,'Add or match the missing ingredients, then refresh the reservation.');need(Number.isFinite(leftovers)&&leftovers>=0&&leftovers<=m.servings,'Leftovers must be between zero and the planned servings.');
   let next=s;for(const r of m.reservations)next=stockAction(next,r.sourceId,'use',r.amount,m.date,true,{mealId:m.id});
   for(const t of m.touches||[])if(stockRows(next).some(x=>x.id===t.sourceId&&x.remaining>0))next=stockAction(next,t.sourceId,'touch',null,m.date,true,{mealId:m.id});
-  if(leftovers)next={...next,lots:[...next.lots,makeLot({name:m.name+' — leftovers',quantity:leftovers,unit:'serving',tracking:'measured',categoryId:'fresh-convenience-food',location:'Fridge',mealId:m.id,notes:'Ingredients consumed when this batch was cooked. Add the label/storage date yourself.'})]};
+  if(leftovers)next={...next,lots:[...next.lots,makeLot({name:m.name+' — leftovers',quantity:leftovers,unit:'serving',tracking:'measured',categoryId:'fresh-convenience-food',location:'Fridge',mealId:m.id,notes:''})]};
   return {...next,mealEntries:next.mealEntries.map(x=>x.id===id?{...x,status:'cooked',leftovers}:x)};
 }
 function missingToList(s,id){
@@ -657,7 +657,7 @@ function missingToList(s,id){
 function weekStart(date){need(validDate(date),'Choose a valid date.');const d=new Date(date+'T12:00:00');return addDays(date,-((d.getDay()+6)%7));}
 function historyGroup(x){return x.kind==='meal'?'meal':x.action==='retire'?'kept':x.action==='waste'?'waste':x.action==='return'?'returns':['open','half','low'].includes(x.action)?'levels':'used';}
 function weeklyUsage(s,date){
- const start=weekStart(date),end=addDays(start,6),events=usageLog(s).filter(x=>x.date>=start&&x.date<=end&&(x.kind==='meal'||['use','finish','touch','open','half','low','waste','return','retire'].includes(x.action)));
+ const start=weekStart(date),end=addDays(start,6),events=usageLog(s).filter(x=>!x.undated&&x.date>=start&&x.date<=end&&(x.kind==='meal'||['use','finish','touch','open','half','low','waste','return','retire'].includes(x.action)));
  const stock=stockRows(s),byId=new Map(stock.map(x=>[x.id,x])),entries=catalogueEntries(s),entryById=new Map(),index=itemIndex(s),items=new Map();
  for(const g of entries)for(const r of g.rows)entryById.set(r.id,g);
  for(const x of events.filter(x=>historyGroup(x)==='used')){

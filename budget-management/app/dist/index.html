@@ -994,6 +994,106 @@ h1{font-size:clamp(1.9rem,3vw,2.5rem);line-height:1.2}h2{font-size:1.25rem}h3{fo
 .workflow-tools{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1rem}.food-plan-panel{margin-bottom:1rem;padding:1.2rem}.food-plan-panel h2,.prep-card h2{margin:0 0 .4rem}.food-budget{text-align:right;display:grid;gap:.25rem}.food-budget strong{font-size:1.8rem}.food-budget small{font-size:.8rem}.food-priorities,.prep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.8rem;margin:1rem 0}.food-priority{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem;border:1px solid var(--line,#d9dfd3);border-radius:var(--m-radius,12px)}.food-priority>div{display:grid;gap:.35rem;min-width:0}.food-priority small{line-height:1.4;overflow-wrap:anywhere}.food-priority.done{opacity:.65}.food-priority.done strong{text-decoration:line-through}.prep-card,.recipe-readiness{padding:1.2rem}.recipe-readiness .food-priority{margin:.6rem 0}.ingredient-link{grid-column:1/-1;display:grid;grid-template-columns:minmax(180px,1fr) auto;align-items:end;gap:.8rem}.prepared-summary{padding:1rem;border:1px solid var(--line,#d9dfd3);border-radius:var(--m-radius,12px)}.food-plan-panel ul{padding-left:1.3rem;line-height:1.7}@media(max-width:600px){.food-plan-panel .section-heading{align-items:start}.food-budget strong{font-size:1.4rem}.food-priorities,.prep-grid{grid-template-columns:1fr}.ingredient-link{grid-template-columns:1fr}.food-priority{gap:.5rem}}
 
 .payment-review{padding:1rem;margin-bottom:1rem}.payment-review .food-priority{margin:.6rem 0}
+
+/* Food you can use: Now, recipes, the meal card, What's left by place. */
+.food-now{display:grid;gap:1.1rem}
+.food-now-head{display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:1.1rem 1.3rem}
+.food-now-head h2{margin:.2rem 0 0;font-size:2rem}
+.food-now-planned{display:grid;gap:.8rem}
+.food-empty{display:grid;gap:.6rem;padding:1.1rem 1.3rem}.food-empty p{margin:0}
+.food-next{margin:.2rem .2rem 0}
+.food-line{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.7rem 0;border-top:1px solid #e3dfd2}
+.food-line:first-of-type{border-top:0}
+section>.food-line:first-child,.surface.food-line{border-top:0}
+.surface.food-line{padding:.9rem 1.2rem}
+.food-line>div:first-child,.food-line-main{display:grid;gap:.2rem;min-width:0}
+.food-line small,.food-line-main small{color:#737a6c;line-height:1.4;overflow-wrap:anywhere}
+.food-line-main{appearance:none;background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer;display:grid;gap:.15rem}
+.food-line-main:hover strong{text-decoration:underline;text-underline-offset:3px}
+.food-open,.food-ready,.food-soon{padding:1.1rem 1.3rem}
+.food-open .section-heading,.food-ready .section-heading,.food-soon .section-heading{margin-bottom:.4rem}
+.food-cook{display:grid;gap:.7rem}
+.food-group-head{display:flex;align-items:center;gap:.5rem;margin:.6rem 0 0;font-size:.95rem}
+.food-group-head span{font-size:.75rem;font-weight:600;color:#737a6c;background:#eeefe3;border-radius:99px;padding:.1rem .5rem}
+.food-recipe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.8rem}
+.food-recipe-card{display:grid;gap:.55rem;align-content:start;padding:1rem 1.1rem}
+.food-recipe-title{appearance:none;background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer;display:grid;gap:.15rem}
+.food-recipe-title h3{margin:0;font-family:Georgia,serif;font-weight:400;font-size:1.2rem}
+.food-recipe-title:hover h3{text-decoration:underline;text-underline-offset:3px}
+.food-recipe-title small{color:#737a6c}
+.food-recipe-card p{margin:0;font-size:.85rem;line-height:1.45}
+.food-chips{display:flex;flex-wrap:wrap;gap:.3rem;list-style:none;margin:0;padding:0}
+.food-chips li{font-size:.75rem;line-height:1.2;padding:.22rem .5rem;border-radius:99px;border:1px solid #d7dbce;background:#fffcf6;color:#36503f}
+.food-chips li.have{background:#e1eddb;border-color:#cddcc4;color:#36503f}
+.food-chips li.have::before{content:'✓ ';font-weight:700}
+.food-chips li.short{background:#f3e6c9;border-color:#e6d3a8;color:#8b6630}
+.food-chips li.missing{background:#fffcf6;border-style:dashed;color:#a44935}
+.food-chips li.optional{color:#737a6c;border-style:dashed}
+.food-soon-note{color:#8b6630}
+.food-meal-card{display:grid;gap:.6rem;padding:1.2rem 1.3rem}
+.food-meal-card.done{opacity:.75}
+.food-meal-top{display:flex;justify-content:space-between;gap:1rem;align-items:start}
+.food-meal-top h3{margin:0;font-family:Georgia,serif;font-weight:400;font-size:1.5rem}
+.food-meal-top small{color:#737a6c}
+.food-parts{margin:0;color:#36503f}
+.food-steps{margin:0;padding-left:1.3rem;display:grid;gap:.45rem;line-height:1.5}
+.food-steps li::marker{color:#3d604c;font-weight:700}
+.food-steps.compact{gap:.2rem;font-size:.9rem;color:#4b5a4f}
+.food-recipe-page,.food-meal-detail{gap:1rem}
+.food-recipe-status{display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap}
+.food-servings{display:inline-flex;align-items:center;gap:.5rem;border:1px solid #d7dbce;border-radius:99px;padding:.15rem .25rem}
+.food-servings button{width:2rem;height:2rem;border-radius:99px;border:0;background:#eeefe3;color:#36503f;font-size:1.1rem;cursor:pointer}
+.food-servings button:disabled{opacity:.4;cursor:default}
+.food-servings span{min-width:6.5rem;text-align:center;font-weight:600;font-size:.9rem}
+.food-recipe-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:1.4rem;align-items:start}
+.food-recipe-columns section{display:grid;gap:.6rem;align-content:start}
+.food-ingredients{list-style:none;margin:0;padding:0;display:grid}
+.food-ingredients li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;column-gap:.6rem;row-gap:.05rem;align-items:baseline;padding:.5rem 0;border-bottom:1px solid #ece8dc}
+.food-ingredients li>i{width:.55rem;height:.55rem;border-radius:99px;background:#3d604c;align-self:center}
+.food-ingredients li.short>i{background:#b8873a}
+.food-ingredients li.missing>i{background:transparent;border:1.5px solid #a44935}
+.food-ingredients li.optional>i{background:transparent;border:1.5px dashed #737a6c}
+.food-ingredients li>b{font-weight:600;font-size:.9rem;white-space:nowrap}
+.food-ingredients .food-ing-home{grid-column:2/-1;color:#737a6c;font-size:.78rem}
+.food-ingredients li.missing .food-ing-home{color:#a44935}
+.food-ingredients .text-link{padding:0;text-align:left;font:inherit;color:inherit;text-decoration:underline;text-decoration-color:#c9cdbf;text-underline-offset:3px}
+.food-empty-method{display:grid;gap:.5rem;padding:.9rem;border:1px dashed #d7dbce;border-radius:10px}
+.food-empty-method p{margin:0}
+.food-recipe-notes{margin:0;font-size:.85rem}
+.food-recipe-history{display:grid;gap:.35rem;border-top:1px solid #e3dfd2;padding-top:.8rem}
+.food-plain-list{margin:.2rem 0;padding-left:1.2rem;line-height:1.6}
+.food-act{display:grid;gap:.7rem;padding:1rem;border-radius:10px;background:#f3f4ea}
+.food-more{border-top:1px solid #e3dfd2;padding-top:.8rem}
+.food-week-missing{margin:.6rem 0}
+.food-recipe-tools{display:grid;gap:.8rem;padding:1rem 1.2rem;margin-bottom:1rem}
+.food-intro{margin:0 0 .8rem}
+.food-uses{display:grid;gap:.5rem;margin:.4rem 0 1rem}
+.food-uses-list{display:flex;flex-wrap:wrap;gap:.4rem}
+.food-chip-button{appearance:none;border:1px solid #cddcc4;background:#e1eddb;color:#36503f;border-radius:99px;padding:.35rem .75rem;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer}
+.food-chip-button:hover{background:#d3e2cb}
+.food-when{border:0;padding:0;margin:0;display:grid;gap:.45rem}
+.radio-label{display:flex;gap:.55rem;align-items:baseline;cursor:pointer}
+.radio-label small{color:#737a6c}
+.food-layout-toggle{display:flex;justify-content:flex-end}
+.food-home-tools{display:grid;gap:.8rem;padding:1rem 1.2rem;margin-bottom:.8rem}
+.food-home-row{display:flex;align-items:end;justify-content:space-between;gap:.8rem;flex-wrap:wrap}
+.food-home-row>:first-child{flex:1 1 260px}
+.food-pick-bar{position:sticky;top:.5rem;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap;padding:.7rem 1rem;margin-bottom:.8rem;border-radius:12px;background:#fffdf7;border:2px solid #3d604c;box-shadow:0 6px 18px #24362922}
+.food-place{padding:.6rem 1.2rem 1rem;margin-bottom:.8rem}
+.food-place .food-group-head{margin:.4rem 0 .3rem}
+.food-home-line{display:flex;align-items:center;gap:.7rem;padding:.5rem 0;border-top:1px solid #ece8dc}
+.food-home-line.picked{background:#eef3e7;border-radius:8px}
+.food-home-line>input{width:1.15rem;height:1.15rem;flex:none;margin-left:.3rem}
+.food-home-line .food-line-main{display:flex;align-items:center;gap:.7rem;flex:1;min-width:0}
+.food-home-line .food-line-main>span{display:grid;gap:.1rem;min-width:0}
+.food-home-art{width:2.6rem;height:2.6rem;border-radius:8px;object-fit:cover;flex:none}
+.food-home-art.art-fallback{display:grid;place-items:center;background:#eeefe3}
+@media(max-width:760px){
+ .food-recipe-columns{grid-template-columns:1fr}
+ .food-line,.food-home-line{flex-wrap:wrap}
+ .food-home-line .inline-actions{width:100%;justify-content:flex-end}
+ .food-now-head h2{font-size:1.6rem}
+}
 </style></head><body><div id="root"></div><noscript>Please enable JavaScript to use your planner.</noscript><script id="planner-app">
 const e = React.createElement;
 const {useState,useEffect,useMemo} = React;
@@ -1631,14 +1731,14 @@ function entryHistory(s,g){
 function lastingLives(s,keys){
   const names={};for(const r of s.resources)names[r.id]=r.name;for(const l of s.lots)names[l.id]=l.name;
   const opened={},finished={};
-  for(const ev of s.stockEvents){const k=itemKey(ev.name||names[ev.sourceId]);if(!keys.has(k))continue;if(ev.action==='open'&&!opened[ev.sourceId])opened[ev.sourceId]=ev.date;if(ev.action==='finish')finished[ev.sourceId]=ev.date;}
+  for(const ev of s.stockEvents){const k=itemKey(ev.name||names[ev.sourceId]);if(!keys.has(k))continue;if(ev.action==='open'&&!opened[ev.sourceId])opened[ev.sourceId]=ev.date;if(ev.action==='finish'&&!ev.undated)finished[ev.sourceId]=ev.date;}
   for(const [id,meta] of Object.entries(s.resourceMeta||{}))if(meta.opened&&!opened[id]&&keys.has(itemKey(names[id])))opened[id]=meta.opened;
   for(const l of s.lots)if(l.opened&&!opened[l.id]&&keys.has(itemKey(l.name)))opened[l.id]=l.opened;
   return Object.keys(finished).filter(id=>opened[id]&&finished[id]>opened[id]).map(id=>daysBetween(opened[id],finished[id])/30.44);
 }
 function entryInsights(s,g,history,facts,today=isoDate(new Date())){
   const out={};
-  const uses=history.filter(x=>x.kind==='stock'&&['use','finish'].includes(x.action)&&x.amount>0&&unitKey(x.unit)===unitKey(facts.unit));
+  const uses=history.filter(x=>x.kind==='stock'&&!x.undated&&['use','finish'].includes(x.action)&&x.amount>0&&unitKey(x.unit)===unitKey(facts.unit));
   if(uses.length>=2){const first=uses[uses.length-1].date,days=Math.max(14,daysBetween(first,today)),total=uses.reduce((n,x)=>n+x.amount,0);out.perDay=total/days;if(facts.left>0&&out.perDay>0)out.runOut=addDays(today,Math.round(facts.left/out.perDay));}
   const buys=history.filter(x=>x.kind==='bought');
   if(buys.length){out.buys=buys.length;out.lastBought=buys[0].date;out.lastUnitPence=Math.round(buys[0].pence/(buys[0].amount||1));const shops=buys.map(b=>b.merchant).filter(Boolean);if(shops.length){out.shop=buys[0].merchant||mostCommon(shops);out.usualShop=mostCommon(shops);}}
@@ -1983,7 +2083,7 @@ function cookMeal(s,id,leftovers=0,force=false){
   const m=s.mealEntries.find(x=>x.id===id);need(m?.status==='planned','This meal is already completed.');need(force||!m.missing.length,'Add or match the missing ingredients, then refresh the reservation.');need(Number.isFinite(leftovers)&&leftovers>=0&&leftovers<=m.servings,'Leftovers must be between zero and the planned servings.');
   let next=s;for(const r of m.reservations)next=stockAction(next,r.sourceId,'use',r.amount,m.date,true,{mealId:m.id});
   for(const t of m.touches||[])if(stockRows(next).some(x=>x.id===t.sourceId&&x.remaining>0))next=stockAction(next,t.sourceId,'touch',null,m.date,true,{mealId:m.id});
-  if(leftovers)next={...next,lots:[...next.lots,makeLot({name:m.name+' — leftovers',quantity:leftovers,unit:'serving',tracking:'measured',categoryId:'fresh-convenience-food',location:'Fridge',mealId:m.id,notes:'Ingredients consumed when this batch was cooked. Add the label/storage date yourself.'})]};
+  if(leftovers)next={...next,lots:[...next.lots,makeLot({name:m.name+' — leftovers',quantity:leftovers,unit:'serving',tracking:'measured',categoryId:'fresh-convenience-food',location:'Fridge',mealId:m.id,notes:''})]};
   return {...next,mealEntries:next.mealEntries.map(x=>x.id===id?{...x,status:'cooked',leftovers}:x)};
 }
 function missingToList(s,id){
@@ -1997,7 +2097,7 @@ function missingToList(s,id){
 function weekStart(date){need(validDate(date),'Choose a valid date.');const d=new Date(date+'T12:00:00');return addDays(date,-((d.getDay()+6)%7));}
 function historyGroup(x){return x.kind==='meal'?'meal':x.action==='retire'?'kept':x.action==='waste'?'waste':x.action==='return'?'returns':['open','half','low'].includes(x.action)?'levels':'used';}
 function weeklyUsage(s,date){
- const start=weekStart(date),end=addDays(start,6),events=usageLog(s).filter(x=>x.date>=start&&x.date<=end&&(x.kind==='meal'||['use','finish','touch','open','half','low','waste','return','retire'].includes(x.action)));
+ const start=weekStart(date),end=addDays(start,6),events=usageLog(s).filter(x=>!x.undated&&x.date>=start&&x.date<=end&&(x.kind==='meal'||['use','finish','touch','open','half','low','waste','return','retire'].includes(x.action)));
  const stock=stockRows(s),byId=new Map(stock.map(x=>[x.id,x])),entries=catalogueEntries(s),entryById=new Map(),index=itemIndex(s),items=new Map();
  for(const g of entries)for(const r of g.rows)entryById.set(r.id,g);
  for(const x of events.filter(x=>historyGroup(x)==='used')){
@@ -2861,7 +2961,7 @@ cookMeal = function connectedMealConsumption(s,id,leftovers=0,force=false,option
   const before=new Set(s.lots.map(l=>l.id));
   s={...s,mealEntries:s.mealEntries.map(x=>x.id===id?{...x,date}:x)};
   let next=baseCookMeal(s,id,leftovers,force);
-  next={...next,lots:next.lots.map(l=>!before.has(l.id)&&l.mealId===id?{...l,prepared:true,preparedDate:date,location:options.location||'Fridge',expiry:options.expiry||'',expiryType:options.expiry?'use-by':'best-before',notes:'Prepared portions. Ingredients were used once when this batch was cooked. Storage date is entered by you.'}:l),mealEntries:next.mealEntries.map(x=>x.id===id?{...x,cookedDate:date,prepOnly:!!options.preparing}:x)};
+  next={...next,lots:next.lots.map(l=>!before.has(l.id)&&l.mealId===id?{...l,prepared:true,preparedDate:date,location:options.location||'Fridge',expiry:options.expiry||'',expiryType:options.expiry?'use-by':'best-before',notes:''}:l),mealEntries:next.mealEntries.map(x=>x.id===id?{...x,cookedDate:date,prepOnly:!!options.preparing}:x)};
   if(options.preparing&&options.freezerServings){
     const frozen=Number(options.freezerServings);need(Number.isInteger(frozen)&&frozen>0&&frozen<=leftovers,'Choose how many whole portions to freeze.');
     next={...next,lots:next.lots.flatMap(l=>!before.has(l.id)&&l.mealId===id?[...(frozen<leftovers?[{...l,quantity:leftovers-frozen,remaining:leftovers-frozen,location:'Fridge'}]:[]),{...l,id:frozen<leftovers?uid('lot'):l.id,quantity:frozen,remaining:frozen,location:'Freezer',expiry:'',expiryType:'best-before'}]:[l])};
@@ -2941,6 +3041,214 @@ function parseReceiptText(s,text){
   need(lines.every(l=>l.grossPence>=0),'A line discount is larger than its price.');
   return {merchant,date,paidPence:paidPence??lines.reduce((n,l)=>n+l.grossPence,0),lines:lines.map(l=>({...l,price:(l.grossPence/100).toFixed(2)}))};
 }
+
+/* Food you can use: what is at home for each recipe, what to eat now, recipes as templates,
+   and finishing things without a date. Reads the same stock ledger as meals and shopping. */
+
+// A recipe ingredient names a food. A pack linked by hand is used while it lasts; after that,
+// any pack of the same product (or the same name) counts, so a recipe stays a template.
+const baseIngredientMatcher = ingredientMatcher;
+ingredientMatcher = function foodIngredientMatcher(s, ing) {
+  if (!ing.sourceIds?.length) return baseIngredientMatcher(s, ing);
+  const ids = new Set(ing.sourceIds), idx = itemIndex(s), known = new Set(s.items.map((i) => i.id));
+  const linked = [...s.lots, ...s.resources].filter((r) => ids.has(r.id));
+  const itemOf = (r) => (r.itemId && known.has(r.itemId) ? r.itemId : idx.get(itemKey(r.name))?.id) || '';
+  const items = new Set(linked.map(itemOf).filter(Boolean)), keys = new Set(linked.map((r) => itemKey(r.name)).filter(Boolean));
+  return (r) => {
+    if (ids.has(r.id)) return true;
+    const item = itemOf(r);
+    return item ? items.has(item) : keys.has(itemKey(r.name));
+  };
+};
+
+const FRESH_CATEGORIES = new Set(['fruit-vegetables', 'meat-fish-plant-proteins', 'eggs-dairy', 'fresh-convenience-food', 'bread-bakery', 'milk-alternatives']);
+function isFoodRow(s, r) { return r.source === 'lot' ? category(s, r.categoryId).pool === 'grocery' : s.resources.find((x) => x.id === r.id)?.category === 'Food'; }
+// Should this be eaten soon? A label date first; without one, fresh food in the fridge that has
+// been there a while. `kind`: passed, label, made or fridge; `date` is the label date or the day it came.
+function useSoon(s, row, today = isoDate(new Date())) {
+  if (!(row.remaining > 0) || ['level', 'durable'].includes(row.tracking)) return null;
+  if (row.expiry && validDate(row.expiry)) {
+    const days = daysBetween(today, row.expiry), useBy = row.expiryType === 'use-by';
+    if (days < 0) return { rank: 3, days, kind: 'passed', date: row.expiry, useBy };
+    if (days <= 3) return { rank: 2, days, kind: 'label', date: row.expiry, useBy };
+    return null;
+  }
+  const fridge = /fridge/i.test(row.location || ''), fresh = FRESH_CATEGORIES.has(row.categoryId) || row.prepared;
+  if (!fridge || !fresh) return null;
+  const since = row.preparedDate || stockPurchase(s, row).date || row.added || '';
+  if (!validDate(since)) return null;
+  const days = daysBetween(since, today);
+  if (row.prepared && days >= 2) return { rank: 2, days: -days, kind: 'made', date: since };
+  if (days >= 4) return { rank: 1, days: -days, kind: 'fridge', date: since };
+  return null;
+}
+
+// Everything at home now, ignoring what planned meals have set aside (a plan can change).
+function physicalState(s) { return { ...s, mealEntries: s.mealEntries.map((m) => (m.status === 'planned' ? { ...m, reservations: [] } : m)) }; }
+
+// One ingredient against the cupboard: enough, some, a long-lasting jar, or none.
+function ingredientAtHome(s, ing, needed, date, today = isoDate(new Date())) {
+  const fits = ingredientMatcher(s, ing), rows = stockRows(s).filter((r) => r.remaining > 0 && r.tracking !== 'durable');
+  let lasting = rows.filter((r) => r.tracking === 'level' && fits(r));
+  if (!lasting.length && !ing.sourceIds?.length && !ing.itemId && !ing.typeId) lasting = rows.filter((r) => r.tracking === 'level' && wordsIn(ing.name, r.name));
+  if (lasting.length) return { state: 'lasting', have: null, rows: lasting, soon: null };
+  let have = 0; const used = [];
+  for (const r of rows.filter((r) => r.tracking !== 'level' && !r.scheduledDate && fits(r))) {
+    const one = convertQty(1, r.unit, ing.unit); if (!one) continue;
+    have += r.remaining * one; used.push(r);
+  }
+  have = +have.toFixed(6);
+  const soon = used.map((r) => useSoon(s, r, today)).filter(Boolean).sort((a, b) => b.rank - a.rank)[0] || null;
+  return { state: have >= needed - 1e-6 ? 'have' : have > 0 ? 'short' : 'none', have, rows: used, soon };
+}
+
+// A recipe against what is at home: each ingredient's state, what is missing, what is kept for
+// another planned meal, and a score that puts recipes using food that should go soon first.
+function recipeAtHome(s, recipe, { servings, date = isoDate(new Date()), except = '' } = {}) {
+  const phys = physicalState(s), want = Number(servings) > 0 ? Number(servings) : recipe.servings, today = isoDate(new Date());
+  const lines = (recipe.ingredients || []).map((ing) => {
+    const needed = +(ing.quantity * want / recipe.servings).toFixed(4), home = ingredientAtHome(phys, ing, needed, date, today);
+    // Meals of this same recipe are not "other" meals: they are said apart, as when it is planned.
+    const keptFor = home.rows.flatMap((r) => s.mealEntries.filter((m) => m.status === 'planned' && m.id !== except && m.recipeId !== recipe.id && m.reservations.some((x) => x.sourceId === r.id)));
+    const free = home.rows.reduce((n, r) => n + Math.max(0, r.remaining - reservedAmount(s, r.id, except)) * (convertQty(1, r.unit, ing.unit) || 0), 0);
+    const kept = home.state === 'have' && free < needed - 1e-6 ? [...new Map(keptFor.map((m) => [m.id, m])).values()] : [];
+    return { ing, needed, ...home, kept };
+  });
+  const missing = lines.filter((l) => !l.ing.optional && ['none', 'short'].includes(l.state));
+  const kept = lines.filter((l) => l.kept.length);
+  const score = lines.reduce((n, l) => n + (l.soon ? [0, 3, 10, 20][l.soon.rank] : 0), 0);
+  const planned = s.mealEntries.filter((m) => m.status === 'planned' && m.recipeId === recipe.id && m.id !== except).sort((a, b) => a.date.localeCompare(b.date));
+  return { recipe, servings: want, lines, missing, kept, planned, ready: !missing.length, score, soon: lines.filter((l) => l.soon) };
+}
+
+// Recipes in the order to cook them: everything at home first, then one thing missing, then more.
+function rankRecipes(s, opts = {}) {
+  return s.recipes.filter((r) => !r.archived).map((r) => {
+    try { return recipeAtHome(s, r, opts); } catch { return null; }
+  }).filter(Boolean).sort((a, b) => a.missing.length - b.missing.length || b.score - a.score || (a.recipe.minutes || 99) - (b.recipe.minutes || 99) || a.recipe.name.localeCompare(b.recipe.name));
+}
+
+const SLOT_ORDER = ['breakfast', 'lunch', 'dinner', 'snack'];
+function slotAt(date = new Date()) { const h = date.getHours() + date.getMinutes() / 60; return h < 10.5 ? 'breakfast' : h < 15.5 ? 'lunch' : h < 21.5 ? 'dinner' : 'snack'; }
+
+// What the moment asks: this mealtime's plan, plans from earlier still open, ready portions,
+// and food that should be eaten soon.
+function foodNow(s, { today = isoDate(new Date()), slot = slotAt() } = {}) {
+  const planned = s.mealEntries.filter((m) => m.date === today && (m.slot || 'dinner') === slot && m.status !== 'skipped' && m.kind !== 'prep');
+  const prep = s.mealEntries.filter((m) => m.date === today && m.kind === 'prep' && m.status === 'planned');
+  const earlierToday = s.mealEntries.filter((m) => m.date === today && m.status === 'planned' && m.kind !== 'prep' && SLOT_ORDER.indexOf(m.slot || 'dinner') < SLOT_ORDER.indexOf(slot));
+  const open = s.mealEntries.filter((m) => m.status === 'planned' && m.date < today).sort((a, b) => b.date.localeCompare(a.date) || SLOT_ORDER.indexOf(b.slot) - SLOT_ORDER.indexOf(a.slot));
+  const ready = s.lots.filter((l) => l.remaining > 0 && (l.prepared || l.mealId)).map((l) => ({ lot: l, batch: s.mealEntries.find((m) => m.id === l.mealId) || null, soon: useSoon(s, l, today) }));
+  const soon = stockRows(s).map((r) => ({ row: r, soon: useSoon(s, r, today) })).filter((x) => x.soon && !x.row.prepared && isFoodRow(s, x.row)).sort((a, b) => b.soon.rank - a.soon.rank || a.soon.days - b.soon.days);
+  const next = s.mealEntries.filter((m) => m.status === 'planned' && m.kind !== 'prep' && (m.date > today || m.date === today && SLOT_ORDER.indexOf(m.slot || 'dinner') > SLOT_ORDER.indexOf(slot))).sort((a, b) => a.date.localeCompare(b.date) || SLOT_ORDER.indexOf(a.slot) - SLOT_ORDER.indexOf(b.slot))[0] || null;
+  return { today, slot, planned, prep, earlierToday, open, ready, soon, next };
+}
+
+// Cooking now comes before plans: the new meal takes what is at home, even what another planned
+// meal had set aside; that meal is planned again and says what it now needs.
+function cookFromHome(s, { id = uid('meal'), date = isoDate(new Date()), slot = slotAt(), recipe, servings } = {}) {
+  need(recipe, 'Choose a recipe.');
+  const d = { id, date, slot, name: recipe.name, recipeId: recipe.id, servings: Number(servings) > 0 ? Number(servings) : recipe.servings, kind: 'recipe' };
+  const fresh = planMeal(physicalState(s), d).mealEntries.find((m) => m.id === id);
+  let next = { ...s, mealEntries: [...s.mealEntries, fresh] };
+  const used = new Set(fresh.reservations.map((r) => r.sourceId)), rows = new Map(stockRows(s).map((r) => [r.id, r]));
+  const over = (st, sourceId) => reservedAmount(st, sourceId) > (rows.get(sourceId)?.remaining || 0) + 1e-6;
+  for (const m of s.mealEntries.filter((m) => m.status === 'planned' && m.reservations.some((r) => used.has(r.sourceId) && over(next, r.sourceId)))) {
+    const without = { ...next, mealEntries: next.mealEntries.map((x) => (x.id === m.id ? { ...x, reservations: [] } : x)) };
+    try { next = planMeal(without, m); }
+    catch { next = { ...without, mealEntries: without.mealEntries.map((x) => (x.id === m.id ? { ...x, missing: [...x.missing, ...m.reservations.filter((r) => used.has(r.sourceId)).map((r) => ({ name: r.name, quantity: r.amount, unit: r.unit }))] } : x)) }; }
+  }
+  return next;
+}
+function mealsGivingWay(s, recipe, servings) { const x = recipeAtHome(s, recipe, { servings }); return [...new Map(x.kept.flatMap((l) => l.kept).map((m) => [m.id, m])).values()]; }
+
+// Turn a meal into a recipe (a template): its cupboard picks become ingredients that name the food,
+// and the meal now follows the recipe.
+function mealToRecipe(s, mealId, { id, name, steps = '', minutes = '' } = {}) {
+  const meal = s.mealEntries.find((m) => m.id === mealId); need(meal, 'Meal not found.');
+  need(meal.status === 'planned' || !meal.recipeId, 'This meal already follows a recipe.');
+  const idx = itemIndex(s), rows = new Map(stockRows(s).map((r) => [r.id, r]));
+  const servings = Number(meal.servings) > 0 ? Number(meal.servings) : 1;
+  const ingredients = (meal.stock || []).map((p) => {
+    const row = (p.ids || []).map((id) => rows.get(id)).find(Boolean), item = (row?.itemId && s.items.find((i) => i.id === row.itemId)) || idx.get(itemKey(p.name));
+    const line = { name: item ? item.name : niceFoodName(p.name), quantity: p.tracking === 'level' || !(Number(p.amount) > 0) ? 1 : +(Number(p.amount) / servings).toFixed(4), unit: p.tracking === 'level' ? 'a little' : String(p.unit || 'item') };
+    if (item) line.itemId = item.id;
+    if (p.tracking === 'level' || !(Number(p.amount) > 0)) line.optional = true;
+    return line;
+  });
+  need(ingredients.length || String(steps).trim(), 'Add what goes into it, or write how to make it.');
+  need(!id || !s.recipes.some((r) => r.id === id), 'That recipe already exists.');
+  const recipe = { id: id || uid('recipe'), name: String(name || meal.name).trim() || meal.name, servings: 1, minutes: minutes === '' ? '' : Number(minutes) || '', ingredients, steps: String(steps || '').trim(), notes: '', source: '', image: '', fromMeal: meal.id };
+  let next = { ...s, recipes: [...s.recipes, recipe] };
+  if (meal.status === 'planned') next = planMeal(next, { ...meal, recipeId: recipe.id, kind: 'recipe', stock: [], servings });
+  else next = { ...next, mealEntries: next.mealEntries.map((m) => (m.id === meal.id ? { ...m, recipeId: recipe.id } : m)) };
+  return next;
+}
+function niceFoodName(n) { const t = String(n || '').trim(); return t ? t.charAt(0).toUpperCase() + t.slice(1) : 'Ingredient'; }
+
+// A copy of a recipe to change freely; meals that follow the original keep it.
+function copyRecipe(s, id, name, newId) {
+  const r = s.recipes.find((x) => x.id === id); need(r, 'Recipe not found.');
+  const copy = { ...clone(r), id: newId || uid('recipe'), name: String(name || '').trim() || r.name + ' (copy)', archived: false, copiedFrom: r.id };
+  delete copy.fromMeal;
+  return { ...s, recipes: [...s.recipes, copy] };
+}
+
+// Recipes that use a food (a catalogue entry from Food & supplies).
+function recipesUsing(s, g) {
+  const rows = g.rows.length ? g.rows : [], keys = entryKeys(g);
+  return s.recipes.filter((r) => !r.archived && (r.ingredients || []).some((ing) => {
+    if (g.item && ing.itemId === g.item.id) return true;
+    const fits = ingredientMatcher(s, ing);
+    return rows.some(fits) || (!ing.sourceIds?.length && !ing.itemId && !ing.typeId && keys.has(itemKey(ing.name)));
+  }));
+}
+
+// Finished (or thrown away) for several things at once. With `undated`, the day is not known:
+// the record keeps the day it was noted, and the day-by-day history leaves it out.
+// Meals that had set these aside are planned again, so they say what they now need.
+function finishStock(s, ids, { date = isoDate(new Date()), undated = false, action = 'finish' } = {}) {
+  need(['finish', 'waste'].includes(action), 'Choose what happened.'); need(validDate(date), 'Choose a valid date.');
+  const rows = stockRows(s).filter((r) => ids.includes(r.id) && r.remaining > 0 && r.tracking !== 'durable');
+  need(rows.length, 'Nothing chosen is still at home.');
+  let next = s;
+  for (const r of rows) next = stockAction(next, r.id, action, action === 'waste' ? r.remaining : null, date, true, undated ? { undated: true } : {});
+  const touched = new Set(rows.map((r) => r.id));
+  for (const m of next.mealEntries.filter((m) => m.status === 'planned' && m.reservations.some((x) => touched.has(x.sourceId)))) {
+    try { next = planMeal(next, m); }
+    catch { // a plan that cannot be made again keeps the rest and lists what went as still needed
+      const gone = m.reservations.filter((x) => touched.has(x.sourceId));
+      next = { ...next, mealEntries: next.mealEntries.map((x) => (x.id === m.id ? { ...x, reservations: x.reservations.filter((r) => !touched.has(r.sourceId)), missing: [...x.missing, ...gone.map((r) => ({ name: r.name, quantity: r.amount, unit: r.unit }))] } : x)) };
+    }
+  }
+  return next;
+}
+function mealsUsingStock(s, ids) { const set = new Set(ids); return s.mealEntries.filter((m) => m.status === 'planned' && m.reservations.some((x) => set.has(x.sourceId))); }
+
+// The list things go on: this week's (or the next dated) list that is still open, else a new "This week".
+function currentShoppingList(s, today = isoDate(new Date())) {
+  const open = s.lists.filter((l) => !l.archived && !l.deleted && (l.weekOf && today >= l.weekOf && today <= addDays(l.weekOf, 6) || l.date && l.date >= today))
+    .sort((a, b) => String(a.date || a.weekOf).localeCompare(String(b.date || b.weekOf)));
+  return open[0] || null;
+}
+function addFoodToShopping(s, lines, today = isoDate(new Date())) {
+  let list = currentShoppingList(s, today), next = s;
+  if (!list) { list = { id: uid('list'), name: 'This week', weekOf: weekStart(today), date: '', merchant: '', channel: 'in-store', lines: [] }; next = { ...s, lists: [...s.lists, list] }; }
+  const there = new Set(list.lines.filter((l) => l.status === 'planned').map((l) => itemKey(l.name))), idx = itemIndex(s);
+  for (const x of lines) {
+    if (!x.name || there.has(itemKey(x.name))) continue;
+    const item = (x.itemId && s.items.find((i) => i.id === x.itemId)) || idx.get(itemKey(x.name));
+    const quantity = Number(x.quantity) > 0 && !['a little', 'pinch', 'tsp', 'tbsp', 'clove', 'slice'].includes(String(x.unit)) ? +Number(x.quantity).toFixed(2) : 1;
+    const unit = quantity === 1 && ['a little', 'pinch', 'tsp', 'tbsp', 'clove', 'slice'].includes(String(x.unit)) ? 'item' : String(x.unit || 'item');
+    next = addListLine(next, list.id, { name: item ? item.name : x.name, quantity, unit, itemId: item?.id, categoryId: item?.categoryId || 'uncategorised', tracking: ['g', 'kg', 'ml', 'L'].includes(unit) ? 'measured' : 'count' });
+    there.add(itemKey(x.name));
+  }
+  return next;
+}
+
+// Notes the app wrote itself are not the user's; these exact sentences are taken out of their records.
+const IMPORT_NOTES = ['From the shared two-week plan. Planned only; no food has been marked consumed.', 'Preparation batch; portions are eaten in linked meals.'];
+function isImportNote(text) { const t = String(text || '').trim(); return IMPORT_NOTES.includes(t) || /^Working recipe from the shared conversation\./.test(t); }
 
 
 const NAV = [['overview','home','Overview'],['planner','calendar','Meal planner'],['resources','box','Food & supplies'],['budget','wallet','Spending']];
@@ -3472,8 +3780,8 @@ function SpendingCalendar({state:s,month:m,onAdd,onOpen}){
 }
 // The address bar follows you: #/food/used, #/meals, #/food/item/<item>?m=2026-10. Back and forward work.
 const TAB_SLUG={home:'everyday',shopping:'shopping',stock:'food',meals:'meals',money:'money',history:'history',settings:'settings'},SLUG_TAB=Object.fromEntries(Object.entries(TAB_SLUG).map(([k,v])=>[v,k]));
-function readRoute(){const raw=(typeof location!=='undefined'?location.hash:'').replace(/^#\/?/,''),[path,query='']=raw.split('?'),parts=path.split('/').filter(Boolean),q=new URLSearchParams(query),at=parts.indexOf('item');let view=parts[1]||'',item='';if(at>0){item=decodeURIComponent(parts.slice(at+1).join('/'));view=at===1?'':parts[1];}return {tab:SLUG_TAB[parts[0]]||'home',view:decodeURIComponent(view),item,month:q.get('m')||'',week:q.get('w')||''};}
-function routeHash(r){const q=new URLSearchParams();if(r.month)q.set('m',r.month);if(r.week)q.set('w',r.week);return '#/'+(TAB_SLUG[r.tab]||'everyday')+(r.view?'/'+encodeURIComponent(r.view):'')+(r.item?'/item/'+encodeURIComponent(r.item):'')+(q.size?'?'+q:'');}
+function readRoute(){const raw=(typeof location!=='undefined'?location.hash:'').replace(/^#\/?/,''),[path,query='']=raw.split('?'),parts=path.split('/').filter(Boolean),q=new URLSearchParams(query),at=parts.indexOf('item');let view=parts[1]||'',item='';if(at>0){item=decodeURIComponent(parts.slice(at+1).join('/'));view=at===1?'':parts[1];}return {tab:SLUG_TAB[parts[0]]||'home',view:decodeURIComponent(view),item,month:q.get('m')||'',week:q.get('w')||'',meal:q.get('meal')||''};}
+function routeHash(r){const q=new URLSearchParams();if(r.month)q.set('m',r.month);if(r.week)q.set('w',r.week);if(r.meal)q.set('meal',r.meal);return '#/'+(TAB_SLUG[r.tab]||'everyday')+(r.view?'/'+encodeURIComponent(r.view):'')+(r.item?'/item/'+encodeURIComponent(r.item):'')+(q.size?'?'+q:'');}
 function useLocalPref(key,init){const [v,setV]=useState(()=>{try{return localStorage.getItem(key)||init;}catch{return init;}});return [v,x=>{setV(x);try{localStorage.setItem(key,x);}catch{}}];}
 function EntryRow({state:s,g,m,setDialog}){
  const f=entryFacts(g),name=entryName(g),level=f.tracking==='level',live=g.rows.filter(r=>r.remaining>0),bottle=level?currentBottle(g):null,info=bottle?lastingInfo(bottle):null,open=()=>setDialog({type:'item-page',key:g.key});
@@ -3483,12 +3791,13 @@ function EntryRow({state:s,g,m,setDialog}){
 function App(){
  const [state,setState]=useState(null),[setup,setSetup]=useState(null),[fatal,setFatal]=useState(''),[status,setStatus]=useState('Loading'),[route,setRoute]=useState(readRoute),[dialog,setDialog]=useState(null),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[conflict,setConflict]=useState(false);
  const [inventory,setInventory]=useState({category:'all',scope:'month',status:'all',search:'',mode:'map'});
- const revision=React.useRef(0),current=React.useRef(null),locked=React.useRef(false),undoRef=React.useRef(null);
- useEffect(()=>{const on=()=>setRoute(readRoute());window.addEventListener('hashchange',on);if(!location.hash)history.replaceState(null,'',routeHash(readRoute()));return ()=>window.removeEventListener('hashchange',on);},[]);
+ const revision=React.useRef(0),current=React.useRef(null),locked=React.useRef(false),undoRef=React.useRef(null),routeRef=React.useRef(readRoute());
+ // Moving to another page, or a link that names a meal, closes whatever dialog was open.
+ useEffect(()=>{const on=()=>{const r=readRoute(),was=routeRef.current;routeRef.current=r;setRoute(r);if(r.tab!==was.tab||r.view!==was.view||r.meal&&r.meal!==was.meal)setDialog(null);};window.addEventListener('hashchange',on);if(!location.hash)history.replaceState(null,'',routeHash(readRoute()));return ()=>window.removeEventListener('hashchange',on);},[]);
  const tab=route.tab,month=/^\d{4}-(0[1-9]|1[0-2])$/.test(route.month)?route.month:initialMonth(),pushedItem=React.useRef(false);
- const go=(patch,opts={})=>{const h=routeHash({...readRoute(),...patch});if(h===location.hash)return;if(opts.replace){history.replaceState(null,'',h);setRoute(readRoute());}else location.hash=h;};
- const setTab=id=>{go({tab:id,view:'',item:'',week:''});try{window.scrollTo(0,0);}catch{}},setMonth=v=>go({month:v===initialMonth()?'':v,week:''});
- const openDialog=d=>{if(d&&d.type==='item-page'){pushedItem.current=true;go({item:d.key});return;}setDialog(d);};
+ const go=(patch,opts={})=>{const h=routeHash({...readRoute(),...patch});if(h===location.hash)return;if(opts.replace){history.replaceState(null,'',h);const r=readRoute();routeRef.current=r;setRoute(r);}else location.hash=h;};
+ const setTab=id=>{go({tab:id,view:'',item:'',week:'',meal:''});try{window.scrollTo(0,0);}catch{}},setMonth=v=>go({month:v===initialMonth()?'':v,week:''});
+ const openDialog=d=>{if(d&&d.type==='item-page'){setDialog(null);pushedItem.current=true;go({item:d.key});return;}setDialog(d);};
  const closeItem=()=>{if(pushedItem.current){pushedItem.current=false;history.back();}else go({item:''},{replace:true});};
  useEffect(()=>{try{document.title=({home:'My everyday',shopping:'Shopping',stock:'Food & supplies',meals:'Meals & recipes',money:'Money & saving',history:'Weekly history',settings:'Settings'}[tab]||'Everyday')+' · Everyday';}catch{}},[tab]);
  useEffect(()=>{try{window.scrollTo(0,0);}catch{}},[route.tab,route.view]);
@@ -3525,7 +3834,9 @@ function App(){
    e('main',{id:'main-content',className:'v2-main',tabIndex:-1},conflict&&e('div',{className:'alert',role:'alert'},'Another tab has saved a newer copy. Your current view has been kept.',e(Btn,{onClick:()=>Download(state)},'Export this view'),e(Btn,{onClick:load},'Reload saved copy')),
      tab==='home'&&e(HomeV2,p),tab==='history'&&e(HistoryV3,p),tab==='shopping'&&e(ShoppingV2,p),tab==='stock'&&e(StockV2,p),tab==='meals'&&e(MealsV2,p),tab==='money'&&e(MoneyV2,p),tab==='settings'&&e(SettingsV2,p),e('footer',{className:'v2-footer'},null,e('button',{className:'photo-credits-button',onClick:()=>setDialog({type:'art-gallery'})},'Images'),e('span',null,'Local & private · '+monthLabel(month))))),
   notice&&e('div',{className:'toast',role:'status'},e('span',null,notice),undoRef.current&&e('button',{disabled:busy||conflict,onClick:()=>commit(undoRef.current,'Undone',{noUndo:true}).catch(()=>{})},'Undo'),e('button',{'aria-label':'Dismiss notification',onClick:()=>setNotice('')},'×')),
-  (dialog||route.item)&&e(ProductDialog,dialog?{...p,key:dialog.type+'-'+(dialog.id||dialog.listId||'')}:{...p,dialog:{type:'item-page',key:route.item},onClose:closeItem,key:'item-page-'+route.item}));
+  (dialog||route.item)&&e(ProductDialog,dialog?{...p,key:dialog.type+'-'+(dialog.id||dialog.listId||'')}:{...p,dialog:{type:'item-page',key:route.item},onClose:closeItem,key:'item-page-'+route.item}),
+  // A link from Life OS (the calendar, Today) names one meal: its card opens over the meal plan.
+  !dialog&&!route.item&&route.meal&&state.mealEntries.some(x=>x.id===route.meal)&&e(ProductDialog,{...p,dialog:{type:'meal-detail',id:route.meal},onClose:()=>go({meal:''},{replace:true}),key:'meal-'+route.meal}));
 }
 ICONS.bag='M5 7h14l2 14H3Zm4 0V5a3 3 0 0 1 6 0v2';
 function Stat({label,value,detail,tone=''}){return e('div',{className:'v2-stat '+tone},e('span',null,label),e('strong',null,value),detail&&e('small',null,detail));}
@@ -3637,7 +3948,7 @@ function usageText(x){
 // A month of what was used, opened, thrown away or eaten.
 function UsageCalendar({state:s,month:m,setDialog}){
  const today=isoDate(new Date()),[picked,setPicked]=useState(()=>dateMonth(today)===m?today:null);
- const log=usageLog(s).filter(x=>dateMonth(x.date)===m&&x.action!=='plan'&&x.action!=='correct'),byDay={};for(const x of log)(byDay[x.date]=byDay[x.date]||[]).push(x);
+ const log=usageLog(s).filter(x=>!x.undated&&dateMonth(x.date)===m&&x.action!=='plan'&&x.action!=='correct'),byDay={};for(const x of log)(byDay[x.date]=byDay[x.date]||[]).push(x);
  const weeks=getWeeks(m),items=log.filter(x=>x.kind==='stock'&&['use','finish'].includes(x.action)).length,meals=log.filter(x=>x.kind==='meal').length,borrowed=log.filter(x=>x.fromMonth).length,wasted=log.filter(x=>x.action==='waste').length;
  const dayRows=picked?(byDay[picked]||[]):[];
  return e('section',{className:'surface calendar-panel usage-panel'},
@@ -3698,7 +4009,6 @@ function StockV2(p){
  const reset=()=>{setSearch('');setShop('');setCategoryId('');setGroup('all');setTypeId('');setDeep(false);setPeriod('all');setFrom('');setTo('');setFilter('available');setFilterTouched(false);setScope('all');};
  const goType=id=>{setTypeId(id);setDeep(false);};
  return e(React.Fragment,null,e(PageHeading,{title:'Food & supplies',action:e(Btn,{kind:'primary',icon:'plus',onClick:()=>setDialog({type:'stock',prefill:typeId?{typeId,categoryId:typeNode(s,typeId)?.categoryId}:{}})},'Add stock')}),e('div',{className:'page-tabs'},e(Segment,{label:'Stock view',value:view,onChange:setView,options:[['left','What’s left'],['cupboard','Browse by category'],['history','Weekly history'],['used','Monthly history'],['plan','Monthly plan']]})),
- e('p',{className:'stock-source-note'},'What you own, including portions saved for later months. Catalogue references do not add stock.'),
  view==='left'?e(RemainingStock,p):view==='plan'?e(AllocationPlan,p):view==='history'?e(WeeklyHistory,{...p,key:m+'-'+(p.route.week||'')}):view==='used'?e(UsageCalendar,{state:s,month:m,setDialog,key:m}):
  e(React.Fragment,null,e('div',{className:'cupboard-tools'},
   e(CategoryShelf,{state:s,value:group,onChange:v=>{setGroup(v);setCategoryId('');goType('');}}),
@@ -3901,6 +4211,7 @@ function ItemPage({state:s,dialog:d,setDialog,onClose}){
      e(Btn,{onClick:edit},item?'Edit details':'Add details & photo')))),
   facts.length>0&&e('ul',{className:'item-facts'},facts.map((x,i)=>e('li',{key:i},x))),
   (item?.notes||item?.shop)&&e('div',{className:'item-info'},item.shop&&e('p',null,e('b',null,'Usually from '),usual?e('button',{type:'button',className:'text-link inline',onClick:()=>setDialog({type:'shop-page',id:usual.id})},usual.name):item.shop),item.notes&&e('p',null,item.notes)),
+  e(FoodRecipesUsing,{state:s,g,setDialog}),
   item&&e(PricesPanel,{state:s,item,setDialog}),
   rowsShown.length>0&&e('details',{className:'share-list'},e('summary',null,level?'Each '+word:'Each share and pack · change amounts or months'),rowsShown.map(r=>e('div',{className:'share-row',key:r.id},e('div',null,e('strong',null,shareLabel(r,m)),e('small',null,[niceName(r.name)!==name?niceName(r.name):'',r.location,reservedAmount(s,r.id)?displayQty(reservedAmount(s,r.id),r.unit)+' kept for a meal':''].filter(Boolean).join(' · '))),e('b',null,r.tracking==='level'?LASTING_LABEL[lastingInfo(r).state]:displayQty(r.remaining,r.unit)),e(Btn,{small:true,onClick:()=>setDialog({type:'row-edit',id:r.id,back:d.key})},'Change')))),
   e('h3',{className:'mini-head history-head'},'History'),null,e(Timeline,{history,onEdit:x=>setDialog({type:'event-edit',id:x.id,back:d.key})})),e(DialogFooter,{onClose,label:'Done'}));
@@ -4021,7 +4332,7 @@ function UseStock({state:s,dialog:d,commit,setDialog,onClose}){
   plan&&!plan.short&&later.length>0&&e('div',{className:'confirmation-box borrow-note'},e('p',null,[byMonth.now?displayQty(byMonth.now,r.unit)+' from what is here for now':'',...later.map(k=>displayQty(byMonth[k],r.unit)+' from '+monthShort(k)+'’s share')].filter(Boolean).join(', ')+'.'),e('small',null,later.map(monthShort).join(' and ')+(later.length>1?' will each have less planned.':' will have that much less planned.'))),
   plan&&plan.short>0&&e('p',{className:'error-box'},free<home?'Only '+displayQty(free,r.unit)+' is free. The rest is kept for a planned meal.':'You only have '+displayQty(home,r.unit)+' at home.'),
   free<home&&!(plan&&plan.short>0)&&e('p',{className:'muted'},displayQty(home-free,r.unit)+' is kept for a planned meal and is left alone.'),
-  e('button',{type:'button',className:'text-link',onClick:()=>setDialog(rows.length>1?{type:'stock-group',ids,name:r.name}:{type:'stock-action',id:r.id})},'See each share and its details'));
+  e('div',{className:'inline-actions'},e('button',{type:'button',className:'text-link',onClick:()=>setDialog({type:'finish-stock',ids})},'It’s all gone'),e('button',{type:'button',className:'text-link',onClick:()=>setDialog(rows.length>1?{type:'stock-group',ids,name:r.name}:{type:'stock-action',id:r.id})},'See each share and its details')));
 }
 // Oil, spray, honey: no measuring. Mark the moments that matter and the estimate follows how fast you use it.
 // Things you keep: how long you have had it, and a way to record when it goes.
@@ -4069,6 +4380,8 @@ function MealEditor({state:s,dialog:d,selectedMonth,commit,onClose}){
  const [form,set]=useDraft(()=>old?{...old}:{date:d.date||(dateMonth(today)===selectedMonth?today:monthStart(selectedMonth)),slot:d.slot||'dinner',name:d.pick?titleName(d.pick.name):(d.name||recipe?.name||''),kind:recipe?'recipe':'note',recipeId:recipe?.id||'',servings:recipe?.servings||1,notes:''});
  const [picks,setPicks]=useState(()=>old?.stock?old.stock.map(x=>({...x})):d.pick?[{...d.pick,amount:d.pick.tracking==='level'?null:pickDefault({row:d.pick,rows:stockRows(s).filter(r=>d.pick.ids.includes(r.id))})}]:[]);
  const [query,setQuery]=useState(''),[eaten,setEaten]=useState(()=>!old&&(d.date||'')!==''&&d.date<today);
+ // Each recipe with what is free for it (not kept for another planned meal), worked out once while the dialog is open.
+ const recipeChoices=useMemo(()=>s.recipes.filter(r=>!r.archived||r.id===(old?.recipeId||d.recipeId)).map(r=>{let a=null;try{a=recipeAvailability(s,r);}catch{}const n=a?a.meal.missing.length:0;return [r.id,r.name+(a?(a.ready?' · everything free at home':' · needs '+n+(n===1?' thing':' things')):'')];}),[s]);
  function chooseRecipe(id){set('recipeId',id);const r=s.recipes.find(x=>x.id===id);if(r){set('name',r.name);set('servings',r.servings);set('kind','recipe');}else set('kind','note');}
  const groups=stockGroups(stockRows(s).filter(r=>r.remaining>0&&r.tracking!=='durable'&&isFood(s,r))),q=query.trim().toLowerCase();
  const results=q?groups.filter(g=>g.row.name.toLowerCase().includes(q)&&!picks.some(p=>p.key===g.key)).slice(0,8):[];
@@ -4078,6 +4391,7 @@ function MealEditor({state:s,dialog:d,selectedMonth,commit,onClose}){
  const borrowed=(preview?.reservations||[]).filter(r=>r.fromMonth),past=validDate(form.date)&&form.date<=today;
  return e(FormModal,{title:old?'Edit meal':'Add a meal',kicker:prettyDate(form.date||today,{weekday:'long',day:'numeric',month:'long'}),onClose,label:eaten&&past?'Save · I had this':'Save meal',onSubmit:()=>{const x=data();need(x.name,'Say what you are having, or add something from your cupboard.');return commit(st=>eaten&&past?eatMeal(st,x):planMeal(st,x),eaten&&past?'Meal saved · taken out of your cupboard':x.stock.length?'Meal planned · kept aside in your cupboard':'Meal planned');}},
   e('div',{className:'form-grid'},e(Input,{label:'Day',type:'date',value:form.date,onChange:v=>set('date',v),required:true}),e(Select,{label:'Mealtime',value:form.slot,onChange:v=>set('slot',v),options:SLOTS})),
+  s.recipes.some(r=>!r.archived)&&e(Select,{label:'From one of your recipes',value:form.recipeId,onChange:chooseRecipe,options:[['','No recipe · I will say what it is'],...recipeChoices]}),
   e(Input,{label:'What are you having?',value:form.name,onChange:v=>set('name',v),placeholder:'Pizza, eggs on toast, dinner out…'}),
   e('section',{className:'cupboard-box'},e('div',{className:'moneyback-head'},e('div',null,e('h3',null,'From your cupboard'))),
    picks.map((p,i)=>e('div',{className:'cupboard-pick',key:p.key},e('span',{className:'pick-copy'},e('strong',null,niceName(p.name)),e('small',null,p.tracking==='level'?'A little · no measuring':'')),p.tracking!=='level'&&e('label',{className:'pick-amount'},e('input',{type:'number',min:p.tracking==='count'?1:'.01',step:p.tracking==='count'?1:'any',value:p.amount??'','aria-label':'Amount of '+p.name,onChange:ev=>setPicks(xs=>xs.map((x,j)=>j===i?{...x,amount:ev.target.value}:x))}),e('span',null,p.unit)),e('button',{type:'button',className:'pick-remove','aria-label':'Remove '+p.name,onClick:()=>setPicks(xs=>xs.filter((x,j)=>j!==i))},'×'))),
@@ -4087,7 +4401,7 @@ function MealEditor({state:s,dialog:d,selectedMonth,commit,onClose}){
    borrowed.length>0&&e('p',{className:'borrow-line'},borrowed.map(r=>displayQty(r.amount,r.unit)+' '+niceName(r.name)+' from '+monthShort(r.fromMonth)+'’s share').join(', ')+'. That month will have it less planned.'),
    preview?.missing?.length>0&&e('p',{className:'error-box'},'Not enough at home: '+preview.missing.map(x=>displayQty(x.quantity,x.unit)+' '+x.name).join(', ')+' still needed.')),
   past&&!(old&&old.status!=='planned')&&e('label',{className:'checkbox-label eaten-check'},e('input',{type:'checkbox',checked:eaten,onChange:ev=>setEaten(ev.target.checked)}),'I’ve already had this. Take it out of my cupboard now.'),
-  e('details',null,e('summary',null,'Recipe, servings and notes'),e('div',{className:'form-stack details-body'},e(Select,{label:'Recipe (optional)',value:form.recipeId,onChange:chooseRecipe,options:[['','No recipe'],...s.recipes.filter(r=>!r.archived||r.id===form.recipeId).map(r=>[r.id,r.name])]}),!form.recipeId&&e(Select,{label:'Kind of meal',value:form.kind,onChange:v=>set('kind',v),options:[['note','Home'],['leftovers','Leftovers'],['out','Eating out'],['tgtg','Too Good To Go']]}),e(Input,{label:'Servings',type:'number',min:1,step:1,value:form.servings,onChange:v=>set('servings',v)}),e(Textarea,{label:'Notes',value:form.notes,onChange:v=>set('notes',v),rows:2}))));
+  e('details',null,e('summary',null,'Servings and notes'),e('div',{className:'form-stack details-body'},!s.recipes.some(r=>!r.archived)&&e(Select,{label:'Recipe (optional)',value:form.recipeId,onChange:chooseRecipe,options:[['','No recipe'],...s.recipes.filter(r=>!r.archived||r.id===form.recipeId).map(r=>[r.id,r.name])]}),!form.recipeId&&e(Select,{label:'Kind of meal',value:form.kind,onChange:v=>set('kind',v),options:[['note','Home'],['leftovers','Leftovers'],['out','Eating out'],['tgtg','Too Good To Go']]}),e(Input,{label:'Servings',type:'number',min:1,step:1,value:form.servings,onChange:v=>set('servings',v)}),e(Textarea,{label:'Notes',value:form.notes,onChange:v=>set('notes',v),rows:2}))));
 }
 function MealDetail({state:s,dialog:d,setDialog,commit,onClose}){
  const meal=s.mealEntries.find(x=>x.id===d.id),[left,setLeft]=useState('0'),[err,setErr]=useState('');if(!meal)return null;
@@ -4800,7 +5114,7 @@ MoneyV2=function workflowMoney(p){
 function PrepPlan({state:s,dialog:d,selectedMonth:m,commit,onClose}){
  const old=s.mealEntries.find(x=>x.id===d.id),today=isoDate(new Date()),[recipe,setRecipe]=useState(old?.recipeId||d.recipeId||''),r=s.recipes.find(x=>x.id===recipe);
  const [date,setDate]=useState(old?.date||(dateMonth(today)===m?today:monthStart(m))),[servings,setServings]=useState(String(old?.servings||r?.servings||2));
- return e(FormModal,{title:old?'Change meal prep':'Plan meal prep',onClose,label:'Save preparation batch',onSubmit:()=>{need(r,'Choose a recipe.');return commit(st=>planMeal(st,{...old,id:old?.id||uid('meal'),date,name:r.name,recipeId:r.id,servings:positive(servings),kind:'prep',slot:'dinner',notes:old?.notes||'Preparation batch; portions are eaten in linked meals.'}),'Batch planned · ingredients reserved');}},
+ return e(FormModal,{title:old?'Change meal prep':'Plan meal prep',onClose,label:'Save preparation batch',onSubmit:()=>{need(r,'Choose a recipe.');return commit(st=>planMeal(st,{...old,id:old?.id||uid('meal'),date,name:r.name,recipeId:r.id,servings:positive(servings),kind:'prep',slot:'dinner',notes:old?.notes||''}),'Batch planned · ingredients reserved');}},
   e(Select,{label:'Recipe to prepare',value:recipe,onChange:v=>{setRecipe(v);setServings(String(s.recipes.find(x=>x.id===v)?.servings||2));},options:[['','Choose a recipe'],...s.recipes.filter(x=>!x.archived).map(x=>[x.id,x.name])]}),
   e('div',{className:'form-grid'},e(Input,{label:'Preparation day',type:'date',value:date,onChange:setDate,required:true}),e(Input,{label:'Portions to make',type:'number',min:1,step:1,value:servings,onChange:setServings,required:true})),
   e('p',{className:'muted'},'Preparing uses the ingredients once and adds ready portions. Plan meals from those portions with “Use a prepared batch”.'));
@@ -4878,5 +5192,349 @@ MealsV2=function workflowMeals(p){
  const weeks=getWeeks(m),days=weeks[Math.min(week,weeks.length-1)];
  return e(React.Fragment,null,heading,tabs,e(FoodPlanPanel,p),e('div',{className:'week-toolbar'},e(Btn,{disabled:week===0,onClick:()=>setWeek(week-1)},'← Previous'),e('strong',null,prettyDate(days[0].date)+' — '+prettyDate(days[6].date)),e(Btn,{disabled:week===weeks.length-1,onClick:()=>setWeek(week+1)},'Next →'),e(Btn,{onClick:()=>p.setDialog({type:'copy-week',dates:days.map(d=>d.date)})},'Copy week')),e('div',{className:'meal-week'},days.map(day=>e(MealDay,{key:day.date,state:s,day,setDialog:p.setDialog}))),e(CupboardStarters,{state:s,month:m,setDialog:p.setDialog}));
 };
+
+/* Food you can use: Now (what to eat), recipes you can read, a meal card that says what it is,
+   and finishing things at home without a date. Loaded after meal-workflow-ui.js. */
+const FOOD_SLOT_NAMES = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' };
+const FOOD_FRACTIONS = [[0.25, '¼'], [0.33, '⅓'], [0.5, '½'], [0.67, '⅔'], [0.75, '¾']];
+// "0.25 pack" reads as "¼ pack"; "1 number" as "1"; "2 pack" as "2 packs".
+function foodQty(q, unit) {
+  const n = Number(q); if (!Number.isFinite(n)) return String(unit || '');
+  const u = String(unit || '').trim();
+  if (['number', 'item', 'items', ''].includes(u)) return String(+n.toFixed(2));
+  const whole = Math.floor(n + 1e-6), part = n - whole, frac = FOOD_FRACTIONS.find(([v]) => Math.abs(part - v) < 0.02);
+  if (frac && (whole < 10)) return (whole ? whole : '') + frac[1] + ' ' + (n > 1 ? displayQty(2, u).replace(/^2 /, '') : u);
+  return displayQty(+n.toFixed(2), u);
+}
+function soonText(x) {
+  if (!x) return '';
+  if (x.kind === 'passed') return (x.useBy ? 'Use-by ' : 'Best before ') + prettyDate(x.date) + ' has passed';
+  if (x.kind === 'label') return x.days === 0 ? 'Use today' : (x.useBy ? 'Use by ' : 'Best before ') + prettyDate(x.date);
+  if (x.kind === 'made') return 'Made ' + prettyDate(x.date);
+  return 'In the fridge since ' + prettyDate(x.date);
+}
+// A recipe's method as numbered steps: its own lines, or its sentences when it is one paragraph.
+function foodSteps(text) {
+  const raw = String(text || '').trim(); if (!raw) return [];
+  const lines = raw.split(/\r?\n+/).map((l) => l.replace(/^\s*(\d+[.)]|[-•*])\s*/, '').trim()).filter(Boolean);
+  if (lines.length > 1) return lines;
+  return raw.split(/(?<=[.!?])\s+(?=[A-Z])/).map((x) => x.trim()).filter(Boolean);
+}
+// "Cook this now", from Now, Recipes or a recipe's page: on the plan for this mealtime, then its card opens.
+function foodCookNow({ state: s, commit, setDialog }, recipe, servings, onError = () => {}) {
+  const id = uid('meal'), slot = slotAt(), gave = mealsGivingWay(s, recipe, servings);
+  const msg = 'On ' + FOOD_SLOT_NAMES[slot].toLowerCase() + ' today' + (gave.length ? ' · ' + gave.map((m) => m.name + ' (' + foodShortDay(m.date) + ')').join(', ') + ' now ' + (gave.length === 1 ? 'needs' : 'need') + ' more' : '');
+  return commit((st) => cookFromHome(st, { id, slot, recipe, servings }), msg).then(() => setDialog({ type: 'meal-detail', id })).catch((x) => onError(x.message));
+}
+function foodDay(date) { return prettyDate(date, { weekday: 'long', day: 'numeric', month: 'long' }); }
+function foodShortDay(date, today = isoDate(new Date())) { return date === today ? 'Today' : date === addDays(today, -1) ? 'Yesterday' : date === addDays(today, 1) ? 'Tomorrow' : prettyDate(date, { weekday: 'short', day: 'numeric', month: 'short' }); }
+function entryKeyForRow(s, rowId) { return catalogueEntries(s).find((g) => g.rows.some((r) => r.id === rowId))?.key || ''; }
+function batchOf(s, meal) { return meal?.preparedFrom ? s.mealEntries.find((x) => x.id === meal.preparedFrom) : null; }
+
+// Words for a meal's state that say what to do, not how it is stored.
+mealStatus = function foodMealStatus(m) {
+  if (m.status === 'skipped') return 'Skipped';
+  if (m.status === 'cooked') return m.prepOnly ? 'Cooked' : 'Eaten';
+  if (m.kind === 'prep') return m.missing?.length ? 'Needs ' + m.missing.length + (m.missing.length === 1 ? ' thing' : ' things') : 'Batch · makes ' + m.servings;
+  if (m.waitingForPrep) return 'Cook the batch first';
+  if (m.missing?.length) return 'Needs ' + m.missing.length + (m.missing.length === 1 ? ' thing' : ' things');
+  if (m.date < isoDate(new Date())) return 'Not marked yet';
+  return m.reservations?.length || m.touches?.length ? 'All at home' : 'Planned';
+};
+const foodBaseUsageText = usageText;
+usageText = function foodUsageText(x) { const t = foodBaseUsageText(x); return x.undated ? { ...t, sub: t.sub + ' · date not known' } : t; };
+
+const foodBaseProductDialog = ProductDialog;
+ProductDialog = function foodDialog(p) {
+  const extra = { 'recipe-page': FoodRecipePage, 'meal-to-recipe': FoodWriteMethod, 'finish-stock': FoodFinish, 'copy-recipe': FoodCopyRecipe };
+  const C = extra[p.dialog.type]; return C ? e(C, p) : e(foodBaseProductDialog, p);
+};
+
+// ---- Meals & recipes: Now · Week · Recipes · Batches · Original calendar ----
+MealsV2 = function foodMeals(p) {
+  const s = p.state, views = ['now', 'week', 'recipes', 'prep', 'original'], view = views.includes(p.route?.view) ? p.route.view : 'now';
+  const tabs = e('div', { className: 'page-tabs' }, e(Segment, { label: 'Meals view', value: view, onChange: (v) => p.go({ view: v, meal: '' }), options: [['now', 'Now'], ['week', 'Week'], ['recipes', 'Recipes'], ['prep', 'Batches'], ['original', 'Original calendar']] }));
+  const action = view === 'recipes' ? e(Btn, { kind: 'primary', icon: 'plus', onClick: () => p.setDialog({ type: 'recipe' }) }, 'Add a recipe')
+    : view === 'prep' ? e(Btn, { kind: 'primary', icon: 'plus', onClick: () => p.setDialog({ type: 'prep-plan' }) }, 'Plan a batch')
+      : e(Btn, { kind: 'primary', icon: 'plus', onClick: () => p.setDialog({ type: 'meal' }) }, 'Add a meal');
+  const heading = e(PageHeading, { title: 'Meals & recipes', action: e('div', { className: 'inline-actions' }, view === 'week' && e(Btn, { onClick: () => p.setDialog({ type: 'food-budget' }) }, s.foodPlan ? 'Meal budget' : 'Set meal budget'), action) });
+  const body = view === 'now' ? e(FoodNow, p) : view === 'week' ? e(FoodWeek, p) : view === 'recipes' ? e(FoodRecipes, p) : view === 'prep' ? e(FoodBatches, p) : e(Planner, p);
+  return e(React.Fragment, null, heading, tabs, body);
+};
+
+function FoodNow(p) {
+  const s = p.state, today = isoDate(new Date()), [slot, setSlot] = useState(() => slotAt()), now = foodNow(s, { today, slot });
+  const ranked = useMemo(() => rankRecipes(s, {}), [s]);
+  const ready = ranked.filter((x) => x.ready), one = ranked.filter((x) => x.missing.length === 1), more = ranked.filter((x) => x.missing.length > 1);
+  const [showMore, setShowMore] = useState(false), [soonAll, setSoonAll] = useState(false);
+  const run = (fn, msg) => p.commit(fn, msg).catch(() => {});
+  const cookNow = (x) => foodCookNow(p, x.recipe, x.recipe.servings);
+  const openMeals = [...now.earlierToday, ...now.open];
+  return e('div', { className: 'food-now' },
+    e('section', { className: 'surface food-now-head' },
+      e('div', null, e('span', { className: 'eyebrow' }, foodDay(today)), e('h2', null, FOOD_SLOT_NAMES[slot])),
+      e(Segment, { label: 'Mealtime', value: slot, onChange: setSlot, options: Object.entries(FOOD_SLOT_NAMES) })),
+    e('section', { className: 'food-now-planned' },
+      now.planned.length ? now.planned.map((m) => e(FoodMealCard, { key: m.id, state: s, meal: m, setDialog: p.setDialog, run }))
+        : e('div', { className: 'surface food-empty' }, e('p', null, 'Nothing planned for ' + FOOD_SLOT_NAMES[slot].toLowerCase() + ' today.'), e('div', { className: 'inline-actions' }, e(Btn, { kind: 'primary', onClick: () => p.setDialog({ type: 'meal', date: today, slot }) }, 'Plan ' + FOOD_SLOT_NAMES[slot].toLowerCase()), ready.length > 0 && e('a', { className: 'text-link', href: '#food-cook' }, 'Or cook from what you have'))),
+      now.prep.map((m) => e('div', { className: 'surface food-line', key: m.id }, e('div', null, e('strong', null, 'Cook today: ' + m.name), e('small', null, 'Makes ' + m.servings + (m.servings === 1 ? ' portion' : ' portions') + (s.mealEntries.some((x) => x.preparedFrom === m.id && x.status === 'planned') ? ' for ' + s.mealEntries.filter((x) => x.preparedFrom === m.id && x.status === 'planned').map((x) => foodShortDay(x.date)).join(', ') : ''))), e(Btn, { small: true, kind: 'primary', onClick: () => p.setDialog({ type: 'meal-detail', id: m.id }) }, 'Open'))),
+      now.next && !now.planned.length && e('p', { className: 'muted food-next' }, 'Next planned: ' + now.next.name + ' · ' + foodShortDay(now.next.date) + ', ' + FOOD_SLOT_NAMES[now.next.slot || 'dinner'].toLowerCase() + '.')),
+    openMeals.length > 0 && e('section', { className: 'surface food-open' },
+      e(SectionTitle, { title: 'Did you eat these?', note: 'Planned and not marked yet. Marking one takes what it used out of your cupboard on its own day.' }),
+      openMeals.slice(0, 8).map((m) => { const batch = batchOf(s, m), blocked = m.kind === 'prep' || m.waitingForPrep || batch && batch.status !== 'cooked';
+        return e('div', { className: 'food-line', key: m.id },
+          e('button', { type: 'button', className: 'food-line-main', onClick: () => p.setDialog({ type: 'meal-detail', id: m.id }) }, e('strong', null, m.name), e('small', null, foodShortDay(m.date, today) + ' · ' + FOOD_SLOT_NAMES[m.slot || 'dinner'])),
+          e('div', { className: 'inline-actions' }, blocked ? e(Btn, { small: true, onClick: () => p.setDialog({ type: 'meal-detail', id: m.id }) }, 'Open') : e(Btn, { small: true, kind: 'primary', onClick: () => run((st) => cookMeal(st, m.id, 0, true, { date: m.date }), 'Marked eaten on ' + prettyDate(m.date)) }, 'I ate it'),
+            m.kind !== 'prep' && e(Btn, { small: true, onClick: () => run((st) => skipWorkflowMeal(st, m.id), 'Marked as not eaten · its food is free again') }, 'I didn’t'))); }),
+      openMeals.length > 8 && e('p', { className: 'muted' }, 'and ' + (openMeals.length - 8) + ' more in the Week view.')),
+    now.ready.length > 0 && e('section', { className: 'surface food-ready' },
+      e(SectionTitle, { title: 'Ready to eat', note: 'Cooked portions waiting in the fridge or freezer.' }),
+      now.ready.map((x) => e('div', { className: 'food-line', key: x.lot.id }, e('div', null, e('strong', null, x.batch?.name || x.lot.name.replace(/ — leftovers$/, '')), e('small', null, [foodQty(x.lot.remaining, x.lot.unit === 'serving' ? 'portion' : x.lot.unit) + ' in the ' + String(x.lot.location || 'fridge').toLowerCase(), x.soon ? soonText(x.soon) : ''].filter(Boolean).join(' · '))),
+        x.batch?.kind === 'prep' ? e(Btn, { small: true, kind: 'primary', onClick: () => p.setDialog({ type: 'prepared-meal', batchId: x.batch.id }) }, 'Eat a portion') : e(Btn, { small: true, onClick: () => p.setDialog({ type: 'use-stock', ids: [x.lot.id] }) }, 'Eat some')))),
+    e('section', { className: 'food-cook', id: 'food-cook' },
+      e(SectionTitle, { title: 'Cook from what you have', note: ranked.length ? 'Your recipes, checked against what is at home now. Food that should be eaten soon puts a recipe first.' : 'No recipes yet. Add one, or save a meal as a recipe from its card.', action: e(Btn, { small: true, onClick: () => p.go({ view: 'recipes', meal: '' }) }, 'All recipes') }),
+      ready.length > 0 && e(React.Fragment, null, e('h3', { className: 'food-group-head' }, 'Everything is at home', e('span', null, ready.length)), e('div', { className: 'food-recipe-grid' }, ready.map((x) => e(FoodRecipeCard, { key: x.recipe.id, x, state: s, setDialog: p.setDialog, onCook: () => cookNow(x), run })))),
+      one.length > 0 && e(React.Fragment, null, e('h3', { className: 'food-group-head' }, 'Missing one thing', e('span', null, one.length)), e('div', { className: 'food-recipe-grid' }, one.map((x) => e(FoodRecipeCard, { key: x.recipe.id, x, state: s, setDialog: p.setDialog, onCook: () => cookNow(x), run })))),
+      more.length > 0 && (showMore ? e(React.Fragment, null, e('h3', { className: 'food-group-head' }, 'Missing more', e('span', null, more.length)), e('div', { className: 'food-recipe-grid' }, more.map((x) => e(FoodRecipeCard, { key: x.recipe.id, x, state: s, setDialog: p.setDialog, onCook: () => cookNow(x), run }))))
+        : e(Btn, { onClick: () => setShowMore(true) }, 'Show ' + more.length + (more.length === 1 ? ' recipe' : ' recipes') + ' missing more'))),
+    now.soon.length > 0 && e('section', { className: 'surface food-soon' },
+      e(SectionTitle, { title: 'Eat soon', note: 'Fresh food that has been in the fridge a while, or is near its date. Already gone? Mark it finished.' }),
+      now.soon.slice(0, soonAll ? 60 : 6).map(({ row: r, soon }) => e('div', { className: 'food-line', key: r.id },
+        e('button', { type: 'button', className: 'food-line-main', onClick: () => { const key = entryKeyForRow(s, r.id); if (key) p.setDialog({ type: 'item-page', key }); } }, e('strong', null, niceName(r.name)), e('small', null, foodQty(r.remaining, r.unit) + ' · ' + soonText(soon))),
+        e('div', { className: 'inline-actions' }, e(Btn, { small: true, onClick: () => p.setDialog({ type: 'use-stock', ids: [r.id] }) }, 'Use some'), e(Btn, { small: true, onClick: () => p.setDialog({ type: 'finish-stock', ids: [r.id] }) }, 'Finished')))),
+      now.soon.length > 6 && !soonAll && e(Btn, { small: true, onClick: () => setSoonAll(true) }, 'Show all ' + now.soon.length)));
+}
+
+// One planned meal, large: what is in it, how to make it, and the one thing to do.
+function FoodMealCard({ state: s, meal: m, setDialog, run }) {
+  const recipe = s.recipes.find((r) => r.id === m.recipeId), batch = batchOf(s, m), steps = foodSteps(recipe?.steps);
+  const parts = recipe ? recipe.ingredients.map((i) => i.name) : [...m.reservations.map((r) => niceName(r.name)), ...(m.touches || []).map((t) => niceName(t.name))];
+  const blocked = m.waitingForPrep || batch && batch.status !== 'cooked';
+  return e('article', { className: 'surface food-meal-card' + (m.status === 'cooked' ? ' done' : '') },
+    e('div', { className: 'food-meal-top' }, e('div', null, e('h3', null, m.name), e('small', null, [mealStatus(m), recipe?.minutes ? recipe.minutes + ' minutes' : ''].filter(Boolean).join(' · '))), e(Badge, { tone: m.status === 'cooked' ? 'green' : m.missing?.length || blocked ? 'amber' : '' }, m.status === 'cooked' ? 'Eaten' : FOOD_SLOT_NAMES[m.slot || 'dinner'])),
+    parts.length > 0 && e('p', { className: 'food-parts' }, parts.join(' · ')),
+    batch && e('p', { className: 'muted' }, batch.status === 'cooked' ? 'From the ' + batch.name.toLowerCase() + ', already cooked.' : 'Uses the ' + batch.name.toLowerCase() + (batch.date === m.date ? ', cooked today first.' : ', cooked ' + foodShortDay(batch.date) + '.')),
+    steps.length > 0 ? e('ol', { className: 'food-steps compact' }, steps.slice(0, 3).map((x, i) => e('li', { key: i }, x)), steps.length > 3 && e('li', { className: 'muted' }, '…')) : !batch && e('p', { className: 'muted' }, 'No method written yet.'),
+    e('div', { className: 'inline-actions' },
+      m.status === 'planned' && (blocked ? e(Btn, { kind: 'primary', onClick: () => setDialog({ type: 'meal-detail', id: batch?.id || m.id }) }, 'Cook the batch') : e(Btn, { kind: 'primary', icon: 'check', onClick: () => run((st) => cookMeal(st, m.id, 0, true, { date: m.date <= isoDate(new Date()) ? m.date : isoDate(new Date()) }), 'Eaten · taken out of your cupboard') }, 'I ate this')),
+      e(Btn, { onClick: () => setDialog({ type: 'meal-detail', id: m.id }) }, 'Open'),
+      recipe ? e(Btn, { onClick: () => setDialog({ type: 'recipe-page', id: recipe.id }) }, 'Recipe') : !batch && m.status === 'planned' && e(Btn, { onClick: () => setDialog({ type: 'meal-to-recipe', id: m.id }) }, 'Write how to make it')));
+}
+
+// A recipe as a choice: what is at home, what is missing, what it would use up.
+function FoodRecipeCard({ x, state: s, setDialog, onCook, run }) {
+  const r = x.recipe, soon = x.soon.slice(0, 3), today = isoDate(new Date());
+  // "Cooking it now takes Tomatoes from Turkish tomato eggs (Mon 12 Oct)": the food, and the first other meal that had it.
+  const kept = x.kept.slice(0, 2).map((l) => l.ing.name + ' from ' + l.kept[0].name + ' (' + foodShortDay(l.kept[0].date, today) + ')' + (l.kept.length > 1 ? ' and ' + (l.kept.length - 1) + ' more' : ''));
+  return e('article', { className: 'surface food-recipe-card' },
+    e('button', { type: 'button', className: 'food-recipe-title', onClick: () => setDialog({ type: 'recipe-page', id: r.id }) }, e('h3', null, r.name), e('small', null, [r.minutes ? r.minutes + ' min' : '', 'makes ' + r.servings].filter(Boolean).join(' · '))),
+    e('ul', { className: 'food-chips' }, x.lines.map((l, i) => e('li', { key: i, className: l.state === 'none' ? (l.ing.optional ? 'optional' : 'missing') : l.state === 'short' ? 'short' : 'have', title: l.state === 'none' ? 'Not at home' : l.state === 'short' ? 'Some at home, not enough' : 'At home' }, l.ing.name))),
+    soon.length > 0 && e('p', { className: 'food-soon-note' }, 'Uses food to eat soon: ' + soon.map((l) => l.ing.name + (l.soon.kind === 'fridge' ? ' (since ' + prettyDate(l.soon.date) + ')' : ' (' + soonText(l.soon) + ')')).join(', ')),
+    x.planned.length > 0 && e('p', { className: 'muted' }, 'Planned for ' + x.planned.slice(0, 2).map((m) => foodShortDay(m.date, today)).join(' and ') + (x.planned.length > 2 ? ' and more' : '') + '.'),
+    kept.length > 0 && e('p', { className: 'muted' }, 'Cooking it now takes ' + kept.join('; ') + (x.kept.length > 2 ? '; and more' : '') + '.'),
+    x.missing.length > 0 && e('p', { className: 'muted' }, 'Missing: ' + x.missing.map((l) => l.ing.name).join(', ')),
+    e('div', { className: 'inline-actions' },
+      x.ready ? e(Btn, { small: true, kind: 'primary', onClick: onCook }, 'Cook this now') : e(Btn, { small: true, kind: 'primary', onClick: () => run((st) => addFoodToShopping(st, x.missing.map((l) => ({ name: l.ing.name, itemId: l.ing.itemId, quantity: l.state === 'short' ? Math.max(0, l.needed - l.have) : l.needed, unit: l.ing.unit }))), 'On your shopping list: ' + x.missing.map((l) => l.ing.name).join(', ')) }, 'Add missing to list'),
+      e(Btn, { small: true, onClick: () => setDialog({ type: 'meal', recipeId: r.id }) }, 'Plan it')));
+}
+
+// ---- The recipe page: read it, cook it, plan it ----
+function FoodRecipePage({ state: s, dialog: d, setDialog, commit, onClose }) {
+  const r = s.recipes.find((x) => x.id === d.id), [servings, setServings] = useState(() => r?.servings || 1), [err, setErr] = useState('');
+  if (!r) return e(Modal, { title: 'Recipe not found', onClose }, e('div', { className: 'dialog-body' }, e('p', null, 'This recipe is no longer here.')), e(DialogFooter, { onClose, label: 'Done' }));
+  const x = recipeAtHome(s, r, { servings }), steps = foodSteps(r.steps), today = isoDate(new Date()), slot = slotAt();
+  const eaten = s.mealEntries.filter((m) => m.recipeId === r.id && m.status === 'cooked').sort((a, b) => b.date.localeCompare(a.date));
+  const coming = s.mealEntries.filter((m) => m.recipeId === r.id && m.status === 'planned').sort((a, b) => a.date.localeCompare(b.date));
+  const run = (fn, msg) => commit(fn, msg).catch((z) => setErr(z.message));
+  const cook = () => foodCookNow({ state: s, commit, setDialog }, r, servings, setErr);
+  const keyOf = (l) => (l.ing.itemId ? 'item:' + l.ing.itemId : l.rows[0] ? entryKeyForRow(s, l.rows[0].id) : '');
+  return e(Modal, { title: r.name, kicker: ['Recipe', r.minutes ? r.minutes + ' minutes' : '', 'makes ' + r.servings].filter(Boolean).join(' · '), onClose, wide: true },
+    e('div', { className: 'dialog-body food-recipe-page' },
+      e('div', { className: 'food-recipe-status' }, e(Badge, { tone: x.ready ? 'green' : 'amber' }, x.ready ? 'Everything is at home' : 'Missing ' + x.missing.length + (x.missing.length === 1 ? ' thing' : ' things')),
+        e('div', { className: 'food-servings', role: 'group', 'aria-label': 'Servings' }, e('button', { type: 'button', 'aria-label': 'Fewer servings', disabled: servings <= 1, onClick: () => setServings(Math.max(1, servings - 1)) }, '−'), e('span', null, servings + (servings === 1 ? ' serving' : ' servings')), e('button', { type: 'button', 'aria-label': 'More servings', onClick: () => setServings(servings + 1) }, '+'))),
+      e('div', { className: 'food-recipe-columns' },
+        e('section', null, e('h3', { className: 'mini-head' }, 'Ingredients'),
+          e('ul', { className: 'food-ingredients' }, x.lines.map((l, i) => { const key = keyOf(l), name = e('span', null, l.ing.name, l.ing.optional && e('small', null, ' · optional'));
+            return e('li', { key: i, className: l.state === 'none' ? (l.ing.optional ? 'optional' : 'missing') : l.state === 'short' ? 'short' : 'have' },
+              e('i', { 'aria-hidden': true }), key ? e('button', { type: 'button', className: 'text-link', onClick: () => setDialog({ type: 'item-page', key }) }, name) : name,
+              e('b', null, l.ing.unit === 'a little' ? 'a little' : foodQty(l.needed, l.ing.unit)),
+              e('small', { className: 'food-ing-home' }, l.state === 'lasting' ? 'At home' : l.state === 'have' ? (l.kept.length ? 'At home · planned for ' + l.kept.map((m) => m.name).join(', ') : 'At home') : l.state === 'short' ? 'Only ' + foodQty(l.have, l.ing.unit) + ' at home' : 'Not at home')); })),
+          x.missing.length > 0 && e(Btn, { small: true, icon: 'plus', onClick: () => run((st) => addFoodToShopping(st, x.missing.map((l) => ({ name: l.ing.name, itemId: l.ing.itemId, quantity: l.state === 'short' ? Math.max(0, l.needed - l.have) : l.needed, unit: l.ing.unit }))), 'On your shopping list: ' + x.missing.map((l) => l.ing.name).join(', ')) }, 'Add what is missing to the shopping list')),
+        e('section', null, e('h3', { className: 'mini-head' }, 'Method'),
+          steps.length ? e('ol', { className: 'food-steps' }, steps.map((t, i) => e('li', { key: i }, t)))
+            : e('div', { className: 'food-empty-method' }, e('p', { className: 'muted' }, 'No method written yet.'), e(Btn, { small: true, onClick: () => setDialog({ type: 'recipe', id: r.id }) }, 'Write the method')),
+          r.notes && !isImportNote(r.notes) && e('p', { className: 'muted food-recipe-notes' }, r.notes))),
+      e('div', { className: 'inline-actions food-recipe-actions' },
+        e(Btn, { kind: 'primary', onClick: cook }, 'Cook it now'),
+        e(Btn, { onClick: () => setDialog({ type: 'meal', recipeId: r.id }) }, 'Plan it for a day'),
+        r.servings > 1 && e(Btn, { onClick: () => setDialog({ type: 'prep-plan', recipeId: r.id }) }, 'Cook as a batch'),
+        e(Btn, { onClick: () => setDialog({ type: 'recipe', id: r.id }) }, 'Edit'),
+        e(Btn, { onClick: () => setDialog({ type: 'copy-recipe', id: r.id }) }, 'Copy as a new recipe')),
+      (coming.length > 0 || eaten.length > 0) && e('section', { className: 'food-recipe-history' }, e('h3', { className: 'mini-head' }, 'When'),
+        coming.map((m) => e('button', { type: 'button', className: 'food-line-main', key: m.id, onClick: () => setDialog({ type: 'meal-detail', id: m.id }) }, e('strong', null, 'Planned · ' + foodShortDay(m.date) + ', ' + FOOD_SLOT_NAMES[m.slot || 'dinner'].toLowerCase()))),
+        eaten.slice(0, 6).map((m) => e('button', { type: 'button', className: 'food-line-main', key: m.id, onClick: () => setDialog({ type: 'meal-detail', id: m.id }) }, e('small', null, 'Eaten · ' + foodShortDay(m.date) + ', ' + FOOD_SLOT_NAMES[m.slot || 'dinner'].toLowerCase())))),
+      e(ErrorMessage, { error: err })),
+    e(DialogFooter, { onClose, label: 'Done' }));
+}
+function FoodCopyRecipe({ state: s, dialog: d, setDialog, commit, onClose }) {
+  const r = s.recipes.find((x) => x.id === d.id), [name, setName] = useState(r ? r.name + ' (my version)' : '');
+  return e(FormModal, { title: 'Copy as a new recipe', onClose, label: 'Make the copy', onSubmit: () => { const id = uid('recipe'); return commit((st) => copyRecipe(st, d.id, name, id), 'Copied · change it as you like').then(() => setDialog({ type: 'recipe', id })); } },
+    e('p', null, 'The copy starts with the same ingredients and method. Meals that follow “' + (r?.name || '') + '” keep the original.'), e(Input, { label: 'Name of the new recipe', value: name, onChange: setName, required: true }));
+}
+
+// A meal with no recipe: write how it is made, and it becomes a recipe to use again.
+function FoodWriteMethod({ state: s, dialog: d, setDialog, commit, onClose }) {
+  const meal = s.mealEntries.find((m) => m.id === d.id), [name, setName] = useState(meal?.name || ''), [minutes, setMinutes] = useState(''), [steps, setSteps] = useState('');
+  if (!meal) return null;
+  const parts = (meal.stock || []).map((x) => niceName(x.name) + (x.amount ? ' · ' + foodQty(x.amount, x.unit) : ''));
+  return e(FormModal, { title: 'Write how to make it', kicker: meal.name, onClose, wide: true, label: 'Save as a recipe', onSubmit: () => { const id = uid('recipe'); return commit((st) => mealToRecipe(st, meal.id, { id, name, steps, minutes }), 'Saved as a recipe · ready to use again').then(() => setDialog({ type: 'recipe-page', id })); } },
+    e('p', null, 'It becomes a recipe you can plan again, and “' + meal.name + '” follows it.'),
+    e('div', { className: 'form-grid' }, e(Input, { label: 'Recipe name', value: name, onChange: setName, required: true }), e(Input, { label: 'Time in minutes (optional)', type: 'number', min: 0, value: minutes, onChange: setMinutes })),
+    parts.length > 0 && e('div', null, e('h3', { className: 'mini-head' }, 'Ingredients, from this meal'), e('ul', { className: 'food-plain-list' }, parts.map((x, i) => e('li', { key: i }, x))), e('p', { className: 'muted' }, 'Amounts are for one serving. Change them, or add more, from Edit on the recipe.')),
+    e(Textarea, { label: 'How to make it', value: steps, onChange: setSteps, rows: 7, placeholder: 'One step per line:\nSlice the halloumi and fry it until golden\nToss the salad with the dressing\nPut the halloumi on top' }));
+}
+
+// ---- The meal card ----
+MealDetail = function foodMealDetail({ state: s, dialog: d, setDialog, commit, onClose }) {
+  const meal = s.mealEntries.find((x) => x.id === d.id), today = isoDate(new Date());
+  const [err, setErr] = useState(''), [left, setLeft] = useState('0'), [otherDay, setOtherDay] = useState(false), [date, setDate] = useState(() => (meal && meal.date <= today ? meal.date : today));
+  const [location, setLocation] = useState('Fridge'), [expiry, setExpiry] = useState(''), [frozen, setFrozen] = useState('0'), [sure, setSure] = useState(false);
+  if (!meal) return e(Modal, { title: 'Meal not found', onClose }, e('div', { className: 'dialog-body' }, e('p', null, 'This meal is no longer in the plan.')), e(DialogFooter, { onClose, label: 'Done' }));
+  const recipe = s.recipes.find((r) => r.id === meal.recipeId), batch = batchOf(s, meal), lots = preparedLots(s, meal.id), steps = foodSteps(recipe?.steps), prep = meal.kind === 'prep';
+  const run = (fn, msg) => commit(fn, msg).catch((x) => setErr(x.message)), planned = meal.status === 'planned';
+  const children = prep ? s.mealEntries.filter((x) => x.preparedFrom === meal.id && x.status !== 'skipped') : [];
+  const kept = [...meal.reservations.map((r) => ({ name: r.name, text: foodQty(r.amount, r.unit), id: r.sourceId, ok: true })), ...(meal.touches || []).map((t) => ({ name: t.name, text: 'a little', id: t.sourceId, ok: true })), ...meal.missing.map((x) => ({ name: x.name, text: foodQty(x.quantity, x.unit), ok: false }))];
+  const notes = meal.notes && !isImportNote(meal.notes) ? meal.notes : '';
+  const blocked = meal.waitingForPrep || batch && batch.status !== 'cooked';
+  return e(Modal, { title: meal.name, kicker: foodDay(meal.date) + ' · ' + (prep ? 'Batch to cook' : FOOD_SLOT_NAMES[meal.slot || 'dinner'] || 'Meal'), onClose, wide: true }, e('div', { className: 'dialog-body form-stack food-meal-detail' },
+    e('div', { className: 'food-recipe-status' }, e(Badge, { tone: meal.status === 'cooked' ? 'green' : meal.missing.length || blocked ? 'amber' : '' }, mealStatus(meal)), recipe && e(Btn, { small: true, onClick: () => setDialog({ type: 'recipe-page', id: recipe.id }) }, 'Open the recipe')),
+    notes && e('p', null, notes),
+    batch && e('div', { className: 'confirmation-box' }, e('strong', null, 'Uses the ' + batch.name.toLowerCase()), e('p', null, batch.status === 'cooked' ? 'Already cooked. This meal takes one of its portions.' : 'Cook it first (planned ' + foodShortDay(batch.date) + '); then this meal takes one of its portions.'), e(Btn, { small: true, onClick: () => setDialog({ type: 'meal-detail', id: batch.id }) }, batch.status === 'cooked' ? 'Open the batch' : 'Open the batch to cook it')),
+    e('div', { className: 'food-recipe-columns' },
+      e('section', null, e('h3', { className: 'mini-head' }, meal.status === 'cooked' ? 'What it used' : 'What is in it'),
+        kept.length ? e('ul', { className: 'food-ingredients' }, kept.map((x, i) => { const key = x.id ? entryKeyForRow(s, x.id) : '';
+          return e('li', { key: i, className: x.ok ? 'have' : 'missing' }, e('i', { 'aria-hidden': true }), key ? e('button', { type: 'button', className: 'text-link', onClick: () => setDialog({ type: 'item-page', key }) }, niceName(x.name)) : e('span', null, niceName(x.name)), e('b', null, x.text), e('small', { className: 'food-ing-home' }, x.ok ? (meal.status === 'cooked' ? 'Used' : 'At home, kept for this meal') : 'Not at home')); }))
+          : e('p', { className: 'muted' }, batch ? 'One portion of the batch.' : 'Nothing from your cupboard is linked yet.'),
+        planned && meal.missing.length > 0 && e('div', { className: 'inline-actions' }, e(Btn, { small: true, onClick: () => run((st) => missingToList(st, meal.id), 'What is missing is on a shopping list') }, 'Add what is missing to shopping'), e(Btn, { small: true, onClick: () => setDialog({ type: 'stock' }) }, 'I have it at home'), recipe && e(Btn, { small: true, onClick: () => setDialog({ type: 'recipe', id: recipe.id }) }, 'Change the recipe'))),
+      e('section', null, e('h3', { className: 'mini-head' }, 'How to make it'),
+        steps.length ? e('ol', { className: 'food-steps' }, steps.map((t, i) => e('li', { key: i }, t)))
+          : batch ? e('p', { className: 'muted' }, 'Warm a portion of the ' + batch.name.toLowerCase() + '.')
+            : e('div', { className: 'food-empty-method' }, e('p', { className: 'muted' }, recipe ? 'The recipe has no method written yet.' : 'No method written yet.'),
+              recipe ? e(Btn, { small: true, onClick: () => setDialog({ type: 'recipe', id: recipe.id }) }, 'Write the method')
+                : e('div', { className: 'inline-actions' }, e(Btn, { small: true, kind: 'primary', onClick: () => setDialog({ type: 'meal-to-recipe', id: meal.id }) }, 'Write how to make it'), planned && s.recipes.some((r) => !r.archived) && e(Btn, { small: true, onClick: () => setDialog({ type: 'meal', id: meal.id }) }, 'Use a recipe I have'))))),
+    planned && (prep ? e('section', { className: 'food-act' }, e('h3', { className: 'mini-head' }, 'When it is cooked'),
+      e('div', { className: 'form-grid' }, e(Input, { label: 'Cooked on', type: 'date', value: date, onChange: setDate, required: true }), e(Select, { label: 'Keep the portions in', value: location, onChange: setLocation, options: ['Fridge', 'Freezer'] })),
+      e('div', { className: 'form-grid' }, e(Input, { label: 'Use-by date on the box (optional)', type: 'date', value: expiry, onChange: setExpiry, min: date }), location === 'Fridge' && e(Input, { label: 'Portions to freeze instead', type: 'number', min: 0, max: meal.servings, step: 1, value: frozen, onChange: setFrozen })),
+      e(Btn, { kind: 'primary', icon: 'check', disabled: !!meal.missing.length, onClick: () => run((st) => prepareMeal(st, meal.id, { date, location, expiry, freezerServings: location === 'Fridge' ? Number(frozen) || 0 : 0 }), 'Cooked · ' + meal.servings + ' portions ready') }, 'I cooked this batch'),
+      meal.missing.length > 0 && e('p', { className: 'muted' }, 'Something is missing. Add it at home first, or change the recipe.'))
+      : e('section', { className: 'food-act' },
+        e('div', { className: 'inline-actions' }, e(Btn, { kind: 'primary', icon: 'check', disabled: !!blocked, onClick: () => run((st) => cookMeal(st, meal.id, Number(left) || 0, true, { date }), 'Eaten · taken out of your cupboard') }, otherDay ? 'I ate this on ' + prettyDate(date) : 'I ate this'),
+          !otherDay && e('button', { type: 'button', className: 'text-link', onClick: () => setOtherDay(true) }, meal.date < today ? 'Not on ' + prettyDate(meal.date) + '?' : 'Another day?')),
+        otherDay && e(Input, { label: 'The day you ate it', type: 'date', value: date, max: today, onChange: setDate }),
+        !meal.preparedFrom && meal.servings > 1 && e(Input, { label: 'Portions left for later', type: 'number', min: 0, max: meal.servings - 1, step: 1, value: left, onChange: setLeft }),
+        blocked && e('p', { className: 'muted' }, 'Cook the batch first, then mark this eaten.'))),
+    planned && e('div', { className: 'inline-actions food-more' },
+      e(Btn, { onClick: () => setDialog({ type: prep ? 'prep-plan' : 'meal', id: meal.id }) }, prep ? 'Change the batch' : 'Change day or what is in it'),
+      meal.recipeId && e(Btn, { onClick: () => run((st) => refreshMeal(st, meal.id), 'Checked against what is at home') }, 'Check the cupboard again'),
+      e(Btn, { onClick: () => run((st) => skipWorkflowMeal(st, meal.id), prep ? 'Skipped, with its meals · food is free again' : 'Skipped · its food is free again') }, prep ? 'Skip the batch and its meals' : 'Skip'),
+      !prep && (sure ? e(Btn, { kind: 'danger', onClick: () => run((st) => ({ ...st, mealEntries: st.mealEntries.filter((x) => x.id !== meal.id) }), 'Taken off the plan') }, 'Take it off the plan for good') : e(Btn, { kind: 'danger', onClick: () => setSure(true) }, 'Remove'))),
+    prep && children.length > 0 && e('section', null, e('h3', { className: 'mini-head' }, 'Meals from this batch'), children.map((c) => e('button', { type: 'button', className: 'food-line-main', key: c.id, onClick: () => setDialog({ type: 'meal-detail', id: c.id }) }, e('strong', null, c.name), e('small', null, foodShortDay(c.date) + ' · ' + mealStatus(c))))),
+    lots.length > 0 && e('section', { className: 'prepared-summary' }, e('h3', null, 'Cooked portions'), lots.map((l) => e('div', { className: 'summary-line', key: l.id }, e('span', null, l.location + (l.expiry ? ' · use by ' + prettyDate(l.expiry) : '')), e('b', null, foodQty(l.remaining, l.unit === 'serving' ? 'portion' : l.unit) + ' left'))), meal.prepOnly && e(Btn, { onClick: () => setDialog({ type: 'prepared-meal', batchId: meal.id }) }, 'Plan a meal from this batch')),
+    meal.status === 'cooked' && e(Btn, { onClick: () => run((st) => uneatMeal(st, meal.id), 'Undone · back in your cupboard') }, meal.prepOnly ? 'Not cooked after all' : 'Not eaten after all'),
+    meal.status === 'skipped' && e('div', { className: 'inline-actions' }, e(Btn, { onClick: () => run((st) => planMeal({ ...st, mealEntries: st.mealEntries.map((x) => (x.id === meal.id ? { ...x, status: 'planned' } : x)) }, { ...meal, status: 'planned' }), 'Back on the plan') }, 'Put it back on the plan'), e(Btn, { kind: 'danger', onClick: () => run((st) => ({ ...st, mealEntries: st.mealEntries.filter((x) => x.id !== meal.id) }), 'Taken off the plan') }, 'Remove from the plan')),
+    e(ErrorMessage, { error: err })), e(DialogFooter, { onClose, label: 'Done' }));
+};
+
+// ---- Week, Recipes, Batches ----
+function FoodWeek(p) {
+  const s = p.state, m = p.selectedMonth, weeks = getWeeks(m), target = s.mealEntries.find((x) => x.id === p.route?.meal)?.date || isoDate(new Date());
+  const find = () => Math.max(0, weeks.findIndex((w) => w.some((d) => d.date === target)));
+  const [week, setWeek] = useState(find); useEffect(() => setWeek(find()), [m, target]);
+  const days = weeks[Math.min(week, weeks.length - 1)], dates = new Set(days.map((d) => d.date));
+  const missing = s.mealEntries.filter((x) => x.status === 'planned' && dates.has(x.date) && x.missing?.length);
+  return e(React.Fragment, null, e(FoodPlanPanel, p),
+    e('div', { className: 'week-toolbar' }, e(Btn, { disabled: week === 0, onClick: () => setWeek(week - 1) }, '← Previous'), e('strong', null, prettyDate(days[0].date) + ' — ' + prettyDate(days[6].date)), e(Btn, { disabled: week === weeks.length - 1, onClick: () => setWeek(week + 1) }, 'Next →'), e(Btn, { onClick: () => p.setDialog({ type: 'copy-week', dates: days.map((d) => d.date) }) }, 'Copy week')),
+    missing.length > 0 && e('div', { className: 'surface food-line food-week-missing' }, e('div', null, e('strong', null, (() => { const n = missing.reduce((t, x) => t + x.missing.length, 0); return 'This week’s meals need ' + n + (n === 1 ? ' more thing' : ' more things'); })()), e('small', null, missing.map((x) => x.name + ': ' + x.missing.map((i) => i.name).join(', ')).join(' · '))), e(Btn, { small: true, kind: 'primary', onClick: () => p.commit((st) => addFoodToShopping(st, missing.flatMap((x) => x.missing.map((i) => ({ name: i.name, itemId: i.itemId, quantity: i.quantity, unit: i.unit })))), 'On your shopping list').catch(() => {}) }, 'Add them to the shopping list')),
+    e('div', { className: 'meal-week' }, days.map((day) => e(MealDay, { key: day.date, state: s, day, setDialog: p.setDialog }))), e(CupboardStarters, { state: s, month: m, setDialog: p.setDialog }));
+}
+function FoodRecipes(p) {
+  const s = p.state, [query, setQuery] = useState(''), [show, setShow] = useState('all');
+  const ranked = useMemo(() => rankRecipes(s, {}), [s]), q = query.trim().toLowerCase();
+  const shown = ranked.filter((x) => (!q || matchesWords([x.recipe.name, ...x.recipe.ingredients.map((i) => i.name)].join(' ').toLowerCase(), q)) && (show === 'all' || show === 'ready' && x.ready || show === 'one' && x.missing.length === 1 || show === 'quick' && Number(x.recipe.minutes) > 0 && Number(x.recipe.minutes) <= 20));
+  const run = (fn, msg) => p.commit(fn, msg).catch(() => {});
+  const cookNow = (x) => foodCookNow(p, x.recipe, x.recipe.servings);
+  return e(React.Fragment, null,
+    e('div', { className: 'surface food-recipe-tools' }, e(Input, { label: 'Find a recipe or an ingredient', type: 'search', value: query, onChange: setQuery, placeholder: 'Tomato, salmon, pasta…' }), e(Segment, { label: 'Show', value: show, onChange: setShow, options: [['all', 'All ' + ranked.length], ['ready', 'Can make now'], ['one', 'Missing one thing'], ['quick', '20 minutes or less']] })),
+    e('div', { className: 'food-recipe-grid' }, shown.map((x) => e(FoodRecipeCard, { key: x.recipe.id, x, state: s, setDialog: p.setDialog, onCook: () => cookNow(x), run }))),
+    !shown.length && e(Empty, { icon: 'leaf', title: ranked.length ? 'No recipe matches' : 'No recipes yet', action: e(Btn, { kind: 'primary', onClick: () => p.setDialog({ type: 'recipe' }) }, 'Add a recipe') }, ranked.length ? 'Try another word or another filter.' : 'Add one, or open a meal and choose “Write how to make it”.'));
+}
+function FoodBatches(p) {
+  const s = p.state, batches = s.mealEntries.filter((m) => m.kind === 'prep' && m.status !== 'skipped').sort((a, b) => a.date.localeCompare(b.date));
+  return e(React.Fragment, null, e('p', { className: 'muted food-intro' }, 'Cook once, eat several times: a batch uses its ingredients once and makes portions for the meals planned from it.'),
+    e('div', { className: 'workflow-tools' }, e(Btn, { onClick: () => p.setDialog({ type: 'prepared-meal' }) }, 'Plan a meal from a batch')),
+    e('div', { className: 'prep-grid' }, batches.map((m) => { const lots = preparedLots(s, m.id), used = s.mealEntries.filter((x) => x.preparedFrom === m.id && x.status !== 'skipped');
+      return e('article', { className: 'surface prep-card', key: m.id }, e('h2', null, m.name), e('p', null, foodShortDay(m.date) + ' · ' + m.servings + ' portions · ' + mealStatus(m)), lots.map((l) => e('p', { key: l.id }, foodQty(l.remaining, 'portion') + ' in the ' + String(l.location).toLowerCase())), e('ul', null, used.map((x) => e('li', { key: x.id }, foodShortDay(x.date) + ' · ' + x.name + ' · ' + mealStatus(x)))), e(Btn, { kind: 'primary', onClick: () => p.setDialog({ type: 'meal-detail', id: m.id }) }, 'Open batch')); })),
+    !batches.length && e(Empty, { icon: 'leaf', title: 'No batches planned', action: e(Btn, { kind: 'primary', onClick: () => p.setDialog({ type: 'prep-plan' }) }, 'Plan a batch') }, 'Choose a recipe that makes several portions.'));
+}
+
+// ---- A food's page: the recipes that use it ----
+function FoodRecipesUsing({ state: s, g, setDialog }) {
+  const list = recipesUsing(s, g); if (!list.length) return null;
+  return e('section', { className: 'food-uses' }, e('h3', { className: 'mini-head' }, 'Recipes with it'), e('div', { className: 'food-uses-list' }, list.map((r) => e('button', { type: 'button', key: r.id, className: 'food-chip-button', onClick: () => setDialog({ type: 'recipe-page', id: r.id }) }, r.name))));
+}
+
+// ---- Food & supplies: finished, with or without a day ----
+function FoodFinish({ state: s, dialog: d, commit, onClose }) {
+  const today = isoDate(new Date()), rows = stockRows(s).filter((r) => d.ids.includes(r.id) && r.remaining > 0 && r.tracking !== 'durable');
+  const [when, setWhen] = useState(d.when || 'unknown'), [date, setDate] = useState(today), [action, setAction] = useState('finish');
+  const meals = mealsUsingStock(s, rows.map((r) => r.id)), names = [...new Set(rows.map((r) => niceName(r.name)))];
+  if (!rows.length) return e(Modal, { title: 'Nothing to finish', onClose }, e('div', { className: 'dialog-body' }, e('p', null, 'None of these are still at home.')), e(DialogFooter, { onClose, label: 'Done' }));
+  return e(FormModal, { title: names.length === 1 ? names[0] + ' is gone' : names.length + ' things are gone', onClose, label: action === 'waste' ? 'Record as thrown away' : 'Mark finished', onSubmit: () => commit((st) => finishStock(st, rows.map((r) => r.id), { date: when === 'day' ? date : today, undated: when === 'unknown', action }), (names.length === 1 ? names[0] : names.length + ' things') + (action === 'waste' ? ' recorded as thrown away' : ' marked finished') + (when === 'unknown' ? ' · date not known' : '')) },
+    names.length > 1 && e('ul', { className: 'food-plain-list' }, names.map((n) => e('li', { key: n }, n))),
+    e(Segment, { label: 'What happened', value: action, onChange: setAction, options: [['finish', 'Used up'], ['waste', 'Thrown away']] }),
+    e('fieldset', { className: 'food-when' }, e('legend', { className: 'mini-head' }, 'When'),
+      [['unknown', 'I don’t know', 'It stays out of the day-by-day history.'], ['today', 'Today', ''], ['day', 'On a day', '']].map(([k, label, hint]) => e('label', { key: k, className: 'radio-label' }, e('input', { type: 'radio', name: 'food-when', checked: when === k, onChange: () => setWhen(k) }), e('span', null, label, hint && e('small', null, ' · ' + hint)))),
+      when === 'day' && e(Input, { label: 'The day', type: 'date', value: date, max: today, onChange: setDate, required: true })),
+    meals.length > 0 && e('p', { className: 'confirmation-box' }, 'Planned with it: ' + meals.map((m) => m.name + ' (' + foodShortDay(m.date) + ')').join(', ') + '. ' + (meals.length === 1 ? 'That meal' : 'Those meals') + ' will say what they now need.'));
+}
+
+// What's left, as rows by place: the fridge first, what to eat soon first inside each place.
+// Tick several and mark them finished at once. The cards view is kept as a choice.
+const foodBaseRemainingStock = RemainingStock;
+RemainingStock = function foodRemainingStock(p) {
+  const [layout, setLayout] = useLocalPref('everyday_left_layout', 'list');
+  const toggle = e('div', { className: 'food-layout-toggle' }, e(Segment, { label: 'Layout', value: layout, onChange: setLayout, options: [['list', 'List by place'], ['cards', 'Cards']] }));
+  return layout === 'cards' ? e(React.Fragment, null, toggle, e(foodBaseRemainingStock, p)) : e(FoodAtHome, { ...p, toggle });
+};
+const FOOD_PLACE_ORDER = ['Fridge', 'Freezer', 'Fruit bowl', 'Bread bin', 'Cupboard / pantry', 'Kitchen'];
+function FoodAtHome(p) {
+  const { state: s, setDialog, toggle } = p, today = isoDate(new Date()), [query, setQuery] = useState(''), [place, setPlace] = useState('all'), [picking, setPicking] = useState(false), [picked, setPicked] = useState(() => new Set());
+  const all = remainingStockGroups(s), q = query.trim().toLowerCase();
+  const shown = all.filter((g) => (place === 'all' || g.location === place) && (!q || [entryName(g), ...g.rows.map((r) => r.name)].some((n) => n.toLowerCase().includes(q))));
+  const places = [...new Set(all.map((g) => g.location))].sort((a, b) => (FOOD_PLACE_ORDER.indexOf(a) + 1 || 99) - (FOOD_PLACE_ORDER.indexOf(b) + 1 || 99) || a.localeCompare(b));
+  const soonOf = (g) => g.rows.map((r) => useSoon(s, r, today)).filter(Boolean).sort((a, b) => b.rank - a.rank)[0] || null;
+  const groups = places.map((pl) => ({ place: pl, list: shown.filter((g) => g.location === pl).map((g) => ({ g, soon: soonOf(g) })).sort((a, b) => (b.soon?.rank || 0) - (a.soon?.rank || 0) || entryName(a.g).localeCompare(entryName(b.g))) })).filter((x) => x.list.length);
+  const ids = (g) => g.rows.map((r) => r.id), toggleOne = (g) => setPicked((old) => { const next = new Set(old); const k = g.key; next.has(k) ? next.delete(k) : next.add(k); return next; });
+  const pickedIds = all.filter((g) => picked.has(g.key)).flatMap(ids), done = () => { setPicking(false); setPicked(new Set()); };
+  const finish = (when) => setDialog({ type: 'finish-stock', ids: pickedIds, when });
+  return e(React.Fragment, null,
+    e('section', { className: 'surface food-home-tools' },
+      e('div', { className: 'food-home-row' }, e(Input, { label: 'Find something at home', type: 'search', value: query, onChange: setQuery, placeholder: 'Chicken, milk, apples…' }), toggle),
+      e('div', { className: 'food-home-row' }, e(Segment, { label: 'Place', value: place, onChange: setPlace, options: [['all', 'Everywhere'], ...places.map((x) => [x, x])] }),
+        e(Btn, { small: true, kind: picking ? 'primary' : '', onClick: () => (picking ? done() : setPicking(true)) }, picking ? 'Done choosing' : 'Choose several'))),
+    picking && e('div', { className: 'food-pick-bar', role: 'region', 'aria-label': 'Chosen things' }, e('strong', null, picked.size ? picked.size + ' chosen' : 'Tick what is gone'),
+      e('div', { className: 'inline-actions' }, e(Btn, { small: true, kind: 'primary', disabled: !picked.size, onClick: () => finish('unknown') }, 'Finished · date not known'), e(Btn, { small: true, disabled: !picked.size, onClick: () => finish('today') }, 'Finished today'), e(Btn, { small: true, disabled: !picked.size, onClick: () => finish('day') }, 'Another day…'), e('button', { type: 'button', className: 'text-link', onClick: done }, 'Cancel'))),
+    e('p', { className: 'muted' }, shown.length + (shown.length === 1 ? ' thing' : ' things') + ' at home' + (place === 'all' ? '' : ' in ' + place.toLowerCase())),
+    groups.map(({ place: pl, list }) => e('section', { className: 'surface food-place', key: pl }, e('h3', { className: 'food-group-head' }, pl, e('span', null, list.length)),
+      list.map(({ g, soon }) => { const reserved = g.rows.reduce((n, r) => n + reservedAmount(s, r.id), 0), purchase = stockPurchase(s, g.rows[0]), level = g.tracking === 'level', kept = g.tracking === 'durable', on = picked.has(g.key);
+        const amount = g.rows.some((r) => r.amountUnmeasured) ? 'Opened · amount not measured' : level ? g.rows.map((r) => LASTING_LABEL[lastingInfo(r).state]).join(' · ') : foodQty(g.left, g.unit) + (kept ? ' kept' : '');
+        return e('div', { className: 'food-home-line' + (on ? ' picked' : ''), key: g.key },
+          picking && !kept && e('input', { type: 'checkbox', checked: on, onChange: () => toggleOne(g), 'aria-label': 'Choose ' + entryName(g) }),
+          e('button', { type: 'button', className: 'food-line-main', onClick: () => (picking && !kept ? toggleOne(g) : setDialog({ type: 'item-page', key: g.entryKey })) }, e(Art, { file: entryArt(s, g), className: 'food-home-art' }),
+            e('span', null, e('strong', null, entryName(g)), e('small', null, [amount, soon ? soonText(soon) : purchase.date ? 'bought ' + prettyDate(purchase.date) : '', reserved > 0 ? foodQty(reserved, g.unit) + ' planned for a meal' : ''].filter(Boolean).join(' · ')))),
+          !picking && !kept && e('div', { className: 'inline-actions' }, e(Btn, { small: true, onClick: () => setDialog(level ? { type: 'stock-group', ids: ids(g), name: entryName(g) } : { type: 'use-stock', ids: ids(g) }) }, level ? 'Update' : 'Use some'), e(Btn, { small: true, onClick: () => setDialog({ type: 'finish-stock', ids: ids(g) }) }, 'Finished')));
+      }))),
+    !shown.length && e('p', { className: 'empty-copy' }, q ? 'Nothing at home matches “' + query + '”.' : 'Nothing recorded here. Choose another place, or add stock.'));
+}
 
 ReactDOM.createRoot(document.getElementById("root")).render(e(PlannerErrorBoundary,null,e(App)));</script></body></html>
