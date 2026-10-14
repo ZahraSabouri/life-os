@@ -219,6 +219,63 @@ Brief: `briefs/stage-2d-everything-hers.md`. Session note: `sessions/2026-10-13-
 - [ ] Not yet: people (add, change) from the main app; notices when Life OS itself is not running (it would have to start with Windows); keeping a job's files inside JobMap's backup file.
 - [x] **Fault of 13 October, fixed:** after a restart Life OS could answer while Budget and JobMap did not load. The launcher now waits for the old server to go, and Life OS starts either one again by itself within about 15 seconds if it stops answering.
 
+## O. A product for customers, a Guide to use, and a life in it (13 October evening)
+> "I still have these problems with these prewritten things that you put in the app … That's not what we want the customer, or user of this web app, see. I'm not the customer. I'm developing this with you for another audience."
+> "instead of putting all chapters in this long text, I want them to be in different parts. And I want them to be more thorough and more deep and more functional. They are just, like, pretty appearances. I want them to have functionality, to be able to use them. And I want you to absolutely show the shit out of how these are being used."
+> "connecting the directory of jobs to the job map in a way that it shows main CV or, like, previous applications."
+> "I'm seeing this my name in Job app as a sort of, like, person account … we're not doing account/user management just for now. So I need you to remove that from there."
+> "each of these mini apps look like a separate app style … do more things to make Cardiff Live, Budget app, Job map, and Study Hub to look like they are parts of LifeOS and not a separate app."
+> "We want journaling in it. I cannot see anywhere I can do journaling. I want to be able to upload pictures. I want to be able to write down notes. I want to be able to add people's birthdays or different things to the calendar … Tell me if I can. … I don't want you to add things if they already exist."
+> "these entities as people, we want to add people, exactly. And then later we are maybe gonna make this socializing part later, not now … but you have to develop everything to be, I mean, for us to be able to work on them later."
+> "do all other things that you named that are not done yet, and then commit what code has uncommitted as well." · "i also want you to commit changes as me, not as me and claude" · "document these and go on"
+
+What existed and what did not (checked in the documents and the code before building): notes existed (the add line, the Ledger); events on the calendar existed (Calendar → "Add a Life OS event"); journaling, uploading pictures, and adding a person or a birthday did not.
+
+- [x] **Journal** (top bar): a page for a day with words, a mood and pictures; pages by month, found by words, changed, removed; every picture in one view. A journal page is kept off the calendar's things to do.
+- [x] **Pictures** on a journal page: JPEG, PNG, WebP or GIF, 8 MB each, checked by their first bytes, kept in the core's data folder (outside git), removed with their page.
+- [x] **People** (top bar): add with only a name; birthday, how she knows them, how to reach them, notes; change, remove; birthdays in the next two months. A birthday is on the calendar every year.
+- [x] **Ready for a later social layer:** `person_identities` (person, provider, external id) waits beside `people`; nothing writes to it.
+- [x] **Words for customers:** no name in the Court's greeting (it said "Xar" in code, in four places); the dead "Search ⌘K" button is gone; the Court's menu in Madder, Indigo and Paper has every page and app; maintenance notes are out of the Guide ("Retake the pictures" shows only at `/guide?maintain`).
+- [x] **The Guide in parts** (14 October): a first page with a search and 25 "How do I…?" answers (each with its steps, its pictures and a button that goes to the place), the 17 parts in groups, a page for each part with before and next and "Mark as read", clickable diagrams; 82 steps, 76 pictures (19 with numbered circles). Every page of the four apps inside has a step.
+- [ ] The Guide's pictures come from this installation's own records. A product needs them taken from example data.
+- [x] JobMap: the account block with her name is gone, and Preferences no longer describes one person's CV.
+- [x] **JobMap → My documents**: connect the folder of CVs and applications (read only, never outside it), choose the main CV, look through the folder; "Previous applications" lists every job applied for or with files, a folder or a CV kept; on a job, "Keep a copy of my main CV with this job". Connected to `C:\Users\ctrlz\Documents\Apply`, main CV `CV/!newJob_CV_Zahra_UK.pdf` (her to confirm or change).
+- [x] **The four apps look like sections of Life OS** inside it: no brand of their own, one menu style, page titles in Life OS's display face and size, Cardiff Life's pages as a row of views. Opened by themselves they keep their own look. (A first pass: their inner cards and forms still differ.)
+- [x] **Life OS starts when she signs in to Windows** (on; "Do not start with Windows.cmd" turns it off), so the notices come after a restart. The computer had restarted on the morning of 14 October and Life OS was not running until then.
+- [x] **JobMap's backup carries the files kept with jobs** (up to 60 MB; any left out are named) and a restore puts them back.
+- [x] The Guide's remaining pages (see above).
+- [x] Every commit from 13 October evening is under her name alone. Codex's waiting notes and instructions committed at her request (14 October).
+- [ ] Still not in the app: yearly dates that are not birthdays (an anniversary); a plan tied to a person; pictures on other kinds of entry; a place for "memories" by place.
+
+## P. What a product for customers still needs (listed 13 October, none begun)
+**Product**
+- [ ] Accounts and sign-in, with each person's data kept apart (her decision: not now).
+- [ ] A first-run setup with example data; the Guide's pictures taken from it.
+- [ ] One search across everything; a settings page (name, week start, which notices).
+- [ ] Calendar import and export (ICS, a Google Calendar connector); yearly dates such as anniversaries.
+
+**DevOps**
+- [ ] A backup off this laptop, nightly, with a restore test (also in section G: "the one item that matters this month").
+- [x] Life OS starting with Windows (14 October).
+- [ ] One command that builds every part; every test suite run automatically on a test database (see G: `hosting/app.test.mjs` must not run on the real one).
+- [ ] A remote to push to; the long-lived branch merged; releases and a changelog.
+- [ ] A health page and an error log.
+
+**Cache and speed**
+- [ ] The main app is one file of over 700 KB: split it per page.
+- [ ] JobMap's whole list (5 MB) is read again for the day, the calendar and the review: reuse answers until a revision changes.
+- [ ] Journal pictures are shown at full size: make thumbnails on upload.
+- [ ] An offline cache once it is an installable app.
+
+**UI and UX**
+- [ ] One shared set of components for the four apps inside: the first pass is done (brand, menu, titles); cards, forms and buttons inside each app still differ.
+- [ ] Phone widths for every page; a keyboard and screen-reader pass; a contrast check in Madder.
+- [ ] Empty and loading states everywhere; right-to-left text for Persian.
+- [ ] The top bar is full (fourteen entries): group them.
+
+**Security**
+- [ ] One fixed access key, answering this computer only. Real sign-in and HTTPS before anyone else uses it.
+
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
 > "when you click on [Life OS] … Click on the name above. It should, like directly direct to the main page, main URL. And if you click on a specific job role … on the today page … I should be able to kind of be directed to the same component … in the job map app." (12 October evening)

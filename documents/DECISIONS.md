@@ -4,6 +4,17 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 14 October 2026 — a product for customers (stage 2e)
+
+- **The app speaks to the person using it, never to the people building it** (Xar, 13 October: "I'm not the customer. I'm developing this with you for another audience"). No one's name in the code (the Court greeted "Xar"), no notes about how pages are maintained, no control that does nothing. Maintenance tools stay out of a user's pages: retaking the Guide's pictures is at `/guide?maintain`.
+- **No accounts yet, by her choice; records are ready for them.** `person_identities` waits beside `people` for tying a person to a real account in a later social layer.
+- **A journal page is an entry of the kind "journal"**, dated to its day and kept off the calendar's things to do. Its pictures are files in the core's data folder (outside git), checked by their first bytes, and removed with their entry.
+- **People are a table of the core, not entries**, as the database already had them; a birthday comes on the calendar every year from there.
+- **The four apps take Life OS's look through the shared skin, only when shown inside Life OS** (`html[data-life-os-frame]` in `hosting/skins/public/shared.css`); their own code is not changed for it.
+- **JobMap reads a documents folder she connects and never writes into it**; a file from it is copied onto a job only when she asks. The main CV is a path inside that folder.
+- **Life OS starts with Windows through one file in the user's Startup folder** (`launch.mjs --start-with-windows on|off`), so the notices outlive a restart.
+- **Commits are hers alone** (Xar, 13 October: "commit changes as me, not as me and claude").
+
 ## 13 October 2026 — everything hers (stage 2d)
 
 - **What she adds by hand is kept by the part it belongs to.** An event of her own in Cardiff Life is kept in Life OS (one setting, `cardiff-own-events`), beside the researched `events.csv` that her agents write, and is drawn by the same page. JobMap keeps her categories, folder and links as three more fields of its own job record, through its own save route, in both copies.
