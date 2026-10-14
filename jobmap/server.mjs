@@ -22,7 +22,7 @@ async function connected(){connecting??=ensureWorkspaceService(connection).final
 const publicRoot=path.join(root,'dist/client');
 const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Cross-Origin-Resource-Policy':'same-origin'};
 function json(res,data,status=200){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8',...headers});res.end(JSON.stringify(data));}
-async function body(req){let data='';for await(const c of req){data+=c;if(Buffer.byteLength(data)>15*1024*1024){const e=new Error('File is too large.');e.status=413;throw e;}}try{return JSON.parse(data)}catch{throw new Error('Invalid JSON.');}}
+async function body(req,limit=15*1024*1024){let data='';for await(const c of req){data+=c;if(Buffer.byteLength(data)>limit){const e=new Error('File is too large.');e.status=413;throw e;}}try{return JSON.parse(data)}catch{throw new Error('Invalid JSON.');}}
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.ico':'image/x-icon','.json':'application/json','.txt':'text/plain; charset=utf-8','.woff2':'font/woff2'};
 const server=http.createServer(async(req,res)=>{
  try{
@@ -38,7 +38,7 @@ const server=http.createServer(async(req,res)=>{
   if(url.pathname==='/api/stop'&&req.method==='POST'){await body(req);json(res,{stopped:true});server.close(()=>process.exit(0));return;}
   if(connection.proxy&&url.pathname.startsWith('/api/')){
    await connected();
-   const forwarded=await fetch(connection.apiOrigin+url.pathname+url.search,{method:req.method,headers:{'Content-Type':'application/json','X-JobMap-Client':'workspace-v1','Origin':connection.apiOrigin},...(!['GET','HEAD'].includes(req.method)?{body:JSON.stringify(await body(req))}:{}),signal:AbortSignal.timeout(15000)});
+   const forwarded=await fetch(connection.apiOrigin+url.pathname+url.search,{method:req.method,headers:{'Content-Type':'application/json','X-JobMap-Client':'workspace-v1','Origin':connection.apiOrigin},...(!['GET','HEAD'].includes(req.method)?{body:JSON.stringify(await body(req,url.pathname==='/api/restore'?90*1024*1024:15*1024*1024))}:{}),signal:AbortSignal.timeout(url.pathname==='/api/restore'||url.pathname==='/api/backup'?120000:15000)});
    const content=Buffer.from(await forwarded.arrayBuffer());
    res.writeHead(forwarded.status,{...headers,'Content-Type':forwarded.headers.get('content-type')||'application/json',...(forwarded.headers.has('content-disposition')?{'Content-Disposition':forwarded.headers.get('content-disposition')}:{})});
    res.end(req.method==='HEAD'?undefined:content);return;
@@ -59,8 +59,8 @@ const server=http.createServer(async(req,res)=>{
   if(url.pathname==='/api/preferences'&&req.method==='PUT'){const b=await body(req);json(res,await store.preferences(b.preferences,b.revision));return;}
   if(url.pathname==='/api/jobs'&&req.method==='POST'){const b=await body(req);json(res,await store.add(b.job,b.revision),201);return;}
   if(url.pathname.startsWith('/api/jobs/')&&req.method==='PATCH'){const b=await body(req);json(res,await store.patch(decodeURIComponent(url.pathname.slice(10)),b.patch,b.revision));return;}
-  if(url.pathname==='/api/backup'&&req.method==='GET'){res.setHeader('Content-Disposition',`attachment; filename="JobMap-backup-${new Date().toISOString().slice(0,10)}.json"`);json(res,store.export());return;}
-  if(url.pathname==='/api/restore'&&req.method==='POST'){const b=await body(req);json(res,await store.restore(b.backup,b.revision));return;}
+  if(url.pathname==='/api/backup'&&req.method==='GET'){res.setHeader('Content-Disposition',`attachment; filename="JobMap-backup-${new Date().toISOString().slice(0,10)}.json"`);json(res,await files.withFiles(store.export(),store.jobs()));return;}
+  if(url.pathname==='/api/restore'&&req.method==='POST'){const b=await body(req,90*1024*1024);const result=await store.restore(b.backup,b.revision);await files.putBack(b.backup,result.jobs);json(res,result);return;}
   // Her documents folder: what is in it, and which folder and main CV she chose.
   if(url.pathname==='/api/documents'&&req.method==='GET'){const documents=store.state.documents||{root:'',mainCv:''};let listing=null,problem='';if(documents.root){try{listing=await listDocuments(documents.root,url.searchParams.get('dir')||'');}catch(error){problem=error.message;}}json(res,{documents,listing,problem,revision:store.state.revision});return;}
   if(url.pathname==='/api/documents'&&req.method==='PUT'){const b=await body(req);json(res,await store.documents(b.documents,b.revision));return;}

@@ -36,6 +36,24 @@ export class JobFiles{
   await writeFile(path.join(this.folder(jobId),id),content,{flag:'wx'});
   return {id,name,size:content.byteLength,type:this.typeOf(name),addedAt:new Date().toISOString()};
  }
+ // The backup carries the files kept with jobs, up to `limit` bytes in all; any left out are named.
+ async withFiles(exported,jobs,limit=60*1024*1024){
+  const copies=[],leftOut=[];let total=0;
+  for(const job of jobs)for(const file of job.files||[]){
+   if(total+file.size>limit){leftOut.push(`${job.role} · ${file.name}`);continue;}
+   try{copies.push({jobId:job.id,id:file.id,data:(await this.read(job.id,file.id)).toString('base64')});total+=file.size;}catch{leftOut.push(`${job.role} · ${file.name} (missing)`);}
+  }
+  return {...exported,files:copies,...(leftOut.length?{filesLeftOut:leftOut}:{})};
+ }
+ // After a restore: each file the restored jobs name, written back from the backup.
+ async putBack(backup,jobs){
+  const named=new Set(jobs.flatMap(job=>(job.files||[]).map(file=>`${job.id}\0${file.id}`)));let written=0;
+  for(const copy of Array.isArray(backup?.files)?backup.files:[]){
+   if(!copy||typeof copy.jobId!=='string'||!isId(copy.id)||typeof copy.data!=='string'||!named.has(`${copy.jobId}\0${copy.id}`)||!/^[A-Za-z0-9+/]*={0,2}$/.test(copy.data))continue;
+   await mkdir(this.folder(copy.jobId),{recursive:true});await writeFile(path.join(this.folder(copy.jobId),copy.id),Buffer.from(copy.data,'base64'));written+=1;
+  }
+  return written;
+ }
  read(jobId,id){if(!isId(id))throw refuse(404,'File not found.');return readFile(path.join(this.folder(jobId),id));}
  async remove(jobId,id){if(!isId(id))return;await unlink(path.join(this.folder(jobId),id)).catch(error=>{if(error.code!=='ENOENT')throw error;});}
 }

@@ -81,4 +81,12 @@ assert(selectJobs(base,{scope:'parttime'}).every(x=>!x.match.early&&!x.match.unp
  assert.deepEqual([validDocuments({root:docs,mainCv:'CV_Example.pdf'}),validDocuments({root:'relative/folder',mainCv:''}),validDocuments({root:'',mainCv:''}),validDocuments({root:docs,mainCv:'',extra:1}),validDocuments(undefined)],[true,false,true,false,true]);
  const mine=await new Store(base,kept).init();const saved=await mine.documents({root:'"'+docs+'"',mainCv:'CV_Example.pdf'},0);assert.deepEqual(saved.documents,{root:docs,mainCv:'CV_Example.pdf'});await assert.rejects(mine.documents({root:'not/absolute',mainCv:''},1));
  assert.deepEqual((await new Store(base,kept).init()).state.documents,{root:docs,mainCv:'CV_Example.pdf'});}
+// The backup carries the files kept with jobs; a restore puts them back.
+{const kept=await mkdtemp(fileURLToPath(new URL('../data/test-workspace-',import.meta.url)));const mine=await new Store(base,kept).init();const files=new JobFiles(path.join(kept,'files'));
+ const words=Buffer.from('The CV I sent.');const meta=await files.save('SF-333ZL',{name:'CV.pdf',data:words.toString('base64')});await mine.attach('SF-333ZL',meta,0);
+ const backup=await files.withFiles(mine.export(),mine.jobs());assert.deepEqual([backup.files.length,backup.files[0].jobId,Buffer.from(backup.files[0].data,'base64').equals(words),'filesLeftOut' in backup],[1,'SF-333ZL',true,false]);
+ const small=await files.withFiles(mine.export(),mine.jobs(),3);assert.deepEqual([small.files.length,small.filesLeftOut.length],[0,1]);
+ await files.remove('SF-333ZL',meta.id);await assert.rejects(files.read('SF-333ZL',meta.id));
+ const restored=await mine.restore(backup,1);assert.equal(await files.putBack(backup,restored.jobs),1);assert.deepEqual(await files.read('SF-333ZL',meta.id),words);
+ assert.equal(await files.putBack({files:[{jobId:'SF-333ZL',id:'../../escape',data:'QQ=='},{jobId:'NOT-NAMED',id:meta.id,data:'QQ=='}]},restored.jobs),0);}
 console.log(JSON.stringify({result:'PASS',records:980,studentFutures:772,links:963,persistence:'restart, backup restore, invalid restore, conflict protection',matching:'skills, location, hours, missing core language, graduate, unpaid, date gates',testDirectory:directory}));
