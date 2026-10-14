@@ -29,7 +29,29 @@ function openBrowser() {
   child.unref()
 }
 
+// Starting with Windows: a small file in the user's Startup folder that runs this launcher,
+// without a window, when they sign in. Then Life OS (and its notices) is there without being
+// opened by hand. "off" removes the file; nothing else is changed.
+const startupFile = () => path.join(process.env.APPDATA ?? '', 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup', 'Life OS.vbs')
+async function startWithWindows(choice) {
+  if (process.platform !== 'win32' || !process.env.APPDATA) { console.log('Starting with the computer is only set up on Windows.'); return }
+  const file = startupFile()
+  if (choice === 'on') {
+    const quote = (value) => `""${value}""`
+    const line = `CreateObject("WScript.Shell").Run "${quote(process.execPath)} ${quote(path.join(root, 'launch.mjs'))} --no-browser", 0, False`
+    await fs.writeFile(file, `' Starts Life OS, without a window, when you sign in to Windows.\r\n${line}\r\n`, 'utf8')
+    console.log('Life OS will start when you sign in to Windows.')
+  } else if (choice === 'off') {
+    await fs.rm(file, { force: true })
+    console.log('Life OS will not start by itself.')
+  } else {
+    console.log(await fs.access(file).then(() => 'Life OS starts when you sign in to Windows.', () => 'Life OS does not start by itself.'))
+  }
+}
+
 async function main() {
+  const asked = process.argv.indexOf('--start-with-windows')
+  if (asked >= 0) { await startWithWindows(process.argv[asked + 1]); return }
   if (process.argv.includes('--stop')) {
     if (!await health()) { console.log('Life OS is already stopped.'); return }
     const saved = JSON.parse(await fs.readFile(serviceFile, 'utf8'))
