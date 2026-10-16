@@ -4,6 +4,15 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 15 October 2026 — Health as a part of its own (`briefs/health-part.md`)
+
+- **Health is a part of Life OS, not a fifth app in a frame.** Xar called it "the health mini app" the day after it was proposed as Body & Health. It is a page set of Life OS itself (`/health`), in the top bar and behind the Court's Body & Health tile, because what it keeps (sessions, appointments, results, measurements) are core entries that the calendar, Today and the bell already read.
+- **Food is still Budget's** (14 October): Health reads recipes and food at home through Life OS with Budget's own rules, and adds a UK recipe to her recipes there. Her diet is a Life OS setting (`health-diet`), because it is about her, not about a shop.
+- **UK guidance, programmes, exercises and recipes ship with the app** (`code/life-os/shared/health/`), each figure with its NHS or FSA page. They are reference content for any customer, offered to choose from; nothing of it is put into her records unless she chooses it. The words are written for Life OS; NHS recipe pages are linked, not copied.
+- **A vigorous minute counts as two moderate ones** in the week's figure, so a mix adds up to one number against 150. The NHS states the 75 and 150 equivalence, not a per-minute rule; this is the app's way of adding a mix.
+- **Couch to 5K follows the NHS plan exactly**; Strength at home, Gym starter and Brisk walks are the app's own, built from the NHS guidance and exercises, and say so.
+- **`main` is brought level with the work** (Xar, 15 October: "push everything to the main branch"). Until then each stage branch waited for her acceptance and `main` stayed at the first setup commit; her request is taken as that acceptance for everything up to now. `main` is moved forward to the stage branch (a fast-forward: nothing on `main` is lost) and pushed to GitHub. Personal data stays out of git as before.
+
 ## 14 October 2026 — food you can use (Budget fix, `briefs/budget-food-flow.md`)
 
 - **Food stays in Budget, beside the stock it uses; Body & Health shows it.** Xar asked whether meals and health should leave Budget for a Health app ("they should necessarily be connected … because we want the resources to be linked"). Recipes and meals need the cupboard, receipts and shopping lists, which are Budget's, so the food was not moved. The Body & Health area (already the place for appointments, training and plans) shows the day's food and links into Budget. If Health becomes a part of its own later, the food part moves with it as a whole.

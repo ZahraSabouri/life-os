@@ -306,6 +306,22 @@ Brief: `briefs/budget-food-flow.md`. Her words, each with what it becomes:
 - [ ] **(Xar)** Meals & recipes → Now asks "Did you eat these?" about five meals of 12 to 14 October; only she knows. "Eat soon" lists fridge food bought 8 to 21 September that may be long gone: "Finished" (or "Choose several") with "date not known".
 - [ ] Later: recipes as their own collection in Life OS (Roadmap stage 5); a cooking view with one step at a time; a recipe from a web page.
 
+## S. Health, a part of its own (15 October)
+Brief: `briefs/health-part.md`. Her words:
+> "now work on more details for the health mini app, exercises, dietry and recipes and even gather stuff from the internet and work a uk kinda style" (15 October)
+> "Maybe we can have another app for health, which has, like, doctor appointments, tests, and gym sessions and exercises, and also food recipes." (14 October)
+
+- [x] **A Health part** beside the four apps inside (top bar, the Court's Body & Health tile, its room page): This week · Exercise · Food · Appointments & tests.
+- [x] **Exercises:** log what you did (minutes, how hard, strength or not, which exercises) and plan sessions on the calendar; an exercise library with how-to steps; programmes that put their sessions on the calendar (NHS Couch to 5K, strength at home, a gym starter, a daily brisk walk).
+- [x] **"uk kinda style":** the week measured against the UK guideline (150 minutes moderate or 75 vigorous, strength on 2 days), the NHS talk test for effort, UK words and units.
+- [x] **Dietary:** her diet (vegetarian, vegan, pescatarian, no pork, no beef) and the 14 UK allergens to avoid; the Eatwell Guide, 5 A Day, fluids, reference intakes; a food label checker (traffic lights).
+- [x] **Recipes "from the internet":** UK recipes (British and Welsh classics, cheap student cooking), written for the app, each linked to a similar NHS Healthier Families recipe where there is one; checked against what is at home in Budget; "Add to my recipes" puts one into Budget; what is missing goes on the shopping list.
+- [x] **Appointments and tests** (her words of 14 October): GP, dentist, optician, blood tests, vaccinations and the rest on the calendar and in the bell; results and records; measurements over time.
+- [x] On the day: a Health panel on Today and the Court; sessions and appointments on the calendar under Health and opening in Health.
+- [x] The Guide: a Health chapter with pictures, and its "How do I" answers.
+- [x] "add anything new or non existent in the guide, to the guide" (15 October): every page and control of Life OS and the apps inside checked against the Guide; what it does not cover yet added, with pictures.
+- [ ] "in the end push everything to the main branch bc im seeing they're pushed to a specific branch but it's not main branch" (15 October): the stage branches merged into `main`, and `main` pushed to GitHub.
+
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
 > "when you click on [Life OS] … Click on the name above. It should, like directly direct to the main page, main URL. And if you click on a specific job role … on the today page … I should be able to kind of be directed to the same component … in the job map app." (12 October evening)
