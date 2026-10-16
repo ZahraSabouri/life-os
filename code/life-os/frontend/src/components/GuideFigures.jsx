@@ -10,9 +10,10 @@ function PartsMap() {
     ['JobMap', 'jobs to apply for, closing dates, follow-ups', ['Today: Jobs', 'Calendar', 'Review and Analysis', 'The bell'], 'jobmap'],
     ['Budget', 'shopping lists, meals, food at home, money', ['Today: Home', 'Calendar (renewals)', 'Review and Analysis', 'The bell'], 'budget'],
     ['Cardiff Life', 'events you chose or added', ['Calendar', 'Today: “Also today”', 'Court: Ahead'], 'cardiff'],
+    ['Health', 'sessions, appointments, diet, UK recipes', ['Today: Health', 'Calendar (under Health)', 'The bell', 'Budget: your recipes'], 'health'],
     ['Life OS itself', 'your plans, notes, journal, people, focus time', ['Court, Today, Plan the week', 'Journal and People', 'Review and Analysis'], 'court'],
   ]
-  const page = (words) => (/^Today/.test(words) ? '/today' : /^Calendar/.test(words) ? '/calendar' : /^Review/.test(words) ? '/review' : /^Court/.test(words) ? '/court' : /^Journal/.test(words) ? '/journal' : /bell/.test(words) ? '/guide/focus' : '/guide')
+  const page = (words) => (/^Budget/.test(words) ? '/budget#/meals/recipes' : /^Today/.test(words) ? '/today' : /^Calendar/.test(words) ? '/calendar' : /^Review/.test(words) ? '/review' : /^Court/.test(words) ? '/court' : /^Journal/.test(words) ? '/journal' : /bell/.test(words) ? '/guide/focus' : '/guide')
   return <div className="guide-figure guide-map" role="img" aria-label={`What each part gives to Life OS: ${rows.map(([part, gives, shows]) => `${part} gives ${gives}, shown on ${shows.join(', ')}`).join('. ')}`}>
     <div className="guide-map-heads" aria-hidden="true"><span>Where it is kept</span><span>What flows in</span><span>Where you see it in Life OS</span></div>
     {rows.map(([part, gives, shows, id]) => <div className="guide-map-row" key={part}>
@@ -75,6 +76,9 @@ function WhereTable() {
     ['Notes, categories, files and links on a job', 'JobMap → the job’s details', 'The job; your categories filter the list'],
     ['An event', 'Cardiff Life → + Add my own event', 'Calendar, Cardiff Life’s week'],
     ['A payment, a receipt, a meal, food at home', 'Budget', 'Today (Home), Review, Analysis'],
+    ['Exercise you did or plan, a programme', 'Health → Exercise', 'Today (Health), Calendar, the bell'],
+    ['An appointment, a test result, a measurement', 'Health → Appointments & tests', 'Calendar and the bell (appointments); Health'],
+    ['Your diet, a UK recipe for your recipes', 'Health → Food', 'Budget → Meals & recipes'],
   ]
   return <div className="guide-figure guide-where"><table>
     <thead><tr><th scope="col">What</th><th scope="col">Add it here</th><th scope="col">It then shows on</th></tr></thead>

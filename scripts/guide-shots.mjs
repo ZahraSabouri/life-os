@@ -194,7 +194,7 @@ const RECIPES = {
   'today-jobs.jpg': async () => { await go('/today', '.day-path'); await panel('Jobs').locator('.day-figure').waitFor({ timeout: 20_000 }); await part('today-jobs.jpg', panel('Jobs'), { pad: 14, marks: ['section.day-panel[aria-label="Jobs"] .day-figure', 'section.day-panel[aria-label="Jobs"] .day-list a', 'section.day-panel[aria-label="Jobs"] .day-mark'] }) },
   'today-home.jpg': async () => { await go('/today', '.day-path'); await panel('Home').locator('h3').first().waitFor({ timeout: 20_000 }); await part('today-home.jpg', panel('Home')) },
   // ---- Plan the week
-  'planner.jpg': async () => { await go('/planner', '.planner-week'); await page.locator('.planner-chip').first().waitFor({ timeout: 20_000 }).catch(() => {}); await settle(); await view('planner.jpg', { marks: ['.planner-day.is-today', '.planner-day.is-today .planner-add', '.planner-more'] }) },
+  'planner.jpg': async () => { await go('/planner', '.planner-week'); await page.locator('.planner-chip').first().waitFor({ timeout: 20_000 }).catch(() => {}); await settle(); await view('planner.jpg', { marks: ['.planner-day.is-today', '.planner-day .planner-add', '.planner-more'] }) },
   'planner-menu.jpg': async () => {
     await go('/planner', '.planner-week')
     const more = page.locator('.planner-more').first()
@@ -212,6 +212,35 @@ const RECIPES = {
   // ---- Calendar
   'calendar.jpg': async () => { await go('/calendar', '.calendar-layout'); await settle(4000); await view('calendar.jpg', { marks: ['.calendar-view-controls', '.calendar-kind-legend'] }) },
   'room.jpg': async () => { await go('/room/home'); await settle(3000); await view('room.jpg') },
+  'today-health.jpg': async () => { await go('/today', '.day-path'); await panel('Health').locator('.health-panel-figure').waitFor({ timeout: 20_000 }); await part('today-health.jpg', panel('Health')) },
+  // Health. Nothing is saved: forms are opened, never sent.
+  'health.jpg': async () => { await go('/health', '.health-moving'); await settle(1500); await view('health.jpg', { marks: ['.health-tabs', '.health-moving .review-value', 'text:Today', 'text:Coming up'] }) },
+  'health-log.jpg': async () => {
+    await go('/health?view=exercise&log=1', 'form.health-form'); await settle(800)
+    await part('health-log.jpg', page.locator('form.health-form'), { marks: ['form.health-form select', 'form.health-form input[type="date"]', '.health-effort', 'form.health-form > label.health-choice', 'form.health-form textarea'] })
+  },
+  'health-programmes.jpg': async () => {
+    await go('/health?view=exercise', '.health-programme'); await settle(800)
+    await page.locator('.health-programme', { hasText: 'Couch to 5K' }).getByRole('button', { name: 'Start' }).click().catch(() => {}); await settle(500)
+    await part('health-programmes.jpg', page.locator('.health-cards'))
+  },
+  'health-library.jpg': async () => {
+    await go('/health?view=exercise', '.health-exercise'); await settle(500)
+    await page.locator('.health-exercise-head', { hasText: 'Squat' }).first().click(); await settle(400)
+    await page.locator('#health-library').evaluate((el) => el.scrollIntoView({ block: 'start' })); await settle(300)
+    await view('health-library.jpg')
+  },
+  'health-food.jpg': async () => { await go('/health?view=food', '.health-recipe-list'); await settle(2500); await view('health-food.jpg', { marks: ['section[aria-labelledby="health-food-today"] h2', 'section[aria-labelledby="health-diet"] h2', 'section[aria-labelledby="health-mine"] h2', '#health-recipes'] }) },
+  'health-recipe.jpg': async () => {
+    await go('/health?view=food', '.health-recipe-list'); await settle(2500)
+    await page.locator('.health-recipe-head').first().click(); await settle(600)
+    await part('health-recipe.jpg', page.locator('.health-recipe-open'))
+  },
+  'health-eatwell.jpg': async () => { await go('/health?view=food', '#health-eating-well'); await settle(1500); await part('health-eatwell.jpg', page.locator('#health-eating-well + .health-grid')) },
+  'health-care.jpg': async () => { await go('/health?view=care', 'section[aria-labelledby="health-appointments"]'); await settle(1200); await view('health-care.jpg') },
+  'budget-week.jpg': async () => { await go('/budget#/meals/week'); const frame = await budget(); await frame.locator('.meal-week').scrollIntoViewIfNeeded().catch(() => {}); await settle(500); await view('budget-week.jpg', { on: frame, marks: ['.week-toolbar button', '.meal-note'] }) },
+  'budget-batches.jpg': async () => { await go('/budget#/meals/prep'); const frame = await budget(); await view('budget-batches.jpg') },
+  'budget-category-browse.jpg': async () => { await go('/budget#/food/cupboard'); const frame = await budget(); await view('budget-category-browse.jpg') },
   // ---- Review
   'review.jpg': async () => { await go('/review', '.review-tiles'); await settle(1500); await view('review.jpg', { marks: ['.analysis-views', '.day-nav', '.review-tiles'] }) },
   'review-days.jpg': async () => { await go('/review', '.review-days'); await part('review-days.jpg', page.locator('.review-days')) },
