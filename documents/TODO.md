@@ -320,7 +320,7 @@ Brief: `briefs/health-part.md`. Her words:
 - [x] On the day: a Health panel on Today and the Court; sessions and appointments on the calendar under Health and opening in Health.
 - [x] The Guide: a Health chapter with pictures, and its "How do I" answers.
 - [x] "add anything new or non existent in the guide, to the guide" (15 October): every page and control of Life OS and the apps inside checked against the Guide; what it does not cover yet added, with pictures.
-- [ ] "in the end push everything to the main branch bc im seeing they're pushed to a specific branch but it's not main branch" (15 October): the stage branches merged into `main`, and `main` pushed to GitHub.
+- [x] "in the end push everything to the main branch bc im seeing they're pushed to a specific branch but it's not main branch" (15 October): done 16 October. `main` fast-forwarded to `stage/4b-one-look` (everything up to Health, and Codex's notes) and pushed; GitHub `main` and the stage branch are the same commit.
 
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
