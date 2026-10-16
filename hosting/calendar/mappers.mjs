@@ -48,13 +48,16 @@ function annualDates(value, range) {
 }
 
 // A time block belongs to the area it names; other entries to the area of their type.
-const blockAreas = new Set(['study', 'career', 'money', 'home', 'relationships', 'events'])
+const blockAreas = new Set(['study', 'career', 'money', 'home', 'relationships', 'events', 'body'])
 const entryAreas = {
   module: 'study', 'module-session': 'study', assignment: 'study',
   'job-application': 'career', 'academic-application': 'career',
   message: 'relationships', interaction: 'relationships', 'important-date': 'relationships', 'gift-idea': 'relationships',
   'shopping-item': 'home', meal: 'home',
+  workout: 'body', 'workout-plan': 'body', appointment: 'body', routine: 'body', supplement: 'body',
 }
+// Health's own entries open in Health: a session on the Exercise page, an appointment on Care.
+const healthHref = (type, id) => (type === 'workout' ? `/health?view=exercise&entry=${encodeURIComponent(id)}` : type === 'appointment' ? `/health?view=care&entry=${encodeURIComponent(id)}` : null)
 
 export function mapEntries(value, range) {
   const output = []
@@ -67,6 +70,7 @@ export function mapEntries(value, range) {
     const type = entry.type
     if (type === 'repeat') continue   // a repeating plan: its days come as worked-out entries (shared/routines.js)
     if (type === 'journal') continue  // a page of the journal: read in the Journal, not a thing to do on its day
+    if (type === 'measurement' || type === 'medical-record') continue  // Health's records (a weight, a result): kept in Health, not things to do
     // Filed under a room: the calendar area of that room when it has one, and the room's name either way.
     const room = type !== 'time-block' && typeof details.area === 'string' ? details.area : ''
     const base = {
@@ -75,7 +79,7 @@ export function mapEntries(value, range) {
         : type === 'important-date' || type === 'message' ? 'reminder'
           : ['assignment', 'academic-application'].includes(type) ? 'deadline' : 'plan',
       title: text(entry.title, text(details.title, text(details.name, 'Untitled entry'))),
-      href: `/ledger#entry-${encodeURIComponent(entry.id)}`,
+      href: healthHref(type, entry.id) ?? `/ledger#entry-${encodeURIComponent(entry.id)}`,
       meta: { source: 'core', readonly: false, entryId: entry.id, type, status: entry.status, archetype: entry.archetype, ...(room ? { room } : {}), ...(done ? { completed: true } : {}),
         // One day of a repeating plan that she has not acted on: what it takes to make it a real entry when she does.
         ...(entry.virtual ? { routine: { id: details.routine, type, start_at: entry.start_at, end_at: entry.end_at ?? null, all_day: Boolean(entry.all_day), area: details.area ?? '' } } : {}) },

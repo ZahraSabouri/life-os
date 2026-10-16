@@ -62,10 +62,19 @@ export const ENTRY_TYPES = {
     label: 'Workout',
     icon: 'W',
     rooms: ['body'],
-    desc: 'A logged or planned workout.',
+    desc: 'A logged or planned workout. Planned until its status is done. Minutes at moderate and vigorous effort count towards the weekly guideline (shared/health/guidance.js).',
     fields: {
       kind: { type: 'string' },
-      duration_min: { type: 'number' }
+      duration_min: { type: 'number' },
+      effort: { type: 'enum', enum: ['light', 'moderate', 'vigorous'] },
+      moderate_min: { type: 'number' },
+      vigorous_min: { type: 'number' },
+      strength: { type: 'boolean' },
+      // One exercise a line, as she wrote it or chosen from the library ("Squat 3 x 10, 20 kg").
+      exercises: { type: 'string' },
+      // A session of a programme (shared/health/programmes.js): its id and the session's key.
+      programme: { type: 'string' },
+      session: { type: 'string' }
     }
   },
   book: {
@@ -342,8 +351,9 @@ export const ENTRY_TYPES = {
     rooms: ['body'],
     desc: 'A medical/professional appointment.',
     fields: {
-      kind: { type: 'enum', enum: ['doctor', 'dentist', 'optician', 'therapy', 'other'], default: 'doctor' },
-      provider: { type: 'string' }
+      kind: { type: 'enum', enum: ['doctor', 'dentist', 'optician', 'blood-test', 'vaccination', 'scan', 'hospital', 'physio', 'pharmacy', 'therapy', 'sexual-health', 'other'], default: 'doctor' },
+      provider: { type: 'string' },
+      place: { type: 'string' }
     }
   },
   'medical-record': {

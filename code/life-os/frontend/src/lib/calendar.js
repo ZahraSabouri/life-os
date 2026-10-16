@@ -9,6 +9,7 @@ export const CALENDAR_AREAS = [
   { key: 'career', label: 'Career', tone: 'var(--g-blue)' },
   { key: 'money', label: 'Money', tone: 'var(--g-coral)' },
   { key: 'home', label: 'Home', tone: 'var(--g-acc)' },
+  { key: 'body', label: 'Health', tone: 'var(--m-spark)' },
   { key: 'events', label: 'Cardiff events', tone: 'var(--g-rose)' }
 ]
 

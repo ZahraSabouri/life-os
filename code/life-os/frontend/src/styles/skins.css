@@ -283,12 +283,18 @@ button.modern-room:hover { transform: translateY(-1px); border-color: var(--m-li
 
 /* Narrower than a 1280 window: Style and Light/Dark keep their marks and drop their words (still read
    out, still in the tooltip), so the bar stays on one line. */
-@media (min-width: 1101px) and (max-width: 1349px) {
+@media (min-width: 1101px) and (max-width: 1700px) {
   .app-shell[data-ground] .court-topbar :is(.style-switch-label, .mode-switch-label) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+@media (min-width: 1101px) and (max-width: 1349px) {
   .app-shell[data-ground] .court-topbar .court-nav button { padding-inline: 0.3rem; }
 }
+/* The spaced capitals of Madder, Indigo and Paper need a little less room on a small laptop. */
+@media (min-width: 1101px) and (max-width: 1279px) {
+  .app-shell:not([data-ground='modern']) .court-topbar .court-nav button { padding-inline: 0.2rem; letter-spacing: 0.08em; }
+}
 /* On a smaller laptop the top bar keeps to one line: the date gives way (every page says it below). */
-@media (min-width: 1101px) and (max-width: 1500px) {
+@media (min-width: 1101px) and (max-width: 1700px) {
   .app-shell[data-ground] .court-topbar .date-line { display: none; }
   .app-shell[data-ground] .court-topbar { grid-template-columns: auto 1fr; }
   /* …and the menu stays beside the name instead of taking a row of its own. */

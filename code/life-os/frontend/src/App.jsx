@@ -13,6 +13,7 @@ import JournalView from './components/JournalView.jsx'
 import PeopleView from './components/PeopleView.jsx'
 import RoomView from './components/RoomView.jsx'
 import StudyHub from './components/study/StudyHub.jsx'
+import HealthView from './components/health/HealthView.jsx'
 import { FocusProvider } from './lib/focus.jsx'
 import { NoticesProvider } from './lib/notices.jsx'
 import { GroundProvider, useGround } from './lib/groundContext.jsx'
@@ -131,6 +132,8 @@ function AppRoutes() {
           <Route path="/study" element={<StudyRoute />} />
           <Route path="/cardiff-life" element={<CardiffLifeRoute />} />
           <Route path="/budget" element={<BudgetRoute />} />
+          <Route path="/health" element={<HealthView />} />
+          <Route path="/room/body" element={<Navigate to="/health" replace />} />
           <Route path="/jobmap" element={<JobMapRoute />} />
         </Route>
         {/* The database-backed Study records (this semester's timetable, assessments and materials) until the Study hub reads them itself. */}

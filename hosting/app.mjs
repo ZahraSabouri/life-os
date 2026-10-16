@@ -25,6 +25,7 @@ import { createOwnEvents, createOwnEventsRouter } from './cardiff/own-events.mjs
 import { createJobMark, createJobMarkHandler } from './career/mark.mjs'
 import { createGuideRouter } from './guide.mjs'
 import { createShopping, createShoppingRouter, loadBudgetRules } from './home/shopping.mjs'
+import { createFood, createFoodRouter } from './health/food.mjs'
 import { dateKey } from '../code/life-os/shared/calendar.js'
 import { createStudyRuntime } from './study/runtime.mjs'
 import { createStudyRouter } from '../code/life-os/backend/src/modules/study/router.js'
@@ -251,6 +252,8 @@ export function createLifeOsApp(options = {}) {
   app.use('/api/review', createReviewRouter({ express, service: createReviewService(reviewLoaders) }))
   // Things to buy, added from anywhere in Life OS, go into Budget's own shopping list.
   app.use('/api/home/shopping', createShoppingRouter({ express, shopping: options.shopping ?? createShopping({ budgetRoot, getBudgetPort, today: () => dateKey(new Date()) }) }))
+  // Health's food: the UK recipes against what is at home in Budget, and one added to her recipes there.
+  app.use('/api/health/food', createFoodRouter({ express, food: options.healthFood ?? createFood({ budgetRoot, getBudgetPort }) }))
   app.use('/api', (_req, res) => res.status(404).json({ error: 'not found' }))
 
   app.use(express.static(mainDist))

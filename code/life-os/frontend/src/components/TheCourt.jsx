@@ -15,6 +15,8 @@ import { useDayPage } from '../lib/useDayPage.js'
 import { clockOf } from '../lib/day.js'
 import { calendarArea, calendarDisplay, calendarKind, dateKey, filterCalendarItems, formatCalendarDay, itemTime, todayGroups } from '../lib/calendar.js'
 import { useLondonToday } from '../lib/useCalendar.js'
+import { useHealth } from '../lib/useHealth.js'
+import { weekOfMoving, dayOf } from '../../../shared/health/week.js'
 import { clockLabelFor, dateLabelFor, greetingFor, jalaliDateLabelFor, shortDateLabelFor, weekdayLabelFor } from '../lib/courtClock.js'
 
 const ROOM_NAME_OVERRIDES = {
@@ -224,8 +226,14 @@ function roomSlugsForType(type) {
 
 // What is true today of the rooms that have a part of Life OS behind them, from the same day
 // the Court shows. A room without one says what it is for.
-function roomFacts(data) {
+function roomFacts(data, health) {
   const facts = {}
+  if (health) {
+    const next = [...health.week.planned.filter((row) => row.day >= health.today).map((row) => ({ day: row.day, title: row.entry.title })),
+      ...health.entries.filter((e) => e.type === 'appointment' && !['done', 'cancelled'].includes(String(e.status)) && dayOf(e) >= health.today).map((e) => ({ day: dayOf(e), title: e.title }))]
+      .sort((a, b) => a.day.localeCompare(b.day))[0]
+    facts.body = { latest: `${health.week.minutes} of 150 active minutes this week · ${health.week.strengthDays} of 2 strength days`, meta: next ? `Next: ${next.title} · ${next.day === health.today ? 'today' : formatCalendarDay(next.day)}` : 'Nothing planned ahead' }
+  }
   const { study, jobs, home } = data ?? {}
   if (study) facts.study = {
     latest: study.today.length ? `${count(study.today.length, 'card')} today${study.hoursToday ? `, ${hours(study.hoursToday)}` : ''}` : 'No study card is due today',
@@ -953,7 +961,7 @@ function MoreCapture({ captureProps, variant }) {
 }
 
 // Rooms that have a whole part of Life OS behind them; every other room opens its own page.
-const ROOM_DESTINATIONS = { study: 'Study Hub', career: 'JobMap', home: 'Budget' }
+const ROOM_DESTINATIONS = { study: 'Study Hub', career: 'JobMap', home: 'Budget', body: 'Health' }
 
 function ModernRoom({ room, onOpen }) {
   const destination = ROOM_DESTINATIONS[room.slug]
@@ -1077,7 +1085,9 @@ export default function TheCourt() {
   // One reading of the day for the whole page: its dated items, study blocks and panels.
   const page = useDayPage()
   const calendarState = page.calendar
-  const facts = useMemo(() => roomFacts(page.data), [page.data])
+  const healthState = useHealth()
+  const health = useMemo(() => (healthState.loading ? null : { entries: healthState.entries, today: todayKey, week: weekOfMoving(healthState.entries, todayKey) }), [healthState.loading, healthState.entries, todayKey])
+  const facts = useMemo(() => roomFacts(page.data, health), [page.data, health])
 
   const [now, setNow] = useState(() => new Date())
   const entryTypeOptions = useMemo(() => Object.entries(ENTRY_TYPES), [])
@@ -1195,7 +1205,7 @@ export default function TheCourt() {
 
   // A room with a whole part behind it opens that part; every other room opens its own page.
   function onOpenRoom(room) {
-    navigate({ study: '/study', career: '/jobmap', home: '/budget' }[room.slug] ?? `/room/${room.slug}`)
+    navigate({ study: '/study', career: '/jobmap', home: '/budget', body: '/health' }[room.slug] ?? `/room/${room.slug}`)
   }
 
   useEffect(() => {

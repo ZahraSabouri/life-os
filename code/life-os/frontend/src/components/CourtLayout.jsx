@@ -105,6 +105,9 @@ export default function CourtLayout() {
             >
               Budget
             </button>
+            <button type="button" className={location.pathname === '/health' ? 'active' : undefined} onClick={() => navigate('/health')}>
+              Health
+            </button>
             <button
               className={location.pathname === '/jobmap' ? 'active' : undefined}
               type="button"

@@ -211,8 +211,8 @@ function SpendingCalendar({state:s,month:m,onAdd,onOpen}){
 }
 // The address bar follows you: #/food/used, #/meals, #/food/item/<item>?m=2026-10. Back and forward work.
 const TAB_SLUG={home:'everyday',shopping:'shopping',stock:'food',meals:'meals',money:'money',history:'history',settings:'settings'},SLUG_TAB=Object.fromEntries(Object.entries(TAB_SLUG).map(([k,v])=>[v,k]));
-function readRoute(){const raw=(typeof location!=='undefined'?location.hash:'').replace(/^#\/?/,''),[path,query='']=raw.split('?'),parts=path.split('/').filter(Boolean),q=new URLSearchParams(query),at=parts.indexOf('item');let view=parts[1]||'',item='';if(at>0){item=decodeURIComponent(parts.slice(at+1).join('/'));view=at===1?'':parts[1];}return {tab:SLUG_TAB[parts[0]]||'home',view:decodeURIComponent(view),item,month:q.get('m')||'',week:q.get('w')||'',meal:q.get('meal')||''};}
-function routeHash(r){const q=new URLSearchParams();if(r.month)q.set('m',r.month);if(r.week)q.set('w',r.week);if(r.meal)q.set('meal',r.meal);return '#/'+(TAB_SLUG[r.tab]||'everyday')+(r.view?'/'+encodeURIComponent(r.view):'')+(r.item?'/item/'+encodeURIComponent(r.item):'')+(q.size?'?'+q:'');}
+function readRoute(){const raw=(typeof location!=='undefined'?location.hash:'').replace(/^#\/?/,''),[path,query='']=raw.split('?'),parts=path.split('/').filter(Boolean),q=new URLSearchParams(query),at=parts.indexOf('item');let view=parts[1]||'',item='';if(at>0){item=decodeURIComponent(parts.slice(at+1).join('/'));view=at===1?'':parts[1];}return {tab:SLUG_TAB[parts[0]]||'home',view:decodeURIComponent(view),item,month:q.get('m')||'',week:q.get('w')||'',meal:q.get('meal')||'',recipe:q.get('recipe')||''};}
+function routeHash(r){const q=new URLSearchParams();if(r.month)q.set('m',r.month);if(r.week)q.set('w',r.week);if(r.meal)q.set('meal',r.meal);if(r.recipe)q.set('recipe',r.recipe);return '#/'+(TAB_SLUG[r.tab]||'everyday')+(r.view?'/'+encodeURIComponent(r.view):'')+(r.item?'/item/'+encodeURIComponent(r.item):'')+(q.size?'?'+q:'');}
 function useLocalPref(key,init){const [v,setV]=useState(()=>{try{return localStorage.getItem(key)||init;}catch{return init;}});return [v,x=>{setV(x);try{localStorage.setItem(key,x);}catch{}}];}
 function EntryRow({state:s,g,m,setDialog}){
  const f=entryFacts(g),name=entryName(g),level=f.tracking==='level',live=g.rows.filter(r=>r.remaining>0),bottle=level?currentBottle(g):null,info=bottle?lastingInfo(bottle):null,open=()=>setDialog({type:'item-page',key:g.key});
@@ -224,10 +224,10 @@ function App(){
  const [inventory,setInventory]=useState({category:'all',scope:'month',status:'all',search:'',mode:'map'});
  const revision=React.useRef(0),current=React.useRef(null),locked=React.useRef(false),undoRef=React.useRef(null),routeRef=React.useRef(readRoute());
  // Moving to another page, or a link that names a meal, closes whatever dialog was open.
- useEffect(()=>{const on=()=>{const r=readRoute(),was=routeRef.current;routeRef.current=r;setRoute(r);if(r.tab!==was.tab||r.view!==was.view||r.meal&&r.meal!==was.meal)setDialog(null);};window.addEventListener('hashchange',on);if(!location.hash)history.replaceState(null,'',routeHash(readRoute()));return ()=>window.removeEventListener('hashchange',on);},[]);
+ useEffect(()=>{const on=()=>{const r=readRoute(),was=routeRef.current;routeRef.current=r;setRoute(r);if(r.tab!==was.tab||r.view!==was.view||r.meal&&r.meal!==was.meal||r.recipe&&r.recipe!==was.recipe)setDialog(null);};window.addEventListener('hashchange',on);if(!location.hash)history.replaceState(null,'',routeHash(readRoute()));return ()=>window.removeEventListener('hashchange',on);},[]);
  const tab=route.tab,month=/^\d{4}-(0[1-9]|1[0-2])$/.test(route.month)?route.month:initialMonth(),pushedItem=React.useRef(false);
  const go=(patch,opts={})=>{const h=routeHash({...readRoute(),...patch});if(h===location.hash)return;if(opts.replace){history.replaceState(null,'',h);const r=readRoute();routeRef.current=r;setRoute(r);}else location.hash=h;};
- const setTab=id=>{go({tab:id,view:'',item:'',week:'',meal:''});try{window.scrollTo(0,0);}catch{}},setMonth=v=>go({month:v===initialMonth()?'':v,week:''});
+ const setTab=id=>{go({tab:id,view:'',item:'',week:'',meal:'',recipe:''});try{window.scrollTo(0,0);}catch{}},setMonth=v=>go({month:v===initialMonth()?'':v,week:''});
  const openDialog=d=>{if(d&&d.type==='item-page'){setDialog(null);pushedItem.current=true;go({item:d.key});return;}setDialog(d);};
  const closeItem=()=>{if(pushedItem.current){pushedItem.current=false;history.back();}else go({item:''},{replace:true});};
  useEffect(()=>{try{document.title=({home:'My everyday',shopping:'Shopping',stock:'Food & supplies',meals:'Meals & recipes',money:'Money & saving',history:'Weekly history',settings:'Settings'}[tab]||'Everyday')+' · Everyday';}catch{}},[tab]);
@@ -267,7 +267,9 @@ function App(){
   notice&&e('div',{className:'toast',role:'status'},e('span',null,notice),undoRef.current&&e('button',{disabled:busy||conflict,onClick:()=>commit(undoRef.current,'Undone',{noUndo:true}).catch(()=>{})},'Undo'),e('button',{'aria-label':'Dismiss notification',onClick:()=>setNotice('')},'×')),
   (dialog||route.item)&&e(ProductDialog,dialog?{...p,key:dialog.type+'-'+(dialog.id||dialog.listId||'')}:{...p,dialog:{type:'item-page',key:route.item},onClose:closeItem,key:'item-page-'+route.item}),
   // A link from Life OS (the calendar, Today) names one meal: its card opens over the meal plan.
-  !dialog&&!route.item&&route.meal&&state.mealEntries.some(x=>x.id===route.meal)&&e(ProductDialog,{...p,dialog:{type:'meal-detail',id:route.meal},onClose:()=>go({meal:''},{replace:true}),key:'meal-'+route.meal}));
+  !dialog&&!route.item&&route.meal&&state.mealEntries.some(x=>x.id===route.meal)&&e(ProductDialog,{...p,dialog:{type:'meal-detail',id:route.meal},onClose:()=>go({meal:''},{replace:true}),key:'meal-'+route.meal}),
+  // A link from Health names one recipe: its page opens over the recipes.
+  !dialog&&!route.item&&!route.meal&&route.recipe&&state.recipes.some(x=>x.id===route.recipe)&&e(ProductDialog,{...p,dialog:{type:'recipe-page',id:route.recipe},onClose:()=>go({recipe:''},{replace:true}),key:'recipe-'+route.recipe}));
 }
 ICONS.bag='M5 7h14l2 14H3Zm4 0V5a3 3 0 0 1 6 0v2';
 function Stat({label,value,detail,tone=''}){return e('div',{className:'v2-stat '+tone},e('span',null,label),e('strong',null,value),detail&&e('small',null,detail));}

@@ -58,7 +58,7 @@ ProductDialog = function foodDialog(p) {
 // ---- Meals & recipes: Now · Week · Recipes · Batches · Original calendar ----
 MealsV2 = function foodMeals(p) {
   const s = p.state, views = ['now', 'week', 'recipes', 'prep', 'original'], view = views.includes(p.route?.view) ? p.route.view : 'now';
-  const tabs = e('div', { className: 'page-tabs' }, e(Segment, { label: 'Meals view', value: view, onChange: (v) => p.go({ view: v, meal: '' }), options: [['now', 'Now'], ['week', 'Week'], ['recipes', 'Recipes'], ['prep', 'Batches'], ['original', 'Original calendar']] }));
+  const tabs = e('div', { className: 'page-tabs' }, e(Segment, { label: 'Meals view', value: view, onChange: (v) => p.go({ view: v, meal: '', recipe: '' }), options: [['now', 'Now'], ['week', 'Week'], ['recipes', 'Recipes'], ['prep', 'Batches'], ['original', 'Original calendar']] }));
   const action = view === 'recipes' ? e(Btn, { kind: 'primary', icon: 'plus', onClick: () => p.setDialog({ type: 'recipe' }) }, 'Add a recipe')
     : view === 'prep' ? e(Btn, { kind: 'primary', icon: 'plus', onClick: () => p.setDialog({ type: 'prep-plan' }) }, 'Plan a batch')
       : e(Btn, { kind: 'primary', icon: 'plus', onClick: () => p.setDialog({ type: 'meal' }) }, 'Add a meal');
@@ -162,7 +162,7 @@ function FoodRecipePage({ state: s, dialog: d, setDialog, commit, onClose }) {
           e('ul', { className: 'food-ingredients' }, x.lines.map((l, i) => { const key = keyOf(l), name = e('span', null, l.ing.name, l.ing.optional && e('small', null, ' · optional'));
             return e('li', { key: i, className: l.state === 'none' ? (l.ing.optional ? 'optional' : 'missing') : l.state === 'short' ? 'short' : 'have' },
               e('i', { 'aria-hidden': true }), key ? e('button', { type: 'button', className: 'text-link', onClick: () => setDialog({ type: 'item-page', key }) }, name) : name,
-              e('b', null, l.ing.unit === 'a little' ? 'a little' : foodQty(l.needed, l.ing.unit)),
+              e('b', null, l.ing.unit === 'a little' ? 'a little' : foodQty(l.needed, l.ing.unit), l.ing.amount ? e('small', null, ' (recipe: ' + l.ing.amount + ')') : null),
               e('small', { className: 'food-ing-home' }, l.state === 'lasting' ? 'At home' : l.state === 'have' ? (l.kept.length ? 'At home · planned for ' + l.kept.map((m) => m.name).join(', ') : 'At home') : l.state === 'short' ? 'Only ' + foodQty(l.have, l.ing.unit) + ' at home' : 'Not at home')); })),
           x.missing.length > 0 && e(Btn, { small: true, icon: 'plus', onClick: () => run((st) => addFoodToShopping(st, x.missing.map((l) => ({ name: l.ing.name, itemId: l.ing.itemId, quantity: l.state === 'short' ? Math.max(0, l.needed - l.have) : l.needed, unit: l.ing.unit }))), 'On your shopping list: ' + x.missing.map((l) => l.ing.name).join(', ')) }, 'Add what is missing to the shopping list')),
         e('section', null, e('h3', { className: 'mini-head' }, 'Method'),
@@ -269,6 +269,8 @@ function FoodRecipes(p) {
   const run = (fn, msg) => p.commit(fn, msg).catch(() => {});
   const cookNow = (x) => foodCookNow(p, x.recipe, x.recipe.servings);
   return e(React.Fragment, null,
+    // Life OS's Health part keeps a list of UK recipes; one can be added here from there.
+    window.top !== window && e('p', { className: 'muted food-intro' }, 'More recipes: ', e('a', { href: '/health?view=food#health-recipes', target: '_top' }, 'UK recipes in Health'), ', checked against what is at home here.'),
     e('div', { className: 'surface food-recipe-tools' }, e(Input, { label: 'Find a recipe or an ingredient', type: 'search', value: query, onChange: setQuery, placeholder: 'Tomato, salmon, pasta…' }), e(Segment, { label: 'Show', value: show, onChange: setShow, options: [['all', 'All ' + ranked.length], ['ready', 'Can make now'], ['one', 'Missing one thing'], ['quick', '20 minutes or less']] })),
     e('div', { className: 'food-recipe-grid' }, shown.map((x) => e(FoodRecipeCard, { key: x.recipe.id, x, state: s, setDialog: p.setDialog, onCook: () => cookNow(x), run }))),
     !shown.length && e(Empty, { icon: 'leaf', title: ranked.length ? 'No recipe matches' : 'No recipes yet', action: e(Btn, { kind: 'primary', onClick: () => p.setDialog({ type: 'recipe' }) }, 'Add a recipe') }, ranked.length ? 'Try another word or another filter.' : 'Add one, or open a meal and choose “Write how to make it”.'));

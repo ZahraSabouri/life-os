@@ -1,4 +1,5 @@
 import ChangePlan from './ChangePlan.jsx'
+import HealthPanel from './health/HealthPanel.jsx'
 import { Fragment, useState } from 'react'
 // The pieces a day is drawn with, shared by the Court, Today and the strip inside each part:
 // the line that adds to the day, the day's path, and the Study, Jobs, Home and Notes panels.
@@ -250,7 +251,7 @@ export function NotesPanel({ notes }) {
 
 // The four panels of a day, each drawn when its part could be read. `layout` says which panel
 // stands in which column: two columns beside the day's path (Today), three on the Court.
-export const PANELS_BESIDE_PATH = [['study', 'home'], ['jobs', 'notes']]
+export const PANELS_BESIDE_PATH = [['study', 'home'], ['jobs', 'health', 'notes']]
 export const PANELS_ALONE = [['study', 'notes'], ['jobs'], ['home']]
 export function DayPanels({ page, compact = false, layout = PANELS_BESIDE_PATH }) {
   const { data, isToday } = page
@@ -267,6 +268,9 @@ export function DayPanels({ page, compact = false, layout = PANELS_BESIDE_PATH }
   const notes = <Panel title="Notes" href="/ledger" open="Open Ledger" unavailable={page.unavailable('notes')}>
     {data?.notes ? <NotesPanel notes={data.notes} /> : waiting('Nothing to show.')}
   </Panel>
-  const panels = { study, home, jobs, notes }
+  const health = <Panel title="Health" href="/health" open="Open Health">
+    <HealthPanel today={page.date} isToday={isToday} compact={compact} />
+  </Panel>
+  const panels = { study, home, jobs, notes, health }
   return <>{layout.map((column) => <div className="day-panel-column" key={column.join('-')}>{column.map((name) => <Fragment key={name}>{panels[name]}</Fragment>)}</div>)}</>
 }

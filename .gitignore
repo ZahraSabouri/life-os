@@ -54,3 +54,6 @@ migration/backups/
 # Temporary folders left by test runs, and packaged copies of past updates
 /budget-management/app/tests/storage-test-*/
 /budget-management/app/updates/
+
+# Try-out build of the main app (.runtime/hub-dev/dev-server.mjs)
+code/life-os/frontend/dist-next/

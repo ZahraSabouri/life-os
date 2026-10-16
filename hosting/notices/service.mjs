@@ -11,7 +11,7 @@ const listed = (names, limit = 2) => `${names.slice(0, limit).join('; ')}${names
 const pounds = (pence) => `£${(pence / 100).toFixed(2).replace(/\.00$/, '')}`
 const LONDON_CLOCK = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
 const clockOf = (iso) => LONDON_CLOCK.format(new Date(iso))
-const AREAS = { core: 'Your plans', study: 'Study', career: 'Jobs', money: 'Money', home: 'Home', relationships: 'People', events: 'Events' }
+const AREAS = { core: 'Your plans', study: 'Study', career: 'Jobs', money: 'Money', home: 'Home', relationships: 'People', events: 'Events', body: 'Health' }
 const DONE = new Set(['done', 'completed', 'complete', 'cancelled', 'canceled', 'archived', 'submitted'])
 const finished = (item) => Boolean(item?.meta?.completed || item?.meta?.done) || DONE.has(String(item?.meta?.status ?? '').toLowerCase())
 
@@ -82,6 +82,17 @@ export function buildNotices({ day, items, open, money, now = new Date() } = {})
     if (date !== today && date !== tomorrow) continue
     add({ id: `dated:${item.id}:${date}`, level: date === today ? 'today' : 'ahead', area: item.area, title: `${text(item.title)}${date === today ? ' is today' : ' is tomorrow'}`, detail: AREAS[item.area], href: item.href || '/calendar' })
   }
+
+  // ---- Health: appointments today and tomorrow, sessions planned for today ------------------
+  for (const item of array(items)) {
+    if (item?.area !== 'body' || item.meta?.type !== 'appointment' || finished(item)) continue
+    const date = String(item.start).slice(0, 10)
+    if (date !== today && date !== tomorrow) continue
+    const clock = !item.all_day && String(item.start).length > 10 ? `, ${clockOf(item.start)}` : ''
+    add({ id: `health:appointment:${item.id}:${date}`, level: date === today ? 'today' : 'ahead', area: 'body', title: `${text(item.title)}${date === today ? ' is today' : ' is tomorrow'}${clock}`, detail: item.location ? `At ${text(item.location)}` : 'Health', at: clock ? clockOf(item.start) : '', href: item.href || '/health?view=care' })
+  }
+  const sessions = array(items).filter((item) => item?.area === 'body' && item.meta?.type === 'workout' && String(item.start).slice(0, 10) === today && !finished(item))
+  if (sessions.length) add({ id: `health:sessions:${today}`, level: 'today', area: 'body', title: `${plural(sessions.length, 'session')} of exercise planned today`, detail: listed(sessions.map((item) => text(item.title)), 2), href: sessions.length === 1 ? sessions[0].href : '/health?view=exercise' })
 
   // ---- Her own plans -----------------------------------------------------------------------
   const tasks = array(items).filter((item) => item?.all_day && item.meta?.source === 'core' && item.meta?.type === 'task' && String(item.start).slice(0, 10) === today && !finished(item))
