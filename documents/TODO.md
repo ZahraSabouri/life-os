@@ -322,6 +322,14 @@ Brief: `briefs/health-part.md`. Her words:
 - [x] "add anything new or non existent in the guide, to the guide" (15 October): every page and control of Life OS and the apps inside checked against the Guide; what it does not cover yet added, with pictures.
 - [x] "in the end push everything to the main branch bc im seeing they're pushed to a specific branch but it's not main branch" (15 October): done 16 October. `main` fast-forwarded to `stage/4b-one-look` (everything up to Health, and Codex's notes) and pushed; GitHub `main` and the stage branch are the same commit.
 
+## T. Emergency mode before Test 1 (17 October)
+- [x] "reset the study plan from tomorrow (18th) and put it in emergency mode": Sunday 18 to Friday 23, Statistics only.
+- [x] "if we're not applying for jobs in that period": job time Sunday to Thursday cancelled (kept); Friday evening, after the test, stays.
+- [x] "only studying for the exam and attending 1 session of each of the two modules that week": the CMT309 practical on Thursday and the MAT022 lecture on Friday (the test); the other classes marked as not attended.
+- [x] "consider our prevous comversation and my preferences in studying and and planning for days": at most six hours a day, 90-minute blocks with breaks, lunch and dinner kept, Sunday until 18:00, evenings free.
+- [ ] After the test: watch the recordings of the classes skipped that week (Week 3 MAT022 lectures, the CMT309 lecture of 22 October).
+- [ ] Classes marked as not attended show nowhere in the app: a "not going" state for one class that stays visible, if she wants it.
+
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
 > "when you click on [Life OS] … Click on the name above. It should, like directly direct to the main page, main URL. And if you click on a specific job role … on the today page … I should be able to kind of be directed to the same component … in the job map app." (12 October evening)
