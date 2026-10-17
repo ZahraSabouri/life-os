@@ -106,14 +106,48 @@ function comparePriority(a,b){
 }
 // Her own categories on a job: written with commas between, read as a list without repeats.
 export function tagsOf(job){const seen=new Set(),out=[];for(const raw of String(job?.tags||'').split(/[,;\n]/)){const tag=raw.trim().replace(/\s+/g,' ');if(tag&&!seen.has(tag.toLowerCase())){seen.add(tag.toLowerCase());out.push(tag);}}return out;}
+// One vacancy advertised twice: an employer's own site and a board, or a board that posted it again.
+// The same employer and job title, places that can be the same, and closing dates that agree.
+const fold=s=>String(s||'').normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
+// A reference number in a title ("Software Developer (ref 2526600)") is not part of the job's name.
+export const roleKey=role=>fold(String(role||'').replace(/[([]?\b(?:job\s*)?(?:ref(?:erence)?|req|vacancy)\b\.?\s*(?:no\.?|number)?\s*:?\s*[\w/-]*\d[\w/-]*[)\]]?/gi,' '));
+// "Cardiff University - Centre for Trials Research" and "Cardiff University" are one employer.
+export function employerKey(company){const head=fold(String(company||'').split(/\s[-–—|:]\s|[(,]|\bvia\b/i)[0]).replace(/\b(ltd|limited|plc|llp|inc|group|uk|the)\b/g,' ').replace(/\s+/g,' ').trim();return !head||/^(undisclosed|confidential|anonymous|unnamed|not stated)\b/.test(head)?fold(company):head;}
+// A region stands for the towns in it; a town does not stand for its region, so Cardiff and Newport stay two places.
+const REGIONS=[['southwales',['south wales','de cymru'],['cardiff','newport','swansea','bridgend','caerphilly','pontypridd','barry','cwmbran','llantrisant','rhondda','merthyr','neath','penarth','cathays','llandaff','treforest','nantgarw','caerdydd','casnewydd']],['swengland',['sw england','south west england','south west'],['bristol','bath','almondsbury','swindon','gloucester','cheltenham','exeter','plymouth','taunton']],['nwengland',['nw england','north west england'],[]],['neengland',['ne england','north east england'],[]],['seengland',['se england','south east england'],[]],['eastmidlands',['east midlands'],[]],['westmidlands',['west midlands'],[]],['yorkshire',['yorkshire and humberside','yorkshire'],[]],['eastengland',['east of england'],[]],['northernireland',['northern ireland'],[]],['northwales',['north wales'],[]],['midwales',['mid wales'],[]],['westwales',['west wales'],[]]];
+const ANYWHERE=new Set('uk united kingdom all wide remote hybrid home based national not stated blended on campus and or the of in at with office working flexible site visits visit area greater region location locations various multiple travel required require requires confirmation day days week weekly monthly one per person meetings meeting city centre center england wales britain great gb anywhere any within near across to plus some may be other outside road street floor building house tbc'.split(' '));
+export function placesOf(location){let text=' '+fold(location)+' ';const places=new Set();for(const [name,aliases,towns]of REGIONS)for(const alias of aliases)if(text.includes(' '+alias+' ')){text=text.replaceAll(' '+alias+' ',' ');places.add(name);towns.forEach(t=>places.add(t));}for(const word of text.split(' '))if(word&&!ANYWHERE.has(word)&&!/\d/.test(word))places.add(word);return places;}
+function samePlace(a,b){const x=placesOf(a),y=placesOf(b);return !x.size||!y.size||[...x].some(p=>y.has(p));}
+function sameClosing(a,b){const x=reviewDeadline(a),y=reviewDeadline(b);return !x||!y||Math.abs(daysUntil(x,y.slice(0,10)))<=3;}
+export function sameVacancy(a,b){return !!a&&!!b&&a.id!==b.id&&!!roleKey(a.role)&&roleKey(a.role)===roleKey(b.role)&&!!employerKey(a.company)&&employerKey(a.company)===employerKey(b.company)&&samePlace(a.location,b.location)&&sameClosing(a,b);}
+// For each job still listed more than once, the other listings that look like it, unless she said they differ.
+export function repeatsOf(jobs){
+ const buckets=new Map(),out=new Map();
+ for(const job of jobs){if(job.sameAs||['Archived','Rejected'].includes(job.status))continue;const key=employerKey(job.company)+'|'+roleKey(job.role);if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(job);}
+ const told=(a,b)=>(a.notSame||[]).includes(b.id)||(b.notSame||[]).includes(a.id);
+ for(const list of buckets.values())if(list.length>1)for(const a of list)for(const b of list)if(sameVacancy(a,b)&&!told(a,b)){if(!out.has(a.id))out.set(a.id,[]);out.get(a.id).push(b.id);}
+ return out;
+}
+const OVER=['Archived','Rejected'],SENT=['Applied','Interview','Offer'];
+// The quick views in the menu. Each is a plain rule on dates and her own choices, cheap enough to count on every change.
+export function inView(view,job,today=dayNow()){
+ if(view==='archive')return OVER.includes(job.status);
+ if(OVER.includes(job.status))return false;
+ const days=daysUntil(reviewDeadline(job),today),closed=job.availability==='closed'||(days!==null&&days<0);
+ if(view==='shortlist')return !!job.saved;
+ if(view==='applications')return ['Check details','Preparing',...SENT].includes(job.status);
+ if(view==='followups')return !!job.followUp;
+ if(view==='closing')return !closed&&days!==null&&days<=7&&!SENT.includes(job.status)&&!job.applied;
+ if(view==='new')return !!job.addedOn&&daysUntil(job.addedOn,today)>=-6;
+ if(view==='high')return job.priority==='P1';
+ if(view==='closed')return closed;
+ return true;
+}
 export function selectJobs(jobs,{view='all',scope='parttime',source='',search='',sort='priority',status='',tag=''},profile=DEFAULT_PROFILE,today=dayNow()){
  const q=search.toLowerCase().trim();
- let rows=jobs.map(job=>{const match=assess(job,profile,today);return {job,match,priority:assessPriority(job,match,today)};}).filter(({job,match,priority})=>{
-  if(view==='archive'&&!['Archived','Rejected'].includes(job.status))return false;
-  if(view!=='archive'&&['Archived','Rejected'].includes(job.status))return false;
-  if(view==='shortlist'&&!job.saved)return false;
-  if(view==='applications'&&!['Check details','Preparing','Applied','Interview','Offer'].includes(job.status))return false;
-  if(view==='followups'&&!job.followUp)return false;
+ // A listing joined to another job is shown once, as that job.
+ const repeats=view==='repeats'?repeatsOf(jobs):null;
+ let rows=jobs.filter(job=>!job.sameAs&&inView(view,job,today)&&(!repeats||repeats.has(job.id))).map(job=>{const match=assess(job,profile,today);return {job,match,priority:assessPriority(job,match,today)};}).filter(({job,match,priority})=>{
   if(view==='all'&&scope==='parttime'&&(!(match.parttime||match.hoursFit||job.track?.startsWith('A -'))||match.early||match.unpaid||match.contractor||match.closed))return false;
   // Everything a check has seen open or possibly open, whatever its hours.
   if(view==='all'&&scope==='apply'&&priority.section>3)return false;
@@ -125,6 +159,10 @@ export function selectJobs(jobs,{view='all',scope='parttime',source='',search=''
  });
  rows.sort((a,b)=>{
   if(view==='followups'){const due=(a.job.followUp||'9999').localeCompare(b.job.followUp||'9999');if(due)return due;}
+  if(view==='closing'){const due=(reviewDeadline(a.job)||'9999').localeCompare(reviewDeadline(b.job)||'9999');if(due)return due;}
+  if(view==='new'){const added=(b.job.addedOn||'').localeCompare(a.job.addedOn||'');if(added)return added;}
+  // The listings of one job side by side.
+  if(view==='repeats'){const key=j=>employerKey(j.company)+'|'+roleKey(j.role);const pair=key(a.job).localeCompare(key(b.job));if(pair)return pair;}
   if(sort==='location'&&a.match.loc!==b.match.loc)return b.match.loc-a.match.loc;
   if(sort==='effort'&&a.match.effort!==b.match.effort)return b.match.effort-a.match.effort;
   if(sort==='deadline'){if(a.match.closed!==b.match.closed)return Number(a.match.closed)-Number(b.match.closed);const deadline=(reviewDeadline(a.job)||'9999').localeCompare(reviewDeadline(b.job)||'9999');if(deadline)return deadline;}

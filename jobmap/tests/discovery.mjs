@@ -22,7 +22,9 @@ r=await store.ingest({runId:'test-unchanged',jobs:[{...vacancy,salary:'£30 per 
 await assert.rejects(store.ingest({runId:'bad',jobs:[vacancy,{...vacancy,url:'javascript:alert(1)'}]},4),/http/);assert.equal(store.state.revision,4);
 await assert.rejects(store.ingest({runId:'bad-date',jobs:[{...vacancy,checked:'2026-02-30'}]},4),/valid date/);
 await assert.rejects(store.ingest({runId:'personal-fields',jobs:[{...vacancy,notes:'overwrite'}]},4),/Invalid evidence field/);
-r=await store.ingest({runId:'possible-duplicate',jobs:[{...vacancy,url:'https://another.example.org/different'}]},4);assert.equal(r.added.length,0);assert.equal(r.skipped.length,1);
+// The same vacancy from another site is kept with the saved job, which stays shown once.
+r=await store.ingest({runId:'possible-duplicate',jobs:[{...vacancy,url:'https://another.example.org/different',source:'jobs.ac.uk'}]},4);assert.equal(r.added.length,0);assert.equal(r.skipped.length,0);assert.equal(r.joined.length,1);
+assert.equal(store.jobs().length,981);assert.deepEqual(store.jobs().find(j=>j.id===id).alsoListed.map(a=>a.source),['jobs.ac.uk']);assert.equal(store.state.importRuns.at(-1).joined,1);
 r=await store.ingest({runId:'old-evidence',jobs:[{...vacancy,checked:'2026-09-10'}]},5);assert.equal(r.skipped.length,1);
 r=await store.ingest({runId:'closed',jobs:[{...vacancy,availability:'closed',checked:'2026-09-18'}]},6);assert.equal(r.updated.length,1);assert.equal(assess(store.jobs().find(j=>j.id===id)).closed,true);assert.equal(store.jobs().find(j=>j.id===id).status,'Interview');
 const reopened=await new Store(base,dir).init();assert.equal(reopened.jobs().find(j=>j.id===id).availability,'closed');assert.equal(reopened.state.importRuns.length,6);

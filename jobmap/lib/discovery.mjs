@@ -1,5 +1,6 @@
 import {randomUUID} from 'node:crypto';
 import {calendarDay} from './job-dates.mjs';
+import {sameVacancy} from './matching.mjs';
 
 const limits={role:500,company:300,url:4000,location:1000,salary:3000,hours:500,deadline:10,advertisedOn:10,description:100000,employment:1000,stack:3000,watch:5000,reason:5000,checked:10,source:200,sourceDetail:1000,availability:20};
 const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
@@ -24,7 +25,7 @@ export function validateObservation(raw,validatePatch){
 }
 export function planImport(state,base,raw,validatePatch){
  if(!object(raw)||typeof raw.runId!=='string'||!raw.runId.trim()||raw.runId.length>200||!Array.isArray(raw.jobs)||raw.jobs.length>100)throw new Error('Use a runId and up to 100 jobs.');
- if(state.importRuns?.some(r=>r.id===raw.runId))return {repeated:true,added:[],updated:[],skipped:[],state};
+ if(state.importRuns?.some(r=>r.id===raw.runId))return {repeated:true,added:[],updated:[],skipped:[],joined:[],state};
  const entries=raw.jobs.map(entry=>{
   if(!object(entry))throw new Error('Invalid job.');
   const {existingId,...fields}=entry;
@@ -34,12 +35,19 @@ export function planImport(state,base,raw,validatePatch){
   return {existingId,value};
  });
  const next=structuredClone(state);next.observations??={};next.importRuns??=[];
- const records=[...base,...next.customJobs];const added=[],updated=[],skipped=[];
+ const records=[...base,...next.customJobs];const added=[],updated=[],skipped=[],joined=[];
  for(const {existingId,value}of entries){
   const current=records.map(j=>({...j,...next.observations[j.id],...next.overrides[j.id]}));
   let matches=existingId?current.filter(j=>j.id===existingId):current.filter(j=>canonicalUrl(j.url)===canonicalUrl(value.url));
   if(existingId&&!matches.length)throw new Error('Unknown existing job ID: '+existingId);
-  if(!matches.length&&value.location){const possible=current.filter(j=>identity(j)===identity(value));if(possible.length){skipped.push({role:value.role,ids:possible.map(j=>j.id),reason:'Possible duplicate with another link. Verify vacancy identity, then supply existingId if it is the same job.'});continue;}}
+  // The same vacancy saved from another site: the new link is kept with that job, which stays shown once.
+  let joinTo=null;
+  if(!matches.length){
+   const same=current.filter(j=>!j.sameAs&&sameVacancy(j,{id:'',...value}));
+   if(same.length===1&&value.availability!=='closed')joinTo=same[0].id;
+   else if(same.length>1){skipped.push({role:value.role,ids:same.map(j=>j.id),reason:'Possible duplicate with another link. Verify vacancy identity, then supply existingId if it is the same job.'});continue;}
+   else if(value.location){const possible=current.filter(j=>identity(j)===identity(value));if(possible.length){skipped.push({role:value.role,ids:possible.map(j=>j.id),reason:'Possible duplicate with another link. Verify vacancy identity, then supply existingId if it is the same job.'});continue;}}
+  }
   if(matches.length>1){skipped.push({role:value.role,reason:'Multiple existing records match; review their IDs.'});continue;}
   if(matches.length){
    const job=matches[0],prior=next.observations[job.id];
@@ -54,9 +62,11 @@ export function planImport(state,base,raw,validatePatch){
    if(value.availability==='closed'){skipped.push({role:value.role,reason:'Closed vacancy was not added.'});continue;}
    const job={id:'CUSTOM-'+randomUUID(),rank:base.length+next.customJobs.length+1,status:'To review',priority:'P2',salary:'',hours:'',location:'',deadline:'',employment:'',stack:'',watch:'',reason:'',notes:'',description:'',fields:{},links:[],coverage:'Scheduled search',track:'',...value};
    job.addedOn=calendarDay();
-   next.customJobs.push(job);records.push(job);next.overrides[job.id]={saved:true};added.push(job.id);
+   next.customJobs.push(job);records.push(job);
+   if(joinTo){const to=current.find(j=>j.id===joinTo);next.overrides[job.id]={sameAs:joinTo,history:[{at:new Date().toISOString(),label:'Shown as the listing on '+String(to.source||'another site').slice(0,80)}]};joined.push({id:job.id,joinedTo:joinTo,role:value.role});}
+   else{next.overrides[job.id]={saved:true};added.push(job.id);}
   }
  }
- next.importRuns.push({id:raw.runId,at:new Date().toISOString(),added:added.length,updated:updated.length,skipped:skipped.length});next.importRuns=next.importRuns.slice(-200);
- return {state:next,repeated:false,added,updated,skipped};
+ next.importRuns.push({id:raw.runId,at:new Date().toISOString(),added:added.length,updated:updated.length,skipped:skipped.length,joined:joined.length});next.importRuns=next.importRuns.slice(-200);
+ return {state:next,repeated:false,added,updated,skipped,joined};
 }

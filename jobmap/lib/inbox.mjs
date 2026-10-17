@@ -65,7 +65,7 @@ export class Inbox {
      if (error.status !== 409 || attempt === 3) throw error;
     }
    }
-   const counts = `${result.added.length} added, ${result.updated.length} updated, ${result.skipped.length} skipped`;
+   const counts = `${result.added.length} added, ${result.updated.length} updated, ${result.skipped.length} skipped${result.joined?.length ? `, ${result.joined.length} joined to a job already saved` : ''}`;
    await this.retire(file, name, this.processed);
    await this.note(`- ${at} · ${name} · ${result.repeated ? 'already imported, no change' : counts}`);
    return {name, ok: true, repeated: result.repeated, added: result.added.length, updated: result.updated.length, skipped: result.skipped};

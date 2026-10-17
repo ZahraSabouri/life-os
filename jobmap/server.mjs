@@ -47,6 +47,16 @@ const server=http.createServer(async(req,res)=>{
   if(url.pathname==='/api/discoveries'&&req.method==='POST'){const b=await body(req);json(res,await store.ingest(b.batch,b.revision,b.dryRun===true));return;}
   if(url.pathname==='/api/inbox'&&req.method==='GET'){const folders=await Promise.all(inboxes.map(inbox=>inbox.status()));json(res,{...folders[0],folders,waiting:folders.flatMap(f=>f.waiting)});return;}
   if(url.pathname==='/api/inbox/scan'&&req.method==='POST'){await body(req);const scans=await Promise.all(inboxes.map(inbox=>inbox.scan()));json(res,{busy:scans.some(s=>s.busy),results:scans.flatMap(s=>s.results)});return;}
+  // Two listings of one job: join them (the job shown keeps a copy of the other's files), or show one on its own again.
+  const pair=/^\/api\/jobs\/([^/]+)\/(join|separate)$/.exec(url.pathname);
+  if(pair&&req.method==='POST'){
+   const id=decodeURIComponent(pair[1]),b=await body(req);
+   if(pair[2]==='separate'){json(res,await store.separate(id,b.revision));return;}
+   store.check(b.revision);const all=store.all(),keep=all.find(j=>j.id===id),other=all.find(j=>j.id===b.other);const copied=[];
+   try{for(const f of other&&keep&&!other.sameAs&&!keep.sameAs?other.files||[]:[])if(!(keep.files||[]).some(k=>k.id===f.id)){await files.copy(other.id,keep.id,f.id);copied.push(f.id);}json(res,await store.join(id,b.other,b.revision));}
+   catch(error){for(const f of copied)await files.remove(id,f).catch(()=>{});throw error;}
+   return;
+  }
   // Files kept with a job: add one, open one, remove one.
   const kept=/^\/api\/jobs\/([^/]+)\/files(?:\/([\w-]+))?$/.exec(url.pathname);
   if(kept){
@@ -59,8 +69,8 @@ const server=http.createServer(async(req,res)=>{
   if(url.pathname==='/api/preferences'&&req.method==='PUT'){const b=await body(req);json(res,await store.preferences(b.preferences,b.revision));return;}
   if(url.pathname==='/api/jobs'&&req.method==='POST'){const b=await body(req);json(res,await store.add(b.job,b.revision),201);return;}
   if(url.pathname.startsWith('/api/jobs/')&&req.method==='PATCH'){const b=await body(req);json(res,await store.patch(decodeURIComponent(url.pathname.slice(10)),b.patch,b.revision));return;}
-  if(url.pathname==='/api/backup'&&req.method==='GET'){res.setHeader('Content-Disposition',`attachment; filename="JobMap-backup-${new Date().toISOString().slice(0,10)}.json"`);json(res,await files.withFiles(store.export(),store.jobs()));return;}
-  if(url.pathname==='/api/restore'&&req.method==='POST'){const b=await body(req,90*1024*1024);const result=await store.restore(b.backup,b.revision);await files.putBack(b.backup,result.jobs);json(res,result);return;}
+  if(url.pathname==='/api/backup'&&req.method==='GET'){res.setHeader('Content-Disposition',`attachment; filename="JobMap-backup-${new Date().toISOString().slice(0,10)}.json"`);json(res,await files.withFiles(store.export(),store.all()));return;}
+  if(url.pathname==='/api/restore'&&req.method==='POST'){const b=await body(req,90*1024*1024);const result=await store.restore(b.backup,b.revision);await files.putBack(b.backup,store.all());json(res,result);return;}
   // Her documents folder: what is in it, and which folder and main CV she chose.
   if(url.pathname==='/api/documents'&&req.method==='GET'){const documents=store.state.documents||{root:'',mainCv:''};let listing=null,problem='';if(documents.root){try{listing=await listDocuments(documents.root,url.searchParams.get('dir')||'');}catch(error){problem=error.message;}}json(res,{documents,listing,problem,revision:store.state.revision});return;}
   if(url.pathname==='/api/documents'&&req.method==='PUT'){const b=await body(req);json(res,await store.documents(b.documents,b.revision));return;}

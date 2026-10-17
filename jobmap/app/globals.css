@@ -36,3 +36,23 @@ button.my-tag{cursor:pointer;color:var(--blue)}button.my-tag:hover{border-color:
 .documents-folder:hover,.documents-job:hover b{text-decoration:underline}.documents-job{display:grid;gap:0;flex:1 1 220px}.documents-job span{font-weight:400;color:var(--muted);font-size:14px}
 .documents-file{flex:1 1 220px;min-width:0;overflow-wrap:anywhere}.documents-file em{margin-left:8px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);font-style:normal;font-size:11px;font-weight:600;color:var(--muted)}.documents-file em.main{border-color:var(--blue);color:var(--blue)}
 .documents .caption{margin:0}.kept-main{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 14px}
+
+/* The menu's sections, and a menu that scrolls when the window is short. */
+.nav-group{font-size:.6875rem;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:#96a3bc;margin:20px 14px 6px}
+@media(min-width:721px){.sidebar{overflow-y:auto;scrollbar-width:thin;padding-left:12px;padding-right:12px}.sidebar .nav{padding:10px 12px;margin:2px 0;gap:10px}.sidebar .nav span{line-height:1.3}.sidebar-tools{margin-top:24px;padding-top:14px}}
+@media(max-width:720px){.nav-group{display:none}}
+/* Other sites with the same job, and listings that may be the same job. */
+.listings{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 16px;font-size:.8125rem}
+.listings.maybe{border-color:color-mix(in srgb,var(--amber,#c68a2e) 45%,var(--line));background:color-mix(in srgb,var(--amber,#c68a2e) 6%,transparent)}
+.listings b{display:block;font-weight:600;margin-bottom:6px}
+.listings ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.listings li{display:grid;gap:3px;min-width:0;overflow-wrap:anywhere}
+.listings .caption{margin:0}
+.listing-name{font-weight:600}
+.listing-name a{display:inline-flex;align-items:center;gap:4px}
+.listing-actions{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:3px}
+.listing-actions .subtle{padding:5px 10px;font-size:.8125rem}
+/* Room for the menu's longer names on one line. */
+@media(min-width:1180px){.shell{grid-template-columns:240px minmax(0,1fr)}.shell.has-detail{grid-template-columns:240px minmax(410px,1fr) 420px}}
+@media(min-width:1650px){.shell.has-detail{grid-template-columns:250px minmax(600px,1fr) 460px}}
+@media(min-width:721px) and (max-width:1179px){.shell,.shell.has-detail{grid-template-columns:220px minmax(0,1fr)}}

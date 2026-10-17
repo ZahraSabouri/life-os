@@ -1,4 +1,4 @@
-import {mkdir,writeFile,readFile,unlink} from 'node:fs/promises';
+import {mkdir,writeFile,readFile,unlink,copyFile,constants} from 'node:fs/promises';
 import path from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
 
@@ -55,5 +55,7 @@ export class JobFiles{
   return written;
  }
  read(jobId,id){if(!isId(id))throw refuse(404,'File not found.');return readFile(path.join(this.folder(jobId),id));}
+ // When two listings of one job are joined, the job shown keeps its own copy of each file.
+ async copy(fromJobId,toJobId,id){if(!isId(id))throw refuse(404,'File not found.');await mkdir(this.folder(toJobId),{recursive:true});await copyFile(path.join(this.folder(fromJobId),id),path.join(this.folder(toJobId),id),constants.COPYFILE_EXCL);}
  async remove(jobId,id){if(!isId(id))return;await unlink(path.join(this.folder(jobId),id)).catch(error=>{if(error.code!=='ENOENT')throw error;});}
 }

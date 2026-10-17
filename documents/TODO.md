@@ -330,6 +330,11 @@ Brief: `briefs/health-part.md`. Her words:
 - [ ] After the test: watch the recordings of the classes skipped that week (Week 3 MAT022 lectures, the CMT309 lecture of 22 October).
 - [ ] Classes marked as not attended show nowhere in the app: a "not going" state for one class that stays visible, if she wants it.
 
+## U. One job, shown once; more in JobMap's menu (17 October)
+- [x] "why are there duplicate job entities for the same job in the app? fix that.": the CTR job was saved twice, from Cardiff University's own vacancy site and from jobs.ac.uk, and the import only caught an exact match of employer, title and place. Now one vacancy on two sites shows once everywhere (JobMap, Today, the bell, the calendar, Review), with the other link under "Also listed on" and her work from both kept. 12 listings joined; imports and "Add job" join a repeat by themselves; the uncertain ones wait under "Possible repeats".
+- [x] "also, i need more options in the menu in the left side": Closing this week, New this week, High priority; Applying (Applications, Follow-ups); Tidy up (Possible repeats, Closed adverts, Archive); My categories once she uses any; Back up & restore beside My documents and Preferences.
+- [ ] She decides the 14 listings left under "Possible repeats" (regional graduate postings that may or may not be one job).
+
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
 > "when you click on [Life OS] … Click on the name above. It should, like directly direct to the main page, main URL. And if you click on a specific job role … on the today page … I should be able to kind of be directed to the same component … in the job map app." (12 October evening)

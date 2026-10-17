@@ -4,6 +4,15 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 17 October 2026 — one job, shown once (JobMap)
+
+- **A vacancy advertised on two sites is one job.** The second listing is kept, never deleted, and shown under the first ("Also listed on" with its link); every list, count, Today, the bell, the calendar and Review see one job. "Not the same job" shows it on its own again and remembers they differ.
+- **Joining keeps her work from both listings**: the star, the further status, the higher priority, the earliest applied and follow-up dates, both notes, all categories, links and files. An archived job stays archived unless she had started on the other listing.
+- **One rule decides "same job"** (`jobmap/lib/matching.mjs`, `sameVacancy`): same employer (the part before " - " or "(", without Ltd, Group, UK), same title (reference numbers ignored), places that can be the same (a region includes its towns; two towns are two places; UK-wide or remote fits any), and closing dates no more than 3 days apart. Imports and "Add job" join a new listing to the one job it matches; with two or more matches the import skips it for review as before. Possible matches that are not joined are listed under "Possible repeats" for her to decide.
+- **JobMap's menu gets quick views** (Closing this week, New this week, High priority, Closed adverts), sections (Applying, Tidy up, My categories) and Back up & restore. Each view is a plain rule on dates and her own choices (`inView`), counted on every change.
+
+---
+
 ## 15 October 2026 — Health as a part of its own (`briefs/health-part.md`)
 
 - **Health is a part of Life OS, not a fifth app in a frame.** Xar called it "the health mini app" the day after it was proposed as Body & Health. It is a page set of Life OS itself (`/health`), in the top bar and behind the Court's Body & Health tile, because what it keeps (sessions, appointments, results, measurements) are core entries that the calendar, Today and the bell already read.

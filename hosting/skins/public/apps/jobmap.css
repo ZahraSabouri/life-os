@@ -53,6 +53,10 @@ button:hover { background: var(--panel-2); }
 .brand span { width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--accent); box-shadow: var(--shadow-1); font-size: 20px; }
 .workspace-label, .eyebrow { font-family: var(--m-label-font); }
 .workspace-label { color: var(--muted); font-size: 10.5px; font-weight: 700; letter-spacing: var(--m-label-tracking); }
+/* The menu's section names (Applying, Tidy up, My categories), drawn as each style draws its labels. */
+.nav-group { font-family: var(--m-label-font); color: var(--muted); font-size: 10.5px; font-weight: 700; letter-spacing: var(--m-label-tracking); margin: 18px 12px 6px; }
+.listings { border-color: var(--line); border-radius: var(--radius); background: var(--panel); }
+.listings.maybe { border-color: color-mix(in srgb, var(--amber) 45%, var(--line)); background: color-mix(in srgb, var(--amber) 7%, var(--panel)); }
 .nav { color: var(--muted); border: 1px solid transparent; border-radius: var(--m-radius-nav) !important; font-weight: 600; font-size: 0.86rem; }
 .nav:hover { background: var(--accent-soft); color: var(--ink); }
 .nav.active { background: var(--m-nav-active-bg); color: var(--m-nav-active-ink); box-shadow: var(--m-nav-active-mark); }

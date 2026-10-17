@@ -390,6 +390,17 @@ const RECIPES = {
     await part('jobmap-application.jpg', section, { pad: 14 })
   },
   'jobmap-add.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await frame.locator('button', { hasText: 'Add job' }).first().click(); await settle(800); await view('jobmap-add.jpg') },
+  'jobmap-closing.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await frame.locator('.sidebar .nav', { hasText: 'Closing this week' }).click(); await settle(1000); await view('jobmap-closing.jpg', { on: frame, marks: ['text:Closing this week', 'text:New this week', 'text:High priority', 'text:Closed adverts'] }) },
+  'jobmap-repeats.jpg': async () => {
+    await go('/jobmap')
+    const frame = await jobmap()
+    await frame.locator('.sidebar .nav', { hasText: 'Possible repeats' }).click()
+    await settle(1000)
+    await frame.locator('.job-row .job-open').first().click()
+    await frame.locator('.listings.maybe').waitFor()
+    await settle(600)
+    await view('jobmap-repeats.jpg', { on: frame, marks: ['text:Possible repeats', '.listings.maybe .subtle', '.listings.maybe .listing-actions .text-button'] })
+  },
   'jobmap-shortlist.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await frame.locator('.sidebar button, .sidebar a', { hasText: 'Shortlist' }).first().click(); await settle(1000); await view('jobmap-shortlist.jpg') },
   'jobmap-documents.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await frame.locator('.sidebar button', { hasText: 'My documents' }).click(); await frame.locator('.documents-list li, .documents-root').first().waitFor(); await settle(1200); await view('jobmap-documents.jpg', { on: frame, marks: ['.documents-root input', '.documents-main', '.documents-list', '.documents-applied'] }) },
   'jobmap-archive.jpg': async () => { await go('/jobmap'); const frame = await jobmap(); await frame.locator('.sidebar button', { hasText: 'Archive' }).first().click(); await settle(1000); await view('jobmap-archive.jpg') },
