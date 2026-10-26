@@ -4,6 +4,16 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 26 October 2026 — the plan after Test 1, to 31 December
+
+- **Job-application time stays three hours every day** (her answer, 26 October), through the Test 2 fortnight; study fits around it, 2 to 6 hours a day.
+- **The plan is detailed only as far as what is known.** Cards are minute by minute up to 13 November (Test 2 and the project); after that each module has one card a week with its blocks, because the materials, jobs, events and shopping change daily (her words). A Sunday weekly reset and a Saturday catch-up block are where the plan moves. This replaces the 12 October plan's later cards.
+- **The CMT309 coursework is planned to finish by 17 December**, the earlier of the school calendar (17 December) and the submission portal (27 December, 23:59), until the module leader says which is right.
+- **Past items:** what is over is marked done (the Test 1 week's cards, past job time); what can no longer be done is removed or archived (cards tied to the test day, old-plan cards with no progress, saved jobs past their closing dates without an application). Archived jobs stay in JobMap's Archive.
+- **Budget's cupboards are emptied as of 26 October** (food and drink only), and the September stock-up is counted over the two months it fed, so November starts with nothing already counted.
+
+---
+
 ## 17 October 2026 — one job, shown once (JobMap)
 
 - **A vacancy advertised on two sites is one job.** The second listing is kept, never deleted, and shown under the first ("Also listed on" with its link); every list, count, Today, the bell, the calendar and Review see one job. "Not the same job" shows it on its own again and remembers they differ.

@@ -327,13 +327,28 @@ Brief: `briefs/health-part.md`. Her words:
 - [x] "if we're not applying for jobs in that period": job time Sunday to Thursday cancelled (kept); Friday evening, after the test, stays.
 - [x] "only studying for the exam and attending 1 session of each of the two modules that week": the CMT309 practical on Thursday and the MAT022 lecture on Friday (the test); the other classes marked as not attended.
 - [x] "consider our prevous comversation and my preferences in studying and and planning for days": at most six hours a day, 90-minute blocks with breaks, lunch and dinner kept, Sunday until 18:00, evenings free.
-- [ ] After the test: watch the recordings of the classes skipped that week (Week 3 MAT022 lectures, the CMT309 lecture of 22 October).
+- [x] After the test: watch the recordings of the classes skipped that week (Week 3 MAT022 lectures, the CMT309 lecture of 22 October). On the plan from 28 October (section V).
 - [ ] Classes marked as not attended show nowhere in the app: a "not going" state for one class that stays visible, if she wants it.
 
 ## U. One job, shown once; more in JobMap's menu (17 October)
 - [x] "why are there duplicate job entities for the same job in the app? fix that.": the CTR job was saved twice, from Cardiff University's own vacancy site and from jobs.ac.uk, and the import only caught an exact match of employer, title and place. Now one vacancy on two sites shows once everywhere (JobMap, Today, the bell, the calendar, Review), with the other link under "Also listed on" and her work from both kept. 12 listings joined; imports and "Add job" join a repeat by themselves; the uncertain ones wait under "Possible repeats".
 - [x] "also, i need more options in the menu in the left side": Closing this week, New this week, High priority; Applying (Applications, Follow-ups); Tidy up (Possible repeats, Closed adverts, Archive); My categories once she uses any; Back up & restore beside My documents and Preferences.
 - [ ] She decides the 14 listings left under "Possible repeats" (regional graduate postings that may or may not be one job).
+
+## V. The reset after Test 1, and the plan to 31 December (26 October)
+- [x] "lets work on new weeks and months until the end of december … make a fire plan for everything": Study hub plan from 27 October to 31 December: Test 2 lecture by lecture to 6 November, the project to 13 November, then CMT309 and MAT021 week by week, with a buffer and January's planning at the end.
+- [x] "for the statistics next exam … I absolutely need to study better": Test 2 is 6 November and covers Weeks 3 and 4 only (MLE and MAP, hypothesis tests, regression); every hw3 problem, the Week 3 lab, a timed mixed set, a repair, a 50-minute practice test with marking, two office-hours visits.
+- [x] "pay attention to the python project", "havent studied cmt309 at all": CMT309 from Week 1; the eight coursework notebooks set against the weeks they need; finished by 17 December (portal 27 December).
+- [x] "mark undone tasks done and remove the ones that cannot be done": Test 1 week cards done; 32 old-plan cards (no progress) deleted; past job time and plans done; 25 closed saved jobs archived in JobMap.
+- [x] "reset and start freshly for the next months expenses … empty cupboards since i used everything i had": all food and drink used up in Budget; past planned meals skipped; November starts at £0 counted.
+- [x] "the clearest image of most urgent upcoming events exams and works and applies and attendences … in the coming week": given in the conversation; the careers fair and the school CV session are on the calendar as optional plans.
+- [x] "and also empty today", "only job applying for today": no study on 26 October; job time and a list of the four roles to apply to first.
+- [x] "I need the app to run on the windows startup": it already does (started 28 seconds after sign-in today); silent, at her choice.
+- [x] "Cardiff life app is updated but the life os Cardiff life hasn't": Codex's sync of 15:16 brought it level (132 events in both).
+- [x] "we cannot have tightest fix plan": weekly cards after 13 November, a Sunday weekly reset and a Saturday catch-up block.
+- [ ] When Week 4 MAT022 materials, hw4 and the project brief are saved, name them on their cards.
+- [ ] **(Xar)** Ask whether the CMT309 coursework is due on 17 or 27 December (card on 29 October).
+- [ ] Possible app change: an assessment of kind "test" shows on the calendar at its end time, like a deadline; only "exam" shows at its own time.
 
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
