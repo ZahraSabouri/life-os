@@ -9,6 +9,18 @@ JobMap now runs inside Life OS: double-click **Start Life OS.cmd** in the Life_O
 - Open a job to change its status, notes, priority and dates, read its full saved advert or open the original link. Text fields save automatically. Wait for **Saved locally** before closing.
 - **Preferences:** edit your matching skills, role focus and preferred hours. Download or restore a full workspace backup here.
 
+## Progress, the board, gaps and Write it with Claude (28 October 2026)
+
+- **Progress** (menu → Applying): what is worth a look now (offers, interviews, follow-ups due, applications being prepared, applications with no reply for 14 days, starred jobs closing within a week), how far your applications got, where they stand, and the last 12 weeks. It only reads your jobs.
+- **Board** (Applications → Board): a column for each stage. Change a card's stage with its menu, or drag it on a big screen; Undo works as it does everywhere. List or Board is remembered in this browser.
+- **Gaps** (open a job → Why this match): the tech named in the saved advert that your skills do not list. It matches words; it does not tell essential from desirable.
+- **Write it with Claude** (open a job): Tailored CV, Cover letter, Email to send or Interview prep. JobMap copies a prompt (the advert, your skills, and rules to use only facts from your CV and to list the gaps) and opens a new claude.ai chat. Paste it, attach your CV and send. Nothing leaves JobMap until you do.
+- **Outcome, Feedback and Decided on** (Xar, 27 October) record what the employer came back with, apart from the stage, so a job can be Applied with outcome Rejected. Views for Waiting on a reply, Interviews, Offers and Rejected, a documents filter, and filters that stay put came with them. All jobs lists live adverts only; closed ones are under Closed adverts.
+
+## Life OS owns the data (28 October 2026)
+
+Since 27 October only this copy is developed and searched into. On 28 October the saved workspace moved here: `data/workspace/progress.json` in this folder, written only by the JobMap server Life OS starts (port 47852, public at http://127.0.0.1:47850/apps/jobmap/). The move used JobMap's own backup and restore, and all 1,195 jobs compared equal afterwards. The standalone `Documents\JobMap\Career Agent\JobMap App` is kept as it was on 28 October, as a fallback. Do not start its server: its own connection still lists this folder's inbox. The sections below about two apps sharing one workspace are history.
+
 The app runs on this computer. It does not submit applications or contact employers. The local Codex scheduled search can add and refresh verified jobs through the importer described in SCHEDULED_SEARCH.md. Original adverts may require a Cardiff or job-board login. The initial collection was saved on 13 September 2026.
 
 Matching is an explainable review aid based on the July 2026 UK CV skills, advertised role, location, hours, and known constraints. It does not infer hiring probability, sponsorship, legal work permission or an exact commute. “Easier to apply” ranks only the application steps captured in the advert. Missing source evidence stays unknown.
@@ -72,3 +84,7 @@ The owning workspace is `data/workspace/progress.json` under the standalone app.
 Search findings and inbox receipts stay in each app's own folders. The owner polls both inboxes; duplicate runIds change the workspace once, and each queued file gets its own processed/failed receipt and import log entry. Scheduled searches must continue saving and validating findings for both copies. A repeated batch reported as unchanged is already in their shared workspace.
 
 The initial merge used `reconcile-workspace.mjs` through revision-protected APIs, with recovery snapshots of both originals and the proposed merge. It combines compatible explicit choices, preserves notes and activity, uses the first known Added date across the apps, and refuses conflicting explicit values. It does not copy either progress file over the other. Original per-copy dates remain in the recovery snapshots.
+
+## Credits
+
+Progress, the board, the advert's gaps and Write it with Claude are ideas from **Dossier** by AienTech (https://github.com/AienTech/dossier; version 1.9.2, read on 27 October 2026), a self-hosted job-search app licensed under the GNU Affero General Public License v3.0. They were written again for JobMap's own data and stages. No Dossier code, text or images were copied. The code that carries these ideas names Dossier in its comments (`lib/insights.mjs`, `app/page.tsx`).

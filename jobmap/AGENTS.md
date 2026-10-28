@@ -1,4 +1,13 @@
-# JobMap: two maintained copies
+# Life OS JobMap only, and it owns its data (27–28 October 2026)
+
+Zahra, 27 October: "we only will work on the life os job map from now on". Develop, search into and queue only `C:\Users\ctrlz\Documents\Personal\Projects\Life_OS\jobmap`. On 28 October, at her choice, the saved workspace moved here: `data/workspace-connection.json` names this folder as the owner, served by the JobMap server Life OS starts (http://127.0.0.1:47852; public at http://127.0.0.1:47850/apps/jobmap/api/). The move used JobMap's own backup and restore, and all 1,195 jobs compared equal afterwards (backups in `Life_OS_backups/jobmap-move-2026-10-28/`).
+
+- The standalone `JobMap\Career Agent\JobMap App` is a frozen fallback as of 28 October (revision 103). Do not start its server, run its scripts or write to it: its own connection still lists this folder's inbox, so a running standalone would import Life OS batches into the old workspace. Archiving or deleting it is her step.
+- `check-parity.mjs`, `reconcile-sources.mjs` and `reconcile-workspace.mjs` compare two copies and no longer apply. The copies differ on purpose.
+- The sections below about maintaining both copies and the shared workspace are superseded. Their data rules still hold: never copy progress files, preserve her edits, respect revision checks.
+- Ideas from Dossier (https://github.com/AienTech/dossier, AGPL-3.0) were written again, not copied; credit is in README.md. Keep it that way: copying its code would bring its licence with it.
+
+# JobMap: two maintained copies (superseded 27 October 2026)
 
 ## Tech-only job search scope (9 October 2026)
 

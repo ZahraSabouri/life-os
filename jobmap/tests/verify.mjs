@@ -39,15 +39,20 @@ assert(assess({...simple,description:'Paid role including unpaid parental leave.
 assert(assess({...simple,employment:'Self-employed freelancer'}).score<=30);
 assert(assess({...simple,role:'2027 Graduate Software Engineer'}).score<=35);
 assert(assess({...simple,deadline:'2020-01-01'}).closed);
-assert.equal(selectJobs(base,{scope:'all',source:'Student Futures'}).length,772);
+// All jobs is the live list: closed adverts are counted and shown under Closed adverts instead.
+{const live=selectJobs(base,{scope:'all',source:'Student Futures'}),shut=selectJobs(base,{scope:'all',view:'closed',source:'Student Futures'});
+ assert.equal(live.length+shut.length,772);assert(live.length>0&&shut.length>0);
+ assert(live.every(x=>!x.match.closed));
+ assert.equal(selectJobs(base,{scope:'all',view:'archive',source:'Student Futures'}).filter(x=>live.some(l=>l.job.id===x.job.id)).length,0);}
 assert(selectJobs(base,{scope:'parttime'}).every(x=>!x.match.early&&!x.match.unpaid&&!x.match.closed&&!x.match.contractor));
 // Her own categories, the folder with her files and her own links are kept with a job.
+// Category and search filtering is checked in the category view, which still includes closed adverts.
 {const kept=await mkdtemp(fileURLToPath(new URL('../data/test-workspace-',import.meta.url)));const mine=await new Store(base,kept).init();
  const saved=await mine.patch('SF-333ZL',{tags:'NHS,  remote ; nhs\nDream job',folder:'C:\\Applications\\Example',attachments:'Portal | https://example.org/apply\nC:\\Applications\\Example\\cv.pdf'},0);
  assert.deepEqual(tagsOf(saved.job),['NHS','remote','Dream job']);assert.equal(saved.job.folder,'C:\\Applications\\Example');assert.match(saved.job.attachments,/^Portal \| https/);
  assert.deepEqual([mine.jobs().find(j=>j.id==='IMP-001').tags,tagsOf({}),tagsOf({tags:' , '})],['',[],[]]);
- assert.deepEqual(selectJobs(mine.jobs(),{scope:'all',tag:'remote'}).map(x=>x.job.id),['SF-333ZL']);assert.equal(selectJobs(mine.jobs(),{scope:'all',tag:'nobody'}).length,0);
- assert.deepEqual(selectJobs(mine.jobs(),{scope:'all',search:'dream'}).map(x=>x.job.id).includes('SF-333ZL'),true);
+ assert.deepEqual(selectJobs(mine.jobs(),{scope:'all',view:'category',tag:'remote'}).map(x=>x.job.id),['SF-333ZL']);assert.equal(selectJobs(mine.jobs(),{scope:'all',view:'category',tag:'nobody'}).length,0);
+ assert.deepEqual(selectJobs(mine.jobs(),{scope:'all',view:'category',search:'dream'}).map(x=>x.job.id).includes('SF-333ZL'),true);
  assert.throws(()=>validatePatch({tags:'x'.repeat(501)}));assert.throws(()=>validatePatch({folder:7}));
  const again=await new Store(base,kept).init();assert.equal(again.jobs().find(j=>j.id==='SF-333ZL').tags,saved.job.tags);
  const ran=[];const opened=await openFolder(kept,{run:(command,args)=>{ran.push([command,args]);return {unref(){}}},platform:'win32'});

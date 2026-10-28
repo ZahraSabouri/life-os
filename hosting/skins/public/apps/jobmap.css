@@ -202,3 +202,23 @@ summary:after { color: var(--muted); }
 @media (max-width: 720px) {
   .sidebar { border-right: 0; border-bottom: 1px solid var(--line); }
 }
+
+/* ---- Progress, the board, gaps and Write it with Claude ---- */
+.progress-card { border: var(--m-card-outline); border-top: var(--m-card-outline-top); border-radius: var(--radius-lg); background: var(--m-card-fill); box-shadow: var(--shadow-1); }
+.progress-head h2 { font-family: var(--font-serif); font-weight: 600; }
+.progress-figures dd { font-family: var(--font-num); }
+.attention li { border-top-color: var(--line); }
+.attention button { border-radius: var(--radius-sm); }
+.attention button:hover { background: color-mix(in srgb, var(--accent) 6%, var(--panel)); }
+.attention-action { color: var(--accent-strong); }
+.soon-pill { border-radius: var(--radius-pill); background: color-mix(in srgb, var(--amber) 16%, var(--panel)); color: color-mix(in srgb, var(--amber) 70%, var(--ink)); }
+.bar-track { background: var(--panel-2); }
+.bar, .week-bars i { background: var(--accent); }
+.week-bars { border-bottom-color: var(--line-strong); }
+.week-table th, .week-table td { border-bottom-color: var(--line); }
+.board-column { background: var(--panel-2); border-color: var(--line); border-radius: var(--radius-lg); }
+.board-column.drop { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.board-card { background: var(--panel); border-color: var(--line); border-radius: var(--radius); box-shadow: var(--shadow-1); }
+.board-card select, .claude-prompt textarea { background: var(--panel); border-color: var(--line-strong); border-radius: var(--radius-sm); color: var(--ink); }
+.skill-tags.gap-tags span { background: color-mix(in srgb, var(--amber) 14%, var(--panel)); color: color-mix(in srgb, var(--amber) 72%, var(--ink)); border-radius: var(--radius-pill); }
+.board-outcome { border-radius: var(--radius-pill); background: var(--panel-2); color: var(--muted); }

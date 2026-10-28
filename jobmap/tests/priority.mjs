@@ -17,7 +17,8 @@ for(const lower of excluded)assert.equal(ids([lower,job('viable')])[0],'viable',
 assert(assess(excluded.at(-1),DEFAULT_PROFILE,today).overHours);
 assert.equal(assessPriority(urgent,assess(urgent,DEFAULT_PROFILE,today),today).urgency,0);
 assert.equal(assessPriority(job('unknown'),assess(job('unknown'),DEFAULT_PROFILE,today),today).urgency,8);
-assert.equal(selectJobs([urgent],{scope:'all'},DEFAULT_PROFILE,'2026-10-10')[0].priority.group,4);
+// Its deadline has passed by this date, so it is read in the Closed adverts view; All jobs is live only.
+assert.equal(selectJobs([urgent],{scope:'all',view:'closed'},DEFAULT_PROFILE,'2026-10-10')[0].priority.group,4);
 const conflict=job('conflict',{deadline:'2026-10-12',watch:'Advert text says apply by 9 October 2026; board metadata says 12 October 2026'});
 assert.equal(selectJobs([conflict],{scope:'all'},DEFAULT_PROFILE,today)[0].priority.urgency,0);
 assert.equal(selectJobs([{...conflict,userEditedDeadline:true}],{scope:'all'},DEFAULT_PROFILE,today)[0].priority.urgency,3);
@@ -48,7 +49,8 @@ assert.equal(rated(job('sent',{status:'Applied',checked:'2026-09-13'})).availabi
 assert.deepEqual(ids([job('later-due',{followUp:'2026-10-11',deadline:today}),job('overdue',{followUp:'2026-10-08'})],{view:'followups'}),['overdue','later-due']);
 assert.deepEqual(ids([job('starred',{saved:true}),job('not-starred')],{view:'shortlist'}),['starred']);
 assert.equal(selectJobs(excluded,{scope:'parttime'},DEFAULT_PROFILE,today).some(r=>r.match.closed||r.match.early||r.match.unpaid||r.match.contractor),false);
-assert.deepEqual(ids([job('unknown'),job('expired',{deadline:'2026-10-08'}),job('open',{deadline:'2026-10-10'})],{sort:'deadline'}),['open','unknown','expired']);
+// Read in a view that keeps closed adverts, so the deadline sort can be checked end to end.
+assert.deepEqual(ids([job('unknown'),job('expired',{deadline:'2026-10-08'}),job('open',{deadline:'2026-10-10'})],{sort:'deadline',view:'category'}),['open','unknown','expired']);
 assert.deepEqual(ids([job('strong',{stack:'Python, SQL, Django'}),urgent],{sort:'match'}),['strong','today']);
 const localToday=dayNow();assert.equal(ids([job('a'),job('b')])[0],'a');
 const original=structuredClone([urgent,tomorrow]);ids(original);assert.deepEqual(original,[urgent,tomorrow]);

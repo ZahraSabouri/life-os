@@ -1,3 +1,22 @@
+# Life OS JobMap only (user instruction, 27 October 2026)
+
+Zahra: "we only will work on the life os job map from now on". From this date,
+scheduled searches and development touch only
+`C:\\Users\\ctrlz\\Documents\\Personal\\Projects\\Life_OS\\jobmap`. Do not write
+discoveries, queue batches or make changes in `JobMap\\Career Agent\\JobMap App`.
+This supersedes the 8 October "update both copies" instruction below.
+
+Ownership, decided 28 October (her go-ahead): the saved workspace moved to this folder.
+`data/workspace-connection.json` names `Life_OS\jobmap` as owner, served by the JobMap
+server Life OS starts (http://127.0.0.1:47852; public API
+http://127.0.0.1:47850/apps/jobmap/api/), and its only inbox is this folder's
+`data/inbox`. Save discoveries here, dry-run and queue with this folder's
+`queue-jobs.mjs`, and check this folder's receipts and import log. Where the sections
+below mention a second copy, a shared owner or port 47841, they are history. The
+standalone server must stay stopped: its connection still lists this inbox.
+
+---
+
 # Scheduled searches into JobMap
 
 ## Tech-only job search scope (9 October 2026)

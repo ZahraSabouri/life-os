@@ -10,7 +10,7 @@
     "build": "vite build --config vite.local.config.ts",
     "build:site": "vinext build",
     "start": "node server.mjs",
-    "test": "node tests/verify.mjs && node tests/discovery.mjs && node tests/inbox.mjs && node tests/dates.mjs && node tests/priority.mjs && node tests/workspace.mjs && node tests/repeats.mjs",
+    "test": "node tests/verify.mjs && node tests/discovery.mjs && node tests/inbox.mjs && node tests/dates.mjs && node tests/priority.mjs && node tests/workspace.mjs && node tests/repeats.mjs && node tests/insights.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "check:parity": "node check-parity.mjs"
   },

@@ -9,8 +9,10 @@ import {validDocuments} from './documents.mjs';
 import legacyDates from './legacy-dates.json' with {type:'json'};
 
 export const STATUSES = ['To review','Check details','Preparing','Applied','Interview','Offer','Rejected','Archived'];
-const strings = {notes:30000,nextStep:1000,followUp:10,applied:10,cv:2000,coverLetter:2000,tags:500,folder:1000,attachments:6000,hours:500,role:500,company:300,location:1000,salary:3000,url:4000,deadline:10,advertisedOn:10};
-const dateKeys = new Set(['followUp','applied','deadline','advertisedOn']);
+const strings = {notes:30000,feedback:20000,nextStep:1000,decidedOn:10,followUp:10,applied:10,cv:2000,coverLetter:2000,tags:500,folder:1000,attachments:6000,hours:500,role:500,company:300,location:1000,salary:3000,url:4000,deadline:10,advertisedOn:10};
+const dateKeys = new Set(['followUp','applied','decidedOn','deadline','advertisedOn']);
+// What the employer came back with, kept apart from the stage the job sits at.
+export const OUTCOMES = ['','Awaiting reply','Interview invited','Rejected','Offer','Withdrawn'];
 const empty = () => ({schemaVersion:1,revision:0,updatedAt:null,overrides:{},customJobs:[],preferences:{...DEFAULT_PROFILE}});
 function validateProfile(p){if(!object(p)||typeof p.skills!=='string'||p.skills.length>3000||!['balanced','software','data'].includes(p.focus)||!Number.isInteger(p.maxHours)||p.maxHours<1||p.maxHours>40)throw new Error('Check the matching preferences.');return {skills:p.skills,focus:p.focus,maxHours:p.maxHours};}
 export const localDay=calendarDay;
@@ -41,6 +43,7 @@ export function validatePatch(patch){
  const clean={};
  for(const [key,value] of Object.entries(patch)){
   if(Object.hasOwn(strings,key)){if(typeof value!=='string'||value.length>strings[key])throw new Error('Invalid '+key+'.');if(dateKeys.has(key)&&value&&!validDate(value))throw new Error('Use a valid date.');if(key==='url'&&!safeUrl(value))throw new Error('Use an http or https job link.');if(['role','company'].includes(key)&&!value.trim())throw new Error('Role and company are required.');clean[key]=value;}
+  else if(key==='outcome'){if(!OUTCOMES.includes(value))throw new Error('Invalid outcome.');clean[key]=value;}
   else if(key==='status'){if(!STATUSES.includes(value))throw new Error('Invalid status.');clean[key]=value;}
   else if(key==='saved'){if(typeof value!=='boolean')throw new Error('Invalid shortlist value.');clean[key]=value;}
   else if(key==='priority'){if(!['P1','P2','P3','P4'].includes(value))throw new Error('Invalid priority.');clean[key]=value;}

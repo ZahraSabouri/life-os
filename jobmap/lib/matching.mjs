@@ -129,21 +129,30 @@ export function repeatsOf(jobs){
  return out;
 }
 const OVER=['Archived','Rejected'],SENT=['Applied','Interview','Offer'];
+export const WAITING_DAYS=14;
 // The quick views in the menu. Each is a plain rule on dates and her own choices, cheap enough to count on every change.
 export function inView(view,job,today=dayNow()){
  if(view==='archive')return OVER.includes(job.status);
+ // Outcome views sit beside the stages, so a rejection stays reachable without digging in the archive.
+ if(view==='rejected')return job.status==='Rejected';
  if(OVER.includes(job.status))return false;
  const days=daysUntil(reviewDeadline(job),today),closed=job.availability==='closed'||(days!==null&&days<0);
  if(view==='shortlist')return !!job.saved;
  if(view==='applications')return ['Check details','Preparing',...SENT].includes(job.status);
  if(view==='followups')return !!job.followUp;
+ if(view==='interviews')return job.status==='Interview';
+ if(view==='offers')return job.status==='Offer';
+ // Sent, nothing back, and long enough ago to be worth chasing.
+ if(view==='waiting')return job.status==='Applied'&&!!job.applied&&daysUntil(job.applied,today)<=-WAITING_DAYS;
  if(view==='closing')return !closed&&days!==null&&days<=7&&!SENT.includes(job.status)&&!job.applied;
  if(view==='new')return !!job.addedOn&&daysUntil(job.addedOn,today)>=-6;
  if(view==='high')return job.priority==='P1';
  if(view==='closed')return closed;
+ // All jobs is the live list: a closed advert belongs in Closed adverts, not here.
+ if(view==='all')return !closed;
  return true;
 }
-export function selectJobs(jobs,{view='all',scope='parttime',source='',search='',sort='priority',status='',tag=''},profile=DEFAULT_PROFILE,today=dayNow()){
+export function selectJobs(jobs,{view='all',scope='parttime',source='',search='',sort='priority',status='',tag='',outcome='',docs=''},profile=DEFAULT_PROFILE,today=dayNow()){
  const q=search.toLowerCase().trim();
  // A listing joined to another job is shown once, as that job.
  const repeats=view==='repeats'?repeatsOf(jobs):null;
@@ -153,11 +162,21 @@ export function selectJobs(jobs,{view='all',scope='parttime',source='',search=''
   if(view==='all'&&scope==='apply'&&priority.section>3)return false;
   if(view==='all'&&scope==='tech'&&(!match.software&&!match.data))return false;
   if(source&&job.source!==source)return false;if(status&&job.status!==status)return false;
+  if(outcome&&(job.outcome||'')!==outcome)return false;
+  // What she actually sent or kept for a job.
+  if(docs){const kept=!!(job.cv||job.coverLetter||job.folder||job.attachments||job.files?.length);
+   if(docs==='none'&&kept)return false;
+   if(docs==='any'&&!kept)return false;
+   if(docs==='cv'&&!job.cv)return false;
+   if(docs==='cover'&&!job.coverLetter)return false;
+   if(docs==='folder'&&!job.folder)return false;
+   if(docs==='files'&&!job.files?.length)return false;}
   if(tag&&!tagsOf(job).some(t=>t.toLowerCase()===tag.toLowerCase()))return false;
   if(q&&!q.split(/\s+/).every(word=>[job.role,job.company,job.location,job.stack,job.notes,job.nextStep,job.tags].join(' ').toLowerCase().includes(word)))return false;
   return true;
  });
  rows.sort((a,b)=>{
+  if(view==='waiting'){const wait=(a.job.applied||'9999').localeCompare(b.job.applied||'9999');if(wait)return wait;}
   if(view==='followups'){const due=(a.job.followUp||'9999').localeCompare(b.job.followUp||'9999');if(due)return due;}
   if(view==='closing'){const due=(reviewDeadline(a.job)||'9999').localeCompare(reviewDeadline(b.job)||'9999');if(due)return due;}
   if(view==='new'){const added=(b.job.addedOn||'').localeCompare(a.job.addedOn||'');if(added)return added;}

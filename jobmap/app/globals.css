@@ -56,3 +56,72 @@ button.my-tag{cursor:pointer;color:var(--blue)}button.my-tag:hover{border-color:
 @media(min-width:1180px){.shell{grid-template-columns:240px minmax(0,1fr)}.shell.has-detail{grid-template-columns:240px minmax(410px,1fr) 420px}}
 @media(min-width:1650px){.shell.has-detail{grid-template-columns:250px minmax(600px,1fr) 460px}}
 @media(min-width:721px) and (max-width:1179px){.shell,.shell.has-detail{grid-template-columns:220px minmax(0,1fr)}}
+/* Progress: what is worth a look, how far applications got, where they stand, the last 12 weeks. */
+.progress{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:18px;align-items:start}
+.progress>.filter-note{grid-column:1/-1;margin:0}
+.progress-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;min-width:0}
+.progress-card .caption{margin:10px 0 0}
+.attention-card{grid-column:1/-1}
+.progress-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;margin-bottom:14px}
+.progress-head h2{font-size:1rem;font-weight:650;margin:0}
+.progress-head .caption{margin:0}
+.progress-figures{display:flex;gap:22px;margin:0}
+.progress-figures div{display:flex;flex-direction:column-reverse}
+.progress-figures dt{font-size:.75rem;color:var(--muted)}
+.progress-figures dd{margin:0;font-size:1.625rem;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+.attention{list-style:none;margin:0 0 6px;padding:0}
+.attention li{border-top:1px solid var(--line)}
+.attention button{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;border:0;border-radius:8px;background:transparent;padding:11px 8px}
+.attention-copy{flex:1;min-width:0;display:grid;gap:1px}
+.attention-copy b{font-weight:600;font-size:.9375rem}
+.attention-copy span{font-size:.8125rem;color:var(--muted)}
+.attention-copy small{font-size:.8125rem;line-height:1.45;margin-top:3px}
+.attention-action{flex:none;font-size:.8125rem;color:var(--blue);white-space:nowrap;padding-top:2px}
+.soon-pill{flex:none;font-size:.75rem;border-radius:5px;padding:1px 7px;background:#fdf0dc;color:#8a5200;margin-top:2px}
+.bars{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.bars li{display:grid;grid-template-columns:minmax(90px,8.5em) minmax(0,1fr) auto;align-items:center;gap:4px 12px;font-size:.875rem}
+.bars li.none{color:var(--muted)}
+.bar-track{height:10px;border-radius:4px;background:var(--paper);overflow:hidden}
+.bar{display:block;height:100%;border-radius:4px;background:var(--blue)}
+.bar-value{font-variant-numeric:tabular-nums;text-align:right}
+.bar-value small,.bar-note{font-size:.75rem;color:var(--muted)}
+.bar-note{grid-column:2/-1}
+.week-row{margin-bottom:14px}
+.week-row-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 12px;font-size:.875rem;margin-bottom:6px}
+.progress-card .week-row-head .caption{margin:0}
+.week-bars{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:2px;height:44px;align-items:end;border-bottom:1px solid var(--line)}
+.week-bars span{height:100%;display:flex;align-items:flex-end}
+.week-bars i{display:block;width:100%;background:var(--blue);border-radius:4px 4px 0 0}
+.week-axis{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin:-8px 0 12px}
+.week-table summary{font-size:.8125rem;color:var(--muted);cursor:pointer}
+.week-table table{width:100%;border-collapse:collapse;font-size:.8125rem;margin-top:8px;font-variant-numeric:tabular-nums}
+.week-table th,.week-table td{text-align:left;padding:4px 6px;border-bottom:1px solid var(--line);font-weight:400}
+.week-table thead th{color:var(--muted)}
+/* Applications as a board: a column for each stage, side by side; stacked on a phone. */
+.filter-group{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.scope-tabs button svg{margin-right:2px}
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(180px,1fr);gap:12px;overflow-x:auto;padding-bottom:8px;align-items:start}
+.board-column{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:10px;min-height:120px;display:grid;gap:8px;align-content:start}
+.board-column.drop{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.board-column h2{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 4px;font-size:.875rem}
+.board-column h2 small{color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums}
+.board-column>.caption{margin:4px 2px}
+.board-card{background:var(--white);border:1px solid var(--line);border-radius:8px;padding:10px;display:grid;gap:6px;cursor:grab}
+.board-card:active{cursor:grabbing}
+.board-open{border:0;background:transparent;padding:0;text-align:left;display:grid;gap:1px}
+.board-open:hover{background:transparent}
+.board-open b{font-weight:600;font-size:.875rem;line-height:1.35}
+.board-open span{font-size:.8125rem;color:var(--muted)}
+.board-card select{font-size:.8125rem;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--white)}
+.board-card .next-step{margin:0;font-size:.8125rem}
+.board-card .deadline{font-size:.75rem}
+.board-outcome{justify-self:start;font-size:.75rem;border-radius:5px;padding:1px 7px;background:var(--paper);color:var(--muted)}
+@media(max-width:720px){.board{grid-auto-flow:row;grid-auto-columns:auto;overflow-x:visible}}
+/* The advert's skills that hers do not list, and Write it with Claude. */
+.gap-title{font-size:.75rem;font-weight:600;color:var(--muted);margin:14px 0 -10px}
+.skill-tags.gap-tags span{background:#fdf3e4;color:#8a5200}
+.claude-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.claude-actions .subtle{padding:6px 11px;font-size:.8125rem}
+.claude-actions .selected{font-weight:600}
+.claude-prompt textarea{width:100%;font-size:.75rem;line-height:1.5;margin-top:6px;border:1px solid var(--line);border-radius:8px;padding:8px;resize:vertical;background:var(--paper)}
+.claude-prompt a{text-decoration:underline;text-underline-offset:3px;display:inline-flex;align-items:center;gap:3px}
