@@ -4,6 +4,16 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 27–28 October 2026 — JobMap: Life OS only, Life OS owns the data, ideas from Dossier
+
+- **Only the Life OS JobMap from now on** (her words, 27 October: "we only will work on the life os job map from now on"). Supersedes "maintain both copies" (8 October) and the shared workspace (12 October).
+- **Life OS's JobMap owns its saved data** (her choice, 28 October), so fields only Life OS knows (outcome, feedback, decided on) can be saved; the standalone server refused them. Moved with JobMap's own backup and restore; all 1,195 jobs compared equal. The standalone is kept unchanged as a fallback, not deleted; deleting is her step.
+- **Ideas from Dossier (github.com/AienTech/dossier) are rebuilt, not copied** (27 October): Progress, a board, the advert's gaps, Write it with Claude. Dossier is AGPL-3.0, and copying its code would put that licence on Life OS, so the ideas were written again and credited (JobMap README, the commit). Not taken: AI writing through a paid API, Gmail and Calendar sign-in, paid job-search APIs (cost, privacy, size).
+- **The outcome is kept apart from the stage** (her change, 27 October): a job can be Applied with outcome Rejected. Progress counts both. A sent job with no reply is worth chasing after 14 days, the same as "Waiting on a reply".
+- **All jobs lists live adverts only** (her change, 27 October); closed ones are under Closed adverts.
+
+---
+
 ## 26 October 2026 — the plan after Test 1, to 31 December
 
 - **Job-application time stays three hours every day** (her answer, 26 October), through the Test 2 fortnight; study fits around it, 2 to 6 hours a day.

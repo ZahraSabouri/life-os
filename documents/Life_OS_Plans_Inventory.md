@@ -26,7 +26,7 @@ These come from the Vision, the Blueprint and the July architecture, and still j
 | Area | What it holds | Status | Roadmap | Notes |
 |---|---|---|---|---|
 | **Study** | semesters, modules, timetable, assessments and exams, materials, study cards, sessions, progress, focus timer, rescue mode | Native Study CP1/CP2 built; richness/acceptance pending | Stage 3 | Renamed from "Summer Rescue" to Study, for the whole degree. Keeps Summer Rescue's behaviour; manuscript visuals later |
-| **Career & Professional** | jobs, shortlist, applications, follow-ups, CV, professional skills | Attached (JobMap) | Stage 4 | The job hunt is a workstream that retires; the room is professional life |
+| **Career & Professional** | jobs, shortlist, applications, follow-ups, CV, professional skills | Attached (JobMap; its data owned by Life OS from 28 October; Progress, board, advert gaps and Claude prompts added 28 October) | Stage 4 | The job hunt is a workstream that retires; the room is professional life |
 | **Money** | monthly allowance, spending, adjustments, saving goals, renewals, category targets | Attached (Budget) | Stage 5 | New since July (the Taxonomy had left finance out) |
 | **Home & Living** | kitchen (stock, usual buys, shopping lists, receipts, meals, recipes), errands, house-hunting, furniture, home projects, home documents | Kitchen part attached (Budget); the rest Later | Stage 5, then later | Recipes become their own collection |
 | **Events & community** (Cardiff Life) | events, communities, Maybe / Plan to go choices, week planner, sources | Attached | Stage 6 | Connectors: Cardiff SU, Eventbrite, web pages, agents. Its name may change if it ever serves other cities |
@@ -178,7 +178,7 @@ On This Day · streaks and milestones · trip threads that gather events, places
 | Item | Status |
 |---|---|
 | Claude scheduled task "Cardiff job search to JobMap" pointed at the Life OS inbox | Done (1 October) |
-| Codex "UK Tech Job Shortlist — JobMap" (Tue/Thu/Sat/Sun 3 pm) still uses the old JobMap App folder | To do |
+| Codex "UK Tech Job Shortlist — JobMap" (Tue/Thu/Sat/Sun 3 pm): its instructions say Life OS only from 27 October, and Life OS owns the data from 28 October; check the task itself runs in `Life_OS\jobmap` | To check |
 | Codex Cardiff Life searches (SU, Thursday 09:00; Eventbrite wider Cardiff, Friday 09:00; a paused Outlook search) still write to `Documents\Cardiff Life` | To do |
 | Merge `v2-subapps` into `main` | Done (5 October, tag `pre-development-2026-10`) |
 | Old nested `.git` folders (`code/life-os`, `summer-rescue-plan-app`, `budget-management/app`) | Open: keep or remove. `code/life-os/.git` is redundant and waits to be moved to `Life_OS_backups` (Xar's step, see `STATUS.md`) |
