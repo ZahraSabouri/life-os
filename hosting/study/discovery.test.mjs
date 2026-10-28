@@ -131,12 +131,15 @@ test('deleted exact versions are not resurrected and source removal never remove
 test('housekeeping is skipped while document, dataset and archive fallbacks are visible', async t => {
   const f = await fixture(t)
   for (const name of ['.git/config.txt', '.agents/context.md', 'node_modules/package/index.js', '.ipynb_checkpoints/copy.ipynb', 'tmp/working.csv', 'AGENTS.md', 'CLAUDE.md', 'SKILL.md', '.env.local']) await f.write(name, 'not a study material')
-  for (const name of ['brief.docx', 'lecture.pptx', 'data.xlsx', 'data.RData', 'archive.zip', 'lab.py']) await f.write(name, 'study bytes for ' + name)
+  for (const name of ['brief.docx', 'lecture.pptx', 'data.xlsx', 'data.RData', 'archive.zip', 'lab.py', 'data.tsv']) await f.write(name, 'study bytes for ' + name)
   await f.configure(); await f.discovery.scan()
-  assert.equal((await f.discovery.scan()).added, 6)
+  assert.equal((await f.discovery.scan()).added, 7)
   assert.equal(f.materials.some(row => row.data.fileName === 'AGENTS.md'), false)
   assert.equal(f.materials.find(row => row.data.fileName === 'brief.docx').data.viewer, 'file')
   assert.equal(f.materials.find(row => row.data.fileName === 'lab.py').data.viewer, 'code')
+  assert.equal(f.materials.find(row => row.data.fileName === 'data.tsv').data.mime, 'text/tab-separated-values')
+  assert.equal(f.materials.find(row => row.data.fileName === 'data.tsv').data.viewer, 'text')
+  assert.equal((await f.discovery.scan()).added, 0)
 })
 
 test('symbolic links are skipped clearly and unrelated folders never get read', async t => {

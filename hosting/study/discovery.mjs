@@ -16,7 +16,7 @@ const IGNORED_DIRECTORIES = new Set(['node_modules', '.venv', 'venv', '__pycache
 const IGNORED_FILES = new Set(['agents.md', 'claude.md', 'skill.md'])
 const TYPES = new Map([
   ['pdf', ['application/pdf', 'frame']], ['ipynb', ['application/json', 'notebook']],
-  ['md', ['text/markdown', 'markdown']], ['txt', ['text/plain', 'text']], ['csv', ['text/csv', 'text']],
+  ['md', ['text/markdown', 'markdown']], ['txt', ['text/plain', 'text']], ['csv', ['text/csv', 'text']], ['tsv', ['text/tab-separated-values', 'text']],
   ...['json', 'py', 'r', 'js', 'jsx', 'ts', 'tsx', 'css', 'sql', 'tex', 'bib', 'yaml', 'yml', 'xml', 'm'].map(type => [type, ['text/plain', 'code']]),
   ...['html', 'htm'].map(type => [type, ['text/html', 'html']]),
   ...['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'].map(type => [type, [`image/${type === 'jpg' ? 'jpeg' : type}`, 'image']]),

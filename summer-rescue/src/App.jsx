@@ -1035,7 +1035,7 @@ export default function App() {
   const totalCount = tracker.cards.length || 1
   const donePct = Math.round((doneCount / totalCount) * 100)
   const examTarget = useMemo(
-    () => resolveExamTarget({ moduleExamDates, schedule, referenceDate }),
+    () => resolveExamTarget({ moduleExamDates, schedule, referenceDate, assessments: session.assessments, modules: session.modules }),
     [moduleExamDates, referenceDate, schedule],
   )
 

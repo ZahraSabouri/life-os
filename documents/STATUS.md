@@ -3,6 +3,7 @@
 **Updated 28 October 2026 by Claude Code** (JobMap: ideas from Dossier, and Life OS owns JobMap's data; Codex's Cardiff line of the same day kept; Claude in Cowork's mail plan added the same evening). Branch `stage/4b-one-look`; `main` was last brought level with it on 16 October. Live: the Court, Today, Calendar, Review, Journal, People, Study hub, Cardiff Life, Budget, Health, JobMap, the Guide. The look (stage 4b) waits for Xar's detailed check. Earlier detail is in the session notes and in git (`88fd056`).
 
 ## Now
+- **28 October (Codex): university audit and Study Hub sync.** Verified saved hashes, all project originals and new MAT022 file URLs; saved current announcements; linked 35 existing cards. Fixed TSV discovery and the confirmed assessment countdown. Corrected project deadline to 13 Nov 23:59 and CMT309 portal deadline to 27 Dec 23:59, preserving the 17 Dec personal target and date conflict. Progress, notes, timetable and plan preserved. See `sessions/2026-10-28-codex-study-materials-audit.md`.
 - **28 October evening (Claude in Cowork): mail and admin, planned.** Her ask: who to email, text, reply to or congratulate, what is in her inboxes and Learning Central, without typing it in. Her choice: read mail inside Life OS with digests, summaries, priorities and notices; gathered only when she runs it. Ready: `mail/GATHER.md` with its format and checker (17 tests pass), her sources, the Claude task **Gather my inboxes** (no schedule), and the brief `briefs/mail-and-admin.md`, approved by her the same evening, to be built by Claude Code on Windows. No app code yet. Note: `sessions/2026-10-28-claude-cowork-mail-planning.md`.
 - **28 October (Claude, Cowork): university materials refresh.** Finished GPT's 27 October refresh. In her MAT022 folder now: the three Week 4 lecture PDFs (relabelled and corrected by the lecturer), the Week 4 lab, `how-to-use-formula-sheet-2.pdf` and `Test details.txt` in `Assessments\In-Class Test 2`, newer Week 1–2 unannotated slides saved beside the originals, and captions for 26–28 October. Test 2's formula sheet and exam-style questions are still to come. CMT309 unchanged; MAT021 empty. Summary: `2. Autumn 2026\Refresh 2026-10-28.md`. Note: `sessions/2026-10-28-claude-cowork-university-materials-refresh.md`.
 - **28 October, later (Claude Code): JobMap filters, documents, the Guide.** A job whose deadline passed while being prepared closes with one button (outcome "Missed deadline"). Search in titles, employers or skills, or with `/regex/`, and group by kind of job, main skill or years of experience. A visa filter reads the advert's wording ("No nationality limit" hides citizens-only and clearance jobs), and an hours filter shows part-time or within her hours. PDFs open from My documents. The Guide has six new JobMap pages with pictures, and four questions. Another session's unfinished Today and calendar edits went live with the Guide build; they're uncommitted, so that session should rebuild and commit. Note: `sessions/2026-10-28-claude-code-jobmap-filters-documents-guide.md`.
@@ -14,9 +15,9 @@
 1. Xar reloads JobMap once (open tabs hold the old revision), then tries Progress, Applications → Board, and Write it with Claude on one job.
 2. Xar follows the study plan (Today shows each card's steps), with the weekly reset on Sundays.
 3. Mail (approved 28 October): in Claude Code on Windows, "Continue Life OS: read STATUS.md, then do CP1 of briefs/mail-and-admin.md." First commit the waiting `mail/` files and documents. Study comes first this week.
-4. Next agent session: fit any new MAT022 or CMT309 materials into this week's cards (`t2-reg1` to `t2-reg4`, `proj-start`). Then `TODO.md` (B, C), and the look check when she gives it.
+4. New MAT022 materials are linked to this week’s cards. Check the Test 2 folder for its still-unpublished formula sheet and exam-style questions. Then `TODO.md` (B, C), and the look check when she gives it.
 
-**Next prompt:** "Continue Life OS: read STATUS.md, then fit any new MAT022 or CMT309 materials into this week's cards."
+**Next prompt:** "Continue Life OS: read STATUS.md and check whether the MAT022 Test 2 formula sheet and exam-style questions have been released."
 
 ## How to see it
 Top bar → JobMap → Progress (menu, Applying); Applications → Board; open a job → Why this match and Write it with Claude. Life OS starts with Windows; otherwise `Start Life OS.cmd`, then http://127.0.0.1:47850.
@@ -38,9 +39,10 @@ Top bar → JobMap → Progress (menu, Applying); Applications → Board; open a
 ## Data
 - JobMap now: owned by `Life_OS\jobmap` (`data/workspace-connection.json`, port 47852), revision 42, 1,195 jobs. Backups: `Life_OS_backups/jobmap-2026-10-27-before-dossier-ideas.json`, `Life_OS_backups/jobmap-move-2026-10-28/` (owner backup at revision 103, every job, both workspace folders, both connection files).
 - Cardiff research backups: `.runtime/cardiff-refresh-backups/`, `.runtime/cardiff-research-backups/`. Backups of 26 October (core, study, budget): see `sessions/2026-10-26-claude-code-reset-plan-to-december.md`.
-- Study state revision 50 (92 cards, 190 blocks); Budget revision 109.
+- Study state revision 53 after materials sync (92 cards, 190 blocks; generated notices may save later revisions); Budget revision 109.
 
 ## Last five sessions
+- 2026-10-28 Study material, deadlines and reminders audit (Codex): `sessions/2026-10-28-codex-study-materials-audit.md`
 - 2026-10-28 Mail and admin, planned (Claude in Cowork): `sessions/2026-10-28-claude-cowork-mail-planning.md`
 - 2026-10-28 University materials refresh (Claude, Cowork): `sessions/2026-10-28-claude-cowork-university-materials-refresh.md`
 - 2026-10-28 JobMap: missed deadlines, search and visa filters, PDFs, the Guide: `sessions/2026-10-28-claude-code-jobmap-filters-documents-guide.md`

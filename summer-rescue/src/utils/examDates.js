@@ -9,6 +9,7 @@
 //   window      - the countdown is running against the start of the exam window
 import { STUDY_MODULES } from '../data/studyModules.js'
 import { semesterWindow } from '../data/plan.js'
+import { assessmentTargets } from './assessmentTargets.js'
 
 // Any module of the open semester can have an exam date.
 export const EXAM_MODULES = STUDY_MODULES.map((module) => ({ id: module.id, label: module.label, code: module.code || module.label }))
@@ -126,19 +127,20 @@ export function confirmedExamDates(moduleExamDates = {}, schedule = {}) {
  * `source: 'window'` means no module date is known and the number is a
  * placeholder against the window start; consumers must label it as such.
  */
-export function resolveExamTarget({ moduleExamDates = {}, schedule = {}, referenceDate = '' } = {}) {
+export function resolveExamTarget({ moduleExamDates = {}, schedule = {}, referenceDate = '', assessments = [], modules = [] } = {}) {
   const { start, end, published } = examWindow(schedule)
-  const confirmed = confirmedExamDates(moduleExamDates, schedule).sort((a, b) =>
+  const confirmed = [...confirmedExamDates(moduleExamDates, schedule), ...assessmentTargets(assessments, modules, referenceDate)].sort((a, b) =>
     a.date.localeCompare(b.date),
   )
 
   if (confirmed.length > 0) {
     const next = confirmed.find((entry) => entry.date >= referenceDate) ?? confirmed[0]
     return {
-      source: 'module',
+      source: next.assessmentId ? 'assessment' : 'module',
       status: 'confirmed',
       confirmed: true,
       moduleId: next.moduleId,
+      ...(next.assessmentId ? { assessmentId: next.assessmentId } : {}),
       label: next.label,
       date: next.date,
       windowStart: start,
