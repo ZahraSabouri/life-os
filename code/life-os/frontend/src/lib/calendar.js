@@ -17,7 +17,8 @@ export const CALENDAR_KINDS = [
   { key: 'fixed', label: 'Fixed time' },
   { key: 'plan', label: 'Plan' },
   { key: 'deadline', label: 'Deadline' },
-  { key: 'reminder', label: 'Reminder' }
+  { key: 'reminder', label: 'Reminder' },
+  { key: 'note', label: 'Note' }
 ]
 
 export const CARDIFF_CHOICES_KEY = 'cardiff-life-choices-v1'

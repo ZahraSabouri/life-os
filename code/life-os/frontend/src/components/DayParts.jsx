@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import { ENTRY_AREAS } from '@shared/entryTypes.js'
 import { ROOMS } from '@shared/rooms.js'
 import { calendarArea, formatCalendarDay } from '../lib/calendar.js'
+import { placeOf } from '../lib/calendarViews.js'
 import { daysAway } from '../lib/day.js'
 
 export const pounds = (pence) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: pence % 100 ? 2 : 0 }).format(pence / 100)
@@ -16,7 +17,7 @@ const MEAL_NAMES = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', s
 export const roomName = (slug) => ROOMS.find((room) => room.slug === slug)?.name ?? ''
 const ADD = {
   plan: { label: 'Plan', button: 'Add', placeholder: (day) => `Add to ${day}: “17:30 library”, “Lidl”, “dinner at 8pm”` },
-  note: { label: 'Note', button: 'Keep', placeholder: () => 'Write a note for today and press Enter' },
+  note: { label: 'Note', button: 'Keep', placeholder: (day) => `Write a note for ${day} and press Enter` },
   buy: { label: 'To buy', button: 'Add', placeholder: () => 'Something to buy: “eggs, rice, 2 kg onions”' },
 }
 
@@ -55,7 +56,7 @@ export function AddLine({ page, id = 'day-add-input', fixedArea = false }) {
 }
 
 // A card's steps. With `onStudy` each square is a real tick, saved in the Study hub.
-function Steps({ card, limit = 6, onStudy, busy, doneWhen = true }) {
+export function Steps({ card, limit = 6, onStudy, busy, doneWhen = true }) {
   const can = Boolean(onStudy && card.hubCardId && card.semesterId)
   if (!card.steps.length) return doneWhen && card.doneWhen ? <p className="day-done-when"><span>Done when</span> {card.doneWhen}</p> : null
   return <>
@@ -70,20 +71,25 @@ function Steps({ card, limit = 6, onStudy, busy, doneWhen = true }) {
   </>
 }
 
-function Stop({ stop, onDone, onRemove, onStudy, onChanged, busy, compact }) {
+// With `onOpen` (the calendar's pop-up) the title opens the thing in the pop-up, and a link
+// beside it goes to where it is kept; `notes` is how many notes are about it.
+function Stop({ stop, onDone, onRemove, onStudy, onChanged, busy, compact, onOpen, notes = 0 }) {
   const [changing, setChanging] = useState(false)
   const area = calendarArea(stop.area)
   const card = stop.card
   const detailed = card && !card.done && (card.steps.length || card.doneWhen)
   // Her own plan says the room it is filed under; everything else, its part of Life OS.
   const label = (stop.room && roomName(stop.room)) || area.label
+  const place = onOpen ? placeOf(stop.href) : ''
   return <li className={`day-stop${stop.when ? ` is-${stop.when}` : ''}${card ? ' has-card' : ''}`} data-kind={stop.kind} style={{ '--item-accent': area.tone }}>
     <div className="day-stop-time">{stop.start ? <span>{stop.start}</span> : null}{stop.end ? <small>{stop.end}</small> : null}</div>
     <div className="day-stop-mark" aria-hidden="true" />
     <div className="day-stop-body">
-      <Link className="day-stop-title" to={stop.href}>{card?.title ?? stop.title}</Link>
+      {onOpen ? <button type="button" className="day-stop-title" onClick={() => onOpen(stop.key)}>{card?.title ?? stop.title}</button>
+        : <Link className="day-stop-title" to={stop.href}>{card?.title ?? stop.title}</Link>}
       <p className="day-stop-meta">
         <span>{label}</span>
+        {notes ? <span>{count(notes, 'note')}</span> : null}
         {card?.moduleCode || card?.module ? <span>{card.moduleCode || card.module}</span> : null}
         {stop.place ? <span>{stop.place}</span> : null}
         {stop.when === 'now' ? <span className="day-now-tag">Now</span> : null}
@@ -103,6 +109,11 @@ function Stop({ stop, onDone, onRemove, onStudy, onChanged, busy, compact }) {
         {stop.entry.task ? <button type="button" onClick={() => onDone(stop)} disabled={busy}>Done</button> : null}
         <button type="button" onClick={() => setChanging(true)} disabled={busy}>Change</button>
         <button type="button" onClick={() => onRemove(stop)} disabled={busy}>Take off the day</button>
+        {onOpen ? <button type="button" onClick={() => onOpen(stop.key)}>Move or add a note</button> : null}
+      </p> : null}
+      {onOpen && !stop.entry ? <p className="day-stop-actions">
+        {place ? <Link to={stop.href}>Open in {place}</Link> : null}
+        <button type="button" onClick={() => onOpen(stop.key)}>{place ? 'Details and a note' : 'Details'}</button>
       </p> : null}
       {stop.entry && changing ? <ChangePlan entry={stop.entry} onCancel={() => setChanging(false)} onSaved={() => { setChanging(false); onChanged?.() }} /> : null}
     </div>
@@ -114,25 +125,27 @@ function NowLine({ clock, label = 'Now' }) {
 }
 
 // The day in clock order, then what is for any time, then the all-day rest in one slim row.
-export function DayPath({ page, compact = false }) {
+export function DayPath({ page, compact = false, onOpen, notesFor }) {
   const { path, isToday, clock } = page
   const when = isToday ? 'today' : 'that day'
+  const opened = onOpen ? { onOpen } : {}
+  const notes = (key) => (notesFor ? notesFor(key) : 0)
   if (page.loading) return <p className="day-quiet" role="status">Putting the day in order…</p>
   return <>
     {path.stops.length ? <ol className="day-stops">
       {path.stops.flatMap((stop, index) => [
         index === path.nowIndex && index > 0 && stop.when !== 'now' ? <NowLine key="now" clock={clock} /> : null,
-        <Stop key={stop.key} stop={stop} compact={compact} {...page.stopProps} />,
+        <Stop key={stop.key} stop={stop} compact={compact} notes={notes(stop.key)} {...opened} {...page.stopProps} />,
       ])}
       {path.nowIndex === -1 ? <NowLine key="now" clock={clock} label={`Now · nothing else has a time ${when}`} /> : null}
     </ol> : <p className="day-quiet">Nothing has a time {when}. Add a plan in the line above.</p>}
     {path.anytime.length ? <>
       <h3>Any time {when}</h3>
-      <ol className="day-stops day-anytime">{path.anytime.map((entry) => <Stop key={entry.key} stop={{ ...entry, start: '', end: '', kind: entry.kind ?? 'plan' }} compact={compact} {...page.stopProps} />)}</ol>
+      <ol className="day-stops day-anytime">{path.anytime.map((entry) => <Stop key={entry.key} stop={{ ...entry, start: '', end: '', kind: entry.kind ?? 'plan' }} compact={compact} notes={notes(entry.key)} {...opened} {...page.stopProps} />)}</ol>
     </> : null}
     {path.also.length ? <>
       <h3>Also {when}</h3>
-      <ul className="day-also">{(compact ? path.also.slice(0, 4) : path.also).map((entry) => <li key={entry.key} style={{ '--item-accent': calendarArea(entry.area).tone }}><Link to={entry.href}>{entry.title}</Link><small>{calendarArea(entry.area).label}</small></li>)}
+      <ul className="day-also">{(compact ? path.also.slice(0, 4) : path.also).map((entry) => <li key={entry.key} style={{ '--item-accent': calendarArea(entry.area).tone }}>{onOpen ? <button type="button" className="day-also-open" onClick={() => onOpen(entry.key)}>{entry.title}</button> : <Link to={entry.href}>{entry.title}</Link>}<small>{calendarArea(entry.area).label}{notes(entry.key) ? ` · ${count(notes(entry.key), 'note')}` : ''}</small></li>)}
         {compact && path.also.length > 4 ? <li className="day-also-more"><Link to="/today">and {path.also.length - 4} more</Link></li> : null}</ul>
     </> : null}
   </>

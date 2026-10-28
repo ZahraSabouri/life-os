@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { isDateKey, londonDateTime } from '../../../shared/calendar.js'
 import { apiFetch } from './api.js'
 import { tellStudyHub } from './studyHub.js'
-import { setPlanStatus } from './plans.js'
+import { movePlan, setPlanStatus } from './plans.js'
 import { isoWeekday, sayWeekdays } from '../../../shared/routines.js'
 import { addDays, filterCalendarItems, formatCalendarDay, isComplete, todayGroups } from './calendar.js'
 import { buildDay, noteTitle, parsePlan, splitThings } from './day.js'
@@ -16,14 +16,17 @@ function savedKind() { try { const saved = window.localStorage.getItem(ADD_KIND_
 // Everything a page needs to show one day and to add to it: the calendar's dated items, the
 // day's study blocks and panels, the path they make, and the one line that adds a plan, a
 // note or something to buy. The Court, Today and the strip inside each part all use this.
-export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
+// The calendar's pop-up asks for the day alone (`only`), with the calendar's own filters
+// (`areas`, `cardiffScope`), a note for any day it shows (`notesAnyDay`), and `onChanged` to
+// have the month behind it read again after a change.
+export function useDayPage(requested, { area: fixedArea = '', onSaved, only = false, areas, cardiffScope = 'saved', notesAnyDay = false, onChanged } = {}) {
   const today = useLondonToday()
   const clock = useLondonClock()
   const date = isDateKey(requested ?? '') ? requested : today
   const isToday = date === today
   // The calendar is read once for the attention lists too, unless the day is far from today.
-  const near = date >= addDays(today, -350) && date <= addDays(today, 14)
-  const calendar = useCalendar(near ? addDays(today, -350) : addDays(date, -7), near ? addDays(today, 14) : addDays(date, 14))
+  const near = !only && date >= addDays(today, -350) && date <= addDays(today, 14)
+  const calendar = useCalendar(near ? addDays(today, -350) : only ? date : addDays(date, -7), near ? addDays(today, 14) : only ? date : addDays(date, 14))
   const day = useDay(date)
   const [kind, setKind] = useState(savedKind)
   // The area a plan or note is filed under (a room page fixes it), and the day a plan is for
@@ -43,13 +46,15 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
-  const items = useMemo(() => filterCalendarItems(calendar.items, { choices: calendar.choices }), [calendar.items, calendar.choices])
+  const items = useMemo(() => filterCalendarItems(calendar.items, { areas, cardiffScope, choices: calendar.choices }), [calendar.items, areas, cardiffScope, calendar.choices])
   const groups = useMemo(() => todayGroups(items, today), [items, today])
   const open = useMemo(() => items.filter((item) => !isComplete(item)), [items])
   const data = day.data?.date === date ? day.data : null
   const path = useMemo(() => buildDay({ items: open, day: data, date, now: isToday ? clock : '' }), [open, data, date, isToday, clock])
-  // A note belongs to the day it is written, so another day takes plans and things to buy only.
-  const adding = kind === 'note' && !isToday ? 'plan' : kind
+  // A note belongs to the day it is written, so another day takes plans and things to buy only;
+  // on the calendar a note can be kept for the day it is about, and is dated to that day.
+  const noteAllowed = isToday || notesAnyDay
+  const adding = kind === 'note' && !noteAllowed ? 'plan' : kind
   const plan = useMemo(() => parsePlan(text), [text])
   const things = useMemo(() => splitThings(text), [text])
   const dayName = planDay === today ? 'today' : formatCalendarDay(planDay, { weekday: 'long' })
@@ -57,7 +62,7 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
   const repeating = adding === 'plan' && Boolean(repeat)
   const weekdays = repeat === 'daily' ? [1, 2, 3, 4, 5, 6, 7] : repeat === 'weekdays' ? [1, 2, 3, 4, 5] : repeat === 'weekly' ? [isoWeekday(planDay)] : [...repeatDays].sort()
   const hint = !text.trim() ? ''
-    : adding === 'note' ? 'A note, kept on today and in the Ledger.'
+    : adding === 'note' ? (notesAnyDay ? `A note for ${dayName}, kept on the calendar and in the Ledger.` : 'A note, kept on today and in the Ledger.')
       : adding === 'buy' ? (things.length ? `${things.length === 1 ? `“${things[0]}” goes` : `${things.length} things go`} on your shopping list in Budget.` : 'Say what to buy; commas separate several things.')
         : !plan.title ? 'Say what it is as well as when.'
           : repeating ? (weekdays.length ? `“${plan.title}” ${sayWeekdays(weekdays)}${plan.start ? ` at ${plan.start}${plan.end ? ` to ${plan.end}` : ''}` : ', at any time of the day'}, from ${dayName}${until ? ` until ${formatCalendarDay(until)}` : ''}.` : 'Choose the days it comes round on.')
@@ -65,14 +70,16 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
             : `“${plan.title}”, any time ${dayName}. Type a time (17:30, 5pm) to place it.`
 
   function choose(next) { setKind(next); try { window.localStorage.setItem(ADD_KIND_KEY, next) } catch { /* kept for this visit */ } }
-  function refetch() { calendar.refetch(); day.refetch() }
+  function refetch() { calendar.refetch(); day.refetch(); onChanged?.() }
+  // A note dated to the day it is for (the calendar's notes), or written today (Today's).
+  const noteFor = (body, details = {}) => ({ type: 'note', title: noteTitle(body), ...(notesAnyDay ? { start_at: date, all_day: true } : {}), details: { body, ...details } })
 
   async function saveLine(event) {
     event?.preventDefault()
     const body = text.trim()
     if (!body || lineState === 'saving') return
     let request
-    if (adding === 'note') request = ['/api/entries', { type: 'note', title: noteTitle(body), details: { body, ...filed } }]
+    if (adding === 'note') request = ['/api/entries', noteFor(body, filed)]
     else if (adding === 'buy') {
       if (!things.length) { setError('Say what to buy.'); return }
       request = ['/api/home/shopping', { items: things, date: planDay }]
@@ -169,11 +176,50 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved } = {}) {
     finally { setSavingId('') }
   }
 
+  // A note about one thing on the day (a class, an event, a job), kept as a note of Life OS
+  // dated to the day, so what the thing belongs to (the Study hub, JobMap) is not changed.
+  async function keepNote(body, about = null) {
+    const words = String(body ?? '').trim()
+    if (!words || savingId) return false
+    setSavingId(`note:${about?.id ?? date}`)
+    setError('')
+    try {
+      await apiFetch('/api/entries', { method: 'POST', body: JSON.stringify(noteFor(words, about ? { about: about.id, about_title: String(about.title ?? '').slice(0, 200) } : {})) })
+      refetch()
+      return true
+    } catch (failure) { setError(`The note was not kept: ${failure.message}`); return false }
+    finally { setSavingId('') }
+  }
+
+  // Her own entry, done or not done after all ('' is "to do"), from the calendar's pop-up.
+  async function setItemStatus(item, status) {
+    if (savingId || item.meta?.source !== 'core' || !item.meta?.entryId) return
+    setSavingId(item.id)
+    setError('')
+    try {
+      await setPlanStatus({ entry: { id: item.meta.entryId, revision: item.meta.revision, routine: item.meta.routine }, title: item.title }, status || null)
+      refetch()
+    } catch (failure) { setError(`Could not change “${item.title}”: ${failure.message}`) }
+    finally { setSavingId('') }
+  }
+
+  async function moveItem(item, toDay) {
+    if (savingId || item.meta?.source !== 'core' || !item.meta?.entryId || !isDateKey(toDay)) return false
+    setSavingId(item.id)
+    setError('')
+    try {
+      await movePlan(item, toDay)
+      refetch()
+      return true
+    } catch (failure) { setError(`Could not move “${item.title}”: ${failure.message}`); return false }
+    finally { setSavingId('') }
+  }
+
   return {
-    today, date, isToday, clock, dayName, calendar, day, data, items, groups, path, refetch,
+    today, date, isToday, clock, dayName, calendar, day, data, items, groups, path, refetch, keepNote, setItemStatus, moveItem,
     loading: calendar.loading || (day.loading && !data),
     unavailable: (id) => data?.sources.find((source) => source.id === id && source.status === 'unavailable')?.error,
-    line: { kind: adding, choose, text, setText, state: lineState, hint, save: saveLine, noteAllowed: isToday, area, setArea, fixedArea: Boolean(fixedArea), day: planDay, setDay,
+    line: { kind: adding, choose, text, setText, state: lineState, hint, save: saveLine, noteAllowed, area, setArea, fixedArea: Boolean(fixedArea), day: planDay, setDay,
       repeat, setRepeat, repeatDays, toggleRepeatDay: (weekday) => setRepeatDays((current) => (current.includes(weekday) ? current.filter((value) => value !== weekday) : [...current, weekday])), until, setUntil },
     error, notice, savingId, completeTask, tickShopping, tickStudy, markJob, jobMark,
     undoJobMark: () => (jobMark?.previous?.status ? markJob(jobMark, jobMark.previous.status, jobMark.previous) : undefined),

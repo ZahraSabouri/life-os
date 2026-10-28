@@ -186,7 +186,7 @@ export default function PlannerView() {
     <RepeatingPlans today={today} turn={turn} onChanged={refetch} />
     <div className="today-page-controls">
       <Link className="ghost-pill compact-pill" to="/today">Today</Link>
-      <Link className="ghost-pill compact-pill" to={`/calendar?date=${from}`}>The month</Link>
+      <Link className="ghost-pill compact-pill" to={`/calendar?month=${from.slice(0, 7)}`}>The month</Link>
       <Link className="ghost-pill compact-pill" to={thisWeek ? '/review' : `/review?week=${from}`}>Look back on this week</Link>
     </div>
   </section>

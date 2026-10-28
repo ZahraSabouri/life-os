@@ -86,7 +86,8 @@ export function splitThings(text) {
 }
 
 export function buildDay({ items = [], day = null, date, now = '' }) {
-  const todays = items.filter((item) => itemOverlaps(item, date, date))
+  // A note dated to the day is read with the day's notes, not walked as a stop on it.
+  const todays = items.filter((item) => itemOverlaps(item, date, date) && item.meta?.type !== 'note')
   const shown = new Set((day?.study?.today ?? []).map((card) => card.id))
   const stops = []
   for (const item of todays) {

@@ -6,9 +6,11 @@ export const ENTRY_TYPES = {
     label: 'Note',
     icon: 'N',
     rooms: [],
-    desc: 'A free thought, quickly captured.',
+    desc: 'A free thought, quickly captured. Dated via entry start_at when it is for a day of the calendar; `about` names the calendar item it is about (its id) and `about_title` that item as it was called.',
     fields: {
-      body: { type: 'string' }
+      body: { type: 'string' },
+      about: { type: 'string' },
+      about_title: { type: 'string' }
     }
   },
   event: {

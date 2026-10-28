@@ -42,6 +42,10 @@ test('core reads every dated type and inclusive multi-day spans, preserving sour
   assert.equal(items[2].area, 'study')
   assert.equal(items[2].kind, 'deadline')
   assert.equal(items[2].meta.readonly, false)
+  // A dated note is a note on its day, not a plan; it carries its words and what it is about.
+  assert.equal(items[1].kind, 'note')
+  const [about] = mapEntries([{ id: 'n', type: 'note', title: 'Ask', start_at: '2026-10-13', details: { body: 'Ask about Test 2', about: 'study:block:s1:b1' } }], october)
+  assert.deepEqual([about.kind, about.meta.type, about.meta.body, about.meta.about], ['note', 'note', 'Ask about Test 2', 'study:block:s1:b1'])
 })
 
 test('timed core month edges follow London and midnight ends are exclusive', () => {

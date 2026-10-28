@@ -75,12 +75,14 @@ export function mapEntries(value, range) {
     const room = type !== 'time-block' && typeof details.area === 'string' ? details.area : ''
     const base = {
       id: `core:entry:${entry.id}`, area: type === 'time-block' && blockAreas.has(details.area) ? details.area : blockAreas.has(room) ? room : entryAreas[type] ?? 'core',
-      kind: ['event', 'appointment', 'performance', 'interaction'].includes(type) ? 'fixed'
+      // A note dated to a day (written on the calendar for it) is a note on that day, not a plan.
+      kind: type === 'note' ? 'note' : ['event', 'appointment', 'performance', 'interaction'].includes(type) ? 'fixed'
         : type === 'important-date' || type === 'message' ? 'reminder'
           : ['assignment', 'academic-application'].includes(type) ? 'deadline' : 'plan',
       title: text(entry.title, text(details.title, text(details.name, 'Untitled entry'))),
       href: healthHref(type, entry.id) ?? `/ledger#entry-${encodeURIComponent(entry.id)}`,
       meta: { source: 'core', readonly: false, entryId: entry.id, type, status: entry.status, archetype: entry.archetype, ...(room ? { room } : {}), ...(done ? { completed: true } : {}),
+        ...(type === 'note' ? { body: text(details.body, '').slice(0, 2000), ...(id(details.about) ? { about: details.about } : {}) } : {}),
         // One day of a repeating plan that she has not acted on: what it takes to make it a real entry when she does.
         ...(entry.virtual ? { routine: { id: details.routine, type, start_at: entry.start_at, end_at: entry.end_at ?? null, all_day: Boolean(entry.all_day), area: details.area ?? '' } } : {}) },
       ...(details.location || details.venue ? { location: text(details.location ?? details.venue, '') } : {}),

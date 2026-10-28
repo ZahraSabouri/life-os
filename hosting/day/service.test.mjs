@@ -106,6 +106,17 @@ test('notes are the ones written that day in London, newest first', () => {
   assert.deepEqual(notes.map(note => [note.id, note.at, note.body]), [['n1', '09:00', 'Ask about calculators'], ['n2', '00:30', 'After midnight in London']])
 })
 
+test('a note kept on the calendar belongs to the day it is for, and says what it is about', () => {
+  const notes = notesDay([
+    { id: 'ahead', type: 'note', title: 'Bring a calculator', start_at: DATE, details: { body: 'Bring a calculator', about: 'study:block:s1:b1', about_title: 'MAT022 · Test 2' }, created_at: '2026-10-01T09:00:00.000Z' },
+    { id: 'elsewhere', type: 'note', title: 'For another day', start_at: '2026-10-20', details: { body: 'Later' }, created_at: '2026-10-13T09:00:00.000Z' },
+  ], DATE)
+  assert.deepEqual(notes.map(note => note.id), ['ahead'], 'written on the 1st for this day; written today for another day is not this day’s')
+  assert.equal(notes[0].forDay, true)
+  assert.equal(notes[0].about, 'study:block:s1:b1')
+  assert.equal(notes[0].aboutTitle, 'MAT022 · Test 2')
+})
+
 test('a source that cannot be read is named and the rest still answers', async () => {
   const service = createDayService({
     loadStudy: async () => workspace, loadPlans: async (id) => plans.find(entry => entry.semesterId === id)?.plan,

@@ -234,13 +234,17 @@ export function homeDay(value, date) {
 }
 
 // ---- Notes ------------------------------------------------------------------------------
+// A note belongs to the day it was written, or to the day it was written for (its start_at,
+// a note kept on the calendar). `about` is the calendar item a note is about, if any.
 export function notesDay(value, date) {
-  return array(Array.isArray(value) ? value : value?.entries).filter((entry) => entry && entry.type === 'note' && !entry.archived && dateKey(entry.created_at) === date)
+  return array(Array.isArray(value) ? value : value?.entries).filter((entry) => entry && entry.type === 'note' && !entry.archived && dateKey(entry.start_at || entry.created_at) === date)
     .map((entry) => {
       let details = entry.details ?? {}
       if (typeof details === 'string') { try { details = JSON.parse(details) } catch { details = {} } }
       const body = text(plain(details).body ?? plain(details).note, 2000)
-      return { id: entry.id, title: text(entry.title, 200), body, at: LONDON_CLOCK.format(new Date(entry.created_at)), created: entry.created_at, href: `/ledger#entry-${encodeURIComponent(entry.id)}` }
+      const about = text(plain(details).about, 300)
+      return { id: entry.id, title: text(entry.title, 200), body, at: LONDON_CLOCK.format(new Date(entry.created_at)), created: entry.created_at, href: `/ledger#entry-${encodeURIComponent(entry.id)}`,
+        ...(entry.start_at ? { forDay: true } : {}), ...(about ? { about, aboutTitle: text(plain(details).about_title, 200) } : {}) }
     })
     .sort((a, b) => String(b.created).localeCompare(String(a.created)))
 }
