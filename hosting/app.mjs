@@ -29,6 +29,8 @@ import { createFood, createFoodRouter } from './health/food.mjs'
 import { dateKey } from '../code/life-os/shared/calendar.js'
 import { createStudyRuntime } from './study/runtime.mjs'
 import { createStudyRouter } from '../code/life-os/backend/src/modules/study/router.js'
+import { createMailRuntime } from './mail/inbox.mjs'
+import { createMailRouter } from '../code/life-os/backend/src/modules/mail/router.js'
 import { saveStudyUpload, studyFilesRoot } from './study/storage.mjs'
 import { createHubRouter } from './study/hub/router.mjs'
 import { skinFiles, skinnedPage } from './skins/index.mjs'
@@ -50,6 +52,8 @@ export function createLifeOsApp(options = {}) {
   const token = options.token ?? process.env.LIFE_OS_TOKEN ?? 'dev-token-change-me'
   const study = options.studyRuntime ?? createStudyRuntime(projectRoot)
   app.locals.studyRuntime = study
+  const mail = options.mailRuntime !== undefined ? options.mailRuntime : createMailRuntime(projectRoot, { findPeople: () => db.prepare('SELECT id, name, contact FROM people').all() })
+  app.locals.mailRuntime = mail
 
   app.get('/__life-os/health', (_req, res) => res.json({
     app: 'life-os', root: projectRoot, pid: process.pid,
@@ -161,6 +165,8 @@ export function createLifeOsApp(options = {}) {
     } catch (error) { next(error) }
   })
   app.use('/api/study', createStudyRouter({ repository: study.repository, imports: study.imports }))
+  if (mail) app.use('/api/mail', createMailRouter(mail))
+  else app.use('/api/mail', (_req, res) => res.status(503).json({ error: 'Mail storage is not configured.' }))
   // A page asks for the day, the calendar, the notices and the week at once, and each of those
   // needs Study, JobMap and Budget. While one read of a part is under way, everyone who asks is
   // given that same read, instead of starting another. Nothing is kept once it has answered,

@@ -21,6 +21,7 @@ function stop() {
     await budgetKeeper.stop()
     await jobmapKeeper.stop()
     await app.locals.studyRuntime?.close().catch(() => {})
+    await app.locals.mailRuntime?.close().catch(() => {})
     db.close()
     process.exit(0)
   })

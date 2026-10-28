@@ -17,9 +17,10 @@ export function createPostgresPool(config, { role = 'app', database = config.dat
   return new pg.Pool({ host: config.host, port: config.port, database, ...account, max: 4, connectionTimeoutMillis: 2500, idleTimeoutMillis: 10000 })
 }
 
-export async function postgresBackup(config, projectRoot, label = 'study', database = config.database) {
+// area names the backup folder (study-<day>, mail-<day>).
+export async function postgresBackup(config, projectRoot, label = 'study', database = config.database, area = 'study') {
   if (!['lifeos', 'lifeos_test'].includes(database)) throw new Error('Unknown backup database')
-  const directory = path.resolve(projectRoot, `../Life_OS_backups/study-${new Date().toISOString().slice(0, 10)}`)
+  const directory = path.resolve(projectRoot, `../Life_OS_backups/${area.replace(/[^a-z0-9_-]/gi, '-')}-${new Date().toISOString().slice(0, 10)}`)
   fs.mkdirSync(directory, { recursive: true })
   const destination = path.join(directory, `${label.replace(/[^a-z0-9_-]/gi, '-')}-${Date.now()}.dump`)
   const executable = path.join(config.bin, process.platform === 'win32' ? 'pg_dump.exe' : 'pg_dump')

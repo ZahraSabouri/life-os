@@ -360,7 +360,8 @@ Brief: `briefs/health-part.md`. Her words:
 - [x] **(Xar)** Brief approved (28 October), to be built by Claude Code on Windows.
 - [ ] **(Xar)** Connect Gmail in Claude's settings (Connectors); be signed in to Cardiff Outlook and Learning Central (and Teams, if wanted) in Claude's built-in browser; then run the gather once and read its digest.
 - [ ] **(Xar)** Is Documents synced to OneDrive? (Gathered mail waits in `Life_OS\mail\inbox\`.)
-- [ ] CP1 the store and importer · CP2 Waiting on you · CP3 reading mail · CP4 digests, Today, bell, calendar, envelope · CP5 Write it with Claude, how to gather, the Guide.
+- [x] CP1 the store and importer (28 October).
+- [ ] CP2 Waiting on you · CP3 reading mail · CP4 digests, Today, bell, calendar, envelope · CP5 Write it with Claude, how to gather, the Guide.
 
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."

@@ -65,14 +65,15 @@ Conventions from the Architecture §3: uuid ids, `timestamptz` in UTC shown in E
 ## Checkpoints
 
 ### CP1: the store and the importer
-- [ ] `migrate.js` runs each folder under `src/migrations/` (study, then mail) with that schema's own `schema_migrations`; Study's behaviour and checks are unchanged (its tests pass).
-- [ ] `migrations/mail/0001_mail.sql`: the tables above, grants for the app role, indexes (received at, source, category, effective priority, status and due).
-- [ ] `code/life-os/backend/src/modules/mail/`: repository (revision checks, 409 on a stale save, history), importer (the six steps above), router under `/api/mail` (`GET /status` with the last batch, what is waiting and failed; `POST /scan`; `GET /batches`; `POST /batches/:id/undo`).
-- [ ] `hosting/mail/inbox.mjs`: the folder watcher, started with Life OS and stopped with it.
-- [ ] Keep `mail/check-batch.test.mjs` passing and run it with the other tests.
+- [x] `migrate.js` runs each folder under `src/migrations/` (study, then mail) with that schema's own `schema_migrations`; Study's behaviour and checks are unchanged (its tests pass).
+- [x] `migrations/mail/0001_mail.sql`: the tables above, grants for the app role, indexes (received at, source, category, effective priority, status and due).
+- [x] `code/life-os/backend/src/modules/mail/`: repository (revision checks, 409 on a stale save, history), importer (the six steps above), router under `/api/mail` (`GET /status` with the last batch, what is waiting and failed; `POST /scan`; `GET /batches`; `POST /batches/:id/undo`).
+- [x] `hosting/mail/inbox.mjs`: the folder watcher, started with Life OS and stopped with it.
+- [x] Keep `mail/check-batch.test.mjs` passing and run it with the other tests.
 - **Done when:** on `lifeos_test`, `example-batch.json` dropped in `mail/inbox/` is applied (7 messages, 4 open actions and 1 already done); dropping it again changes nothing; a copy with one priority changed updates that one record; a broken copy lands in `failed/` with a readable note; undo puts everything back.
 - **Verify:** the new tests; Study's tests; `node code/life-os/backend/src/migrate.js lifeos_test --check` then a real run on `lifeos_test`; the counts above read back through `/api/mail`.
 - **Commit:** `[mail-cp1] Mail schema, importer and the inbox folder`
+- **Done 28 October (Claude Code).** Added for the data safety section: on `lifeos`, Life OS leaves `mail/inbox/` alone until `.runtime/mail-import.json` says `{"live": true}`; `scripts/mail-import.mjs` tries a batch on `lifeos_test` (the file stays put), imports it into `lifeos` only once that run is on `lifeos_test`, and switches live import on. The `mail` schema is not yet on `lifeos` (run `migrate.js lifeos` before the first real import). Run the tests with `LIFE_OS_MAIL_TEST_DB=lifeos_test node --test code/life-os/backend/src/modules/mail/integration.test.js mail/check-batch.test.mjs`.
 
 ### CP2: Waiting on you
 - [ ] `/inbox` (the part's first page), in the Life OS look. Open actions grouped **Today** (due today or earlier, and urgent), **This week**, **Whenever**; then **Done lately** (folded). Each line: what kind (a small mark, not only colour), the title, the person, why, since when, due, the effective priority.
