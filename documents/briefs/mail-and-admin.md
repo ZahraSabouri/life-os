@@ -1,6 +1,6 @@
 # Mail and admin: what's in her inboxes, and who she owes
 
-**Status:** written 28 October 2026 by Claude in Cowork from Xar's answers that day · approved by Xar on 28 October 2026 (to be built by Claude Code on Windows) · done on ____
+**Status:** written 28 October 2026 by Claude in Cowork from Xar's answers that day · approved by Xar on 28 October 2026 (to be built by Claude Code on Windows) · built 28 October 2026; waiting for Xar to put it live and accept it
 **Branch:** keep building on the branch STATUS.md names (today `stage/4b-one-look`, as Health did). If stage 4b has been accepted and merged by then, cut `stage/mail-inbox` from `main`.
 **Checkpoint commits:** `[mail-cp<n>] <summary>`
 
@@ -76,42 +76,43 @@ Conventions from the Architecture §3: uuid ids, `timestamptz` in UTC shown in E
 - **Done 28 October (Claude Code).** Added for the data safety section: on `lifeos`, Life OS leaves `mail/inbox/` alone until `.runtime/mail-import.json` says `{"live": true}`; `scripts/mail-import.mjs` tries a batch on `lifeos_test` (the file stays put), imports it into `lifeos` only once that run is on `lifeos_test`, and switches live import on. The `mail` schema is not yet on `lifeos` (run `migrate.js lifeos` before the first real import). Run the tests with `LIFE_OS_MAIL_TEST_DB=lifeos_test node --test code/life-os/backend/src/modules/mail/integration.test.js mail/check-batch.test.mjs`.
 
 ### CP2: Waiting on you
-- [ ] `/inbox` (the part's first page), in the Life OS look. Open actions grouped **Today** (due today or earlier, and urgent), **This week**, **Whenever**; then **Done lately** (folded). Each line: what kind (a small mark, not only colour), the title, the person, why, since when, due, the effective priority.
-- [ ] On each line: **Done**, **Tomorrow**, **Next week**, **Not needed**, **Open the email** (the message's link, new tab), change priority, a note. Undo for a few seconds after each.
-- [ ] An add line on this page: "text Sam about Saturday", "call the GP surgery", "email the school office", "reply to Jo". The first word sets the kind; a name matched to People sets the person (and if two match, she picks). Saved as origin `hers`.
-- [ ] Today's add line: a plan without a clock time that starts with text, call, email, message or reply (to) is saved as one of these, and the hint says so before Enter. With a clock time it stays a plan, as now.
-- [ ] **Birthdays:** on a person's birthday, "Wish <name> a happy birthday" (kind `congratulate`) is in Waiting on you, worked out from People, not imported. A row is stored only when she acts on it, keyed by person and year, so ticking it once is enough.
-- [ ] **People:** each person's card shows what is open with them, and the last few messages from them, each leading to the Inbox; "Owe them a text" adds one.
+- [x] `/inbox` (the part's first page), in the Life OS look. Open actions grouped **Today** (due today or earlier, and urgent), **This week**, **Whenever**; then **Done lately** (folded). Each line: what kind (a small mark, not only colour), the title, the person, why, since when, due, the effective priority.
+- [x] On each line: **Done**, **Tomorrow**, **Next week**, **Not needed**, **Open the email** (the message's link, new tab), change priority, a note. Undo for a few seconds after each.
+- [x] An add line on this page: "text Sam about Saturday", "call the GP surgery", "email the school office", "reply to Jo". The first word sets the kind; a name matched to People sets the person (and if two match, she picks). Saved as origin `hers`.
+- [x] Today's add line: a plan without a clock time that starts with text, call, email, message or reply (to) is saved as one of these, and the hint says so before Enter. With a clock time it stays a plan, as now.
+- [x] **Birthdays:** on a person's birthday, "Wish <name> a happy birthday" (kind `congratulate`) is in Waiting on you, worked out from People, not imported. A row is stored only when she acts on it, keyed by person and year, so ticking it once is enough.
+- [x] **People:** each person's card shows what is open with them, and the last few messages from them, each leading to the Inbox; "Owe them a text" adds one.
 - **Done when:** with the example batch on the try-out, the four open actions sit in the right groups; Done, Tomorrow and Not needed survive a reload; a hand-added "text Sam" appears under Sam in People; a test person whose birthday is today shows the wish.
 - **Verify:** tests for the add-line words, the grouping, the birthday item and the person matching; the page walked on the try-out with every save caught; looked at in Modern light and dark, Madder, Indigo and Paper, and at 400 pixels.
 - **Commit:** `[mail-cp2] Waiting on you: gathered, hers and birthdays`
 
 ### CP3: reading mail
-- [ ] `/inbox/mail`. Source chips (All and each source, with its colour) and filters: **Needs you**, **Deadlines**, **Announcements**, **Conversations**, **Everything else** (fyi, newsletters, automated; noise only with "Show noise"); **Unread at source**; **Show hidden**. A search over subject, sender, summary and text (PostgreSQL full text with the `simple` configuration so Persian works, plus `ILIKE` for short words).
-- [ ] The list, by day: priority mark, sender, subject, the summary on one line, time, source.
-- [ ] The reader: subject; from, to, cc; when; source and course; the summary in its own box with the priority and why (she can change the priority); the text as **plain text only** (never HTML; `white-space: pre-wrap`; `dir="auto"` so Persian reads right to left); only `https://` links clickable, opening in a new tab with `rel="noopener noreferrer"`; attachment names; **Open in Outlook / Gmail / Learning Central / Teams**; **I need to reply** (a hand action tied to this message); **Hide**. Opening a message sets `seen_at`.
-- [ ] At phone width the list and the reader are two views with Back.
+- [x] `/inbox/mail`. Source chips (All and each source, with its colour) and filters: **Needs you**, **Deadlines**, **Announcements**, **Conversations**, **Everything else** (fyi, newsletters, automated; noise only with "Show noise"); **Unread at source**; **Show hidden**. A search over subject, sender, summary and text (PostgreSQL full text with the `simple` configuration so Persian works, plus `ILIKE` for short words).
+- [x] The list, by day: priority mark, sender, subject, the summary on one line, time, source.
+- [x] The reader: subject; from, to, cc; when; source and course; the summary in its own box with the priority and why (she can change the priority); the text as **plain text only** (never HTML; `white-space: pre-wrap`; `dir="auto"` so Persian reads right to left); only `https://` links clickable, opening in a new tab with `rel="noopener noreferrer"`; attachment names; **Open in Outlook / Gmail / Learning Central / Teams**; **I need to reply** (a hand action tied to this message); **Hide**. Opening a message sets `seen_at`.
+- [x] At phone width the list and the reader are two views with Back.
 - **Done when:** every example message reads well in all four styles; a long text, a Persian text and a message with no text (a newsletter) all look right; search finds a word in a body; Hide and Show hidden work.
 - **Verify:** tests for the filters and search query; a rendering test that a body holding `<script>` or HTML shows as text; looked at as in CP2.
 - **Commit:** `[mail-cp3] Read gathered mail in Life OS`
 
 ### CP4: digests, Today, the bell and the calendar
-- [ ] `/inbox/digests`: each batch newest first: when, the headline, what needs her, deadlines, each source's lines and its status (read, partly read, not reachable, and why), counts, and Undo on the latest. At the top: "Last gathered <when>" and **How to gather** (CP5's Guide page).
-- [ ] Today: a **Waiting on you** panel: the five most pressing open actions with Done and Tomorrow, the latest headline, "last gathered", and a link to the Inbox. If nothing has been gathered for three days, one quiet line says so (not in the bell: she runs it when she wants).
-- [ ] The bell (a `mail` provider in `hosting/notices/service.mjs`): **today**: urgent actions and actions due today; **late**: actions past their day, and replies waiting three days or more; **ahead**: due tomorrow; once per batch, "<n> new announcements" when Learning Central or the school sent any. Birthdays already in the bell lead to the wish.
-- [ ] A Windows notice (through `desktop.mjs`) when an applied batch brings urgent actions: "2 urgent things in your mail". Off with the bell's existing switch.
-- [ ] The calendar: open actions with a due day are items (kind `deadline` when the mail gave the date, `reminder` for her own), area `admin` or `relationships`, done ones shown done, each leading to the action.
-- [ ] The top bar: an envelope beside the bell, with the count of open urgent and high actions, leading to `/inbox`. No new word in the top bar. Measure the top bar at the eight widths in the four styles, as Health did.
+- [x] `/inbox/digests`: each batch newest first: when, the headline, what needs her, deadlines, each source's lines and its status (read, partly read, not reachable, and why), counts, and Undo on the latest. At the top: "Last gathered <when>" and **How to gather** (CP5's Guide page).
+- [x] Today: a **Waiting on you** panel: the five most pressing open actions with Done and Tomorrow, the latest headline, "last gathered", and a link to the Inbox. If nothing has been gathered for three days, one quiet line says so (not in the bell: she runs it when she wants).
+- [x] The bell (a `mail` provider in `hosting/notices/service.mjs`): **today**: urgent actions and actions due today; **late**: actions past their day, and replies waiting three days or more; **ahead**: due tomorrow; once per batch, "<n> new announcements" when Learning Central or the school sent any. Birthdays already in the bell lead to the wish.
+- [x] A Windows notice (through `desktop.mjs`) when an applied batch brings urgent actions: "2 urgent things in your mail". Off with the bell's existing switch.
+- [x] The calendar: open actions with a due day are items (kind `deadline` when the mail gave the date, `reminder` for her own), area `admin` or `relationships`, done ones shown done, each leading to the action.
+- [x] The top bar: an envelope beside the bell, with the count of open urgent and high actions, leading to `/inbox`. No new word in the top bar. Measure the top bar at the eight widths in the four styles, as Health did.
 - **Done when:** the example batch gives a digest page, Today's panel, the right bell lines, three calendar items (29 and 30 October and 2 November in the example) and the envelope's count.
 - **Verify:** tests for the notices and calendar items; looked at as in CP2.
 - **Commit:** `[mail-cp4] Digests, Today, the bell, the calendar and the envelope`
 
 ### CP5: Write it with Claude, how to gather, and the Guide
-- [ ] **Write it with Claude** on a reply or email action and in the reader, as in JobMap: a prompt from the message (the text, who it is from, her note) with the rule to keep to what the message says and to leave the sending to her; it is copied and claude.ai opens; "Nothing is sent until you send it". Her name for signing comes from settings, never from code.
-- [ ] **How to gather**, a Guide page: in the Claude app, open the scheduled task "Gather my inboxes" and run it; or copy the one-line prompt for Codex or any AI ("Gather my inboxes: follow mail/GATHER.md in the Life_OS folder"), with a Copy button on the Digests page; what each source needs once (connectors in Claude's settings, being signed in to the built-in browser).
-- [ ] The Guide's chapter for the Inbox (the three pages, the add line, birthdays, Today's panel, the bell, the envelope) and its "How do I" answers. **Pictures only from the example batch on the try-out**, never from her real mail.
+- [x] **Write it with Claude** on a reply or email action and in the reader, as in JobMap: a prompt from the message (the text, who it is from, her note) with the rule to keep to what the message says and to leave the sending to her; it is copied and claude.ai opens; "Nothing is sent until you send it". Her name for signing comes from settings, never from code.
+- [x] **How to gather**, a Guide page: in the Claude app, open the scheduled task "Gather my inboxes" and run it; or copy the one-line prompt for Codex or any AI ("Gather my inboxes: follow mail/GATHER.md in the Life_OS folder"), with a Copy button on the Digests page; what each source needs once (connectors in Claude's settings, being signed in to the built-in browser).
+- [x] The Guide's chapter for the Inbox (the three pages, the add line, birthdays, Today's panel, the bell, the envelope) and its "How do I" answers. **Pictures only from the example batch on the try-out**, never from her real mail.
 - **Done when:** a prompt copies and claude.ai opens; the Guide shows the chapter with its pictures.
 - **Commit:** `[mail-cp5] Write it with Claude, how to gather, and the Guide`
+- **CP2 to CP5 done 28 October (Claude Code), at Xar's request "do the whole thing all at once".** Built in one go on `stage/mail-inbox` (a worktree, because another session had uncommitted edits in the same files), one commit `[mail-cp2-cp5]`, merged into `stage/4b-one-look`. Walked on a private try-out (example batch, test database, an empty core database): every "Done when" above checked. Kept from the plan: the envelope beside the bell (open question 3). Added: `mail/AGENT-PROMPTS.md` (the prompts for her agents). Not done here: `migrate.js lifeos`, the live build and the restart. The session's permission check blocked them, so they wait for Xar (STATUS.md). The render test runs bundled: see the session note.
 
 ## Data safety
 - Nothing existing changes: a new schema, and the core's `people` only read (CP2's "Owe them a text" writes to `mail.actions`, not to `people`).

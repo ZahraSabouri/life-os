@@ -361,7 +361,8 @@ Brief: `briefs/health-part.md`. Her words:
 - [ ] **(Xar)** Connect Gmail in Claude's settings (Connectors); be signed in to Cardiff Outlook and Learning Central (and Teams, if wanted) in Claude's built-in browser; then run the gather once and read its digest.
 - [ ] **(Xar)** Is Documents synced to OneDrive? (Gathered mail waits in `Life_OS\mail\inbox\`.)
 - [x] CP1 the store and importer (28 October).
-- [ ] CP2 Waiting on you · CP3 reading mail · CP4 digests, Today, bell, calendar, envelope · CP5 Write it with Claude, how to gather, the Guide.
+- [x] CP2 Waiting on you · CP3 reading mail · CP4 digests, Today, bell, calendar, envelope · CP5 Write it with Claude, how to gather, the Guide (28 October).
+- [ ] **(Xar)** Put it live (STATUS.md, "Exact next step"), gather once, check the first batch on lifeos_test, then accept with the brief's checklist.
 
 ## X. Reset again through 31 December (28 October)
 

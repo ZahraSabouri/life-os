@@ -85,7 +85,7 @@ When Study, Career, Money, Home and Events become modules with their own tables,
 | **Capture** | Partly: a form driven by the type registry | The type picker isn't grouped by room yet. AI capture is Parked |
 | **Search / Ask** | Later | PostgreSQL full-text search, English and Persian, a ⌘K palette; asking questions about your life after that |
 | **Favorites** | Partly: the `favorite` column and index exist | No star in the interface and no Favorites view yet |
-| **Inbox** | Planned (28 October): `briefs/mail-and-admin.md`. The gathering instructions, format, checker and the on-demand Claude task "Gather my inboxes" exist | Waiting on you (replies, emails, texts, calls, birthday wishes, things to read, do or decide), Mail (gathered messages read in the app, with summaries and priorities), Digests; Today, bell, calendar, People. Captured-but-unfiled things can join later |
+| **Inbox** | Built 28 October (`briefs/mail-and-admin.md`, CP1 to CP5); waiting to go live and for her acceptance. Gathered by her agents (`mail/GATHER.md`, `mail/AGENT-PROMPTS.md`) | Waiting on you (replies, emails, texts, calls, birthday wishes, things to read, do or decide), Mail (gathered messages read in the app, with summaries and priorities), Digests; Today, bell, calendar, People. Captured-but-unfiled things can join later |
 | **Map** | Later | Entries with a place |
 | **Gallery** | Later | Entries with photos, by time and place |
 | **People** | Later | The directory, plus each person's whole thread |

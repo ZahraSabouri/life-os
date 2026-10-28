@@ -1,8 +1,10 @@
 # Life OS: status
 
-**Updated 28 October 2026 by Claude Code** (the Calendar: everything in the address and a day that opens; Codex's state of the same evening kept). Branch `stage/4b-one-look`. Running: http://127.0.0.1:47850; Budget 47851; JobMap 47852. Standalone JobMap remains frozen.
+**Updated 28 October 2026 by Claude Code** (mail CP2 to CP5 built and merged; the Calendar and Codex's state of the same evening kept). Branch `stage/4b-one-look`. Running: http://127.0.0.1:47850; Budget 47851; JobMap 47852. Standalone JobMap remains frozen.
 
 ## Now
+
+**Inbox (Claude Code, her request "do the whole thing"), built, not yet live:** the envelope beside the bell opens **Waiting on you** (who she owes a reply, email, text, call or birthday wish; Today, This week, Whenever, Done lately; Done, Tomorrow, Next week, Not needed, the email, priority, a note, Undo), **Mail** (every gathered message by day, sources, filters, search, read as plain text, Open in Outlook/Gmail, I need to reply, Hide) and **Digests** (each run, what could not be read, Undo, How to gather). Today has a "Waiting on you" panel; Today's add line takes "text Sam about Saturday"; People shows what she owes each person and "Owe them a text"; the bell, the calendar and a Windows notice for urgent things. Write it with Claude on replies. The Guide has an Inbox chapter (pictures from the example batch only). Prompts for her agents: `mail/AGENT-PROMPTS.md`. Note: `sessions/2026-10-28-claude-code-mail-cp2-cp5-inbox.md`.
 
 **Calendar (Claude Code, her request today), live:** the month, view, filters, search, an open day and the thing open in it are in the address, so Back goes back: it closes the thing, then the day, then steps back through months and views. Named month steps, Go to, **Month / Week (by the hour) / List / Year**, search, week numbers, keys (← → T M W L Y). **Click a day:** it opens over the month with the day in time order, study steps to tick, Done / Change / Move / Take off the day on her plans, "I applied", "Open in Study hub / Cardiff Life / JobMap …", Study, Jobs, Home and Health tabs, and **notes for a day or about one thing** (✎ on the month). The Guide's and the Journal's pictures are in the address too. Brief: `briefs/calendar-day-and-addresses.md`; note: `sessions/2026-10-28-claude-code-calendar-day-and-addresses.md`.
 
@@ -10,6 +12,7 @@
 
 ## Exact next step and how to see it
 
+0. **Mail goes live (Xar, or an agent she approves):** `node code/life-os/backend/src/migrate.js lifeos` (it backs up first; adds the empty `mail` tables only), then `Build Life OS.cmd`, then Stop and Start Life OS. Then the envelope by the bell works. Gathering: `mail/AGENT-PROMPTS.md` (connect Gmail, sign in to Outlook and Learning Central in Claude's browser, run "Gather my inboxes"); the first batch goes to `lifeos_test` first, then hers, then `node scripts/mail-import.mjs lifeos --live on`.
 1. Xar reloads Life OS and tries the Calendar: "November ›" then Back; click a day; click a class's title → "Open in Study hub" → Back; keep "A note for the day". The list is in the brief's acceptance checklist.
 2. Study as planned: **Today**, **Study hub → Week**, or **Calendar → Week**. Thursday's blocks, Friday's Test 2 recap; **Health → Exercise → Gym A/B** from Friday 30 October 08:30.
 
@@ -20,7 +23,7 @@
 - Xar: should a note about a JobMap job go into JobMap's own notes instead of a Life OS note? Agree project part/check-ins; confirm CMT309's 17/27 December; choose events. MAT021 dates must come from publication.
 - Calendar limits: "Open in Cardiff Life" opens its list, not the event (that needs Cardiff Life's own code); a crowded day in Week gets narrow columns; the four framed apps keep their own addresses; dropdown menus are not in the address.
 - Existing displays: false "Studied today" banner; Test 2 also shows its containing lecture; generic `test` draws at its end time.
-- Mail CP1 awaits review; live mail storage returns 503, importer off. Earlier acceptance and questions remain in TODO (stage 4b look, Health/Study, JobMap leads/repeats, Guide/mail setup).
+- Mail: built (CP1 to CP5) and merged; until `migrate.js lifeos` runs, `/api/mail` answers 503 and the calendar lists "Mail and admin" as unavailable. Live import stays off until the first batch is seen on `lifeos_test`. A review of the mail work is still to do. Earlier acceptance and questions remain in TODO (stage 4b look, Health/Study, JobMap leads/repeats, Guide/mail setup).
 - Don't run `hosting/app.test.mjs` (it reseeds the core). Browser checks use `playwright-core` from `summer-rescue` (the Playwright MCP extension is not installed).
 
 ## Data
@@ -29,8 +32,8 @@ Core 207 entries; Study 54; Budget 110; JobMap 52, 1,211 jobs. Backups: [reset](
 
 ## Last five sessions (all 28 October)
 
+- Mail CP2 to CP5, the Inbox (Claude Code): `sessions/2026-10-28-claude-code-mail-cp2-cp5-inbox.md`
 - Calendar in the address and the day pop-up (Claude Code): `sessions/2026-10-28-claude-code-calendar-day-and-addresses.md`
 - Workout documents in the plan (Codex): `sessions/2026-10-28-codex-records-workout-documents.md`
 - Reset through December (Codex): `sessions/2026-10-28-codex-records-plan-to-december.md`
 - Mail CP1, store and importer (Claude Code): `sessions/2026-10-28-claude-code-mail-cp1-store-importer.md`
-- Study materials audit (Codex): `sessions/2026-10-28-codex-study-materials-audit.md`
