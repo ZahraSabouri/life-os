@@ -11,6 +11,7 @@ function PartsMap() {
     ['Budget', 'shopping lists, meals, food at home, money', ['Today: Home', 'Calendar (renewals)', 'Review and Analysis', 'The bell'], 'budget'],
     ['Cardiff Life', 'events you chose or added', ['Calendar', 'Today: “Also today”', 'Court: Ahead'], 'cardiff'],
     ['Health', 'sessions, appointments, diet, UK recipes', ['Today: Health', 'Calendar (under Health)', 'The bell', 'Budget: your recipes'], 'health'],
+    ['Inbox', 'your gathered mail; who you owe a reply, a text or a call', ['Today: Waiting on you', 'Calendar (under Life admin)', 'The bell', 'Journal and People'], 'inbox'],
     ['Life OS itself', 'your plans, notes, journal, people, focus time', ['Court, Today, Plan the week', 'Journal and People', 'Review and Analysis'], 'court'],
   ]
   const page = (words) => (/^Budget/.test(words) ? '/budget#/meals/recipes' : /^Today/.test(words) ? '/today' : /^Calendar/.test(words) ? '/calendar' : /^Review/.test(words) ? '/review' : /^Court/.test(words) ? '/court' : /^Journal/.test(words) ? '/journal' : /bell/.test(words) ? '/guide/focus' : '/guide')

@@ -2,6 +2,7 @@
 // records the change in mail.history. Imports write source fields; her fields are
 // changed only through patchHers(), with a revision check (409 on a stale save).
 import { randomUUID } from 'node:crypto'
+import { areaOf, birthdayKey } from '../../../../shared/mail.js'
 
 export class MailError extends Error {
   constructor(status, message, details) {
@@ -115,6 +116,43 @@ export function createMailRepository({ pool }) {
     })
   }
 
+  // Something she owes, added by her (origin 'hers'), or a birthday wish once she acts on it.
+  async function createHers({ kind, title, person_id = null, person_name = null, message_id = null, due = null, her_note = null } = {}) {
+    if (!['reply', 'email', 'text', 'call', 'read', 'do', 'decide'].includes(kind)) throw new MailError(400, 'Say what kind: reply, email, text or call')
+    const words = String(title ?? '').trim().slice(0, 300)
+    if (!words) throw new MailError(400, 'Say what it is')
+    if (due && !/^\d{4}-\d{2}-\d{2}$/.test(due)) throw new MailError(400, 'A day is written YYYY-MM-DD')
+    return transaction((client) => write(client, 'actions', null, {
+      origin: 'hers', dedupe_key: `hers:${randomUUID()}`, kind, area: areaOf(kind), title: words, priority: 'normal', since: new Date().toISOString(), due,
+      person_id: person_id ? String(person_id) : null, person_name: person_name ? String(person_name).slice(0, 200) : null,
+      message_ids: message_id ? [String(message_id)] : [], her_note: her_note ? String(her_note).slice(0, 2000) : null,
+    }, { change: 'hers', before: null }))
+  }
+
+  async function actOnBirthday({ person_id, person_name, day, ...fields }) {
+    if (!person_id || !/^\d{4}-\d{2}-\d{2}$/.test(String(day ?? ''))) throw new MailError(400, 'Say whose birthday and which day')
+    const key = birthdayKey(person_id, day.slice(0, 4))
+    const found = (await pool.query('SELECT id, revision FROM mail.actions WHERE dedupe_key = $1 AND deleted_at IS NULL', [key])).rows[0]
+    if (found) return patchHers('actions', found.id, found.revision, fields)
+    const unknown = Object.keys(fields).filter((field) => !HER_FIELDS.actions.includes(field))
+    if (unknown.length) throw new MailError(400, `These can't be changed here: ${unknown.join(', ')}`)
+    return transaction((client) => write(client, 'actions', null, {
+      origin: 'birthday', dedupe_key: key, kind: 'congratulate', area: 'relationships', title: `Wish ${String(person_name ?? 'them').slice(0, 200)} a happy birthday`,
+      priority: 'high', due: day, since: new Date().toISOString(),
+      person_id: String(person_id), person_name: person_name ?? null, ...fields,
+      ...(fields.status === 'done' ? { done_at: new Date().toISOString(), done_by: 'her' } : {}),
+    }, { change: 'hers', before: null }))
+  }
+
+  // Opening a message in Life OS: set once, no revision needed.
+  async function markSeen(id) {
+    return transaction(async (client) => {
+      const before = (await client.query('SELECT to_jsonb(t) AS row FROM mail.messages t WHERE id = $1 AND deleted_at IS NULL FOR UPDATE', [id])).rows[0]?.row
+      if (!before) throw new MailError(404, 'Not found')
+      return before.seen_at ? before : write(client, 'messages', id, { seen_at: new Date().toISOString() }, { change: 'hers', before })
+    })
+  }
+
   const lastBatch = async () => (await pool.query("SELECT id, run_id, file_name, gathered_at, agent, imported_at, status, counts, sources, digest FROM mail.batches ORDER BY imported_at DESC LIMIT 1")).rows[0] ?? null
   const batches = async ({ limit = 50 } = {}) => (await pool.query('SELECT id, run_id, file_name, gathered_at, agent, imported_at, status, counts, undone_at FROM mail.batches ORDER BY imported_at DESC LIMIT $1', [limit])).rows
   const counts = async () => (await pool.query(`SELECT
@@ -122,5 +160,5 @@ export function createMailRepository({ pool }) {
       (SELECT count(*)::int FROM mail.actions WHERE deleted_at IS NULL AND status = 'open') AS open_actions,
       (SELECT count(*)::int FROM mail.actions WHERE deleted_at IS NULL AND status = 'done') AS done_actions`)).rows[0]
 
-  return { pool, transaction, patchHers, lastBatch, batches, counts }
+  return { pool, transaction, patchHers, createHers, actOnBirthday, markSeen, lastBatch, batches, counts }
 }

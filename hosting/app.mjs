@@ -52,7 +52,7 @@ export function createLifeOsApp(options = {}) {
   const token = options.token ?? process.env.LIFE_OS_TOKEN ?? 'dev-token-change-me'
   const study = options.studyRuntime ?? createStudyRuntime(projectRoot)
   app.locals.studyRuntime = study
-  const mail = options.mailRuntime !== undefined ? options.mailRuntime : createMailRuntime(projectRoot, { findPeople: () => db.prepare('SELECT id, name, contact FROM people').all() })
+  const mail = options.mailRuntime !== undefined ? options.mailRuntime : createMailRuntime(projectRoot, { findPeople: () => db.prepare('SELECT id, name, contact, birthday FROM people').all() })
   app.locals.mailRuntime = mail
 
   app.get('/__life-os/health', (_req, res) => res.json({
@@ -203,6 +203,8 @@ export function createLifeOsApp(options = {}) {
   calendarLoaders.loadEvents = async () => [...await researchedEvents(), ...ownEvents.list()]
   calendarLoaders.loadBudget = together(calendarLoaders.loadBudget)
   // A part gets eight seconds before the calendar says it could not be read (it was two and a half).
+  // What she owes with a day, from the mail part.
+  if (mail) calendarLoaders.loadMail = (range) => mail.reads.dated(range.from, range.to)
   const calendarService = createCalendarService({ ...calendarLoaders, timeoutMs: 8000 })
   app.use('/api/calendar', createCalendarRouter(calendarService))
   // What a day needs beyond its dated items: study blocks with their cards, and the current
@@ -229,6 +231,7 @@ export function createLifeOsApp(options = {}) {
     dayOf: dayService, calendarOf: calendarService,
     loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('task', 'time-block')").all(),
     loadBudget: calendarLoaders.loadBudget, budgetFigures,
+    loadMail: mail ? () => mail.reads.forNotices() : undefined,
   })
   // While a tab is open the browser tells her; when none is, the server asks Windows to
   // (hosting/notices/desktop.mjs). Only the real server does this, not a try-out.
@@ -240,6 +243,8 @@ export function createLifeOsApp(options = {}) {
     prefs: () => { try { return JSON.parse(db.prepare("SELECT value FROM settings WHERE key = 'notices'").get()?.value ?? '{}') ?? {} } catch { return {} } },
   }) : null
   app.locals.desktopNotifier = notifier
+  // A gathered batch that brings urgent things says so once, through Windows.
+  if (mail && notifier) mail.onApplied = (result) => (result.counts?.urgent ? notifier.tell(`${result.counts.urgent} urgent ${result.counts.urgent === 1 ? 'thing' : 'things'} in your mail`, 'Open Waiting on you in Life OS.', '/inbox') : null)
   app.use('/api/notices', (_req, _res, next) => { browserSeenAt = Date.now(); next() }, createNoticesRouter({ express, service: async () => { const result = await noticesService(); return { ...result, told: notifier?.told(result.today) ?? [] } } }))
   // A week looked back on across every part. Read only. "Spent" is Budget's own month rule.
   // What the review and the analysis read: the same loaders, so their numbers agree.

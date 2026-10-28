@@ -6,6 +6,8 @@ import { movePlan, setPlanStatus } from './plans.js'
 import { isoWeekday, sayWeekdays } from '../../../shared/routines.js'
 import { addDays, filterCalendarItems, formatCalendarDay, isComplete, todayGroups } from './calendar.js'
 import { buildDay, noteTitle, parsePlan, splitThings } from './day.js'
+import { parseOwe } from '@shared/mail.js'
+import { addOwed } from './useMail.js'
 import { useCalendar, useLondonToday } from './useCalendar.js'
 import { useDay, useLondonClock } from './useDay.js'
 
@@ -60,11 +62,14 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
   const dayName = planDay === today ? 'today' : formatCalendarDay(planDay, { weekday: 'long' })
   const filed = area ? { area } : {}
   const repeating = adding === 'plan' && Boolean(repeat)
+  // A plan without a clock time that starts with text, call, email, message or reply is something she owes.
+  const owed = adding === 'plan' && !repeating && !plan.start ? parseOwe(text) : null
   const weekdays = repeat === 'daily' ? [1, 2, 3, 4, 5, 6, 7] : repeat === 'weekdays' ? [1, 2, 3, 4, 5] : repeat === 'weekly' ? [isoWeekday(planDay)] : [...repeatDays].sort()
   const hint = !text.trim() ? ''
     : adding === 'note' ? (notesAnyDay ? `A note for ${dayName}, kept on the calendar and in the Ledger.` : 'A note, kept on today and in the Ledger.')
       : adding === 'buy' ? (things.length ? `${things.length === 1 ? `“${things[0]}” goes` : `${things.length} things go`} on your shopping list in Budget.` : 'Say what to buy; commas separate several things.')
         : !plan.title ? 'Say what it is as well as when.'
+          : owed ? `“${owed.title}” goes on Waiting on you in the Inbox${planDay === today ? '' : `, for ${dayName}`}. Add a clock time to make it a plan instead.`
           : repeating ? (weekdays.length ? `“${plan.title}” ${sayWeekdays(weekdays)}${plan.start ? ` at ${plan.start}${plan.end ? ` to ${plan.end}` : ''}` : ', at any time of the day'}, from ${dayName}${until ? ` until ${formatCalendarDay(until)}` : ''}.` : 'Choose the days it comes round on.')
           : plan.start ? `“${plan.title}” at ${plan.start}${plan.end ? ` to ${plan.end}` : ''}, ${dayName}. It goes on the calendar too.`
             : `“${plan.title}”, any time ${dayName}. Type a time (17:30, 5pm) to place it.`
@@ -84,6 +89,7 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
       if (!things.length) { setError('Say what to buy.'); return }
       request = ['/api/home/shopping', { items: things, date: planDay }]
     } else if (!plan.title) { setError('Say what it is as well as when, for example “17:30 library”.'); return }
+    else if (owed) request = ['owed', { text: body, due: planDay }]
     else if (repeating) {
       if (!weekdays.length) { setError('Choose at least one day for it to come round on.'); return }
       if (until && until < planDay) { setError('It cannot end before it starts.'); return }
@@ -99,11 +105,12 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
     setError('')
     setNotice('')
     try {
-      const saved = await apiFetch(request[0], { method: 'POST', body: JSON.stringify(request[1]) })
+      const saved = request[0] === 'owed' ? await addOwed(request[1]) : await apiFetch(request[0], { method: 'POST', body: JSON.stringify(request[1]) })
       setText('')
       if (repeating) { setRepeat(''); setRepeatDays([]); setUntil('') }
       refetch()
       onSaved?.()
+      if (request[0] === 'owed') setNotice(`On Waiting on you: ${saved.title}${saved.person_name ? `, under ${saved.person_name} in People` : saved.candidates ? '. More than one person has that name: choose on the Inbox page' : ''}.`)
       if (adding === 'buy') setNotice(saved.added?.length ? `On “${saved.list.name}” in Budget: ${saved.added.join(', ')}.${saved.skipped?.length ? ` Already there: ${saved.skipped.join(', ')}.` : ''}` : `Already on “${saved.list.name}”: ${(saved.skipped ?? []).join(', ')}.`)
       setLineState('saved')
       window.setTimeout(() => setLineState(''), 1500)

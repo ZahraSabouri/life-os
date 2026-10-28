@@ -3,6 +3,7 @@
 // It only reads: the day (study, jobs, home), the calendar's dated items, and her own plans.
 // What she has already seen is kept by the page, not here.
 import { addDays, dateKey } from '../../code/life-os/shared/calendar.js'
+import { mailNotices } from '../mail/notices.mjs'
 
 const array = (value) => (Array.isArray(value) ? value : [])
 const text = (value, limit = 200) => String(value ?? '').trim().slice(0, limit)
@@ -77,10 +78,12 @@ export function buildNotices({ day, items, open, money, now = new Date() } = {})
   if (money && Number.isFinite(money.leftPence) && money.leftPence < 0) add({ id: `money:over:${money.month}`, level: 'late', area: 'money', title: `Over this month's budget by ${pounds(-money.leftPence)}`, detail: `${pounds(money.spentPence)} spent of ${pounds(money.budgetPence)}`, href: '/budget' })
   // Renewals and other dated money or home things, today and tomorrow.
   for (const item of array(items)) {
-    if (!item?.all_day || !['money', 'relationships'].includes(item.area) || finished(item)) continue
+    if (!item?.all_day || !['money', 'relationships'].includes(item.area) || finished(item) || item.meta?.source === 'mail') continue
     const date = String(item.start).slice(0, 10)
     if (date !== today && date !== tomorrow) continue
-    add({ id: `dated:${item.id}:${date}`, level: date === today ? 'today' : 'ahead', area: item.area, title: `${text(item.title)}${date === today ? ' is today' : ' is tomorrow'}`, detail: AREAS[item.area], href: item.href || '/calendar' })
+    // A birthday today leads to the wish on Waiting on you.
+    const wish = item.meta?.type === 'birthday' && date === today
+    add({ id: `dated:${item.id}:${date}`, level: date === today ? 'today' : 'ahead', area: item.area, title: `${text(item.title)}${date === today ? ' is today' : ' is tomorrow'}`, detail: wish ? 'Wish them a happy birthday' : AREAS[item.area], href: wish ? '/inbox' : item.href || '/calendar' })
   }
 
   // ---- Health: appointments today and tomorrow, sessions planned for today ------------------
@@ -123,16 +126,17 @@ export function openPlans(entries, today, days = 7) {
   return { count: open.length, plans: open.slice(0, 6) }
 }
 
-export function createNoticesService({ dayOf, calendarOf, loadEntries, loadBudget, budgetFigures, now = () => new Date() } = {}) {
+export function createNoticesService({ dayOf, calendarOf, loadEntries, loadBudget, budgetFigures, loadMail, now = () => new Date() } = {}) {
   return async function notices() {
     const moment = now()
     const today = dateKey(moment)
     // Each part that cannot be read leaves its notices out; the rest still come.
-    const [day, calendar, entries, budget] = await Promise.all([
+    const [day, calendar, entries, budget, mail] = await Promise.all([
       Promise.resolve().then(() => dayOf({ date: today })).catch(() => null),
       Promise.resolve().then(() => calendarOf({ from: today, to: addDays(today, 1) })).catch(() => null),
       Promise.resolve().then(() => loadEntries()).catch(() => null),
       Promise.resolve().then(() => loadBudget?.()).catch(() => null),
+      Promise.resolve().then(() => loadMail?.()).catch(() => null),
     ])
     let money = null
     try {
@@ -141,6 +145,10 @@ export function createNoticesService({ dayOf, calendarOf, loadEntries, loadBudge
       if (figures && Number.isFinite(Number(figures.totalRemaining))) money = { month: today.slice(0, 7), spentPence: Math.round(Number(figures.totalSpent) * 100), budgetPence: Math.round(Number(figures.adjustedTotal) * 100), leftPence: Math.round(Number(figures.totalRemaining) * 100) }
     } catch { money = null }
     const result = buildNotices({ day, items: calendar?.items ?? [], open: entries ? openPlans(entries, today) : null, money, now: moment })
+    if (mail) {
+      result.notices.push(...mailNotices(mail, today))
+      result.notices.sort((a, b) => LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level) || String(a.at).localeCompare(String(b.at)))
+    }
     const missing = [day ? '' : 'the day', calendar ? '' : 'the calendar', entries ? '' : 'your plans'].filter(Boolean)
     return { ...result, ...(missing.length ? { missing } : {}) }
   }

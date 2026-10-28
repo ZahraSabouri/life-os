@@ -14,6 +14,7 @@ import PeopleView from './components/PeopleView.jsx'
 import RoomView from './components/RoomView.jsx'
 import StudyHub from './components/study/StudyHub.jsx'
 import HealthView from './components/health/HealthView.jsx'
+import InboxView from './components/inbox/InboxView.jsx'
 import { FocusProvider } from './lib/focus.jsx'
 import { NoticesProvider } from './lib/notices.jsx'
 import { GroundProvider, useGround } from './lib/groundContext.jsx'
@@ -133,6 +134,8 @@ function AppRoutes() {
           <Route path="/cardiff-life" element={<CardiffLifeRoute />} />
           <Route path="/budget" element={<BudgetRoute />} />
           <Route path="/health" element={<HealthView />} />
+          <Route path="/inbox" element={<InboxView />} />
+          <Route path="/inbox/:view" element={<InboxView />} />
           <Route path="/room/body" element={<Navigate to="/health" replace />} />
           <Route path="/jobmap" element={<JobMapRoute />} />
         </Route>
