@@ -1,7 +1,8 @@
 // The journal: a page for a day, in her own words, with a mood and pictures if she likes.
 // Each page is an entry of the kind "journal" in the core, dated to its day.
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAddress } from '../lib/addresses.js'
 import { apiFetch } from '../lib/api.js'
 import { formatCalendarDay } from '../lib/calendar.js'
 import { addPictures, Picture, PictureLarge, removePicture } from '../lib/pictures.jsx'
@@ -80,9 +81,21 @@ function Page({ entry, onChanged, onOpen }) {
 export default function JournalView() {
   const today = useLondonToday()
   const all = useEntries('?limit=5000')
-  const [words, setWords] = useState('')
-  const [view, setView] = useState('pages')
-  const [large, setLarge] = useState(null)
+  // What is shown is in the address: Pictures (?view=pictures), the words found (?find=), a picture large (?picture=).
+  const address = useAddress()
+  const view = address.params.get('view') === 'pictures' ? 'pictures' : 'pages'
+  const setView = (next) => address.show({ view: next === 'pictures' ? next : null })
+  const asked = address.params.get('find') ?? ''
+  const [words, setWords] = useState(asked)
+  useEffect(() => { setWords(asked) }, [asked])
+  useEffect(() => {
+    if (words === asked) return undefined
+    const timer = window.setTimeout(() => address.swap({ find: words.trim() ? words : null }), 250)
+    return () => window.clearTimeout(timer)
+  }, [words, asked, address])
+  const pictureId = address.params.get('picture') ?? ''
+  const large = pictureId ? { id: pictureId } : null
+  const setLarge = (value) => (value ? address.open('picture', { picture: value.id }) : address.close(['picture']))
   const pages = useMemo(() => all.entries.filter((entry) => entry.type === 'journal' && !entry.archived).sort((a, b) => dayOf(b).localeCompare(dayOf(a)) || String(b.created_at).localeCompare(String(a.created_at))), [all.entries])
   const found = useMemo(() => {
     const asked = words.toLowerCase().trim().split(/\s+/).filter(Boolean)

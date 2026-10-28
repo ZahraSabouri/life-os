@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { CHAPTERS, GROUPS, GUIDE_IMAGES, PART_OPENS, STEP_OPENS, TASKS } from '../guide/chapters.js'
+import { useAddress } from '../lib/addresses.js'
 import { apiFetch } from '../lib/api.js'
 import { useFocus } from '../lib/focus.jsx'
 import { useNotices } from '../lib/notices.jsx'
@@ -152,12 +153,19 @@ function Maintain({ onDone, shots, takenAt }) {
   return <p className="guide-maintain">Maintenance: {GUIDE_IMAGES.filter((name) => shots[name]).length} of {GUIDE_IMAGES.length} pictures{takenAt ? `, taken ${new Date(takenAt).toLocaleString('en-GB')}` : ''}. <button type="button" onClick={start} disabled={state.running}>{state.running ? 'Taking the pictures…' : 'Retake the pictures'}</button> {state.said}</p>
 }
 
+// A picture's words, from its name: the step it shows, or the "How do I…?" it answers.
+const pictureTitle = (name) => CHAPTERS.flatMap((chapter) => chapter.steps).find((step) => step.image === name)?.title ?? TASKS.find((task) => task.images?.includes(name))?.q ?? 'Picture'
+
 export default function GuideView() {
   const { loaded, shots, takenAt, read: readShots } = useShots()
   const { chapter: partId } = useParams()
   const location = useLocation()
   const [read, toggleRead] = useRead()
-  const [large, setLarge] = useState(null)
+  // A picture shown large is in the address (?picture=), so Back closes it and a link can open it.
+  const address = useAddress()
+  const shown = address.params.get('picture') ?? ''
+  const large = shown && shots[shown] ? { image: shown, title: pictureTitle(shown) } : null
+  const setLarge = useCallback((value) => (value ? address.open('picture', { picture: value.image }) : address.close(['picture'])), [address])
   const stamp = encodeURIComponent(takenAt)
   const chapter = partId ? PART[partId] : null
   const maintain = useMemo(() => new URLSearchParams(location.search).has('maintain'), [location.search])
@@ -166,7 +174,7 @@ export default function GuideView() {
     const onKey = (event) => { if (event.key === 'Escape') setLarge(null) }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [large])
+  }, [large, setLarge])
   return <section className="today-layout unified-today day-page guide-page" aria-label="Guide">
     <header className="ledger-header">
       <div className="ledger-brandline"><h1>Guide</h1><span /></div>

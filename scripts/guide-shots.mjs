@@ -210,7 +210,13 @@ const RECIPES = {
     await part('planner-repeating.jpg', page.locator('.planner-repeating'))
   },
   // ---- Calendar
-  'calendar.jpg': async () => { await go('/calendar', '.calendar-layout'); await settle(4000); await view('calendar.jpg', { marks: ['.calendar-view-controls', '.calendar-kind-legend'] }) },
+  'calendar.jpg': async () => { await go('/calendar', '.calendar-layout'); await settle(4000); await view('calendar.jpg', { marks: ['.calendar-steps', '.calendar-views', '.calendar-search', '.calendar-week-number', '.calendar-kind-legend'] }) },
+  // Today, open over the month. The day is London's today, as the calendar counts it.
+  'calendar-day.jpg': async () => {
+    const day = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(new Date())
+    await go(`/calendar?day=${day}`, '.calendar-day-dialog[open] .day-stops'); await settle(2500)
+    await view('calendar-day.jpg', { marks: ['.calendar-day-step', '.calendar-day-tabs [role="tablist"]', '#calendar-day-add', '.calendar-day-dialog .day-stop-actions a', '.calendar-day-dialog .day-stop-actions button', '.calendar-note-form'] })
+  },
   'room.jpg': async () => { await go('/room/home'); await settle(3000); await view('room.jpg') },
   'today-health.jpg': async () => { await go('/today', '.day-path'); await panel('Health').locator('.health-panel-figure').waitFor({ timeout: 20_000 }); await part('today-health.jpg', panel('Health')) },
   // Health. Nothing is saved: forms are opened, never sent.
