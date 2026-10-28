@@ -57,11 +57,20 @@ function NoteForm({ page, about, label }) {
   </form>
 }
 
+// A long note shows its beginning, so the rest of the day stays in sight; "Read all" shows the rest.
+const SHORT = 240
 function NoteList({ notes }) {
+  const [open, setOpen] = useState([])
   if (!notes.length) return null
-  return <ul className="day-notes calendar-note-list">{notes.map((note) => <li key={note.id}>
-    <time>{note.forDay ? 'Note' : note.at}</time><p>{note.body || note.title}</p><Link to={note.href} title="Change or remove it in the Ledger">Ledger</Link>
-  </li>)}</ul>
+  return <ul className="day-notes calendar-note-list">{notes.map((note) => {
+    const words = note.body || note.title
+    const long = words.length > SHORT && !open.includes(note.id)
+    return <li key={note.id}>
+      <time>{note.forDay ? 'Note' : note.at}</time>
+      <p>{long ? `${words.slice(0, SHORT).trimEnd()}… ` : words}{long ? <button type="button" className="calendar-note-more" onClick={() => setOpen((current) => [...current, note.id])}>Read all</button> : null}</p>
+      <Link to={note.href} title="Change or remove it in the Ledger">Ledger</Link>
+    </li>
+  })}</ul>
 }
 
 function Thing({ page, thingKey, onBack, onItem }) {

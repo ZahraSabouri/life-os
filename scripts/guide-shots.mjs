@@ -215,7 +215,7 @@ const RECIPES = {
   'calendar-day.jpg': async () => {
     const day = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(new Date())
     await go(`/calendar?day=${day}`, '.calendar-day-dialog[open] .day-stops'); await settle(2500)
-    await view('calendar-day.jpg', { marks: ['.calendar-day-step', '.calendar-day-tabs [role="tablist"]', '#calendar-day-add', '.calendar-day-dialog .day-stop-actions a', '.calendar-day-dialog .day-stop-actions button', '.calendar-note-form'] })
+    await view('calendar-day.jpg', { marks: ['.calendar-day-step', '.calendar-day-tabs [role="tablist"]', '#calendar-day-add', '.calendar-day-dialog .day-stop-actions a', '.calendar-day-dialog .day-stop-actions button'] })
   },
   'room.jpg': async () => { await go('/room/home'); await settle(3000); await view('room.jpg') },
   'today-health.jpg': async () => { await go('/today', '.day-path'); await panel('Health').locator('.health-panel-figure').waitFor({ timeout: 20_000 }); await part('today-health.jpg', panel('Health')) },

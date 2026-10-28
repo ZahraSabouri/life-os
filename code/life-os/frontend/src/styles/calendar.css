@@ -157,6 +157,8 @@
 .calendar-note-list { margin: 0 0 0.75rem; }
 .calendar-note-list li { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr) auto; gap: 0.6rem; align-items: baseline; }
 .calendar-note-list a { color: var(--m-faint); font-size: 0.75rem; }
+.calendar-note-list p { white-space: pre-line; }
+.calendar-note-more { border: 0; padding: 0; background: transparent; color: var(--m-accent-strong); cursor: pointer; font: 600 0.8rem/1.3 var(--m-font); }
 .calendar-note-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.45rem 0.6rem; align-items: end; }
 .calendar-note-form label { grid-column: 1 / -1; color: var(--m-muted); font: 600 0.78rem/1.2 var(--m-font); }
 .calendar-note-form textarea { width: 100%; box-sizing: border-box; resize: vertical; border: 1px solid var(--m-line); border-radius: var(--m-radius-sm, 6px); padding: 0.55rem 0.65rem; background: var(--m-card-fill); color: var(--m-ink); font: var(--m-text-weight) 0.95rem/1.45 var(--m-font); }
