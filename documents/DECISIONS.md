@@ -4,6 +4,13 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 28 October 2026 — a page keeps what it shows in its address; the calendar's day opens over it (Xar with Claude Code)
+
+- Xar: "I want everything to be in URL … so when I press back, I can go back, even if some pop-up window was open"; "open one day, and a pop-up window should open … mark things done, or add notes, or click on links".
+- **A page of Life OS keeps its view, filters, search and open pop-ups in its address** (`frontend/src/lib/addresses.js`). A pop-up opened from the page is a step of Back; one that came with a link or a reload is taken out of the address when closed. Steps inside a pop-up (another day, a tab) change the address in place, so Back closes the pop-up rather than walking back through every day looked at. Done for the Calendar, the Guide's and the Journal's pictures and the Journal's views. Dropdown menus (bell, style, phone menu) are not pages and stay out. The four apps in frames keep their own addresses after `#`.
+- **The calendar's day opens over the month** (`?day=`, `&item=`, `&tab=`) with Today's day in it: everything in time order, the actions each part already allowed, "Open in …" its own place, and a note.
+- **A note written from the calendar is a Life OS note dated to the day it is for** (`start_at`), and `about` names the calendar item it is about. On the calendar it is a "note" (✎), not a plan, and the day reads notes dated to it as well as notes written on it. Written on Today, a note still belongs to the day it is written. Open: whether a note about a JobMap job should go into JobMap's own notes instead.
+
 ## 28 October 2026 — use the workout documents in the saved plan
 
 - Xar supplied workout.docx and the Howard Gardens exercise-options PDF: “can you also add/effect these”, then “go on”. Apply their useful routine/research content to the existing gym slots, keeping her already-confirmed two-day pattern and protected time.
