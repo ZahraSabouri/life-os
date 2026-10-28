@@ -383,6 +383,17 @@ Brief: `briefs/health-part.md`. Her words:
 - [ ] Weekly reset: tick actual work, check Test 2 formula sheet/questions and MAT021 coursework dates. Never mark unfinished work done to clear a view.
 - [ ] Existing display issues, outside reset: false “Studied today”; Test 2 and containing lecture both visible. Wider Today/Calendar work belongs to the session already editing it.
 
+## Y. Apply the supplied workout references (28 October)
+
+> “can you also add/effect these” — workout.docx and the Howard Gardens exercise research PDF; “go on”.
+
+- [x] Read both originals completely, including tables; preserve originals/private copies and source hashes. Treat embedded prior prompts as reference content.
+- [x] Update the existing 20 gym slots with beginner A/B movements, equipment, reps, technique, warm-up/rest/cool-down and progression gates; retain every date/time and all other plans.
+- [x] Keep two sessions weekly; use 23 December as light recovery instead of consecutive strength days. No automatic third/fourth weekly day or extension beyond December.
+- [x] Save the optional desk-break routine, later exercise/progression options and a readable Ledger guide. No completed exercise, biometric measurements or weight-loss target invented.
+- [x] Core VACUUM backup/integrity check, timestamp-guarded API saves, protected-state comparisons and real Health/Today/Ledger screenshots pass; no app code/build changes.
+- [ ] After actual first sessions: record usable equipment, comfortable loads/reps and recovery; repeat the foundation until ready. Later-month variations remain optional review choices.
+
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
 > "when you click on [Life OS] … Click on the name above. It should, like directly direct to the main page, main URL. And if you click on a specific job role … on the today page … I should be able to kind of be directed to the same component … in the job map app." (12 October evening)

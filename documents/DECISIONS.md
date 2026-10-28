@@ -4,6 +4,12 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 28 October 2026 — use the workout documents in the saved plan
+
+- Xar supplied workout.docx and the Howard Gardens exercise-options PDF: “can you also add/effect these”, then “go on”. Apply their useful routine/research content to the existing gym slots, keeping her already-confirmed two-day pattern and protected time.
+- The adaptation uses beginner A/B sessions with comfort/completion gates. Optional three/four-day examples and months 3–6 stay reference ideas; they do not override her two-day choice or extend the calendar. Christmas week's adjacent visits become strength then light recovery.
+- Keep original files unchanged; personal exercise instructions, source copies and current clarification stay in app/private records. No newly completed workouts or clinical/biometric facts inferred from old document text. A normal Ledger note makes the guide readable without an app-code change.
+
 ## 28 October 2026 — reset through December, protected time and honest completion
 
 - **Time off:** “Use Saturday + Monday; Friday + Sunday evenings.” No assigned study/jobs Monday or Saturday; classes remain. Evening protection starts at 18:00. Keep 24–27 December free. Supersedes 26 October's daily job time and Saturday catch-up; catch-up moves to Sunday.
