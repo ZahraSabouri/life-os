@@ -73,6 +73,8 @@ const server=http.createServer(async(req,res)=>{
   if(url.pathname==='/api/restore'&&req.method==='POST'){const b=await body(req,90*1024*1024);const result=await store.restore(b.backup,b.revision);await files.putBack(b.backup,store.all());json(res,result);return;}
   // Her documents folder: what is in it, and which folder and main CV she chose.
   if(url.pathname==='/api/documents'&&req.method==='GET'){const documents=store.state.documents||{root:'',mainCv:''};let listing=null,problem='';if(documents.root){try{listing=await listDocuments(documents.root,url.searchParams.get('dir')||'');}catch(error){problem=error.message;}}json(res,{documents,listing,problem,revision:store.state.revision});return;}
+  // One file from her documents folder, shown in the browser when it can be (PDF, pictures, text) and never from outside that folder.
+  if(url.pathname==='/api/documents/file'&&req.method==='GET'){const {name,data}=await readDocument(store.state.documents?.root,url.searchParams.get('path')||'',50*1024*1024);const content=Buffer.from(data,'base64');res.writeHead(200,{...headers,'Content-Type':files.typeOf(name),'Content-Length':content.byteLength,'Content-Disposition':`${files.inline(name)?'inline':'attachment'}; filename*=UTF-8''${encodeURIComponent(name)}`});res.end(content);return;}
   if(url.pathname==='/api/documents'&&req.method==='PUT'){const b=await body(req);json(res,await store.documents(b.documents,b.revision));return;}
   if(url.pathname==='/api/open-folder'&&req.method==='POST'){const b=await body(req);json(res,await openFolder(b.path));return;}
   if(url.pathname.startsWith('/api/')){json(res,{error:'Not found.'},404);return;}

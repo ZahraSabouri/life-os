@@ -152,7 +152,26 @@ export function inView(view,job,today=dayNow()){
  if(view==='all')return !closed;
  return true;
 }
-export function selectJobs(jobs,{view='all',scope='parttime',source='',search='',sort='priority',status='',tag='',outcome='',docs=''},profile=DEFAULT_PROFILE,today=dayNow()){
+// What an advert says about the right to work, from its own words only. It decides nothing about her permission
+// to work; it points at the line to read. Nationality or clearance limits come first, then a refusal to sponsor.
+export const VISA_LABELS={citizens:'Limited by nationality or clearance',nosponsor:'Says no visa sponsorship',sponsor:'Visa sponsorship offered',unstated:'Says nothing about visas'};
+export function visaWording(job){
+ const text=[job.role,job.employment,job.description,job.watch].filter(Boolean).join('\n');
+ if(/(?:must|need to|needs to|required to|only)\b[^.\n]{0,40}\b(?:british|uk) (?:citizen|national)|(?:british|uk) (?:citizens?|nationals?) only|sole (?:british|uk) national|\b(?:sc|dv)\b[ -]?clear|security clearance|developed vetting|nationality (?:rules|requirements)/i.test(text))return 'citizens';
+ if(/\b(?:no|not|unable|cannot|can't|don't|doesn't|won't|isn't|without)\b[^.\n]{0,40}\bsponsor/i.test(text))return 'nosponsor';
+ if(/visa sponsorship|sponsor (?:a |your )?visa|skilled worker (?:visa|route)|certificate of sponsorship|(?:can|will|able to) sponsor|sponsorship (?:is )?(?:available|offered|provided|considered|possible)/i.test(text))return 'sponsor';
+ return 'unstated';
+}
+// Search where she chooses: everywhere, the job title, the employer, or the skills and advert text. Every
+// word must be found; a search written /like this/ is a regular expression (a broken one is read as words).
+const SEARCH_FIELDS={title:j=>[j.role],company:j=>[j.company],skills:j=>[j.stack,j.description]};
+export function matchesSearch(job,search,field=''){
+ const text=(SEARCH_FIELDS[field]||(j=>[j.role,j.company,j.location,j.stack,j.notes,j.nextStep,j.tags]))(job).filter(Boolean).join(' ');
+ const pattern=/^\/(.+)\/([a-z]*)$/.exec(search.trim());
+ if(pattern){try{return new RegExp(pattern[1],pattern[2].includes('i')?pattern[2]:pattern[2]+'i').test(text);}catch{}}
+ const lower=text.toLowerCase();return search.toLowerCase().trim().split(/\s+/).every(word=>lower.includes(word));
+}
+export function selectJobs(jobs,{view='all',scope='parttime',source='',search='',field='',sort='priority',status='',tag='',outcome='',docs='',visa='',hours=''},profile=DEFAULT_PROFILE,today=dayNow()){
  const q=search.toLowerCase().trim();
  // A listing joined to another job is shown once, as that job.
  const repeats=view==='repeats'?repeatsOf(jobs):null;
@@ -163,6 +182,10 @@ export function selectJobs(jobs,{view='all',scope='parttime',source='',search=''
   if(view==='all'&&scope==='tech'&&(!match.software&&!match.data))return false;
   if(source&&job.source!==source)return false;if(status&&job.status!==status)return false;
   if(outcome&&(job.outcome||'')!==outcome)return false;
+  // What the advert says about visas; "open" leaves out only adverts limited by nationality or clearance.
+  if(visa&&(visa==='open'?visaWording(job)==='citizens':visaWording(job)!==visa))return false;
+  if(hours==='fits'&&!(match.parttime||match.hoursFit))return false;
+  if(hours==='over'&&!(match.fulltime||match.overHours))return false;
   // What she actually sent or kept for a job.
   if(docs){const kept=!!(job.cv||job.coverLetter||job.folder||job.attachments||job.files?.length);
    if(docs==='none'&&kept)return false;
@@ -172,7 +195,7 @@ export function selectJobs(jobs,{view='all',scope='parttime',source='',search=''
    if(docs==='folder'&&!job.folder)return false;
    if(docs==='files'&&!job.files?.length)return false;}
   if(tag&&!tagsOf(job).some(t=>t.toLowerCase()===tag.toLowerCase()))return false;
-  if(q&&!q.split(/\s+/).every(word=>[job.role,job.company,job.location,job.stack,job.notes,job.nextStep,job.tags].join(' ').toLowerCase().includes(word)))return false;
+  if(q&&!matchesSearch(job,search,field))return false;
   return true;
  });
  rows.sort((a,b)=>{

@@ -16,6 +16,10 @@ JobMap now runs inside Life OS: double-click **Start Life OS.cmd** in the Life_O
 - **Gaps** (open a job → Why this match): the tech named in the saved advert that your skills do not list. It matches words; it does not tell essential from desirable.
 - **Write it with Claude** (open a job): Tailored CV, Cover letter, Email to send or Interview prep. JobMap copies a prompt (the advert, your skills, and rules to use only facts from your CV and to list the gaps) and opens a new claude.ai chat. Paste it, attach your CV and send. Nothing leaves JobMap until you do.
 - **Outcome, Feedback and Decided on** (Xar, 27 October) record what the employer came back with, apart from the stage, so a job can be Applied with outcome Rejected. Views for Waiting on a reply, Interviews, Offers and Rejected, a documents filter, and filters that stay put came with them. All jobs lists live adverts only; closed ones are under Closed adverts.
+- **Close a missed deadline** (open the job): when a job you were preparing passes its closing date, “Close it: missed the deadline” archives it with the outcome Missed deadline. It leaves your lists and Progress; Undo brings it back.
+- **Search and group**: search everywhere, or only job titles, employers, or skills and advert text; a search between slashes (/data (analyst|engineer)/) is a regular expression. Group the list by kind of job, main skill or years of experience.
+- **Visa and hours filters**: what the advert says about visas (limited by nationality or clearance, no sponsorship, sponsorship offered, nothing said), with “No nationality limit” to hide the jobs limited by nationality or clearance; and part-time or within your hours, or full-time. The visa filter reads the advert’s own words, not your right to work.
+- **See your documents** (My documents → View): PDFs, pictures and text files from your documents folder, or kept with a job, open inside JobMap.
 
 ## Life OS owns the data (28 October 2026)
 

@@ -10,12 +10,12 @@ const monday=day=>shift(day,-((new Date(day+'T12:00:00Z').getUTCDay()+6)%7));
 
 // How far a job got: 0 not sent, 1 applied, 2 interview, 3 offer. Its stage now, every stage in its
 // history ("Applied → Interview"), a date applied and the employer's outcome all count, so a rejection
-// keeps where it got to. Any outcome means it was sent.
+// keeps where it got to. Any outcome but a missed deadline means it was sent.
 export const FUNNEL=['Applied','Interview','Offer'];
 const RANK={Applied:1,Interview:2,Offer:3},OUTCOME_RANK={'Interview invited':2,Offer:3};
 const moves=job=>(job.history||[]).map(h=>({at:h.at,stages:/^(.+) → (.+)$/.exec(h.label)?.slice(1)||[]}));
 export function furthest(job){
- let rank=job.applied||job.outcome?1:0;
+ let rank=job.applied||job.outcome&&job.outcome!=='Missed deadline'?1:0;
  for(const stage of [job.status,...moves(job).flatMap(m=>m.stages)])rank=Math.max(rank,RANK[stage]||0);
  return Math.max(rank,OUTCOME_RANK[job.outcome]||0);
 }
@@ -138,4 +138,31 @@ export function claudePrompt(kind,job,profile=DEFAULT_PROFILE,options={}){
   '- UK English, plain and specific, without clichés.',
   '- If you need something you do not have, ask me instead of guessing.',
  ].join('\n');
+}
+
+// Grouping a list three ways: the kind of job its title names, the tech its advert names most, and the years of
+// experience it asks for. Each is read from the saved advert only; what it does not say is grouped as not stated.
+const FAMILIES=[['Data science and ML',/data scien|machine learning|\bml\b|\bai\b|artificial intelligence|deep learning|\bnlp\b/i],['Data engineering',/data engineer|\betl\b|data platform|data architect|database|\bdba\b/i],['Data and BI analysis',/analyst|analytics|insight|business intelligence|\bbi\b|reporting/i],['Testing and QA',/\btest|\bqa\b|quality assurance/i],['DevOps, cloud and platform',/devops|cloud|platform|site reliability|\bsre\b|infrastructure/i],['Software development',/software|developer|engineer|programmer|full[ -]?stack|back[ -]?end|front[ -]?end|\bweb\b/i],['Support and systems',/support|systems|technician|administrator|\bit\b/i],['Research',/research/i]];
+const YEARS=['Entry level or under 2 years','2 to 3 years','4 to 5 years','6 years or more','Years not stated'];
+export function titleFamily(job){return FAMILIES.find(([,rule])=>rule.test(job.role||''))?.[0]||'Other roles';}
+export function yearsAsked(job){
+ const text=[job.role,job.description].filter(Boolean).join('\n');
+ const found=[...text.matchAll(/(\d{1,2})\s*\+?\s*(?:(?:-|–|to)\s*\d{1,2}\s*)?\+?\s*years?['’]?\s+(?:of\s+)?(?:[\w-]+\s+){0,4}?experience/gi)].map(m=>Number(m[1])).filter(n=>n<=20);
+ if(found.length){const least=Math.min(...found);return YEARS[least<2?0:least<=3?1:least<=5?2:3];}
+ return /\bgraduate\b|entry[ -]level|\bjunior\b|no (?:previous |prior )?experience (?:is )?(?:needed|required|necessary)/i.test(text)?YEARS[0]:YEARS[4];
+}
+export function mainSkill(job){
+ const employer=String(job.company||'').trim(),text=[job.role,job.stack,job.description].filter(Boolean).join('\n').replace(employer.length>2?new RegExp(escape(employer),'gi'):/$^/,' ');
+ let best='',most=0;
+ for(const [name,words=[name.toLowerCase()],cased=false] of TERMS){const count=words.reduce((n,w)=>n+(text.match(new RegExp('(?:^|[^A-Za-z0-9])'+escape(w)+'(?=$|[^A-Za-z0-9])',cased?'g':'gi'))||[]).length,0);if(count>most){best=name;most=count;}}
+ return best||'No tech named';
+}
+export const GROUPS=[['','No grouping'],['title','Kind of job'],['skill','Main skill'],['years','Years of experience']];
+// The rows in groups, keeping their order inside each group: title kinds and years in a fixed order, skills by size.
+export function groupRows(rows,by){
+ const label=by==='title'?r=>titleFamily(r.job):by==='skill'?r=>mainSkill(r.job):r=>yearsAsked(r.job);
+ const labelled=rows.map(r=>({...r,group:label(r)})),size=new Map();for(const r of labelled)size.set(r.group,(size.get(r.group)||0)+1);
+ const fixed=by==='title'?[...FAMILIES.map(f=>f[0]),'Other roles']:by==='years'?YEARS:null;
+ const rank=g=>fixed?fixed.indexOf(g):g==='No tech named'?1e6:-size.get(g);
+ return {rows:labelled.map((r,i)=>({r,i})).sort((a,b)=>rank(a.r.group)-rank(b.r.group)||a.r.group.localeCompare(b.r.group)||a.i-b.i).map(x=>x.r),size};
 }

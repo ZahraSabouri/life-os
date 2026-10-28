@@ -222,3 +222,6 @@ summary:after { color: var(--muted); }
 .board-card select, .claude-prompt textarea { background: var(--panel); border-color: var(--line-strong); border-radius: var(--radius-sm); color: var(--ink); }
 .skill-tags.gap-tags span { background: color-mix(in srgb, var(--amber) 14%, var(--panel)); color: color-mix(in srgb, var(--amber) 72%, var(--ink)); border-radius: var(--radius-pill); }
 .board-outcome { border-radius: var(--radius-pill); background: var(--panel-2); color: var(--muted); }
+.deadline-close { border-color: color-mix(in srgb, var(--amber) 40%, var(--line)); background: color-mix(in srgb, var(--amber) 9%, var(--panel)); border-radius: var(--radius); }
+.documents-preview iframe { border-color: var(--line); border-radius: var(--radius-sm); }
+.visa-tag { border-radius: var(--radius-pill); } .visa-citizens { background: color-mix(in srgb, var(--red) 12%, var(--panel)); color: color-mix(in srgb, var(--red) 80%, var(--ink)); } .visa-sponsor { background: color-mix(in srgb, var(--green) 14%, var(--panel)); color: color-mix(in srgb, var(--green) 75%, var(--ink)); }

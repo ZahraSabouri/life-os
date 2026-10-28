@@ -12,7 +12,7 @@ export const STATUSES = ['To review','Check details','Preparing','Applied','Inte
 const strings = {notes:30000,feedback:20000,nextStep:1000,decidedOn:10,followUp:10,applied:10,cv:2000,coverLetter:2000,tags:500,folder:1000,attachments:6000,hours:500,role:500,company:300,location:1000,salary:3000,url:4000,deadline:10,advertisedOn:10};
 const dateKeys = new Set(['followUp','applied','decidedOn','deadline','advertisedOn']);
 // What the employer came back with, kept apart from the stage the job sits at.
-export const OUTCOMES = ['','Awaiting reply','Interview invited','Rejected','Offer','Withdrawn'];
+export const OUTCOMES = ['','Awaiting reply','Interview invited','Rejected','Offer','Withdrawn','Missed deadline'];
 const empty = () => ({schemaVersion:1,revision:0,updatedAt:null,overrides:{},customJobs:[],preferences:{...DEFAULT_PROFILE}});
 function validateProfile(p){if(!object(p)||typeof p.skills!=='string'||p.skills.length>3000||!['balanced','software','data'].includes(p.focus)||!Number.isInteger(p.maxHours)||p.maxHours<1||p.maxHours>40)throw new Error('Check the matching preferences.');return {skills:p.skills,focus:p.focus,maxHours:p.maxHours};}
 export const localDay=calendarDay;

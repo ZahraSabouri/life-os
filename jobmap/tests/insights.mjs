@@ -84,3 +84,32 @@ assert.match(claudePrompt('nonsense',job('n'),DEFAULT_PROFILE),/CV tailored/);
 assert.match(claudePrompt('interview',job('n'),DEFAULT_PROFILE),/I did not save the advert text/);
 
 console.log('PASS: furthest stage and sent day, the funnel, heard back, where things stand, twelve weeks, worth a look in order, advert skills and gaps, the Claude prompt.');
+
+// A missed deadline closes a job that was never sent.
+import {titleFamily,yearsAsked,mainSkill,groupRows} from '../lib/insights.mjs';
+import {matchesSearch} from '../lib/matching.mjs';
+assert.equal(furthest(job('m',{status:'Archived',outcome:'Missed deadline'})),0);
+// Search in a chosen place, every word, or a /regular expression/; a broken one is read as words.
+const dev=job('d',{role:'Senior Data Engineer',company:'Admiral',stack:'Python',description:'5 years of Spark experience'});
+assert(matchesSearch(dev,'data engineer','title'));assert(!matchesSearch(dev,'admiral','title'));assert(matchesSearch(dev,'admiral','company'));
+assert(matchesSearch(dev,'spark','skills'));assert(!matchesSearch(dev,'spark',''));
+assert(matchesSearch(dev,'/^senior .*engineer$/','title'));assert(!matchesSearch(dev,'/^junior/','title'));assert(matchesSearch(dev,'/data engineer(/','title')===false);
+// Groups: the kind of job, the years asked, the tech named most.
+assert.equal(titleFamily(dev),'Data engineering');assert.equal(titleFamily(job('t',{role:'Software Test Engineer'})),'Testing and QA');assert.equal(titleFamily(job('o',{role:'Chef'})),'Other roles');
+assert.equal(yearsAsked(dev),'4 to 5 years');assert.equal(yearsAsked(job('g',{role:'Graduate Developer'})),'Entry level or under 2 years');assert.equal(yearsAsked(job('n',{description:'Great team.'})),'Years not stated');
+assert.equal(mainSkill(job('s',{stack:'Python, SQL',description:'SQL daily; SQL Server'})),'SQL');assert.equal(mainSkill(job('x')),'No tech named');
+const grouped=groupRows([{job:dev},{job:job('t',{role:'Software Test Engineer'})},{job:job('e',{role:'Data Engineer II'})}],'title');
+assert.deepEqual(grouped.rows.map(r=>[r.job.id,r.group]),[['d','Data engineering'],['e','Data engineering'],['t','Testing and QA']]);assert.equal(grouped.size.get('Data engineering'),2);
+console.log('PASS: missed deadline, search fields and regular expressions, grouping by kind of job, years and main skill.');
+
+// What an advert says about visas, and the visa and hours filters.
+import {visaWording,selectJobs} from '../lib/matching.mjs';
+const said=d=>visaWording(job('v',{description:d}));
+assert.equal(said('Applicants must be British citizens.'),'citizens');assert.equal(said('SC clearance is required.'),'citizens');assert.equal(said('Civil Service nationality rules apply.'),'citizens');
+assert.equal(said('We are unable to offer visa sponsorship.'),'nosponsor');assert.equal(said('Visa sponsorship is available.'),'sponsor');
+assert.equal(said('Open to UK, Commonwealth and EEA nationals.'),'unstated');assert.equal(said('A friendly team.'),'unstated');
+const pool=[job('c',{description:'Must be a British citizen.'}),job('s',{description:'Visa sponsorship available.',hours:'16 hours per week'}),job('u',{employment:'Full-time'})];
+const pick=o=>selectJobs(pool,{scope:'all',view:'category',...o}).map(r=>r.job.id).sort().join();
+assert.equal(pick({visa:'open'}),'s,u');assert.equal(pick({visa:'citizens'}),'c');assert.equal(pick({visa:'sponsor'}),'s');
+assert.equal(pick({hours:'fits'}),'s');assert.equal(pick({hours:'over'}),'u');
+console.log('PASS: visa wording (nationality or clearance, no sponsorship, sponsorship, unstated) and the visa and hours filters.');
