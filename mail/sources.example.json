@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "firstRunDays": 14,
+  "maxDays": 30,
+  "sources": [
+    {
+      "id": "uni-outlook", "label": "University Outlook", "kind": "outlook",
+      "routes": ["connector:Microsoft 365", "browser:https://outlook.office.com/mail/"],
+      "read": ["Inbox, Focused and Other", "Sent, only to see what has been answered"]
+    },
+    {
+      "id": "gmail", "label": "Gmail", "kind": "gmail",
+      "routes": ["connector:Gmail", "browser:https://mail.google.com/"],
+      "read": ["Inbox: Primary, plus Updates and Promotions only for anything that needs her", "Sent, only to see what has been answered"]
+    },
+    {
+      "id": "learning-platform", "label": "Learning platform", "kind": "learning-central",
+      "routes": ["browser:https://learning.example.ac.uk/"],
+      "read": ["Activity stream", "Announcements in each current course", "Messages"]
+    },
+    {
+      "id": "teams", "label": "Teams chats", "kind": "teams", "optional": true,
+      "routes": ["connector:Microsoft 365", "browser:https://teams.microsoft.com/"],
+      "read": ["Chats and mentions where someone asks her something"]
+    }
+  ]
+}

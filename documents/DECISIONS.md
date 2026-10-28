@@ -4,6 +4,14 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 28 October 2026 — Mail and admin: an Inbox part, gathered when she asks
+
+- **Her mail is read inside Life OS**, "with things in notification and inbox digest and summaries and priorities" (her choice among three shapes). The part is **Inbox**: Waiting on you (who she owes a reply, an email, a text, a call or birthday wishes, and what to read, do or decide), Mail (every gathered message, readable, with summary and priority), Digests. Brief: `briefs/mail-and-admin.md`, approved 28 October, built by Claude Code on Windows (she chose that over building from Cowork, which cannot test against her database).
+- **Gathering runs only when she starts it** ("leave the running to me (i run it whenever i want instead of it being scheduled)"): the Claude scheduled task "Gather my inboxes" has no schedule. Any AI can do the same from `mail/GATHER.md`.
+- **Sources: everything reachable** ("Cardiff Outlook, Gmail, Learning Central directly, EVERYTHING you have access to"): Cardiff Outlook, Gmail, Learning Central and Teams chats, through a connector when connected, otherwise a browser where she is signed in.
+- **Read only, everywhere.** A run never sends, drafts, deletes, moves or files mail, and never writes to Life OS's database; it leaves a batch in `mail/inbox/` that Life OS imports through its one door, with field ownership (her priorities, ticks and notes always win). Life OS does not sign in to her mailboxes itself; that would be its own brief. *Why:* her data stays hers and nothing is changed behind her back; Cardiff's Microsoft consent is unknown.
+- **Texts stay one line by hand**; WhatsApp and phone texts are not gathered (no safe route). Birthday wishes come from People.
+
 ## 27–28 October 2026 — JobMap: Life OS only, Life OS owns the data, ideas from Dossier
 
 - **Only the Life OS JobMap from now on** (her words, 27 October: "we only will work on the life os job map from now on"). Supersedes "maintain both copies" (8 October) and the shared workspace (12 October).

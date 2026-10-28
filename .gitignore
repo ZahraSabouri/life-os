@@ -71,3 +71,12 @@ code/life-os/frontend/dist-next/
 /cardiff-life/life-os-sync.json
 /cardiff-life/__pycache__/
 /cardiff-life/tests/__pycache__/
+
+# --- Mail: gathered mail, digests and her mailbox list are personal ---------
+/mail/inbox/*
+!/mail/inbox/README.txt
+/mail/digests/
+/mail/sources.json
+/mail/gather-log.md
+/mail/gather-state.json
+/mail/import-log.md

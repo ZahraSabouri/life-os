@@ -350,6 +350,18 @@ Brief: `briefs/health-part.md`. Her words:
 - [ ] **(Xar)** Ask whether the CMT309 coursework is due on 17 or 27 December (card on 29 October).
 - [ ] Possible app change: an assessment of kind "test" shows on the calendar at its end time, like a deadline; only "exam" shows at its own time.
 
+## W. Mail and admin: who she owes, what is in her inboxes (28 October)
+> "I need to admin my day better by keeping the track of who I should email, what are in my email inboxes, what are the announcements in the Learning Central, who I should text, who I should reply to … who I should, like, congratulate their birthday … I cannot do adding admin tasks daily."
+> Her shape: read mail in Life OS "but with things in notification and inbox digest and summaries and priorities". Sources: "Cardiff Outlook, Gmail, Learning Central directly, EVERYTHING you have access to … leave the running to me (i run it whenever i want instead of it being scheduled)".
+
+- [x] The gathering instructions, format and checker (`mail/GATHER.md`, `mail-batch.schema.json`, `check-batch.mjs`, 17 tests) and her sources (`mail/sources.json`, not in git).
+- [x] The Claude scheduled task **Gather my inboxes**, with no schedule: she runs it.
+- [x] The brief: `briefs/mail-and-admin.md` (five checkpoints).
+- [x] **(Xar)** Brief approved (28 October), to be built by Claude Code on Windows.
+- [ ] **(Xar)** Connect Gmail in Claude's settings (Connectors); be signed in to Cardiff Outlook and Learning Central (and Teams, if wanted) in Claude's built-in browser; then run the gather once and read its digest.
+- [ ] **(Xar)** Is Documents synced to OneDrive? (Gathered mail waits in `Life_OS\mail\inbox\`.)
+- [ ] CP1 the store and importer · CP2 Waiting on you · CP3 reading mail · CP4 digests, Today, bell, calendar, envelope · CP5 Write it with Claude, how to gather, the Guide.
+
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
 > "when you click on [Life OS] … Click on the name above. It should, like directly direct to the main page, main URL. And if you click on a specific job role … on the today page … I should be able to kind of be directed to the same component … in the job map app." (12 October evening)

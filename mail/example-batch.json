@@ -1,0 +1,127 @@
+{
+  "format": "life-os.mail-batch",
+  "version": 1,
+  "runId": "2026-10-28-0915-ex4mpl",
+  "gatheredAt": "2026-10-28T09:15:00Z",
+  "agent": "Example data for tests and the Guide (not real mail)",
+  "sources": [
+    { "id": "uni-outlook", "label": "University Outlook", "kind": "outlook", "route": "browser", "status": "read", "window": { "from": "2026-10-20T00:00:00Z", "to": "2026-10-28T09:10:00Z" }, "coverage": "Inbox (Focused and Other) and Sent, 20 to 28 October: 31 messages." },
+    { "id": "gmail", "label": "Gmail", "kind": "gmail", "route": "connector", "status": "read", "window": { "from": "2026-10-20T00:00:00Z", "to": "2026-10-28T09:12:00Z" }, "coverage": "Primary and Updates, and Sent, 20 to 28 October: 18 messages." },
+    { "id": "learning-platform", "label": "Learning platform", "kind": "learning-central", "route": "browser", "status": "partial", "window": { "from": "2026-10-20T00:00:00Z", "to": "2026-10-28T09:14:00Z" }, "coverage": "Activity stream and announcements in 3 of 4 courses; one course page did not load." },
+    { "id": "teams", "label": "Teams chats", "kind": "teams", "route": "none", "status": "unavailable", "coverage": "Not signed in; skipped." }
+  ],
+  "digest": {
+    "headline": "Two people are waiting on you, a room change tomorrow, and a form due Friday.",
+    "bySource": [
+      { "source": "uni-outlook", "summary": "A room change for Thursday's lab, a reminder about the extenuating circumstances deadline, and three newsletters." },
+      { "source": "gmail", "summary": "Sam asked whether Saturday still works. A security code and two shop receipts, nothing to do." },
+      { "source": "learning-platform", "summary": "The coursework brief for DS101 is out; the lecturer asked everyone to read it before Monday." }
+    ],
+    "needsYou": ["Reply to Jo Evans about your part of the group report (waiting 4 days)", "Reply to Sam about Saturday", "Fill in the placement interest form by Friday"],
+    "deadlines": [ { "title": "Placement interest form closes", "date": "2026-10-30", "ref": "m4" } ],
+    "gaps": ["Learning platform: one course page did not load", "Teams chats: not signed in"]
+  },
+  "messages": [
+    {
+      "ref": "m1", "source": "uni-outlook", "sourceId": "h:3f9a1c0d2b7e4a51", "threadId": "group-report-thread",
+      "kind": "email", "receivedAt": "2026-10-24T10:02:00Z",
+      "from": { "name": "Jo Evans", "address": "jo.evans@example.ac.uk" }, "to": [ { "name": "You", "address": "you@example.ac.uk" } ],
+      "subject": "Group report: your section?", "folder": "Inbox", "unreadAtSource": false, "repliedAtSource": false,
+      "link": "https://outlook.office.com/mail/inbox",
+      "text": "Hi,\n\nCould you send me your section of the group report by Thursday so I can merge everything before Friday? Even a rough draft is fine.\n\nThanks,\nJo",
+      "textComplete": true,
+      "summary": "Jo needs your section of the group report by Thursday to merge it before Friday.",
+      "category": "needs-you", "priority": "urgent", "priorityReason": "Due Thursday and Jo has waited 4 days.", "deadline": "2026-10-29"
+    },
+    {
+      "ref": "m2", "source": "uni-outlook", "sourceId": "h:77b0e2a95c1d3f08",
+      "kind": "email", "receivedAt": "2026-10-27T16:40:00Z",
+      "from": { "name": "School Office", "address": "school-office@example.ac.uk" },
+      "subject": "Room change: Thursday lab moves to Room 2.14", "folder": "Inbox", "unreadAtSource": true,
+      "link": "https://outlook.office.com/mail/inbox",
+      "text": "Thursday's 14:10 lab will be in Room 2.14 this week only.",
+      "textComplete": true,
+      "summary": "Thursday's 14:10 lab is in Room 2.14 this week only.",
+      "category": "announcement", "priority": "high", "priorityReason": "Changes where a class is tomorrow."
+    },
+    {
+      "ref": "m3", "source": "gmail", "sourceId": "18f2c3a0b9d7e611", "threadId": "18f2c3a0b9d7e600",
+      "kind": "email", "receivedAt": "2026-10-27T19:05:00Z",
+      "from": { "name": "Sam Taylor", "address": "sam.taylor@example.com" },
+      "subject": "Saturday?", "folder": "Inbox", "unreadAtSource": true, "repliedAtSource": false,
+      "link": "https://mail.google.com/mail/u/0/#inbox/18f2c3a0b9d7e600",
+      "text": "Are we still on for Saturday? I could do 2pm by the museum.",
+      "textComplete": true,
+      "summary": "Sam asks if Saturday at 2pm by the museum still works.",
+      "category": "needs-you", "priority": "high", "priorityReason": "A plan for this weekend."
+    },
+    {
+      "ref": "m4", "source": "uni-outlook", "sourceId": "h:c41d9e7a02f6b385",
+      "kind": "email", "receivedAt": "2026-10-23T08:30:00Z",
+      "from": { "name": "Careers Team", "address": "careers@example.ac.uk" },
+      "subject": "Placement interest form closes Friday", "folder": "Other", "unreadAtSource": false,
+      "attachments": [ { "name": "Placement guide.pdf", "size": 412000 } ],
+      "link": "https://outlook.office.com/mail/inbox",
+      "text": "If you would like a placement next summer, fill in the interest form by Friday 30 October.",
+      "textComplete": true,
+      "summary": "The placement interest form closes on Friday 30 October.",
+      "category": "deadline", "priority": "normal", "priorityReason": "Optional, but closes this week.", "deadline": "2026-10-30"
+    },
+    {
+      "ref": "m5", "source": "learning-platform", "sourceId": "h:5e8b2f1c9a3d7064",
+      "kind": "announcement", "receivedAt": "2026-10-26T12:00:00Z",
+      "from": { "name": "Dr Example Lecturer" }, "course": "DS101 Example Module",
+      "subject": "Coursework brief released",
+      "link": "https://learning.example.ac.uk/ultra/courses",
+      "text": "The coursework brief is now available under Assessment. Please read it before Monday's lecture, where we will go through questions.",
+      "textComplete": true,
+      "summary": "The DS101 coursework brief is out; read it before Monday's lecture.",
+      "category": "announcement", "priority": "high", "priorityReason": "Asked to read it before Monday."
+    },
+    {
+      "ref": "m6", "source": "gmail", "sourceId": "18f2b9e4c0a1d722",
+      "kind": "notification", "receivedAt": "2026-10-26T07:58:00Z",
+      "from": { "name": "Example Account Security", "address": "no-reply@example.com" },
+      "subject": "Your sign-in code", "folder": "Updates",
+      "summary": "A sign-in code email (code left out).",
+      "category": "automated", "priority": "low"
+    },
+    {
+      "ref": "m7", "source": "uni-outlook", "sourceId": "h:0a6d4b8e1f2c9357",
+      "kind": "email", "receivedAt": "2026-10-22T09:00:00Z",
+      "from": { "name": "Student News", "address": "news@example.ac.uk" },
+      "subject": "This week on campus", "folder": "Other",
+      "summary": "Weekly campus newsletter: a careers fair, a library survey and society events.",
+      "category": "newsletter", "priority": "low"
+    }
+  ],
+  "actions": [
+    {
+      "ref": "a1", "kind": "reply", "title": "Reply to Jo Evans with your section of the group report",
+      "why": "Jo needs it by Thursday to merge before Friday.", "person": { "name": "Jo Evans", "address": "jo.evans@example.ac.uk" },
+      "since": "2026-10-24T10:02:00Z", "due": "2026-10-29", "priority": "urgent", "messageRefs": ["m1"],
+      "dedupeKey": "reply:uni-outlook:group-report-thread"
+    },
+    {
+      "ref": "a2", "kind": "reply", "title": "Reply to Sam about Saturday",
+      "why": "Sam suggested 2pm by the museum.", "person": { "name": "Sam Taylor", "address": "sam.taylor@example.com" },
+      "since": "2026-10-27T19:05:00Z", "priority": "high", "messageRefs": ["m3"],
+      "dedupeKey": "reply:gmail:18f2c3a0b9d7e600"
+    },
+    {
+      "ref": "a3", "kind": "do", "title": "Fill in the placement interest form",
+      "why": "Only if you want a placement next summer.", "due": "2026-10-30", "priority": "normal", "messageRefs": ["m4"],
+      "dedupeKey": "do:uni-outlook:h:c41d9e7a02f6b385"
+    },
+    {
+      "ref": "a4", "kind": "read", "title": "Read the DS101 coursework brief",
+      "why": "The lecturer will take questions on Monday.", "due": "2026-11-02", "priority": "high", "messageRefs": ["m5"],
+      "dedupeKey": "read:learning-platform:h:5e8b2f1c9a3d7064"
+    },
+    {
+      "ref": "a5", "kind": "email", "title": "Email the library about the overdue book",
+      "why": "Last week's batch had this; you emailed them on 25 October.", "priority": "low",
+      "dedupeKey": "email:uni-outlook:library-thread", "resolvedAtSource": true, "resolvedNote": "You emailed them on 25 October."
+    }
+  ]
+}
