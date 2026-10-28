@@ -1,0 +1,122 @@
+/* Inbox: the same panels, lists and buttons as Today and Health, so each style draws it in its
+   own design. Only what the Inbox adds is here, written with the style's own --m values. */
+.mail-page { display: grid; gap: 1.1rem; }
+.mail-tabs { justify-self: start; flex-wrap: wrap; }
+.mail-waiting, .mail-digests { display: grid; gap: 1rem; }
+.mail-count { color: var(--m-muted); font: 600 0.8rem/1 var(--m-font); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* A kind and a priority: words in a small chip, so colour is never the only sign. */
+.mail-kind, .mail-priority { display: inline-block; flex: none; padding: 0.1rem 0.42rem; border: 1px solid var(--m-line-strong, var(--m-line)); border-radius: var(--m-radius-chip, 999px);
+  color: var(--m-muted); font: 600 0.68rem/1.35 var(--m-label-font, var(--m-font)); letter-spacing: var(--m-label-tracking, 0.02em); text-transform: uppercase; }
+.mail-kind.is-text, .mail-kind.is-call, .mail-kind.is-congratulate { border-style: dashed; }
+.mail-priority.is-urgent { border-color: var(--m-red); color: var(--m-red); }
+.mail-priority.is-high { border-color: var(--m-accent-strong); color: var(--m-accent-strong); }
+.mail-priority.is-low { opacity: 0.7; }
+
+/* Waiting on you */
+.app-shell .mail-add { grid-template-columns: minmax(0, 1fr) auto auto; }
+.mail-add .day-add-hint { grid-column: 1 / -1; margin: 0; }
+.mail-add-pick { display: inline-flex; gap: 0.35rem; align-items: center; color: var(--m-muted); font-size: 0.82rem; }
+.mail-actions { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.2rem; }
+.mail-action { display: grid; gap: 0.25rem; padding: 0.6rem 0 0.6rem 0.75rem; border-left: 2px solid var(--m-line); }
+.mail-action + .mail-action { border-top: 1px solid var(--m-rule, var(--m-line)); }
+.mail-action.is-urgent { border-left-color: var(--m-red); }
+.mail-action.is-high { border-left-color: var(--m-accent-strong); }
+.mail-action.is-closed .mail-action-title { color: var(--m-muted); text-decoration: line-through; text-decoration-thickness: 1px; }
+.mail-action-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.45rem; }
+.mail-action-title { color: var(--m-ink); font: var(--m-title-weight, 600) 0.95rem/1.35 var(--m-title-font, var(--m-font)); }
+.mail-action-facts, .mail-action-note { margin: 0; color: var(--m-muted); font-size: 0.82rem; line-height: 1.45; }
+.mail-action-note { color: var(--m-ink); font-style: italic; }
+.mail-who { color: var(--m-ink); font-weight: 600; }
+.mail-action-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin: 0.15rem 0 0; }
+.mail-action-buttons a, .mail-reader-actions a { color: var(--m-accent-strong); font-size: 0.82rem; }
+.mail-priority-pick select { font: 0.8rem/1.2 var(--m-font); padding: 0.2rem 0.3rem; }
+.mail-note-form { display: flex; gap: 0.4rem; }
+.mail-note-form input { flex: 1; min-width: 0; }
+.mail-claude-said { flex-basis: 100%; color: var(--m-muted); font-size: 0.8rem; }
+.mail-undo button { margin-left: 0.4rem; }
+.mail-done > summary { display: flex; align-items: baseline; gap: 0.6rem; cursor: pointer; list-style: none; }
+.mail-done > summary h2 { margin: 0; }
+.mail-actions.is-compact .mail-action { padding-block: 0.45rem; }
+
+/* Today's panel */
+.mail-panel-headline { margin: 0 0 0.4rem; color: var(--m-ink); font-size: 0.88rem; line-height: 1.45; }
+.mail-panel-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; margin: 0.5rem 0 0; color: var(--m-muted); font-size: 0.8rem; }
+.mail-panel-foot a { color: var(--m-accent-strong); }
+
+/* Mail: sources, filters, the list by day and the reader */
+.mail-controls { display: grid; gap: 0.6rem; }
+.mail-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.mail-chips button { padding: 0.25rem 0.7rem; border: 1px solid var(--m-line); border-radius: var(--m-radius-chip, 999px); background: var(--m-card); color: var(--m-ink); font: 600 0.8rem/1.3 var(--m-font); cursor: pointer; }
+.mail-chips button[aria-pressed='true'] { border-color: var(--m-accent); background: var(--m-accent); color: var(--m-on-accent, #fff); }
+.mail-chips button.is-outlook { border-left: 4px solid #2f6db5; }
+.mail-chips button.is-gmail { border-left: 4px solid #c5432f; }
+.mail-chips button.is-learning-central { border-left: 4px solid #7a4fa3; }
+.mail-chips button.is-teams { border-left: 4px solid #5059c9; }
+.mail-filters { flex-wrap: wrap; justify-self: start; }
+.mail-flags { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; color: var(--m-muted); font-size: 0.84rem; }
+.mail-search { flex: 1 1 16rem; }
+.mail-split { display: grid; grid-template-columns: minmax(16rem, 2fr) minmax(0, 3fr); gap: 1rem; align-items: start; }
+.mail-list { max-height: 78vh; overflow: auto; }
+.mail-read { position: sticky; top: 4.5rem; max-height: 82vh; overflow: auto; }
+.mail-day h3 { margin: 0.8rem 0 0.3rem; color: var(--m-muted); font: 600 0.74rem/1.2 var(--m-label-font, var(--m-font)); letter-spacing: var(--m-label-tracking, 0.04em); text-transform: uppercase; }
+.mail-day ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; }
+.mail-row { display: grid; grid-template-columns: auto 1fr; gap: 0.1rem 0.5rem; width: 100%; padding: 0.5rem 0.55rem; border: 1px solid transparent; border-radius: var(--m-radius-sm, 8px); background: none; color: var(--m-ink); text-align: left; cursor: pointer; font: inherit; }
+.mail-row:hover, .mail-row.is-open { border-color: var(--m-line); background: var(--m-sunken); }
+.mail-row .mail-priority { grid-row: span 2; align-self: start; }
+.mail-row-from { font-weight: 600; font-size: 0.86rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mail-row-subject { grid-column: 2; font-size: 0.86rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mail-row.is-new .mail-row-subject { font-weight: 650; }
+.mail-row-summary { grid-column: 1 / -1; color: var(--m-muted); font-size: 0.8rem; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mail-row-when { grid-column: 1 / -1; color: var(--m-faint, var(--m-muted)); font-size: 0.72rem; }
+.mail-row.is-hidden { opacity: 0.6; }
+/* Plain buttons of the Inbox's own, drawn in the style's look rather than the browser's. */
+.app-shell .mail-page :is(.mail-back, .mail-gather-line button, .mail-note-form button, .mail-undo button) { padding: 0.3rem 0.75rem; border: 1px solid var(--m-line-strong, var(--m-line)); border-radius: var(--m-radius-control, 8px); background: transparent; color: var(--m-ink); font: 600 0.8rem/1.2 var(--m-font); cursor: pointer; }
+.mail-back { display: none; }
+.mail-reader h2 { margin: 0 0 0.5rem; color: var(--m-ink); font: var(--m-heading-weight, 600) 1.25rem/1.3 var(--m-display, var(--m-font)); }
+.mail-meta { display: grid; gap: 0.15rem; margin: 0 0 0.8rem; font-size: 0.82rem; }
+.mail-meta div { display: grid; grid-template-columns: 4rem 1fr; gap: 0.5rem; }
+.mail-meta dt { color: var(--m-muted); }
+.mail-meta dd { margin: 0; color: var(--m-ink); overflow-wrap: anywhere; }
+.mail-summary { margin: 0 0 0.9rem; padding: 0.7rem 0.85rem; border: 1px solid var(--m-line); border-left: 3px solid var(--m-accent); border-radius: var(--m-radius-sm, 8px); background: var(--m-sunken); }
+.mail-summary.is-urgent { border-left-color: var(--m-red); }
+.mail-summary p { margin: 0; color: var(--m-ink); font-size: 0.9rem; line-height: 1.5; }
+.mail-summary-why { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.45rem !important; color: var(--m-muted) !important; font-size: 0.8rem !important; }
+.mail-text { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--m-ink); font-size: 0.92rem; line-height: 1.6; unicode-bidi: plaintext; }
+.mail-text a { color: var(--m-accent-strong); }
+.mail-attachments { color: var(--m-muted); font-size: 0.82rem; }
+.mail-reader-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-top: 1rem; }
+
+/* Digests */
+.mail-last { margin: 0; color: var(--m-muted); font-size: 0.88rem; }
+.mail-how-steps { margin: 0.2rem 0 0.6rem; padding-left: 1.2rem; color: var(--m-ink); font-size: 0.88rem; line-height: 1.55; }
+.mail-gather-line { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin: 0 0 0.6rem; }
+.mail-gather-line code { padding: 0.3rem 0.5rem; border-radius: var(--m-radius-sm, 6px); background: var(--m-sunken); color: var(--m-ink); font-size: 0.82rem; overflow-wrap: anywhere; }
+.mail-sign { display: grid; gap: 0.25rem; max-width: 26rem; color: var(--m-muted); font-size: 0.82rem; }
+.mail-headline { margin: 0 0 0.4rem; color: var(--m-ink); font: var(--m-title-weight, 600) 1rem/1.45 var(--m-title-font, var(--m-font)); }
+.mail-digest h3 { margin: 0.8rem 0 0.25rem; color: var(--m-muted); font: 600 0.74rem/1.2 var(--m-label-font, var(--m-font)); letter-spacing: var(--m-label-tracking, 0.04em); text-transform: uppercase; }
+.mail-digest.is-undone { opacity: 0.65; }
+.mail-sources { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; }
+.mail-sources li { padding-left: 0.6rem; border-left: 2px solid var(--m-accent); font-size: 0.86rem; }
+.mail-sources li.is-partial { border-left-color: var(--m-accent-strong); }
+.mail-sources li.is-unavailable, .mail-sources li.is-skipped { border-left-color: var(--m-red); }
+.mail-sources p { margin: 0.15rem 0 0; color: var(--m-ink); line-height: 1.45; }
+.mail-sources .mail-coverage { color: var(--m-muted); font-size: 0.8rem; }
+.mail-source-status { color: var(--m-muted); font-size: 0.78rem; }
+.mail-counts { color: var(--m-muted); font-size: 0.8rem; }
+
+/* People */
+.people-mail { display: grid; gap: 0.2rem; margin: 0.35rem 0 0; padding: 0.45rem 0.6rem; border-radius: var(--m-radius-sm, 8px); background: var(--m-sunken); font-size: 0.82rem; }
+.people-mail p { margin: 0; color: var(--m-ink); }
+.people-mail a { color: var(--m-accent-strong); }
+.people-mail small { color: var(--m-muted); }
+
+/* At phone width the list and the reader take turns. */
+@media (max-width: 760px) {
+  .mail-split { grid-template-columns: 1fr; }
+  .mail-mail.is-reading .mail-list, .mail-mail:not(.is-reading) .mail-read { display: none; }
+  .mail-read { position: static; max-height: none; }
+  .mail-list { max-height: none; }
+  .mail-back { display: inline-flex; margin-bottom: 0.6rem; }
+}

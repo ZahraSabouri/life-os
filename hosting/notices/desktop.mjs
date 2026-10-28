@@ -82,6 +82,12 @@ export function createDesktopNotifier({ load, prefs = () => ({}), browserSeenAt 
   timer?.unref?.()
   return {
     tick,
+    // One notice now (an applied mail batch with urgent things), unless she has turned them off.
+    async tell(title, body, href = '/today') {
+      if ({ whenClosed: true, ...prefs() }.whenClosed === false) return false
+      await show(title, body, `${origin}${href}`)
+      return true
+    },
     // What it has shown today, for the browser to leave alone.
     told: (day) => (told.day === day ? [...told.ids] : []),
     stop() { unschedule(timer) },

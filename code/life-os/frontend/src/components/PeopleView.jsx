@@ -1,10 +1,13 @@
 // People: the ones in her life, with what she knows of them. A birthday set here is on the
-// calendar every year, and in the bell on the day and the day before.
+// calendar every year, and in the bell on the day and the day before. What she owes them, and
+// their last few messages, come from the Inbox.
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { apiFetch } from '../lib/api.js'
 import { formatCalendarDay } from '../lib/calendar.js'
 import { useLondonToday } from '../lib/useCalendar.js'
+import { addOwed, london, useMail } from '../lib/useMail.js'
+import { titleOf } from '@shared/mail.js'
 
 const EMPTY = { name: '', birthday: '', relation: '', contact: '', notes: '' }
 const RELATIONS = ['Family', 'Friend', 'Partner', 'Classmate', 'Colleague', 'Teacher', 'Neighbour']
@@ -60,6 +63,11 @@ export default function PeopleView() {
   const [sure, setSure] = useState('')
   const [words, setWords] = useState('')
   const [said, setSaid] = useState('')
+  const mail = useMail('/api/mail/people')
+  async function oweText(person) {
+    try { await addOwed({ kind: 'text', title: `Text ${person.name}`, person_id: String(person.id), person_name: person.name }); setSaid(`“Text ${person.name}” is on Waiting on you.`) }
+    catch (failure) { setState((current) => ({ ...current, error: `Not added: ${failure.message}` })) }
+  }
   useEffect(() => {
     let off = false
     apiFetch('/api/people').then((people) => { if (!off) setState({ people, loading: false, error: '' }) }).catch((failure) => { if (!off) setState({ people: [], loading: false, error: failure.message }) })
@@ -96,8 +104,13 @@ export default function PeopleView() {
           <div className="people-who"><b>{person.name}</b>{person.relation ? <span>{person.relation}</span> : null}</div>
           <p className="people-facts">{[person.next ? `Birthday ${formatCalendarDay(person.next.date, { weekday: undefined })}, ${away(person.next.days)}${person.next.turns ? ` (turns ${person.next.turns})` : ''}` : 'No birthday set', person.contact].filter(Boolean).join(' · ')}</p>
           {person.notes ? <p className="people-notes">{person.notes}</p> : null}
+          {mail.data?.[person.id] ? <div className="people-mail">
+            {mail.data[person.id].actions.map((row) => <p key={row.id}><Link to={`/inbox?action=${row.id}`}>{titleOf(row)}</Link>{row.due ? <small> · by {row.due}</small> : null}</p>)}
+            {mail.data[person.id].messages.map((row) => <p key={row.id}><small>{london(row.received_at)} · </small><Link to={`/inbox/mail?open=${row.id}`} dir="auto">{row.subject || row.summary}</Link></p>)}
+          </div> : null}
           <p className="day-stop-actions">
             <button type="button" onClick={() => { setEditing(person.id); setSure('') }}>Change</button>
+            <button type="button" onClick={() => oweText(person)}>Owe them a text</button>
             {sure === person.id ? <><button type="button" onClick={() => remove(person)}>Remove for good</button><button type="button" onClick={() => setSure('')}>Keep</button></> : <button type="button" onClick={() => setSure(person.id)}>Remove</button>}
           </p>
         </>}

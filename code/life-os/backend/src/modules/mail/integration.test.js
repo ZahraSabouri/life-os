@@ -56,7 +56,7 @@ test('mail import on lifeos_test: apply, repeat, update, fail, her fields, undo'
     drop('first.json', first)
     const [result] = (await inbox.scan()).results
     assert.equal(result.ok, true)
-    assert.deepEqual(result.counts, { messages: { new: 7, updated: 0, unchanged: 0 }, actions: { new: 5, updated: 0, unchanged: 0 } })
+    assert.deepEqual(result.counts, { messages: { new: 7, updated: 0, unchanged: 0 }, actions: { new: 5, updated: 0, unchanged: 0 }, urgent: 1 })
     assert.equal(backups, 1)
     const rows = (await pool.query('SELECT status, done_by FROM mail.actions WHERE first_batch_id = $1', [result.batchId])).rows
     assert.equal(rows.filter((row) => row.status === 'open').length, 4)
@@ -77,7 +77,7 @@ test('mail import on lifeos_test: apply, repeat, update, fail, her fields, undo'
     const before = await action('reply:gmail:18f2c3a0b9d7e600')
     drop('one-change.json', variant((batch) => { batch.messages[1].priority = 'normal' }))
     const [result] = (await inbox.scan()).results
-    assert.deepEqual(result.counts, { messages: { new: 0, updated: 1, unchanged: 6 }, actions: { new: 0, updated: 0, unchanged: 5 } })
+    assert.deepEqual(result.counts, { messages: { new: 0, updated: 1, unchanged: 6 }, actions: { new: 0, updated: 0, unchanged: 5 }, urgent: 0 })
     assert.equal((await action('reply:gmail:18f2c3a0b9d7e600')).revision, before.revision)
   })
 

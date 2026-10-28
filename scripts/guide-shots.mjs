@@ -142,7 +142,14 @@ const EXAMPLE_PAGES = [
 const examplePicture = async (route) => { const picture = await page.request.get(`${base}/intro-hero.jpg`); return route.fulfill({ status: 200, contentType: 'image/jpeg', body: await picture.body() }) }
 const journalExamples = [['**/api/entries?limit=5000', json(EXAMPLE_PAGES)], ['**/api/files/example-*', examplePicture]]
 
+// The Inbox's pictures show the example batch on the try-out (mail/example-batch.json), never her mail.
+const exampleOnly = () => { if (/:47850\/?$/.test(base)) throw new Error('taken on the try-out only, from the example batch, never from your mail') }
 const RECIPES = {
+  // ---- Inbox, from the example batch on the try-out only
+  'inbox.jpg': async () => { exampleOnly(); await go('/inbox', '.mail-group'); await settle(800); await view('inbox.jpg', { marks: ['.mail-tabs', '.mail-add input', '.mail-group h2', '.mail-action-buttons'] }) },
+  'inbox-mail.jpg': async () => { exampleOnly(); await go('/inbox/mail', '.mail-row'); await page.locator('.mail-row', { hasText: 'Jo Evans' }).first().click(); await page.locator('.mail-reader').waitFor(); await settle(800); await view('inbox-mail.jpg', { marks: ['.mail-chips', '.mail-filters', '.mail-search input', '.mail-summary', '.mail-reader-actions'] }) },
+  'inbox-digests.jpg': async () => { exampleOnly(); await go('/inbox/digests', '.mail-digest'); await settle(800); await view('inbox-digests.jpg', { marks: ['.mail-how', '.mail-headline', '.mail-sources'] }) },
+  'inbox-today.jpg': async () => { exampleOnly(); await go('/today', '.day-path'); await panel('Waiting on you').locator('.mail-action').first().waitFor({ timeout: 20_000 }); await part('inbox-today.jpg', panel('Waiting on you')) },
   // ---- Finding your way
   'topbar.jpg': async () => { await go('/court', '.court-topbar'); await part('topbar.jpg', page.locator('header.court-topbar'), { pad: 4, marks: ['text:Life OS', 'text:Court', 'text:Study hub', '.notice-bell', '.focus-button', '.guide-link', '.style-switch-trigger', 'text:Divan'] }) },
   // ---- Journal and People, with examples

@@ -11,6 +11,7 @@ import path from 'node:path'
 import { postgresConfig, createPostgresPool, postgresBackup } from '../../code/life-os/backend/src/postgres.js'
 import { createMailRepository, MailError } from '../../code/life-os/backend/src/modules/mail/repository.js'
 import { createMailImporter } from '../../code/life-os/backend/src/modules/mail/importer.js'
+import { createMailReads } from '../../code/life-os/backend/src/modules/mail/reads.js'
 
 const MAX_BYTES = 15 * 1024 * 1024
 const SETTLE_MS = 5000
@@ -21,7 +22,7 @@ export function liveImportOn(projectRoot) {
   try { return JSON.parse(fs.readFileSync(path.join(projectRoot, '.runtime/mail-import.json'), 'utf8')).live === true } catch { return false }
 }
 
-export function createMailInbox({ directory, importer, logFile, enabled = () => true, settleMs = SETTLE_MS, pollMs = POLL_MS, log = console.log }) {
+export function createMailInbox({ directory, importer, logFile, enabled = () => true, settleMs = SETTLE_MS, pollMs = POLL_MS, log = console.log, onApplied = () => {} }) {
   const processed = path.join(directory, 'processed')
   const failed = path.join(directory, 'failed')
   let running = false
@@ -61,6 +62,7 @@ export function createMailInbox({ directory, importer, logFile, enabled = () => 
       const counts = result.repeated ? 'already imported, no change'
         : `messages ${result.counts.messages.new} new, ${result.counts.messages.updated} updated, ${result.counts.messages.unchanged} unchanged; actions ${result.counts.actions.new} new, ${result.counts.actions.updated} updated, ${result.counts.actions.unchanged} unchanged`
       await note(`- ${at} · ${name} · ${counts}`)
+      if (!result.repeated) await Promise.resolve(onApplied(result)).catch(() => {})
       return { name, ok: true, repeated: result.repeated, batchId: result.batchId, counts: result.counts }
     } catch (error) {
       if (!(error instanceof MailError)) {
@@ -108,7 +110,7 @@ export function createMailInbox({ directory, importer, logFile, enabled = () => 
 // The running part: the store, the importer and the watcher for one database. The real
 // mail/inbox/ is read only by the real database, once live import is on; a try-out
 // reads only a folder it is given.
-export function createMailRuntime(projectRoot, { database, directory, findPeople = () => [], background = true, enabled } = {}) {
+export function createMailRuntime(projectRoot, { database, directory, findPeople = () => [], background = true, enabled, onApplied } = {}) {
   let config, pool
   try { config = postgresConfig(projectRoot); pool = createPostgresPool(config, database ? { database } : undefined) } catch { return null }
   const target = database ?? config.database
@@ -116,7 +118,8 @@ export function createMailRuntime(projectRoot, { database, directory, findPeople
   const importer = createMailImporter({ repository, findPeople, log: console.log, backup: () => postgresBackup(config, projectRoot, 'before-mail-batch', target, 'mail') })
   const own = Boolean(directory)
   const inbox = createMailInbox({ directory: directory ?? path.join(projectRoot, 'mail/inbox'), importer, logFile: path.join(projectRoot, 'mail/import-log.md'),
-    enabled: enabled ?? (() => own || (target === 'lifeos' && liveImportOn(projectRoot))) })
+    enabled: enabled ?? (() => own || (target === 'lifeos' && liveImportOn(projectRoot))), onApplied: (result) => runtime.onApplied?.(result) })
+  const runtime = { repository, importer, inbox, reads: createMailReads({ pool }), findPeople, database: target, onApplied, close: async () => { inbox.close(); await pool.end() } }
   if (background) inbox.start()
-  return { repository, importer, inbox, database: target, close: async () => { inbox.close(); await pool.end() } }
+  return runtime
 }

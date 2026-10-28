@@ -92,6 +92,7 @@ export function createMailImporter({ repository, backup = async () => null, find
         }
         tally('actions', found, after)
       }
+      counts.urgent = (await client.query("SELECT count(*)::int AS n FROM mail.actions WHERE last_batch_id = $1 AND status = 'open' AND coalesce(her_priority, priority) = 'urgent' AND deleted_at IS NULL", [batchId])).rows[0].n
       await client.query('UPDATE mail.batches SET counts = $2 WHERE id = $1', [batchId, JSON.stringify(counts)])
     })
     log(`mail: batch applied: messages ${counts.messages.new} new, ${counts.messages.updated} updated, ${counts.messages.unchanged} unchanged; actions ${counts.actions.new} new, ${counts.actions.updated} updated, ${counts.actions.unchanged} unchanged`)

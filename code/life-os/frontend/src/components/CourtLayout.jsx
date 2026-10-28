@@ -4,6 +4,7 @@ import { useGround } from '../lib/groundContext.jsx'
 import AreaToday from './AreaToday.jsx'
 import { FocusButton, FocusPanel, FocusPlayer } from './FocusDock.jsx'
 import { NoticeBell, NoticePanel } from './NoticeBell.jsx'
+import MailEnvelope from './inbox/MailEnvelope.jsx'
 import ModeSwitch from './ModeSwitch.jsx'
 import StyleSwitch from './StyleSwitch.jsx'
 
@@ -115,6 +116,7 @@ export default function CourtLayout() {
             >
               JobMap
             </button>
+            <MailEnvelope />
             <NoticeBell />
             <FocusButton />
             <button type="button" className={`guide-link${location.pathname.startsWith('/guide') ? ' active' : ''}`} onClick={() => navigate('/guide')} title="Guide: how each part works, with pictures" aria-label="Guide">?</button>
