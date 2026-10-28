@@ -211,6 +211,12 @@ router.patch('/:id', (req, res) => {
       return res.status(404).json({ error: 'not found' })
     }
 
+    // A caller can guard its patch with the updated_at value it read. SQLite's
+    // read and update below are synchronous, so no request can interleave them.
+    if (req.headers['if-match'] !== undefined) {
+      const expected = String(req.headers['if-match']).trim().replace(/^W\//, '').replace(/^"|"$/g, '')
+      if (expected !== existing.updated_at) return res.status(409).json({ error: 'Entry changed. Load it again before saving.' })
+    }
     const body = req.body ?? {}
     const title = 'title' in body
       ? cleanOptionalString(body.title)

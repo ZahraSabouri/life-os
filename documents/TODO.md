@@ -346,7 +346,7 @@ Brief: `briefs/health-part.md`. Her words:
 - [x] "I need the app to run on the windows startup": it already does (started 28 seconds after sign-in today); silent, at her choice.
 - [x] "Cardiff life app is updated but the life os Cardiff life hasn't": Codex's sync of 15:16 brought it level (132 events in both).
 - [x] "we cannot have tightest fix plan": weekly cards after 13 November, a Sunday weekly reset and a Saturday catch-up block.
-- [ ] When Week 4 MAT022 materials, hw4 and the project brief are saved, name them on their cards.
+- [x] Week 4 materials and project brief named/linked on reset cards (28 October). No hw4 was published; use the Week 4 lab and forthcoming Test 2 questions instead.
 - [ ] **(Xar)** Ask whether the CMT309 coursework is due on 17 or 27 December (card on 29 October).
 - [ ] Possible app change: an assessment of kind "test" shows on the calendar at its end time, like a deadline; only "exam" shows at its own time.
 
@@ -362,6 +362,26 @@ Brief: `briefs/health-part.md`. Her words:
 - [ ] **(Xar)** Is Documents synced to OneDrive? (Gathered mail waits in `Life_OS\mail\inbox\`.)
 - [x] CP1 the store and importer (28 October).
 - [ ] CP2 Waiting on you · CP3 reading mail · CP4 digests, Today, bell, calendar, envelope · CP5 Write it with Claude, how to gather, the Guide.
+
+## X. Reset again through 31 December (28 October)
+
+> “i didnt do any studying unfortunately unless for the exam”; “full reset”; “second exam … only (not the first test)”.
+> “preferred hours: 17-20 or between my classes or anytime else really”; “pause on days close to deadlines or exams”; “two days a week gym”.
+> “Use Saturday + Monday; Friday + Sunday evenings”; “those can be fluid”; “take research very seriously”.
+> “Keep history, allowance and subscriptions; clear old plans/lists”; “Apply these safety guards and continue the reset”.
+
+- [x] Audit sources/transcripts, assessments/timetable, core repeats, notices, ordered JobMap, Cardiff research and Budget; show dated picture before writes and ask her decisions together.
+- [x] Apply approved stale-save guards; prove stale writes fail and matching saves preserve other fields.
+- [x] Replace 70 untouched superseded cards; keep all progress/history. **Zero newly done.** Detailed Test 2/project blocks through 13 November, then weekly cards to December.
+- [x] Monday/Saturday free of assigned study/jobs, Friday/Sunday evenings and 24–27 December protected; gym twice weekly; deadline job pauses; Sunday catch-up/reset.
+- [x] Read/link MAT022 brief, dataset and LaTeX files; plan unknown group decisions. CMT309 cautious 17 December target; no AI-written assessed code/answers/text.
+- [x] Fresh Budget plans: archive three old lists, clear stale food plan, preserve history/allowance/subscriptions and pending October purchase.
+- [x] Archive five saved expired unapplied jobs; correct Android's assignment-end date; verify public API against Life OS owner. Standalone untouched.
+- [x] Add 14 dated options and one conditional career programme; sync Cardiff at 149 events/90 communities/11 opportunities. Personal choices retained; Outlook backfill partial.
+- [x] Backups, dry run, preservation checks, native files, real-app screenshots. Private receipts in `.runtime/study-plan-2026-10-28/`; see reset session note.
+- [ ] **(Xar)** Agree project part/check-ins; confirm CMT309 deadline; choose events and move affected capacity when ready.
+- [ ] Weekly reset: tick actual work, check Test 2 formula sheet/questions and MAT021 coursework dates. Never mark unfinished work done to clear a view.
+- [ ] Existing display issues, outside reset: false “Studied today”; Test 2 and containing lecture both visible. Wider Today/Calendar work belongs to the session already editing it.
 
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
@@ -379,7 +399,7 @@ Brief: `briefs/health-part.md`. Her words:
 ## Waiting on Xar, gathered
 1. Nothing is waiting on her from 12 October's six questions; all were answered that day.
 2. ~~The summer study data that is not study~~ answered and done 12 October (section J).
-3. Job time after 25 October: keep adding two weeks at a time, or make it a repeating routine?
+3. ~~Job time after 25 October~~ answered/reset 28 October: repeating active-day slots, deadline pauses and protected time (section X).
 4. Her detailed check of the look, and of the new Court.
 5. JobMap, three questions in section I: the doubled vacancy, the September workbook's settings, the never-checked September leads.
 6. "Use common sense": which change did she mean (section C)?

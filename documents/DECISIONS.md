@@ -4,6 +4,16 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 28 October 2026 — reset through December, protected time and honest completion
+
+- **Time off:** “Use Saturday + Monday; Friday + Sunday evenings.” No assigned study/jobs Monday or Saturday; classes remain. Evening protection starts at 18:00. Keep 24–27 December free. Supersedes 26 October's daily job time and Saturday catch-up; catch-up moves to Sunday.
+- **Jobs and gym:** “preferred hours: 17-20 or between my classes or anytime else really”; “pause on days close to deadlines or exams”; “two days a week gym.” Reserve editable gym hours. Pause jobs 1–6 November, 8–13 November and 13–17 December; otherwise use active days/class gaps.
+- **Study:** “i didnt do any studying unfortunately unless for the exam”; “full reset”; “second exam … only (not the first test).” Replace untouched superseded cards, preserve progress/history, mark no new work done. Detailed blocks through the project, then weekly cards tied to actual releases.
+- **Project/deadline:** her role is unknown; “read the brief yourself and put it in the app”; CMT309: “lets be catious.” Link the brief/files and plan the group decisions. Keep 17 December as personal submission target, retaining the portal's 27 December and unresolved conflict.
+- **Events/research:** “those can be fluid”; “take research very seriously.” Reserve research/postgraduate review time. Events remain available options, without attendance or bookings inferred.
+- **Budget:** “Keep history, allowance and subscriptions; clear old plans/lists.” Archive three lists with all lines retained, clear stale food plan, preserve history, £250 allowance, subscriptions and unresolved October purchase.
+- **Narrow fix explicitly approved:** “Apply these safety guards and continue the reset.” Core entry PATCH can check its timestamp; Study plan PATCH can check revision/exact plan hash. No UI/schema change or broader bug-fix permission.
+
 ## 28 October 2026 — Mail and admin: an Inbox part, gathered when she asks
 
 - **Her mail is read inside Life OS**, "with things in notification and inbox digest and summaries and priorities" (her choice among three shapes). The part is **Inbox**: Waiting on you (who she owes a reply, an email, a text, a call or birthday wishes, and what to read, do or decide), Mail (every gathered message, readable, with summary and priority), Digests. Brief: `briefs/mail-and-admin.md`, approved 28 October, built by Claude Code on Windows (she chose that over building from Cowork, which cannot test against her database).

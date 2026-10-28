@@ -206,13 +206,25 @@ export function createHubStore({ pool, repository, clock = () => new Date(), log
     }
   }
 
-  async function updatePlan(id, change) {
+  async function updatePlan(id, change, { expectedRevision, expectedPlanHash } = {}) {
     const semester = await semesterRow(id)
-    await pool.query('INSERT INTO study.hub_workspaces (semester_id) VALUES ($1) ON CONFLICT (semester_id) DO NOTHING', [semester.id])
-    const current = (await pool.query('SELECT plan FROM study.hub_workspaces WHERE semester_id = $1', [semester.id])).rows[0]
-    const plan = { ...(plain(current.plan) ? current.plan : {}), ...change }
-    await pool.query('UPDATE study.hub_workspaces SET plan = $2::json WHERE semester_id = $1', [semester.id, JSON.stringify(plan)])
-    return plan
+    const client = await pool.connect()
+    try {
+      await client.query('BEGIN')
+      await client.query('INSERT INTO study.hub_workspaces (semester_id) VALUES ($1) ON CONFLICT (semester_id) DO NOTHING', [semester.id])
+      const current = (await client.query('SELECT plan, revision FROM study.hub_workspaces WHERE semester_id = $1 FOR UPDATE', [semester.id])).rows[0]
+      if (expectedRevision !== undefined && expectedRevision !== current.revision) throw new HubError(409, 'Workspace changed. Load it again before saving the plan.')
+      const previous = plain(current.plan) ? current.plan : {}
+      const hash = createHash('sha256').update(JSON.stringify(previous)).digest('hex')
+      if (expectedPlanHash !== undefined && expectedPlanHash !== hash) throw new HubError(409, 'Plan changed. Load it again before saving.')
+      const plan = { ...previous, ...change }
+      await client.query('UPDATE study.hub_workspaces SET plan = $2::json WHERE semester_id = $1', [semester.id, JSON.stringify(plan)])
+      await client.query('COMMIT')
+      return plan
+    } catch (error) {
+      await client.query('ROLLBACK').catch(() => {})
+      throw error
+    } finally { client.release() }
   }
 
   function normaliseEvent(input) {

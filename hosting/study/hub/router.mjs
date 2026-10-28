@@ -136,7 +136,11 @@ export function createHubRouter({ express, store, repository, readAssetsManifest
     if (!plain(req.body)) throw new HubError(400, 'Describe what to change')
     const allowed = ['campaignMeta', 'options', 'scheduleRules', 'scheduleExceptions', 'scheduleAssumptions', 'knowledgeSeeds', 'texts']
     const change = Object.fromEntries(Object.entries(req.body).filter(([key]) => allowed.includes(key)))
-    res.json({ ok: true, plan: await store.updatePlan(semester(req), change) })
+    const expected = req.headers['if-match'] === undefined ? undefined : expectedRevision(req.headers['if-match'])
+    if (expected === null) throw new HubError(400, 'If-Match must name the workspace revision')
+    const expectedPlanHash = req.get('X-Expected-Plan-Hash')
+    if (expectedPlanHash !== undefined && !/^[a-f0-9]{64}$/.test(expectedPlanHash)) throw new HubError(400, 'Send the hash of the plan you loaded')
+    res.json({ ok: true, plan: await store.updatePlan(semester(req), change, { expectedRevision: expected, expectedPlanHash }) })
   }))
 
   // ---- Modules ----------------------------------------------------------------------------
