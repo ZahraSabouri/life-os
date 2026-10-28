@@ -7,6 +7,7 @@ import re
 import tomllib
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from university_priority import university_data
 
 ROOT = Path(__file__).resolve().parent
 
@@ -64,12 +65,37 @@ def schedules():
         try:
             cfg = tomllib.loads(path.read_text(encoding="utf-8"))
             rule = dict(p.split("=", 1) for p in cfg["rrule"].removeprefix("RRULE:").split(";") if "=" in p)
-            when = ", ".join(days.get(d, d) for d in rule.get("BYDAY", "").split(","))
+            when = "Daily" if rule.get("FREQ") == "DAILY" else ", ".join(days.get(d, d) for d in rule.get("BYDAY", "").split(","))
             when += f' · {int(rule.get("BYHOUR", 0)):02d}:{int(rule.get("BYMINUTE", 0)):02d}'
             result.append(dict(name=label, when=when, state=cfg["status"].lower()))
         except (OSError, KeyError, ValueError):
             result.append(dict(name=label, when="Schedule unavailable", state="unknown"))
     return result
+
+
+
+def report_selection(rows, report, today=None):
+    """Keep all active occurrences when a report links to a shared programme."""
+    today = today or datetime.now(ZoneInfo("Europe/London")).date().isoformat()
+    by_url = {}
+    for row in rows:
+        if row["status"] not in {"upcoming", "needs_verification", "recurring"}:
+            continue
+        if row["date"] and row["date"] < today:
+            continue
+        by_url.setdefault(row["source_url"].rstrip("/"), []).append(row)
+    ranked, featured, section = [], [], ""
+    for line in report.splitlines():
+        if line.startswith("## "):
+            section = line[3:].lower()
+        for url in re.findall(r"\]\((https?://[^)]+)\)", line):
+            matches = by_url.get(url.rstrip("/"), [])
+            for row in sorted(matches, key=lambda r: (r["date"], r.get("start_time", ""), r["event_id"])):
+                if row["event_id"] not in ranked:
+                    ranked.append(row["event_id"])
+                if "best things" in section and row["community_id"] not in featured:
+                    featured.append(row["community_id"])
+    return ranked, featured
 
 
 def main():
@@ -99,39 +125,28 @@ def main():
         if not row["source_url"].startswith(("https://", "http://")):
             raise ValueError(f'Invalid source URL: {row["event_id"]}')
     report = read("events.md")
-    ranked, featured, section = [], [], ""
-    by_url = {r["source_url"].rstrip("/"): r for r in rows}
-    for line in report.splitlines():
-        if line.startswith("## "):
-            section = line[3:].lower()
-        for url in re.findall(r"\]\((https?://[^)]+)\)", line):
-            row = by_url.get(url.rstrip("/"))
-            if row:
-                if row["event_id"] not in ranked:
-                    ranked.append(row["event_id"])
-                if "best things" in section and row["community_id"] not in featured:
-                    featured.append(row["community_id"])
+    ranked, featured = report_selection(rows, report)
     if rows and not ranked:
         raise ValueError("events.md must link to current event source URLs before rebuilding.")
     deadlines = []
     match = re.search(r"^## Deadlines / act soon\s*\n(.*?)(?=^## |\Z)", report, re.M | re.S)
     if match:
         deadlines = [inline(line[2:]) for line in match.group(1).splitlines() if line.startswith("- ")]
-    payload = dict(events=rows, ranked=ranked, featured=featured[:3], communities=communities(read("communities.md")), deadlines=deadlines, schedules=schedules(), built=datetime.now(ZoneInfo("Europe/London")).isoformat(timespec="minutes"))
+    payload = dict(university=university_data(ROOT), events=rows, ranked=ranked, featured=featured[:3], communities=communities(read("communities.md")), deadlines=deadlines, schedules=schedules(), built=datetime.now(ZoneInfo("Europe/London")).isoformat(timespec="minutes"))
     encoded = json.dumps(payload, ensure_ascii=False).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
     template = read("html_template.html")
     if template.count("__CARDIFF_DATA__") != 1:
         raise ValueError("Template must contain exactly one data placeholder.")
     if template.count("__CARDIFF_SCRIPT__") != 1:
         raise ValueError("Template must contain exactly one script placeholder.")
-    script = read("planner.js")
+    script = read("university.js") + "\n" + read("planner.js")
     if "</script" in script.lower():
         raise ValueError("Planner script contains an unsafe closing script tag.")
     output = template.replace("__CARDIFF_SCRIPT__", script).replace("__CARDIFF_DATA__", encoded)
     temporary = ROOT / "index.html.tmp"
     temporary.write_text(output, encoding="utf-8")
     temporary.replace(ROOT / "index.html")
-    print(json.dumps({"output": str(ROOT / "index.html"), "event_records":len(rows), "recommended_records":len(ranked), "communities":len(payload["communities"]), "bytes":len(output.encode("utf-8"))}))
+    print(json.dumps({"output": str(ROOT / "index.html"), "teaching_records":len(payload["university"]["teaching"]), "opportunity_records":len(payload["university"]["opportunities"]), "event_records":len(rows), "recommended_records":len(ranked), "communities":len(payload["communities"]), "bytes":len(output.encode("utf-8"))}))
 
 
 if __name__ == "__main__":

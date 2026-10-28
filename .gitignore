@@ -57,3 +57,17 @@ migration/backups/
 
 # Try-out build of the main app (.runtime/hub-dev/dev-server.mjs)
 code/life-os/frontend/dist-next/
+
+# Cardiff research includes private university evidence and local configuration.
+/cardiff-life/events.csv
+/cardiff-life/events.md
+/cardiff-life/communities.md
+/cardiff-life/history.md
+/cardiff-life/index.html
+/cardiff-life/opportunities.json
+/cardiff-life/university-status.json
+/cardiff-life/timetable-source.json
+/cardiff-life/research-sync-state.json
+/cardiff-life/life-os-sync.json
+/cardiff-life/__pycache__/
+/cardiff-life/tests/__pycache__/

@@ -230,3 +230,15 @@ Do not:
 unless I explicitly ask for that action.
 
 When login is required merely to perform an action rather than to view public information, leave the action for me.
+
+## University first and Life OS updates
+
+User priority, 26 October 2026: university Outlook announcements and opportunities first, then teaching timetable, then other events. Catch competitions, hackathons, scholarships, funding, applications and expressions of interest early. Track application deadlines separately from presentation/event dates, including opportunities beyond the ordinary 21-day event window. Confirm taught-MSc eligibility and preparation/team requirements. Never turn a closed application into an upcoming opportunity merely because its presentation is later.
+
+Outlook browser access was verified on 26 October. Recheck access each run; use the signed-in university Codex tab or a connected university connector. The first 30-day backfill is partial. `university-status.json` records coverage and the last complete checkpoint; advance that checkpoint only after finishing the search. Do not interpret a failed or partial search as no opportunities. `opportunities.json` keeps concise facts, stable IDs, stage deadlines, eligibility, source references and availability. Preserve first_seen and user feedback. Do not store email bodies, recipients, tracking links or authentication links.
+
+The Outlook search runs daily at 09:00 Europe/London. Notify on useful new opportunities, material changes, first crossings of 7/3/1-day deadline windows and newly actionable access gaps; record alert IDs/milestones in history to prevent repeats. Thursday and Friday searches keep their times but perform the university priority check first. Timetable file age must remain visible; email corrections go in `timetable-source.json` with scope and source, without rewriting the original export. Missing classes do not establish availability. The source path is local configuration and must not be committed.
+
+After every research update run `python build_html.py`, then `python sync_life_os.py` from the standalone Cardiff Life folder. `life-os-sync.json` names the Life OS Cardiff directory. Sync copies only research files, validates stable IDs/provenance, checks its previous destination hashes, backs up, and builds using Life OS's own display code. It never writes the core database, own-events API or browser choices. If destination research was independently edited, stop and merge the conflict before syncing. Never copy a whole app folder or overwrite Life OS's own planner/template. Confirm source/destination event and community counts and check the live Life OS Cardiff page/calendar when accessible. A successful offline build alone is not proof of a live refresh.
+
+The priority panel is fed by opportunities.json and university-status.json. Dated event occurrences remain in events.csv. Teaching blocks are a separate projection of the saved timetable; they are not optional events and must not be duplicated into Life OS core teaching records. Browser Maybe/Plan to go choices remain intentions only.

@@ -39,7 +39,7 @@ export default function CalendarView() {
   const [visibleMonth, setVisibleMonth] = useState(() => monthStart(initialDay))
   const [selectedDay, setSelectedDay] = useState(initialDay)
   const [areas, setAreas] = useState(() => CALENDAR_AREAS.map(area => area.key))
-  const [cardiffScope, setCardiffScope] = useState('saved')
+  const [cardiffScope, setCardiffScope] = useState('all')
   const [view, setView] = useState('month')
   const [captureTitle, setCaptureTitle] = useState('')
   const [captureDate, setCaptureDate] = useState(initialDay)
@@ -108,7 +108,7 @@ export default function CalendarView() {
       <select id="calendar-cardiff-scope" value={cardiffScope} onChange={event => setCardiffScope(event.target.value)}>
         <option value="saved">Saved plans & maybe</option><option value="going">Plan to go</option><option value="all">All researched options</option>
       </select>
-      <p className="calendar-filter-note">Choices come from Cardiff Life in this browser. <Link to="/cardiff-life">Open Cardiff Life</Link></p>
+      <p className="calendar-filter-note">Showing researched options does not add them to your plans. Choose Maybe or Plan to go in Cardiff Life. <Link to="/cardiff-life">Open Cardiff Life</Link></p>
       <div className="calendar-kind-legend" aria-label="Item kinds">{CALENDAR_KINDS.map(kind => <span key={kind.key} data-kind={kind.key}>{kind.label}</span>)}</div>
     </aside>
 

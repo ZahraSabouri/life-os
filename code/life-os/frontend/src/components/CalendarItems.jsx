@@ -24,7 +24,7 @@ export default function CalendarItems({ items, calendar, areas, showDate = false
         </div>
         <div className="calendar-agenda-copy">
           <Link className="calendar-item-title" to={item.href || '/calendar'}>{item.title}</Link>
-          <div className="calendar-item-meta"><span>{area.label}</span><span className="calendar-kind-tag">{calendarKind(item.kind)}</span>{item.choice ? <span>{item.choice === 'going' ? 'Plan to go' : 'Maybe'}</span> : null}{item.attention ? <span className="calendar-attention-tag">{item.attention}</span> : null}</div>
+          <div className="calendar-item-meta"><span>{area.label}</span><span className="calendar-kind-tag">{calendarKind(item.kind)}</span>{item.choice ? <span>{item.choice === 'going' ? 'Plan to go' : 'Maybe'}</span> : null}{item.meta?.candidate && !item.choice ? <span>Available option</span> : null}{item.attention ? <span className="calendar-attention-tag">{item.attention}</span> : null}</div>
           {item.location ? <p>{item.location}</p> : null}
           {item.meta?.savedSnapshot ? <p>Saved copy; check the current listing before travelling.</p> : null}
           {item.meta?.needsVerification ? <p>Check the published time and details before travelling.</p> : null}

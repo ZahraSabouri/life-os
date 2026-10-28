@@ -111,7 +111,7 @@ if(typeof document!=='undefined')(()=>{
     $('week-mix').textContent=counts.length?'Your mix: '+counts.map(([title,n])=>title+' '+n).join(' · '):'Choose an event below to start shaping your week.';
     $('week-grid').innerHTML=Array.from({length:7},(_,i)=>{
       const day=P.addDays(week,i),list=weekEvents.filter(e=>e.date===day).sort((a,b)=>a.start_time.localeCompare(b.start_time)),saved=list.filter(e=>choices[e.event_id]),options=list.filter(e=>!choices[e.event_id]&&P.active(e,today));
-      return `<section class="day ${day===today?'today':''} ${day<today?'past':''}"><header><span>${format(day,{weekday:'short'})}</span><strong>${format(day,{day:'numeric'})}</strong>${day===today?'<small>Today</small>':''}</header><div class="day-content">${saved.map(e=>weekTile(e)).join('')}${$('show-options').checked?options.slice(0,2).map(e=>weekTile(e,true)).join(''):''}${!saved.length&&!($('show-options').checked&&options.length)?'<p class="day-empty">'+(day<today?'No saved choices':'Nothing planned')+'</p>':''}${options.length?`<button class="day-more" data-day="${day}">Explore ${options.length} option${options.length===1?'':'s'} →</button>`:''}</div></section>`;
+      return `<section data-date="${day}" class="day ${day===today?'today':''} ${day<today?'past':''}"><header><span>${format(day,{weekday:'short'})}</span><strong>${format(day,{day:'numeric'})}</strong>${day===today?'<small>Today</small>':''}</header><div class="day-content">${saved.map(e=>weekTile(e)).join('')}${$('show-options').checked?options.slice(0,2).map(e=>weekTile(e,true)).join(''):''}${!saved.length&&!($('show-options').checked&&options.length)?'<p class="day-empty">'+(day<today?'No saved choices':'Nothing planned')+'</p>':''}${options.length?`<button class="day-more" data-day="${day}">Explore ${options.length} option${options.length===1?'':'s'} →</button>`:''}</div></section>`;
     }).join('');
     const clashes=[],selected=events.filter(e=>choices[e.event_id]&&P.active(e,today));
     for(let i=0;i<selected.length;i++)for(let j=i+1;j<selected.length;j++)if((planned.includes(selected[i])||planned.includes(selected[j]))&&P.overlaps(selected[i],selected[j]))clashes.push([selected[i],selected[j]]);
@@ -119,6 +119,7 @@ if(typeof document!=='undefined')(()=>{
     $('clashes').innerHTML='<strong>Choices that overlap</strong><ul>'+clashes.map(([a,b])=>`<li>${esc(a.name)} and ${esc(b.name)} · ${format(a.date)}. Both stay saved while you decide.</li>`).join('')+'</ul><small>Only published times are compared; allow extra travel time.</small>';
     const undated=events.filter(e=>choices[e.event_id]&&!e.date);$('unscheduled').hidden=!undated.length;
     $('unscheduled').innerHTML='<h3>Saved · date to confirm</h3>'+undated.map(e=>`<button class="text-button" data-detail="${esc(e.event_id)}">${esc(e.name)} · ${label(choices[e.event_id].status)}</button>`).join('');
+    if(typeof window!=='undefined')window.renderUniversity?.();
   }
   function renderExplore(){
     filters.week=week;const result=P.filter(allEvents(),filters,choices,today,data.ranked);
@@ -127,7 +128,8 @@ if(typeof document!=='undefined')(()=>{
     $('event-grid').innerHTML=result.length?result.map(card).join(''):'<div class="empty"><h3>No events match these filters.</h3><p>Try another week or reset the filters to see all researched choices.</p><button data-reset>Reset filters</button></div>';
     document.querySelectorAll('[data-category]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.category===filters.category)));
     document.querySelectorAll('[data-scope]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.scope===filters.scope)));
-    $('choice-total').textContent=Object.keys(choices).length;
+    $('choice-total').textContent=Object.keys(choices).length+' saved';
+    if(typeof window!=='undefined')window.renderUniversity?.();
   }
   function render(){renderWeek();renderExplore();}
   // ---- Events she adds herself: kept in Life OS (api/own-events), drawn like any other event.
