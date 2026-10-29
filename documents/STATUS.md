@@ -1,39 +1,34 @@
 # Life OS: status
 
-**Updated 28 October 2026 by Claude Code** (mail CP2 to CP5 built and merged; the Calendar and Codex's state of the same evening kept). Branch `stage/4b-one-look`. Running: http://127.0.0.1:47850; Budget 47851; JobMap 47852. Standalone JobMap remains frozen.
+**Updated 29 October 2026 by Claude Code** (the Calendar finished and pushed; Codex's Health → Gym of the same night kept). Branch `stage/4b-one-look`, and `main` level with it; running at http://127.0.0.1:47850 (Budget 47851, JobMap 47852). Standalone JobMap is frozen.
 
 ## Now
 
-**Inbox (Claude Code, her request "do the whole thing"), built, not yet live:** the envelope beside the bell opens **Waiting on you** (who she owes a reply, email, text, call or birthday wish; Today, This week, Whenever, Done lately; Done, Tomorrow, Next week, Not needed, the email, priority, a note, Undo), **Mail** (every gathered message by day, sources, filters, search, read as plain text, Open in Outlook/Gmail, I need to reply, Hide) and **Digests** (each run, what could not be read, Undo, How to gather). Today has a "Waiting on you" panel; Today's add line takes "text Sam about Saturday"; People shows what she owes each person and "Owe them a text"; the bell, the calendar and a Windows notice for urgent things. Write it with Claude on replies. The Guide has an Inbox chapter (pictures from the example batch only). Prompts for her agents: `mail/AGENT-PROMPTS.md`. Note: `sessions/2026-10-28-claude-code-mail-cp2-cp5-inbox.md`.
+**Calendar, finished and live** (her "elevate ux, cover uncovereds … push it to main"): everything is in the address and Back works, now also inside **Cardiff Life** ("Open in Cardiff Life" opens the event itself) and **JobMap** (an open job, its views), and for the bell, Focus, the style menu and the phone menu. **Drag her own plans** to another day (Month or Week) with **Undo**; **"+"** on a day and a **click on an empty hour** in Week add with the time filled in; Undo after Done, Take off the day and Move; swipe between days on a phone; List starts at today. [Session](sessions/2026-10-29-claude-code-calendar-cover-and-elevate.md), [brief](briefs/calendar-day-and-addresses.md).
 
-**Calendar (Claude Code, her request today), live:** the month, view, filters, search, an open day and the thing open in it are in the address, so Back goes back: it closes the thing, then the day, then steps back through months and views. Named month steps, Go to, **Month / Week (by the hour) / List / Year**, search, week numbers, keys (← → T M W L Y). **Click a day:** it opens over the month with the day in time order, study steps to tick, Done / Change / Move / Take off the day on her plans, "I applied", "Open in Study hub / Cardiff Life / JobMap …", Study, Jobs, Home and Health tabs, and **notes for a day or about one thing** (✎ on the month). The Guide's and the Journal's pictures are in the address too. Brief: `briefs/calendar-day-and-addresses.md`; note: `sessions/2026-10-28-claude-code-calendar-day-and-addresses.md`.
+**Inbox (published at her choice, not yet working):** the Inbox pages, Today's "Waiting on you" and the envelope are live but say they cannot read mail, and the Calendar says "Mail and admin" could not be read, until the mail schema migration and a first real batch on `lifeos_test` (see `mail/AGENT-PROMPTS.md`, the 28 October Inbox notes). Nobody has migrated or enabled it.
 
-**Study (Codex):** the reset through **31 December is saved and checked**. 72 cards, 136 blocks: detailed Test 2/project work through 13 November, then movable weekly module cards. Test 2 is 6 November (20%); MAT022 project 13 November 23:59 (60%); CMT309's eight notebooks have a cautious 17 December finish target (portal says 27 December); MAT021 starts 16 November. Monday/Saturday have no study or jobs; Friday/Sunday evenings and 24–27 December are free. The 20 gym reservations hold the beginner A/B sessions (23 December light recovery). Budget's old lists archived; five expired unapplied jobs archived. Cardiff research: 149 events, 90 communities, 11 opportunities; Outlook backfill partial. Core/Study stale-save guards are live.
+**Health → Gym (Codex, live):** her plan, A/B technique templates, scheduled workouts with set/repetition/weight logging, rest timer, move, skip and reopen; all 20 gym slots kept; nothing marked done. Codex's files are not committed yet. [Session](sessions/2026-10-29-codex-health-gym-native-plans.md), [brief](briefs/health-gym-plans.md).
 
-## Exact next step and how to see it
+**Study/reset:** 72 cards/136 blocks through 31 December. Test 2: 6 November (20%); project: 13 November 23:59 (60%); CMT309 cautious finish 17 December, portal 27 December; MAT021 starts 16 November. Mondays/Saturdays, Friday/Sunday evenings and 24–27 December protected. Cardiff research 149 events/90 communities/11 opportunities; Outlook backfill partial.
 
-0. **Mail goes live (Xar, or an agent she approves):** `node code/life-os/backend/src/migrate.js lifeos` (it backs up first; adds the empty `mail` tables only), then `Build Life OS.cmd`, then Stop and Start Life OS. Then the envelope by the bell works. Gathering: `mail/AGENT-PROMPTS.md` (connect Gmail, sign in to Outlook and Learning Central in Claude's browser, run "Gather my inboxes"); the first batch goes to `lifeos_test` first, then hers, then `node scripts/mail-import.mjs lifeos --live on`.
-1. Xar reloads Life OS and tries the Calendar: "November ›" then Back; click a day; click a class's title → "Open in Study hub" → Back; keep "A note for the day". The list is in the brief's acceptance checklist.
-2. Study as planned: **Today**, **Study hub → Week**, or **Calendar → Week**. Thursday's blocks, Friday's Test 2 recap; **Health → Exercise → Gym A/B** from Friday 30 October 08:30.
+## Exact next step
 
-**Next prompt:** "Check whether the MAT022 Test 2 formula sheet and exam-style questions have been released, then adjust next week's blocks around what I actually completed."
+1. Xar reloads Life OS and tries the Calendar checklist (brief, items 1–9): Next month then Back; drag "Job applications" in Week and Undo; "Open in Cardiff Life" then Back; a JobMap job then Back.
+2. **Health → Gym → Open workout**; first session Friday 30 October 08:30. Log only actual work.
+3. Study via Today/Study hub → Week; check the Test 2 formula sheet and questions.
+
+**Next prompt:** "Check the newly released Test 2 material and adjust my plan around what I actually completed."
 
 ## Waiting and limits
 
-- Xar: should a note about a JobMap job go into JobMap's own notes instead of a Life OS note? Agree project part/check-ins; confirm CMT309's 17/27 December; choose events. MAT021 dates must come from publication.
-- Calendar limits: "Open in Cardiff Life" opens its list, not the event (that needs Cardiff Life's own code); a crowded day in Week gets narrow columns; the four framed apps keep their own addresses; dropdown menus are not in the address.
-- Existing displays: false "Studied today" banner; Test 2 also shows its containing lecture; generic `test` draws at its end time.
-- Mail: built (CP1 to CP5) and merged; until `migrate.js lifeos` runs, `/api/mail` answers 503 and the calendar lists "Mail and admin" as unavailable. Live import stays off until the first batch is seen on `lifeos_test`. A review of the mail work is still to do. Earlier acceptance and questions remain in TODO (stage 4b look, Health/Study, JobMap leads/repeats, Guide/mail setup).
-- Don't run `hosting/app.test.mjs` (it reseeds the core). Browser checks use `playwright-core` from `summer-rescue` (the Playwright MCP extension is not installed).
+- Xar: run the mail migration and first batch when ready; should a note about a JobMap job go into JobMap's own notes?; project part/check-ins; CMT309's 17/27 December; chosen events. MAT021 dates unknown.
+- Calendar limits: Budget's smaller dialogs are not in its address; dragging needs a mouse (phones use "Move to"); a plan over several days moves with Change.
+- Existing issues: false hub "Studied today"; test plus containing lecture; generic `test` kind at end time. Earlier acceptance/Guide/JobMap questions remain in TODO. Health machine inventory and starting loads unknown; no auto-progression.
+- Don't run `hosting/app.test.mjs` (it reseeds the core). Browser checks use `playwright-core` from `summer-rescue`.
 
-## Data
+## Data and latest sessions
 
-Core 207 entries; Study 54; Budget 110; JobMap 52, 1,211 jobs. Backups: [reset](sessions/2026-10-28-codex-records-plan-to-december.md), [workout](sessions/2026-10-28-codex-records-workout-documents.md); the frontend before the Calendar build in `.runtime/calendar-plus-2026-10-28/dist-before/`. The Calendar session changed no data (every check caught saves in the browser).
+Core **207 entries**; Study 54; Budget 110; JobMap 52/1,211 jobs. The Calendar sessions changed no data (saves caught in the browser); builds backed up in `.runtime/calendar-plus-2026-10-28/` and `-29/`. Native-gym backup: Codex's session. No schema migration.
 
-## Last five sessions (all 28 October)
-
-- Mail CP2 to CP5, the Inbox (Claude Code): `sessions/2026-10-28-claude-code-mail-cp2-cp5-inbox.md`
-- Calendar in the address and the day pop-up (Claude Code): `sessions/2026-10-28-claude-code-calendar-day-and-addresses.md`
-- Workout documents in the plan (Codex): `sessions/2026-10-28-codex-records-workout-documents.md`
-- Reset through December (Codex): `sessions/2026-10-28-codex-records-plan-to-december.md`
-- Mail CP1, store and importer (Claude Code): `sessions/2026-10-28-claude-code-mail-cp1-store-importer.md`
+Last five: Calendar finished (29 Oct, Claude Code); native Gym (29 Oct, Codex); Inbox CP2–CP5 (28 Oct); Calendar/day addresses (28 Oct); workout-document import (28 Oct). Notes in `documents/sessions/`.

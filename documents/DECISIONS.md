@@ -4,6 +4,14 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 29 October 2026 — Back inside the framed apps and for every panel; plans dragged between days (Xar with Claude Code)
+
+- Xar: "elevate ux, cover uncovereds and test and finish the thing and push it to main branch".
+- **What Life OS adds to a framed app's behaviour is served with its page** (`hosting/skins/public/apps/<id>.js`, beside the style file), so the app's own files stay untouched: Cardiff Life's `#event=` and `#view=`, without changing the files Codex's research sync keeps by hash. JobMap, being Life OS's own, keeps its view and open job in its own address in its code.
+- **Side panels and menus are `?panel=`**, one at a time: Back or Esc closes, a click elsewhere closes in place (a step back at the same moment would undo where that click goes), a page chosen from the phone menu takes the menu's place. Esc reaches only what is on top.
+- **Her own plans of one day can be dragged to another day**, with Undo; Done, Take off the day and Move each have Undo where they were done. Undo uses the same save rules (a day of a repeating plan goes back to its own day and the plan made for the new day is taken off, kept like everything taken off).
+- **Publishing the branch included the mail session's Inbox**, at her choice ("Everything, Inbox too"); its migration and first batch remain hers.
+
 ## 28 October 2026 — a page keeps what it shows in its address; the calendar's day opens over it (Xar with Claude Code)
 
 - Xar: "I want everything to be in URL … so when I press back, I can go back, even if some pop-up window was open"; "open one day, and a pop-up window should open … mark things done, or add notes, or click on links".
