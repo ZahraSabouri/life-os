@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { Router } from 'express'
 import db from '../db.js'
 import { picturesOf, removePictureFile } from './files.js'
-import { archetypeOf, typeExists, validateDetails } from '../../../shared/entryTypes.js'
+import { archetypeOf, typeExists, validateDetails, validateWorkoutCompletion } from '../../../shared/entryTypes.js'
 import { buildEntriesQuery } from '../query.js'
 
 const router = Router()
@@ -129,6 +129,7 @@ router.post('/', (req, res) => {
     const cleanAllDay = all_day ? 1 : 0
     const cleanFavorite = cleanOptionalBoolean(favorite) ? 1 : 0
     const cleanDetails = cleanDetailsForType(cleanType, details)
+    if (cleanType === 'workout') validateWorkoutCompletion(cleanDetails, cleanStatus)
 
     insertEntry.run(
       id,
@@ -241,6 +242,7 @@ router.patch('/:id', (req, res) => {
       : existing.details
     const now = new Date().toISOString()
 
+    if (existing.type === 'workout') validateWorkoutCompletion(JSON.parse(details), status)
     updateEntry.run(title, status, startAt, endAt, allDay, favorite, details, now, req.params.id)
 
     res.json(serializeEntry(selectEntryById.get(req.params.id)))

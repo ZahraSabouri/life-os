@@ -11,6 +11,7 @@ import { EXERCISES, MUSCLE_GROUPS, PLACES, exercise } from '../../../../shared/h
 import { PROGRAMMES, programmeSession, scheduleProgramme } from '../../../../shared/health/programmes.js'
 import { dayOf, isDone, isSkipped, sessionCounts, weekStart } from '../../../../shared/health/week.js'
 import { Meter, SessionLine, Source, minutesText } from './parts.jsx'
+import { StructuredWorkout, GymPlanTeaser } from './GymPlans.jsx'
 
 const WEEKDAYS = [[1, 'Mon'], [2, 'Tue'], [3, 'Wed'], [4, 'Thu'], [5, 'Fri'], [6, 'Sat'], [7, 'Sun']]
 const clockIn = (entry) => (String(entry?.start_at ?? '').length > 10 ? clockOf(entry.start_at) : '')
@@ -34,8 +35,10 @@ function SessionForm({ page, entry, mode, onDone, pick }) {
     const same = entry && Number(d.duration_min) === minutes && (d.effort ?? activity(d.kind).effort) === form.effort
     const effortMinutes = same && (d.moderate_min !== undefined || d.vigorous_min !== undefined) ? { moderate_min: d.moderate_min ?? 0, vigorous_min: d.vigorous_min ?? 0 }
       : { moderate_min: form.effort === 'moderate' ? minutes : 0, vigorous_min: form.effort === 'vigorous' ? minutes : 0 }
+    const start = startOf(form.day, form.time)
+    const span = entry?.end_at && entry?.start_at?.length > 10 ? Date.parse(entry.end_at) - Date.parse(entry.start_at) : minutes * 60000
     const body = {
-      title: form.title.trim() || activity(form.kind).label, start_at: startOf(form.day, form.time), all_day: !form.time,
+      title: form.title.trim() || activity(form.kind).label, start_at: start, end_at: form.time ? new Date(Date.parse(start) + span).toISOString() : null, all_day: !form.time,
       details: { ...d, kind: form.kind, duration_min: minutes, effort: form.effort, ...effortMinutes, strength: form.strength, exercises: form.exercises.trim(), note: form.note.trim(), area: 'body' },
     }
     try {
@@ -54,8 +57,7 @@ function SessionForm({ page, entry, mode, onDone, pick }) {
       {EFFORTS.map((e) => <label key={e.key} className="health-choice"><input type="radio" name="effort" checked={form.effort === e.key} onChange={() => set('effort', e.key)} /><span><b>{e.label}</b> {e.test}{e.counts ? '' : ' Not counted towards the 150 minutes.'}</span></label>)}
     </fieldset>
     <label className="entry-editor-wide health-choice"><input type="checkbox" checked={form.strength} onChange={(event) => set('strength', event.target.checked)} /><span>It worked my muscles (weights, bands, body-weight exercises, yoga): it counts as a strength day.</span></label>
-    <label className="entry-editor-wide"><span>Exercises, one a line (optional; choose from the library below)</span><textarea rows={3} value={form.exercises} onChange={(event) => set('exercises', event.target.value)} placeholder={'Squat · 3 × 10 · 20 kg\nPlank · 3 × 30 seconds'} /></label>
-    <label className="entry-editor-wide"><span>Note (optional)</span><input value={form.note} onChange={(event) => set('note', event.target.value)} maxLength={2000} placeholder="Felt strong; knee a bit sore" /></label>
+    {d.training ? <p className="entry-editor-wide">Exercise targets, instructions and actual sets stay attached. Edit them in the workout.</p> : <><label className="entry-editor-wide"><span>Exercises, one a line (optional; choose from the library below)</span><textarea rows={3} value={form.exercises} onChange={(event) => set('exercises', event.target.value)} placeholder={'Squat · 3 × 10 · 20 kg\nPlank · 3 × 30 seconds'} /></label><label className="entry-editor-wide"><span>Note (optional)</span><input value={form.note} onChange={(event) => set('note', event.target.value)} maxLength={2000} placeholder="Felt strong; knee a bit sore" /></label></>}
     {state.error ? <p className="entry-editor-wide entry-editor-error" role="alert">{state.error}</p> : null}
     <p className="entry-editor-wide entry-editor-actions">
       <button type="submit" className="entry-editor-save" disabled={state.saving}>{state.saving ? 'Saving…' : entry ? 'Save the changes' : mode === 'log' ? 'Save: I did this' : 'Put it on the calendar'}</button>
@@ -86,6 +88,7 @@ function SessionCard({ page, entry, onEdit, onClose }) {
   const [sure, setSure] = useState(false)
   const [open, setOpen] = useState('')
   const act = (patch) => page.change(entry.id, patch).catch(() => {})
+  if (d.training) return <StructuredWorkout key={entry.id} entry={entry} page={page} onEdit={onEdit} onClose={onClose} />
   return <section className="day-panel health-session" aria-labelledby="health-session">
     <header><h2 id="health-session">{entry.title || activity(d.kind).label}</h2><button type="button" className="ghost-pill compact-pill" onClick={onClose}>Close</button></header>
     <p className="health-small">{[formatCalendarDay(dayOf(entry), { weekday: 'long', month: 'long' }), clockIn(entry), activity(d.kind).label, done ? 'done' : isSkipped(entry) ? 'skipped' : 'planned'].filter(Boolean).join(' · ')}</p>
@@ -174,16 +177,17 @@ export default function HealthExercise({ page }) {
   }, [page.entries])
   const upcoming = page.week.planned.filter((row) => row.day >= today)
   return <>
-    <div className="health-actions entry-editor-actions">
+    {!entry ? <GymPlanTeaser page={page} /> : null}
+    {!entry?.details?.training ? <div className="health-actions entry-editor-actions">
       <button type="button" className="entry-editor-save" onClick={() => setParams({ view: 'exercise', log: '1' })}>Log a session</button>
       <button type="button" onClick={() => setParams({ view: 'exercise', plan: '1' })}>Plan a session</button>
-    </div>
+    </div> : null}
     {mode === 'log' || mode === 'plan' ? <SessionForm key={mode} page={page} mode={mode} pick={pick} onDone={(saved) => setParams(saved ? { view: 'exercise', entry: saved.id } : { view: 'exercise' })} /> : null}
     {entry && mode === 'edit' ? <SessionForm key={`edit-${entry.id}`} page={page} entry={entry} mode="edit" pick={pick} onDone={() => setParams({ view: 'exercise', entry: entry.id })} /> : null}
     {entry && mode !== 'edit' ? <SessionCard page={page} entry={entry} onEdit={() => setParams({ view: 'exercise', entry: entry.id, edit: '1' })} onClose={close} /> : null}
     {entryId && !entry && !page.loading ? <p className="day-quiet">That session is no longer here.</p> : null}
 
-    <div className="health-grid">
+    {!entry?.details?.training ? <><div className="health-grid">
       <section className="day-panel" aria-labelledby="health-this-week">
         <header><h2 id="health-this-week">This week</h2><Link to="/health">The week</Link></header>
         <p className="review-value">{page.week.minutes}<small> of 150 active minutes · {page.week.strengthDays} of 2 strength days</small></p>
@@ -212,6 +216,6 @@ export default function HealthExercise({ page }) {
     <ul className="health-exercise-list">{shown.map((item) => <ExerciseCard key={item.id} item={item} open={open === item.id} onToggle={() => setOpen(open === item.id ? '' : item.id)}
       onAdd={mode ? (x) => setPick({ line: `${x.name} · ${x.dose}`, at: Date.now() }) : null} />)}</ul>
     {!shown.length ? <p className="day-quiet">No exercise matches. Clear the search or the filters.</p> : null}
-    <p className="health-small">How-to words are written for Life OS. For videos, the NHS has free workouts: <Source source={SOURCES.fitnessStudio} />. If something hurts, stop; if you have a health condition, ask your GP before starting something new.</p>
+    <p className="health-small">How-to words are written for Life OS. For videos, the NHS has free workouts: <Source source={SOURCES.fitnessStudio} />. If something hurts, stop; if you have a health condition, ask your GP before starting something new.</p></> : null}
   </>
 }

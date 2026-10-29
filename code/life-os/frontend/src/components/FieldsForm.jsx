@@ -53,6 +53,8 @@ export default function FieldsForm({ details, onChange, type, skip = [] }) {
         const label = name.replaceAll('_', ' ')
         const value = valueFor(details, name, schema)
 
+        if (schema.type === 'object') return <p key={name}>Training details stay attached when you save. <a href="/health?view=gym">Open them in Health</a>.</p>
+
         if (schema.type === 'enum') {
           return (
             <label key={name}>

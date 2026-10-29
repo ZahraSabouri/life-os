@@ -12,6 +12,14 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 - **Her own plans of one day can be dragged to another day**, with Undo; Done, Take off the day and Move each have Undo where they were done. Undo uses the same save rules (a day of a repeating plan goes back to its own day and the plan made for the new day is taken off, kept like everything taken off).
 - **Publishing the branch included the mail session's Inbox**, at her choice ("Everything, Inbox too"); its migration and first batch remain hers.
 
+## 29 October 2026 — gym planning belongs inside Health
+
+- Xar rejected the Ledger workaround: “if health part isnt developed enough to contain gym plan, then do the coding and development and then implement the plan”. This directly authorises Health development; no further approval gate was inferred from the earlier data-only task.
+- A native Gym page and structured workout log replace text-field delivery as the implementation. Existing core IDs, calendar slots, source material and personal fields stay intact; no new database or schema is needed.
+- Completed workouts require actual time and recorded sets. Partial work remains partial, skipped sessions are reversible, milestones are hers to confirm, and progression is based on readiness. No exercise progress is fabricated during verification.
+- The generated Ledger guide is archived after native access passes, with its former text preserved. This supersedes the 28 October decision to use a normal Ledger note as the finished gym interface.
+- Follow-up: “why cant i see the pics anywhere# then”. Pictures belong beside exercises in the native plan/workout and desk routine, visible before opening technique instructions; an enlarged viewer supports the phone. Generic local artwork/photos add no calendar commitments or exercise progress.
+
 ## 28 October 2026 — a page keeps what it shows in its address; the calendar's day opens over it (Xar with Claude Code)
 
 - Xar: "I want everything to be in URL … so when I press back, I can go back, even if some pop-up window was open"; "open one day, and a pop-up window should open … mark things done, or add notes, or click on links".

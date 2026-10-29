@@ -44,6 +44,6 @@ export function SessionLine({ row, page, today }) {
   return <li className={done ? 'is-done' : undefined}>
     <Link to={`/health?view=exercise&entry=${encodeURIComponent(e.id)}`}>{e.title || activity(d.kind).label}</Link>
     <small>{[row.day === today ? (when || 'today') : formatCalendarDay(row.day), d.duration_min ? minutesText(d.duration_min) : '', d.strength ? 'strength' : '', done ? 'done' : ''].filter(Boolean).join(' · ')}</small>
-    {!done ? <span className="health-line-actions"><button type="button" onClick={() => page.change(e.id, { status: 'done' }).catch(() => {})}>Done</button></span> : null}
+    {!done ? <span className="health-line-actions">{d.training ? <Link to={`/health?view=exercise&entry=${encodeURIComponent(e.id)}`}>Log sets</Link> : <button type="button" onClick={() => page.change(e.id, { status: 'done' }).catch(() => {})}>Done</button>}</span> : null}
   </li>
 }

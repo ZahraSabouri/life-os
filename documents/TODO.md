@@ -395,6 +395,19 @@ Brief: `briefs/health-part.md`. Her words:
 - [x] Core VACUUM backup/integrity check, timestamp-guarded API saves, protected-state comparisons and real Health/Today/Ledger screenshots pass; no app code/build changes.
 - [ ] After actual first sessions: record usable equipment, comfortable loads/reps and recovery; repeat the foundation until ready. Later-month variations remain optional review choices.
 
+## Z. Develop native gym planning in Health (29 October)
+
+> “if health part isnt developed enough to contain gym plan, then do the coding and development and then implement the plan”
+> “why cant i see the pics anywhere# then”
+
+- [x] Replace the rejected text/Ledger delivery with Health → Gym: overview/goals, A/B templates/technique, scheduled workouts, readiness phases, progress/milestones, desk routine and references.
+- [x] Structured set/repetition/weight/hold tracking, rest timer, actual duration, partial saves, history/previous results, edit targets, move, skip/restore and reopen. Stale saves retain the draft; reload is explicit.
+- [x] Validate new data on existing core types; protect completion from generic Done controls. Keep generic programmes, exercise library, food and care available.
+- [x] Back up and migrate the existing plan/routine/20 workouts through revision-checked APIs. Keep all IDs/times/source fields; no new completion. Archive the generated guide while preserving its old text.
+- [x] Pictures beside every A/B exercise and all three desk movements, with enlargement, mobile views, descriptions and source credits. Images are packaged locally; no changes to gym records.
+- [x] 25 focused domain/API/render/picture tests and intercepted browser logging checks; desktop/mobile live checks. Final build retains the latest Calendar, Inbox and Guide. Guide screenshots and records updated.
+- [ ] **(Xar)** Reload Life OS → Health → Gym; open the next workout, inspect technique, then log only actual sets and duration when training.
+
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
 > "when you click on [Life OS] … Click on the name above. It should, like directly direct to the main page, main URL. And if you click on a specific job role … on the today page … I should be able to kind of be directed to the same component … in the job map app." (12 October evening)

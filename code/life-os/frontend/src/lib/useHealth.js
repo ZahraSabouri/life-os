@@ -5,7 +5,7 @@ import { apiFetch } from './api.js'
 import { londonDateTime } from '../../../shared/calendar.js'
 import { dayTicks } from '../../../shared/health/week.js'
 
-export const HEALTH_TYPES = ['workout', 'appointment', 'medical-record', 'measurement']
+export const HEALTH_TYPES = ['workout', 'workout-plan', 'routine', 'appointment', 'medical-record', 'measurement']
 const DIET_KEY = 'health-diet'
 export const NO_DIET = { eats: 'everything', leaveOut: [], avoid: [] }
 
@@ -35,7 +35,14 @@ export function useHealth() {
   const refetch = useCallback(() => setTurn((value) => value + 1), [])
 
   const create = useCallback(async (entry) => { const saved = await apiFetch('/api/entries', { method: 'POST', body: JSON.stringify(entry) }); setEntries((rows) => [saved, ...rows]); return saved }, [])
-  const change = useCallback(async (id, patch) => { const saved = await apiFetch(`/api/entries/${encodeURIComponent(id)}`, { method: 'PATCH', body: JSON.stringify(patch) }); setEntries((rows) => rows.map((row) => (row.id === id ? saved : row))); return saved }, [])
+  const reload = useCallback(async (id) => { const saved = await apiFetch(`/api/entries/${encodeURIComponent(id)}`); setEntries(rows => rows.map(row => row.id === id ? saved : row)); return saved }, [])
+  const change = useCallback(async (id, patch, expectedUpdatedAt) => {
+    const current = entries.find(row => row.id === id)
+    if (!current) throw new Error('This record is no longer loaded. Reload before saving.')
+    const saved = await apiFetch(`/api/entries/${encodeURIComponent(id)}`, { method: 'PATCH', headers: { 'If-Match': JSON.stringify(expectedUpdatedAt ?? current.updated_at) }, body: JSON.stringify(patch) })
+    setEntries(rows => rows.map(row => row.id === id ? saved : row))
+    return saved
+  }, [entries])
   const remove = useCallback(async (id) => { await apiFetch(`/api/entries/${encodeURIComponent(id)}`, { method: 'DELETE' }); setEntries((rows) => rows.filter((row) => row.id !== id)) }, [])
   const setDiet = useCallback(async (value) => { setDietState(value); await apiFetch(`/api/settings/${DIET_KEY}`, { method: 'PUT', body: JSON.stringify({ value }) }) }, [])
 
@@ -46,7 +53,7 @@ export function useHealth() {
     return create({ type: 'measurement', title: metric === 'five-a-day' ? '5 A Day' : 'Drinks', start_at: day, all_day: true, status: 'done', details: { metric, value, unit, area: 'body' } })
   }, [entries, change, create])
 
-  return { entries, loading: state.loading, error: state.error, refetch, create, change, remove, diet, setDiet, setTick }
+  return { entries, loading: state.loading, error: state.error, refetch, reload, create, change, remove, diet, setDiet, setTick }
 }
 
 // Food from Budget: the UK recipes against what is at home, and her own recipes.

@@ -1,3 +1,6 @@
+import { validateTrainingPlan, validateTrainingSession, validateMobilityRoutine } from './health/training.js'
+export { validateWorkoutCompletion } from './health/training.js'
+
 export const ARCHETYPES = ['moment', 'commitment', 'workstream', 'collection', 'practice', 'anchor']
 
 export const ENTRY_TYPES = {
@@ -76,7 +79,8 @@ export const ENTRY_TYPES = {
       exercises: { type: 'string' },
       // A session of a programme (shared/health/programmes.js): its id and the session's key.
       programme: { type: 'string' },
-      session: { type: 'string' }
+      session: { type: 'string' },
+      training: { type: 'object', validate: validateTrainingSession }
     }
   },
   book: {
@@ -312,7 +316,7 @@ export const ENTRY_TYPES = {
     icon: 'Tp',
     rooms: ['body'],
     desc: 'An ongoing training programme.',
-    fields: { goal: { type: 'string' }, days_per_week: { type: 'number' } }
+    fields: { goal: { type: 'string' }, days_per_week: { type: 'number' }, training: { type: 'object', validate: validateTrainingPlan } }
   },
   routine: {
     archetype: 'practice',
@@ -323,7 +327,8 @@ export const ENTRY_TYPES = {
     fields: {
       kind: { type: 'enum', enum: ['skincare', 'supplement', 'sleep', 'mobility', 'other'], default: 'other' },
       cadence: { type: 'string' },
-      time_of_day: { type: 'string' }
+      time_of_day: { type: 'string' },
+      training: { type: 'object', validate: validateMobilityRoutine }
     }
   },
   supplement: {
@@ -601,6 +606,10 @@ function validateFieldValue(fieldName, schema, value) {
     if (schema.required) return { error: `${fieldName} is required` }
     if ('default' in schema) return { value: schema.default }
     return { skip: true }
+  }
+
+  if (schema.validate) {
+    try { return { value: schema.validate(value) } } catch (error) { return { error: `${fieldName}: ${error.message}` } }
   }
 
   if (schema.type === 'string') {

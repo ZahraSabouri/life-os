@@ -8,6 +8,7 @@ import { AddLine, count } from '../DayParts.jsx'
 import { ACTIVITY_TARGET, EFFORTS, SOURCES } from '../../../../shared/health/guidance.js'
 import { dayOf } from '../../../../shared/health/week.js'
 import { DayTicks, Meter, SessionLine, Source, minutesText } from './parts.jsx'
+import { GymPlanTeaser } from './GymPlans.jsx'
 
 const MEALS = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' }
 export default function HealthWeek({ page }) {
@@ -20,6 +21,7 @@ export default function HealthWeek({ page }) {
   const plans = (adding.calendar.items ?? []).filter((item) => item.area === 'body' && !['workout', 'appointment'].includes(item.meta?.type) && dateKey(item.start) >= today && !item.meta?.completed).slice(0, 5)
   const left = Math.max(0, ACTIVITY_TARGET.moderateMinutes - week.minutes)
   return <>
+    <GymPlanTeaser page={page} />
     <AddLine page={adding} id="health-add-input" fixedArea />
     <div className="health-grid">
       <section className="day-panel health-moving" aria-labelledby="health-moving">

@@ -227,6 +227,8 @@ const RECIPES = {
   'room.jpg': async () => { await go('/room/home'); await settle(3000); await view('room.jpg') },
   'today-health.jpg': async () => { await go('/today', '.day-path'); await panel('Health').locator('.health-panel-figure').waitFor({ timeout: 20_000 }); await part('today-health.jpg', panel('Health')) },
   // Health. Nothing is saved: forms are opened, never sent.
+  'health-gym.jpg': async () => { await go('/health?view=gym', '.gym-heading'); await view('health-gym.jpg') },
+  'health-workout.jpg': async () => { await go('/health?view=gym', '.gym-heading'); await page.locator('.gym-overview-grid a').first().click(); await page.locator('.gym-set-table').first().waitFor(); await view('health-workout.jpg') },
   'health.jpg': async () => { await go('/health', '.health-moving'); await settle(1500); await view('health.jpg', { marks: ['.health-tabs', '.health-moving .review-value', 'text:Today', 'text:Coming up'] }) },
   'health-log.jpg': async () => {
     await go('/health?view=exercise&log=1', 'form.health-form'); await settle(800)

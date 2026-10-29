@@ -73,6 +73,17 @@ try {
   const response = await patch(`"${entry.updated_at}"`, { status: 'done' }); assert.equal(response.status, 200)
   const returned = await response.json(); assert.equal(returned.status, 'done'); assert.equal(returned.title, 'Keep my title')
   assert.equal((await patch(undefined, { title: 'Legacy client' })).status, 200)
+  const { makeTrainingSession, finishTraining } = await import(uri('code/life-os/shared/health/training.js'))
+  const training = makeTrainingSession('plan', { id: 'a', warmup: [], cooldown: [], guidance: [], exercises: [{ id: 'move', name: 'Fixture movement', equipment: '', instructions: [], cues: [], alternatives: [], optional: false, perSide: false, measure: 'reps', target: { sets: 1, min: 5, max: 8, restSeconds: 60, loadLabel: 'kg' } }] }, 'first')
+  entry = { ...entry, type: 'workout', status: 'planned', details: JSON.stringify({ duration_min: 60, training }) }
+  const previousUpdates = updates
+  const invalidCreation = await fetch(url.replace('/fixture', ''), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'workout', title: 'Fixture', status: 'done', details: JSON.parse(entry.details) }) })
+  assert.equal(invalidCreation.status, 400); assert.match((await invalidCreation.json()).error, /finish it with actual minutes/)
+  assert.equal((await patch(JSON.stringify(entry.updated_at), { status: 'done' })).status, 400)
+  assert.equal(updates, previousUpdates, 'A generic Done cannot invent actual exercise')
+  training.actualMinutes = 20; training.exercises[0].sets[0].done = true
+  assert.equal((await patch(JSON.stringify(entry.updated_at), finishTraining({ details: JSON.parse(entry.details) }, training))).status, 200)
+  assert.equal(JSON.parse(entry.details).duration_min, 20)
   console.log('PASS core HTTP: stale patch cannot write, matching timestamp saves only requested fields, old clients')
 } finally { await new Promise(resolve => server.close(resolve)); delete globalThis.__resetCoreTestDb }
 
