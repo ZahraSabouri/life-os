@@ -23,6 +23,7 @@ Xar ran "Gather my inboxes" and said OK to the first batch after seeing it on `l
 - `code/life-os/frontend/dist`: replaced by a build of the committed code; the earlier one in `.runtime/mail-2026-10-29/dist-before/`.
 
 ## Problems and surprises
+- **My slip, fixed:** the build that was live at 00:23 already carried Codex's uncommitted native Gym (Health → Gym). My clean build of the committed code (06:30) put the Inbox live but took the Gym pages off for a few hours. Fixed by building from the working folder (the Gym, the Inbox and the Guide's new pages together), with the 06:30 build kept in `.runtime/mail-2026-10-29/dist-0630/`; checked live: Health → Gym shows "Open workout", the Inbox and the Guide's Cardiff steps, no page errors. That build also carries whatever Codex had in progress at the time (exercise pictures). Lesson: compare the live build with the new one before replacing it.
 - Building directly into the live `dist` fails while the server is using it, after Vite has emptied the folder. Build elsewhere and copy over (or stop Life OS first).
 - The batch: Cardiff Outlook and Learning Central were only partly read (previews only for some digests; Learning Central's recent activity stayed empty). The digest says so; their windows did not advance.
 - `mail/GATHER.md`, `mail/AGENT-PROMPTS.md` and a new `mail/CODEX-GATHER-PROMPT.txt` were changed by another session (uncommitted); left as they are.
