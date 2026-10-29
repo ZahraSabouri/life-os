@@ -1,12 +1,18 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { attentionReason, calendarDisplay, filterCalendarItems, itemTime, readCardiffChoices, todayGroups, withSavedCardiffItems } from '../src/lib/calendar.js'
+import { attentionReason, calendarDisplay, filterCalendarItems, itemTime, readCardiffChoices, todayGroups, withEventLinks, withSavedCardiffItems } from '../src/lib/calendar.js'
 
 const item = (overrides = {}) => ({ id: 'example', area: 'core', kind: 'plan', title: 'Example', start: '2026-10-05', end: null, all_day: true, href: '/ledger', meta: {}, ...overrides })
 const choices = {
   going: { status: 'going', snapshot: { name: 'Saved event', date: '2026-10-05', start_time: '18:00', end_time: '19:00', location: 'Cardiff' } },
   maybe: { status: 'maybe', snapshot: { name: 'Maybe event', date: '2026-10-06' } }
 }
+
+test('a Cardiff event from an older server answer still opens itself in Cardiff Life', () => {
+  const [event, other] = withEventLinks([item({ area: 'events', href: '/cardiff-life', meta: { eventId: 'su 1/2' } }), item()])
+  assert.equal(event.href, '/cardiff-life#event=su%201%2F2')
+  assert.equal(other.href, '/ledger')
+})
 
 test('Cardiff scope follows the same browser choices without treating research as personal plans', () => {
   const items = [item(), ...['going', 'maybe', 'option'].map(id => item({ id, area: 'events', meta: { eventId: id } }))]
@@ -22,7 +28,7 @@ test('saved snapshots fill truly removed research dates but never resurrect resc
   assert.equal(saved.length, 2)
   assert.equal(saved[0].start, '2026-10-05T17:00:00.000Z')
   assert.equal(saved[0].meta.savedSnapshot, true)
-  assert.equal(saved[0].href, '/cardiff-life')
+  assert.equal(saved[0].href, '/cardiff-life#event=going')
   assert.equal(withSavedCardiffItems([], choices, '2026-10-01', '2026-10-31', ['going', 'maybe']).length, 0)
   assert.equal(withSavedCardiffItems([], choices, '2026-11-01', '2026-11-30', []).length, 0)
   const published = item({ id: 'published', area: 'events', meta: { eventId: 'going' } })

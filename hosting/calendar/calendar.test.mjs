@@ -164,6 +164,7 @@ test('Cardiff candidates preserve IDs, validate London clocks, and never guess u
   assert.equal(items[0].start, '2026-10-05T17:00:00.000Z')
   assert.equal(items[1].end, '2026-10-05T00:00:00.000Z')
   assert.equal(items[2].all_day, true)
+  assert.equal(items[0].href, '/cardiff-life#event=timed', 'each event opens itself in Cardiff Life')
   assert.equal(londonInstant('2026-03-29', '01:30'), null)
   assert.equal(londonInstant('2026-10-25', '01:30'), null)
   assert.equal(londonInstant('2026-10-26', '01:30'), '2026-10-26T01:30:00.000Z')

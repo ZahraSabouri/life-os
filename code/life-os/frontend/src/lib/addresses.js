@@ -36,23 +36,34 @@ export function stepsToClose(params, layers, keys) {
   return layers.length - Math.min(...open.map((key) => layers.lastIndexOf(key)))
 }
 
+// The address and its layers as they are this moment (the router keeps its own state under "usr").
+function current() {
+  const state = window.history.state?.usr ?? {}
+  return { search: window.location.search, state, layers: Array.isArray(state.layers) ? state.layers : [] }
+}
+
 export function useAddress() {
   const location = useLocation()
   const navigate = useNavigate()
   const params = useMemo(() => new URLSearchParams(location.search), [location.search])
   const layers = useMemo(() => (Array.isArray(location.state?.layers) ? location.state.layers : []), [location.state])
 
+  // Changes start from the address as the window has it now, not as the page last drew it: two
+  // things done in one click (a panel closing as a day opens) must not undo each other. The part
+  // after # is the window's too: a framed app writes its own view there without the router knowing.
   const go = useCallback((changes, options = {}) => {
-    const search = changedSearch(location.search, changes)
-    if (search === location.search) return
-    navigate({ pathname: location.pathname, search, hash: location.hash }, { replace: Boolean(options.replace), state: { ...(location.state ?? {}), layers: nextLayers(layers, changes, options) } })
-  }, [location.pathname, location.search, location.hash, location.state, layers, navigate])
+    const now = current()
+    const search = changedSearch(now.search, changes)
+    if (search === now.search) return
+    navigate({ pathname: location.pathname, search, hash: window.location.hash }, { replace: Boolean(options.replace), state: { ...now.state, layers: nextLayers(now.layers, changes, options) } })
+  }, [location.pathname, navigate])
 
   const close = useCallback((keys, also = []) => {
-    const steps = stepsToClose(params, layers, keys)
+    const now = current()
+    const steps = stepsToClose(new URLSearchParams(now.search), now.layers, keys)
     if (steps) navigate(-steps)
     else go(Object.fromEntries([...keys, ...also].map((key) => [key, null])), { replace: true })
-  }, [params, layers, navigate, go])
+  }, [navigate, go])
 
   return useMemo(() => ({
     params,
@@ -66,4 +77,25 @@ export function useAddress() {
     // Closes the pop-ups held by `keys`; `also` names keys that go with them (a tab inside one).
     close,
   }), [params, layers, go, close])
+}
+
+// A side panel or a menu, held by ?panel=<name>: one at a time on any page. Opening one is a step
+// Back closes; opening another in its place changes it without a step of its own. A click
+// elsewhere closes it in place (`{ inPlace: true }`), because that click may itself go somewhere
+// and a step back at the same moment would undo it.
+export function usePanel(name) {
+  const address = useAddress()
+  const shown = address.params.get('panel') ?? ''
+  const setOpen = useCallback((want, { inPlace = false } = {}) => {
+    const next = typeof want === 'function' ? want(shown === name) : want
+    if (next) {
+      if (shown === name) return
+      if (shown) address.swap({ panel: name })
+      else address.open('panel', { panel: name })
+    } else if (shown === name) {
+      if (inPlace) address.swap({ panel: null })
+      else address.close(['panel'])
+    }
+  }, [address, shown, name])
+  return [shown === name, setOpen]
 }

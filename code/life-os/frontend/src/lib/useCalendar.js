@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiFetch } from './api.js'
-import { CARDIFF_CHOICES_KEY, dateKey, readCardiffChoices, withSavedCardiffItems } from './calendar.js'
+import { CARDIFF_CHOICES_KEY, dateKey, readCardiffChoices, withEventLinks, withSavedCardiffItems } from './calendar.js'
 
 export function useLondonToday() {
   const [today, setToday] = useState(() => dateKey(new Date()))
@@ -33,7 +33,7 @@ export function useCalendar(from, to) {
     apiFetch(`/api/calendar?${new URLSearchParams({ from, to })}`, { signal: controller.signal })
       .then(data => {
         if (controller.signal.aborted) return
-        setItems(Array.isArray(data.items) ? data.items : [])
+        setItems(Array.isArray(data.items) ? withEventLinks(data.items) : [])
         setSources(Array.isArray(data.sources) ? data.sources : [])
         setKnownEventIds(Array.isArray(data.knownEventIds) ? data.knownEventIds : null)
       })

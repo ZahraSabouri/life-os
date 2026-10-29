@@ -140,8 +140,8 @@ export function FocusPanel() {
   const panel = useRef(null)
   useEffect(() => {
     if (!focus?.open) return undefined
-    const onKey = (event) => { if (event.key === 'Escape') focus.setOpen(false) }
-    const onDown = (event) => { if (panel.current && !panel.current.contains(event.target) && !event.target.closest?.('.focus-button')) focus.setOpen(false) }
+    const onKey = (event) => { if (event.key === 'Escape' && !document.querySelector('dialog[open]')) focus.setOpen(false) }
+    const onDown = (event) => { if (panel.current && !panel.current.contains(event.target) && !event.target.closest?.('.focus-button')) focus.setOpen(false, { inPlace: true }) }
     document.addEventListener('keydown', onKey)
     document.addEventListener('mousedown', onDown)
     return () => { document.removeEventListener('keydown', onKey); document.removeEventListener('mousedown', onDown) }

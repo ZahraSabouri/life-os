@@ -10,7 +10,9 @@ export const CALENDAR_AREAS = [
   { key: 'money', label: 'Money', tone: 'var(--g-coral)' },
   { key: 'home', label: 'Home', tone: 'var(--g-acc)' },
   { key: 'body', label: 'Health', tone: 'var(--m-spark)' },
-  { key: 'events', label: 'Cardiff events', tone: 'var(--g-rose)' }
+  { key: 'events', label: 'Cardiff events', tone: 'var(--g-rose)' },
+  // Mail's dated things: replies she owes, what a message asks for by a day (hosting/mail).
+  { key: 'admin', label: 'Mail and admin', tone: 'var(--g-sub)' }
 ]
 
 export const CALENDAR_KINDS = [
@@ -124,12 +126,19 @@ export function withSavedCardiffItems(items, choices, from, to, knownEventIds = 
       id: `cardiff-saved:${id}`, area: 'events', kind: start ? 'fixed' : 'plan',
       title: event.name || 'Saved Cardiff event', start: start || event.date,
       end: end || null, all_day: !start,
-      href: '/cardiff-life', location: event.location || '',
+      href: cardiffEventHref(id), location: event.location || '',
       meta: { eventId: id, savedSnapshot: true }
     }
     return itemOverlaps(item, from, to) ? [item] : []
   })
   return [...items, ...saved]
+}
+
+// A Cardiff event opens itself in Cardiff Life, not only its list (the host adds #event= to the
+// app's address; hosting/skins/public/apps/cardiff-life.js). Older answers from the server name only the list.
+export const cardiffEventHref = (id) => `/cardiff-life#event=${encodeURIComponent(id)}`
+export function withEventLinks(items) {
+  return items.map((item) => (item.area === 'events' && item.meta?.eventId && item.href === '/cardiff-life' ? { ...item, href: cardiffEventHref(item.meta.eventId) } : item))
 }
 
 export function sortCalendarItems(items) {

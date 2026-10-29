@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { isDateKey, londonDateTime } from '../../../shared/calendar.js'
 import { apiFetch } from './api.js'
 import { tellStudyHub } from './studyHub.js'
-import { movePlan, setPlanStatus } from './plans.js'
+import { movePlan, setPlanStatus, undoMove, undoStatus } from './plans.js'
 import { isoWeekday, sayWeekdays } from '../../../shared/routines.js'
 import { addDays, filterCalendarItems, formatCalendarDay, isComplete, todayGroups } from './calendar.js'
 import { buildDay, noteTitle, parsePlan, splitThings } from './day.js'
@@ -47,6 +47,8 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
   const [jobMark, setJobMark] = useState(null)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  // The last change that can be taken back from where it was made: { words, undo }.
+  const [change, setChange] = useState(null)
 
   const items = useMemo(() => filterCalendarItems(calendar.items, { areas, cardiffScope, choices: calendar.choices }), [calendar.items, areas, cardiffScope, calendar.choices])
   const groups = useMemo(() => todayGroups(items, today), [items, today])
@@ -120,15 +122,29 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
     }
   }
 
+  const said = { done: 'Done', cancelled: 'Taken off the day', '': 'To do again' }
   // Ticking off or taking off something she added herself. The entry is kept; only its status changes.
   async function setEntryStatus(stop, status) {
     if (savingId || !stop.entry) return
     setSavingId(stop.key)
     setError('')
     try {
-      await setPlanStatus(stop, status)
+      const saved = await setPlanStatus(stop, status)
+      setChange({ words: `${said[status]}: “${stop.title}”.`, undo: () => undoStatus(stop.entry, saved, null) })
       refetch()
     } catch (failure) { setError(`Could not change “${stop.title}”: ${failure.message}`) }
+    finally { setSavingId('') }
+  }
+
+  async function undoChange() {
+    if (!change || savingId) return
+    setSavingId('undo')
+    setError('')
+    try {
+      await change.undo()
+      setChange(null)
+      refetch()
+    } catch (failure) { setError(`Could not take it back: ${failure.message}`) }
     finally { setSavingId('') }
   }
 
@@ -177,7 +193,9 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
     setSavingId(item.id)
     setError('')
     try {
-      await setPlanStatus({ entry: { id: item.meta.entryId, revision: item.meta.revision, routine: item.meta.routine }, title: item.title }, 'done')
+      const entry = { id: item.meta.entryId, revision: item.meta.revision, routine: item.meta.routine }
+      const saved = await setPlanStatus({ entry, title: item.title }, 'done')
+      setChange({ words: `Done: “${item.title}”.`, undo: () => undoStatus(entry, saved, item.meta.status ?? null) })
       calendar.refetch()
     } catch (failure) { setError(`Could not mark the task done: ${failure.message}`) }
     finally { setSavingId('') }
@@ -204,7 +222,9 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
     setSavingId(item.id)
     setError('')
     try {
-      await setPlanStatus({ entry: { id: item.meta.entryId, revision: item.meta.revision, routine: item.meta.routine }, title: item.title }, status || null)
+      const entry = { id: item.meta.entryId, revision: item.meta.revision, routine: item.meta.routine }
+      const saved = await setPlanStatus({ entry, title: item.title }, status || null)
+      setChange({ words: `${said[status || '']}: “${item.title}”.`, undo: () => undoStatus(entry, saved, item.meta.status ?? null) })
       refetch()
     } catch (failure) { setError(`Could not change “${item.title}”: ${failure.message}`) }
     finally { setSavingId('') }
@@ -215,7 +235,8 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
     setSavingId(item.id)
     setError('')
     try {
-      await movePlan(item, toDay)
+      const moved = await movePlan(item, toDay)
+      setChange({ words: `Moved “${item.title}” to ${formatCalendarDay(toDay, { weekday: 'long' })}.`, undo: () => undoMove(item, moved) })
       refetch()
       return true
     } catch (failure) { setError(`Could not move “${item.title}”: ${failure.message}`); return false }
@@ -228,7 +249,7 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
     unavailable: (id) => data?.sources.find((source) => source.id === id && source.status === 'unavailable')?.error,
     line: { kind: adding, choose, text, setText, state: lineState, hint, save: saveLine, noteAllowed, area, setArea, fixedArea: Boolean(fixedArea), day: planDay, setDay,
       repeat, setRepeat, repeatDays, toggleRepeatDay: (weekday) => setRepeatDays((current) => (current.includes(weekday) ? current.filter((value) => value !== weekday) : [...current, weekday])), until, setUntil },
-    error, notice, savingId, completeTask, tickShopping, tickStudy, markJob, jobMark,
+    error, notice, savingId, completeTask, tickShopping, tickStudy, markJob, jobMark, change, undoChange, forgetChange: () => setChange(null),
     undoJobMark: () => (jobMark?.previous?.status ? markJob(jobMark, jobMark.previous.status, jobMark.previous) : undefined),
     stopProps: { onDone: (stop) => setEntryStatus(stop, 'done'), onRemove: (stop) => setEntryStatus(stop, 'cancelled'), onStudy: tickStudy, onChanged: refetch, busy: Boolean(savingId) },
   }

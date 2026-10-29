@@ -153,7 +153,8 @@ function TabBody({ tab, page }) {
   return null
 }
 
-export default function CalendarDay({ date, itemKey, tab, areas, cardiffScope, onDay, onItem, onTab, onClose, onChanged }) {
+// `prefill`: opened by "+" or an hour of the week, so the add line has the cursor (and the time).
+export default function CalendarDay({ date, itemKey, tab, areas, cardiffScope, prefill, onPrefilled, onDay, onItem, onTab, onClose, onChanged }) {
   const page = useDayPage(date, { only: true, areas, cardiffScope, notesAnyDay: true, onChanged })
   const dialog = useRef(null)
   const notes = page.data?.notes ?? []
@@ -177,10 +178,39 @@ export default function CalendarDay({ date, itemKey, tab, areas, cardiffScope, o
     return () => window.removeEventListener('keydown', onKey)
   }, [date, itemKey, onDay])
 
+  useEffect(() => {
+    if (!prefill) return
+    page.line.choose('plan')
+    if (prefill.text) page.line.setText(prefill.text)
+    onPrefilled?.()
+    window.setTimeout(() => {
+      const input = document.getElementById('calendar-day-add')
+      if (!input) return
+      input.focus()
+      input.setSelectionRange(input.value.length, input.value.length)
+    }, 60)
+  }, [prefill]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // On a phone, a swipe sideways goes to the day before or after (not inside a field or while a thing is open).
+  const touch = useRef(null)
+  const swipeStart = (event) => {
+    const point = event.touches[0]
+    touch.current = itemKey || typing(event.target) ? null : { x: point.clientX, y: point.clientY, at: Date.now() }
+  }
+  const swipeEnd = (event) => {
+    const start = touch.current
+    touch.current = null
+    if (!start) return
+    const point = event.changedTouches[0]
+    const dx = point.clientX - start.x
+    const dy = point.clientY - start.y
+    if (Math.abs(dx) > 70 && Math.abs(dy) < 45 && Date.now() - start.at < 700) onDay(addDays(date, dx < 0 ? 1 : -1))
+  }
+
   return <dialog ref={dialog} className="calendar-day-dialog" aria-labelledby="calendar-day-title"
     onCancel={(event) => { event.preventDefault(); onClose() }}
     onClick={(event) => { if (event.target === dialog.current) onClose() }}>
-    <div className="calendar-day-sheet day-page">
+    <div className="calendar-day-sheet day-page" onTouchStart={swipeStart} onTouchEnd={swipeEnd}>
       <header className="calendar-day-head">
         <button type="button" className="calendar-day-step is-prev" onClick={() => onDay(addDays(date, -1))} aria-label="The day before">‹ <span>{formatCalendarDay(addDays(date, -1), { month: undefined })}</span></button>
         <div className="calendar-day-titles">
@@ -202,7 +232,7 @@ export default function CalendarDay({ date, itemKey, tab, areas, cardiffScope, o
         {itemKey ? <Thing page={page} thingKey={itemKey} onBack={() => onItem(null)} onItem={(next, movedTo) => (movedTo ? onDay(movedTo) : onItem(next))} />
           : tab !== 'day' ? <div className="calendar-day-panel"><TabBody tab={tab} page={page} /></div>
             : <>
-              <AddLine page={page} id="calendar-day-add" />
+              <AddLine page={page} id="calendar-day-add" undo={false} />
               {page.day.error ? <p className="form-error" role="alert">The day's details could not be loaded: {page.day.error} <button type="button" className="day-retry" onClick={page.day.refetch}>Try again</button></p> : null}
               <section className="day-path calendar-day-path" aria-label="The day in order">
                 <DayPath page={page} onOpen={onItem} notesFor={notesFor} />
@@ -214,6 +244,7 @@ export default function CalendarDay({ date, itemKey, tab, areas, cardiffScope, o
               </section>
             </>}
       </div>
+      {page.change ? <p className="calendar-day-undo" role="status"><span>{page.change.words}</span><button type="button" onClick={page.undoChange} disabled={Boolean(page.savingId)}>Undo</button><button type="button" className="calendar-toast-close" onClick={page.forgetChange} aria-label="Close">×</button></p> : null}
     </div>
   </dialog>
 }

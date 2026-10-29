@@ -83,6 +83,15 @@ test('timed things are placed by London clock times, side by side when they over
   assert.deepEqual([by.a.start, by.a.end, by.a.column, by.a.columns], [510, 570, 0, 2])
   assert.deepEqual([by.b.column, by.b.columns], [1, 2])
   assert.deepEqual([by.c.start, by.c.end, by.c.columns], [720, 750, 1], 'no end: half an hour')
+  assert.deepEqual([by.a.span, by.b.span, by.c.span], [1, 1, 1])
+  // A thing widens into the columns beside it that nothing overlapping it uses.
+  const crowd = Object.fromEntries(placeTimed([
+    item({ id: 'p', all_day: false, start: '2026-10-28T09:00:00.000Z', end: '2026-10-28T10:00:00.000Z' }),
+    item({ id: 'q', all_day: false, start: '2026-10-28T09:00:00.000Z', end: '2026-10-28T09:30:00.000Z' }),
+    item({ id: 'r', all_day: false, start: '2026-10-28T09:00:00.000Z', end: '2026-10-28T09:15:00.000Z' }),
+    item({ id: 's', all_day: false, start: '2026-10-28T09:30:00.000Z', end: '2026-10-28T10:00:00.000Z' }),
+  ], '2026-10-28').map((entry) => [entry.item.id, entry]))
+  assert.deepEqual(['p', 'q', 'r', 's'].map((id) => [crowd[id].column, crowd[id].span, crowd[id].columns]), [[0, 1, 3], [1, 1, 3], [2, 1, 3], [1, 2, 3]])
   assert.deepEqual(weekHours(placed), { from: 0, to: 20 })
   assert.deepEqual(weekHours([]), { from: 8, to: 20 })
 })

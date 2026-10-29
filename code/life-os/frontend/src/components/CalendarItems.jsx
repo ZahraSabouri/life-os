@@ -6,7 +6,7 @@ export function CalendarStatus({ calendar, showChoices = true }) {
   return <div className="calendar-source-status" aria-live="polite">
     {calendar.loading ? <p>Loading your calendar…</p> : null}
     {calendar.error ? <p className="form-error">Could not load the calendar: {calendar.error} <button type="button" onClick={calendar.refetch}>Try again</button></p> : null}
-    {failures.length ? <p className="form-error">Some areas could not be loaded: {failures.map(source => calendarArea(source.area).label).join(', ')}. Other dates are still shown. <button type="button" onClick={calendar.refetch}>Try again</button></p> : null}
+    {failures.length ? <p className="form-error">Some areas could not be loaded: {failures.map(source => source.label || calendarArea(source.area).label).join(', ')}. Other dates are still shown. <button type="button" onClick={calendar.refetch}>Try again</button></p> : null}
     {showChoices && calendar.choicesError ? <p className="form-error">{calendar.choicesError}</p> : null}
   </div>
 }

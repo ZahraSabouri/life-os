@@ -31,8 +31,8 @@ export function NoticePanel() {
   const panel = useRef(null)
   useEffect(() => {
     if (!notices?.open) return undefined
-    const onKey = (event) => { if (event.key === 'Escape') notices.setOpen(false) }
-    const onDown = (event) => { if (panel.current && !panel.current.contains(event.target) && !event.target.closest?.('.notice-bell')) notices.setOpen(false) }
+    const onKey = (event) => { if (event.key === 'Escape' && !document.querySelector('dialog[open]')) notices.setOpen(false) }
+    const onDown = (event) => { if (panel.current && !panel.current.contains(event.target) && !event.target.closest?.('.notice-bell')) notices.setOpen(false, { inPlace: true }) }
     document.addEventListener('keydown', onKey)
     document.addEventListener('mousedown', onDown)
     return () => { document.removeEventListener('keydown', onKey); document.removeEventListener('mousedown', onDown) }

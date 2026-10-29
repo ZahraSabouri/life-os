@@ -2,6 +2,7 @@
 // layout), so a timer keeps counting and a playlist keeps playing from the Court to Today to
 // the Study hub, Budget and JobMap. The Study hub keeps its own Focus Room for study cards.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { usePanel } from './addresses.js'
 import { apiFetch } from './api.js'
 import { desktopNotice } from './notices.jsx'
 import { useSetting } from './settings.js'
@@ -71,7 +72,10 @@ const FocusContext = createContext(null)
 export const useFocus = () => useContext(FocusContext)
 
 export function FocusProvider({ children }) {
-  const [open, setOpen] = useState(false)
+  // Open is in the address (?panel=focus), so Back closes the panel.
+  const [open, setOpen] = usePanel('focus')
+  const opener = useRef(setOpen)
+  opener.current = setOpen
   // { what, area, card: { semesterId, hubCardId } | null, minutes, startedAt, endsAt | null, left | null }
   // Running: `endsAt` is the moment it ends. Paused: `left` is what remains.
   const [session, setSession] = useState(() => read(SESSION_KEY, null))
@@ -94,12 +98,7 @@ export function FocusProvider({ children }) {
   const running = Boolean(session?.endsAt)
   const left = session ? (session.endsAt ? Math.max(0, session.endsAt - now) : session.left ?? 0) : 0
 
-  // One panel at a time: opening the notices shuts this one.
-  useEffect(() => {
-    const onPanel = (event) => { if (event.detail !== 'focus') setOpen(false) }
-    window.addEventListener('life-os:panel', onPanel)
-    return () => window.removeEventListener('life-os:panel', onPanel)
-  }, [])
+  // One panel at a time: the address holds one, so opening the notices shuts this one.
 
   // Another Life OS tab started, paused or ended the session.
   useEffect(() => {
@@ -174,7 +173,7 @@ export function FocusProvider({ children }) {
     } finally { finishing.current = false }
   }, [session])
 
-  useEffect(() => { if (running && left === 0) { setOpen(true); finish(true) } }, [running, left, finish])
+  useEffect(() => { if (running && left === 0) { opener.current(true); finish(true) } }, [running, left, finish])
 
   const addSound = useCallback((name, url) => {
     const safe = safeMaterialUrl(url)
@@ -187,10 +186,10 @@ export function FocusProvider({ children }) {
   const removeSound = useCallback((id) => { setStoredSound({ list: sound.list.filter((item) => item.id !== id) }); setPlaying((current) => (current === id ? null : current)) }, [sound, setStoredSound])
 
   const value = useMemo(() => ({
-    open, setOpen, toggle: () => setOpen((current) => { if (!current) window.dispatchEvent(new CustomEvent('life-os:panel', { detail: 'focus' })); return !current }),
+    open, setOpen, toggle: () => setOpen(!open),
     session, running, left, last, start, pause, resume, cancel, finish: () => finish(false),
     sounds: sound.list, playing, play, playerShown, setPlayerShown, addSound, removeSound,
-  }), [open, session, running, left, last, start, pause, resume, cancel, finish, sound, playing, play, playerShown, addSound, removeSound])
+  }), [open, setOpen, session, running, left, last, start, pause, resume, cancel, finish, sound, playing, play, playerShown, addSound, removeSound])
 
   return <FocusContext.Provider value={value}>{children}</FocusContext.Provider>
 }

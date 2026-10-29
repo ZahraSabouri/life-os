@@ -2,6 +2,7 @@
 // from the computer itself a few minutes before something starts. The list comes from the
 // host (/api/notices), which reads every part; what she has seen is kept as a setting.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { usePanel } from './addresses.js'
 import { useNavigate } from 'react-router-dom'
 import { apiFetch } from './api.js'
 import { useSetting } from './settings.js'
@@ -40,7 +41,8 @@ export const useNotices = () => useContext(NoticesContext)
 
 export function NoticesProvider({ children }) {
   const navigate = useNavigate()
-  const [open, setOpen] = useState(false)
+  // Open is in the address (?panel=notices), so Back closes the list.
+  const [open, setOpen] = usePanel('notices')
   const [data, setData] = useState(EMPTY)
   const [stored, setStored, loaded] = useSetting('notices', null)
   const prefs = useMemo(() => ({ ...PREFS, ...(stored && typeof stored === 'object' ? stored : {}) }), [stored])
@@ -61,13 +63,8 @@ export function NoticesProvider({ children }) {
     return () => { window.clearInterval(timer); window.removeEventListener('focus', refetch); document.removeEventListener('visibilitychange', onVisible) }
   }, [refetch])
 
-  // One panel at a time: opening Focus shuts this one, and the other way round.
-  useEffect(() => {
-    const onPanel = (event) => { if (event.detail !== 'notices') setOpen(false) }
-    window.addEventListener('life-os:panel', onPanel)
-    return () => window.removeEventListener('life-os:panel', onPanel)
-  }, [])
-  const toggle = useCallback(() => setOpen((current) => { if (!current) { window.dispatchEvent(new CustomEvent('life-os:panel', { detail: 'notices' })); refetch() } return !current }), [refetch])
+  // One panel at a time: the address holds one, so opening Focus shuts this one, and the other way round.
+  const toggle = useCallback(() => { if (!open) refetch(); setOpen(!open) }, [open, setOpen, refetch])
 
   const seen = prefs.seen ?? {}
   const unseen = useMemo(() => data.notices.filter((notice) => !seen[notice.id]), [data.notices, seen])
@@ -120,6 +117,6 @@ export function NoticesProvider({ children }) {
     open, setOpen, toggle, notices: data.notices, unseen, seen, markSeen, refetch,
     desktop: prefs.desktop, minutesBefore: prefs.minutesBefore, permission, setDesktop, setMinutesBefore,
     whenClosed: prefs.whenClosed !== false, setWhenClosed,
-  }), [open, toggle, data.notices, unseen, seen, markSeen, refetch, prefs.desktop, prefs.minutesBefore, prefs.whenClosed, permission, setDesktop, setMinutesBefore, setWhenClosed])
+  }), [open, setOpen, toggle, data.notices, unseen, seen, markSeen, refetch, prefs.desktop, prefs.minutesBefore, prefs.whenClosed, permission, setDesktop, setMinutesBefore, setWhenClosed])
   return <NoticesContext.Provider value={value}>{children}</NoticesContext.Provider>
 }

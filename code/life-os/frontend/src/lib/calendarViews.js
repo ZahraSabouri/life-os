@@ -205,7 +205,15 @@ export function placeTimed(items, day) {
   placed.sort((a, b) => a.start - b.start || b.end - a.end || String(a.item.title).localeCompare(String(b.item.title)))
   let group = []
   let groupEnd = -1
-  const finish = () => { const columns = Math.max(0, ...group.map((entry) => entry.column + 1)); for (const entry of group) entry.columns = columns }
+  // A thing widens into the columns to its right that nothing overlapping it uses (`span`).
+  const finish = () => {
+    const columns = Math.max(0, ...group.map((entry) => entry.column + 1))
+    for (const entry of group) {
+      entry.columns = columns
+      entry.span = 1
+      while (entry.column + entry.span < columns && !group.some((other) => other.column === entry.column + entry.span && other.start < entry.end && other.end > entry.start)) entry.span += 1
+    }
+  }
   for (const entry of placed) {
     if (entry.start >= groupEnd && group.length) { finish(); group = [] }
     const taken = new Set(group.filter((other) => other.end > entry.start).map((other) => other.column))

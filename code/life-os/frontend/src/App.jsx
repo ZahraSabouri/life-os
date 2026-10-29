@@ -31,7 +31,7 @@ function SubAppFrame({ route, documentPath, title }) {
   const initialUrl = useRef(`${documentPath}${window.location.hash}`)
   const childRef = useRef(null)
   function syncHash() {
-    if (childRef.current) window.history.replaceState(window.history.state, '', `${route}${childRef.current.location.hash}`)
+    if (childRef.current) window.history.replaceState(window.history.state, '', `${route}${window.location.search}${childRef.current.location.hash}`)
   }
   function onLoad() {
     childRef.current?.removeEventListener('hashchange', syncHash)
@@ -50,11 +50,12 @@ function SubAppFrame({ route, documentPath, title }) {
   }, [location.key, location.hash, documentPath])
   useEffect(() => {
     // Some sub-apps use history.replaceState, which does not emit hashchange.
-    // Mirror the fragment so a Life OS reload restores the same view.
+    // Mirror the fragment so a Life OS reload restores the same view; the search part (an open
+    // panel, ?panel=) stays as it is.
     const timer = window.setInterval(() => {
       const child = frameRef.current?.contentWindow
       if (child && window.location.hash !== child.location.hash) {
-        window.history.replaceState(window.history.state, '', `${route}${child.location.hash}`)
+        window.history.replaceState(window.history.state, '', `${route}${window.location.search}${child.location.hash}`)
       }
     }, 250)
     return () => {

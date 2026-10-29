@@ -1,9 +1,10 @@
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { apiFetch } from '../lib/api.js'
 import { useAddress } from '../lib/addresses.js'
 import { CALENDAR_AREAS, CALENDAR_KINDS, addDays, calendarArea, calendarDisplay, calendarKind, dateForKey, filterCalendarItems, formatCalendarDay, isComplete, itemOverlaps, itemTime, sortCalendarItems } from '../lib/calendar.js'
-import { CALENDAR_VIEWS, DAY_KEYS, groupByDay, isNote, isoWeek, lastOfMonth, matchesSearch, monthGrid, placeOf, placeTimed, readCalendarAddress, shiftMonth, stepView, todayIn, viewRange, weekDays, weekHours, yearMonths } from '../lib/calendarViews.js'
+import { movePlan, undoMove } from '../lib/plans.js'
+import { CALENDAR_VIEWS, DAY_KEYS, daySpan, groupByDay, isNote, isoWeek, lastOfMonth, matchesSearch, monthGrid, placeOf, placeTimed, readCalendarAddress, shiftMonth, stepView, todayIn, viewRange, weekDays, weekHours, yearMonths } from '../lib/calendarViews.js'
 import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
 import { useLondonClock } from '../lib/useDay.js'
 import { CalendarStatus } from './CalendarItems.jsx'
@@ -42,16 +43,27 @@ function stepWords(at) {
   return [monthName(shiftMonth(at.month, -1)), monthName(shiftMonth(at.month, 1))]
 }
 
-function Chip({ item, onOpen }) {
+// Her own plan of one day, not done, can be dragged to another day (the same clock time there).
+const canMove = (item) => item.meta?.source === 'core' && Boolean(item.meta?.entryId) && !isNote(item) && !isComplete(item) && daySpan(item).first === daySpan(item).last
+// What a thing being dragged needs from the thing, and from a day it can be dropped on.
+const dragFrom = (drag, item) => (drag && canMove(item) ? { draggable: true, onDragStart: (event) => { event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', item.title); drag.start(item) }, onDragEnd: drag.end } : {})
+const dropOn = (drag, key) => (drag ? {
+  onDragOver: (event) => { if (!drag.current()) return; event.preventDefault(); event.dataTransfer.dropEffect = 'move'; if (drag.over !== key) drag.setOver(key) },
+  onDragLeave: (event) => { if (drag.current() && !event.currentTarget.contains(event.relatedTarget)) drag.setOver('') },
+  onDrop: (event) => { if (!drag.current()) return; event.preventDefault(); drag.drop(key) },
+} : {})
+
+function Chip({ item, onOpen, drag }) {
   const time = item.all_day ? '' : itemTime(item).split('–')[0]
   const words = `${item.meta?.savedSnapshot ? 'Saved copy · ' : ''}${item.choice === 'maybe' ? 'Maybe · ' : ''}${item.title}`
-  return <button type="button" className={`day-chip${isComplete(item) ? ' is-complete' : ''}`} data-kind={item.kind} data-choice={item.choice} onClick={(event) => { event.stopPropagation(); onOpen(item.id) }}
-    style={{ '--item-accent': calendarArea(item.area).tone }} title={`${words} · ${calendarArea(item.area).label}${time ? ` · ${itemTime(item)}` : ''}`}>
+  const moving = dragFrom(drag, item)
+  return <button type="button" className={`day-chip${isComplete(item) ? ' is-complete' : ''}${moving.draggable ? ' is-movable' : ''}`} data-kind={item.kind} data-choice={item.choice} onClick={(event) => { event.stopPropagation(); onOpen(item.id) }}
+    style={{ '--item-accent': calendarArea(item.area).tone }} title={`${words} · ${calendarArea(item.area).label}${time ? ` · ${itemTime(item)}` : ''}${moving.draggable ? ' · drag it to another day' : ''}`} {...moving}>
     {time ? <small className="day-chip-time">{time}</small> : null}<span>{words}</span>
   </button>
 }
 
-function MonthView({ at, today, on, notesOn, calendar, openDay, showWeek }) {
+function MonthView({ at, today, on, notesOn, calendar, openDay, showWeek, drag, justOpen }) {
   const grid = useMemo(() => monthGrid(at.month, today), [at.month, today])
   return <>
     <div className="calendar-weekdays has-weeks" aria-hidden="true">
@@ -65,14 +77,15 @@ function MonthView({ at, today, on, notesOn, calendar, openDay, showWeek }) {
           const dayItems = on(day.key)
           const dayNotes = notesOn(day.key).length
           const display = calendarDisplay(calendar, { areas: at.areas, count: dayItems.length })
-          return <article key={day.key} className={`calendar-day${day.current ? '' : ' muted-day'}${day.today ? ' today-day' : ''}${day.weekend ? ' weekend-day' : ''}${day.key === at.day ? ' selected-day' : ''}`} onClick={() => openDay(day.key)}>
-            <button className="calendar-day-select" type="button" onClick={(event) => { event.stopPropagation(); openDay(day.key) }} aria-label={`${formatCalendarDay(day.key, { weekday: 'long', month: 'long', year: 'numeric' })}, ${display.countLabel}${dayNotes ? `, ${counted(dayNotes, 'note')}` : ''}. Open the day`}>
+          return <article key={day.key} className={`calendar-day${day.current ? '' : ' muted-day'}${day.today ? ' today-day' : ''}${day.weekend ? ' weekend-day' : ''}${day.key === at.day ? ' selected-day' : ''}${day.key === justOpen ? ' was-open' : ''}${drag.over === day.key ? ' is-drop' : ''}`} onClick={() => openDay(day.key)} {...dropOn(drag, day.key)}>
+            <button className="calendar-day-select" type="button" data-day={day.key} onClick={(event) => { event.stopPropagation(); openDay(day.key) }} aria-label={`${formatCalendarDay(day.key, { weekday: 'long', month: 'long', year: 'numeric' })}, ${display.countLabel}${dayNotes ? `, ${counted(dayNotes, 'note')}` : ''}. Open the day`}>
               <time dateTime={day.key}><span>{day.number}</span><small lang="fa" dir="rtl">{persianDay.format(dateForKey(day.key))}</small></time>
               {dayNotes ? <span className="calendar-day-notes" aria-hidden="true" title={counted(dayNotes, 'note')}>✎{dayNotes > 1 ? dayNotes : ''}</span> : null}
               <span className="calendar-mobile-count">{display.state === 'ready' ? dayItems.length || '' : display.state === 'partial' ? `${dayItems.length}+` : '?'}</span>
             </button>
+            <button type="button" className="calendar-day-add" onClick={(event) => { event.stopPropagation(); openDay(day.key, '', '') }} aria-label={`Add to ${formatCalendarDay(day.key, { weekday: 'long', month: 'long' })}`} title="Add a plan, a note or something to buy">+</button>
             <div className="day-entry-list">
-              {dayItems.slice(0, 4).map((item) => <Chip key={item.id} item={item} onOpen={(id) => openDay(day.key, id)} />)}
+              {dayItems.slice(0, 4).map((item) => <Chip key={item.id} item={item} drag={drag} onOpen={(id) => openDay(day.key, id)} />)}
               {dayItems.length > 4 ? <button className="calendar-more" type="button" onClick={(event) => { event.stopPropagation(); openDay(day.key) }}>+{dayItems.length - 4} more</button> : null}
             </div>
           </article>
@@ -82,7 +95,7 @@ function MonthView({ at, today, on, notesOn, calendar, openDay, showWeek }) {
   </>
 }
 
-function WeekView({ at, today, on, notesOn, openDay }) {
+function WeekView({ at, today, on, notesOn, openDay, drag, justOpen }) {
   const clock = useLondonClock()
   const days = useMemo(() => weekDays(at.week, today), [at.week, today])
   const placed = useMemo(() => Object.fromEntries(days.map((day) => [day.key, placeTimed(on(day.key), day.key)])), [days, on])
@@ -93,26 +106,28 @@ function WeekView({ at, today, on, notesOn, openDay }) {
   return <div className="calendar-week" style={{ '--hours': hours.to - hours.from }}>
     <div className="calendar-week-row calendar-week-days">
       <span className="calendar-week-corner">Wk {isoWeek(at.week)}</span>
-      {days.map((day) => <button key={day.key} type="button" className={`calendar-week-day${day.today ? ' today-day' : ''}${day.weekend ? ' weekend-day' : ''}`} onClick={() => openDay(day.key)} aria-label={`${formatCalendarDay(day.key, { weekday: 'long', month: 'long' })}: open the day`}>
+      {days.map((day) => <button key={day.key} type="button" data-day={day.key} className={`calendar-week-day${day.today ? ' today-day' : ''}${day.weekend ? ' weekend-day' : ''}${day.key === justOpen ? ' was-open' : ''}`} onClick={() => openDay(day.key)} aria-label={`${formatCalendarDay(day.key, { weekday: 'long', month: 'long' })}: open the day`}>
         <strong>{formatCalendarDay(day.key, { month: undefined })}</strong><small lang="fa" dir="rtl">{persianWeekday.format(dateForKey(day.key))} {persianDay.format(dateForKey(day.key))}</small>
         {notesOn(day.key).length ? <span className="calendar-day-notes" aria-hidden="true">✎</span> : null}
       </button>)}
     </div>
     <div className="calendar-week-row calendar-week-allday">
       <span className="calendar-week-corner">All day</span>
-      {days.map((day) => <div key={day.key} className="day-entry-list" onClick={() => openDay(day.key)}>
-        {on(day.key).filter((item) => item.all_day).map((item) => <Chip key={item.id} item={item} onOpen={(id) => openDay(day.key, id)} />)}
+      {days.map((day) => <div key={day.key} className={`day-entry-list${drag.over === day.key ? ' is-drop' : ''}`} onClick={() => openDay(day.key, '', '')} {...dropOn(drag, day.key)}>
+        {on(day.key).filter((item) => item.all_day).map((item) => <Chip key={item.id} item={item} drag={drag} onOpen={(id) => openDay(day.key, id)} />)}
       </div>)}
     </div>
     <div className="calendar-week-row calendar-week-hours">
       <div className="calendar-week-clock" aria-hidden="true">
         {Array.from({ length: hours.to - hours.from }, (_, index) => <span key={index}>{String(hours.from + index).padStart(2, '0')}:00</span>)}
       </div>
-      {days.map((day) => <div key={day.key} className={`calendar-week-column${day.today ? ' today-day' : ''}`} onClick={() => openDay(day.key)} aria-label={`Times on ${formatCalendarDay(day.key, { weekday: 'long' })}`}>
-        {placed[day.key].map(({ item, start, end, column, columns }) => <button key={item.id} type="button"
-          className={`calendar-week-item${isComplete(item) ? ' is-complete' : ''}`} data-kind={item.kind} data-choice={item.choice}
-          style={{ '--item-accent': calendarArea(item.area).tone, top: `${((start - at0) / total) * 100}%`, height: `${((end - start) / total) * 100}%`, left: `${(column / columns) * 100}%`, width: `${100 / columns}%` }}
-          onClick={(event) => { event.stopPropagation(); openDay(day.key, item.id) }} title={`${itemTime(item)} · ${item.title} · ${calendarArea(item.area).label}`}>
+      {/* A click on an empty hour opens the day with that time in the add line. */}
+      {days.map((day) => <div key={day.key} className={`calendar-week-column${day.today ? ' today-day' : ''}${drag.over === day.key ? ' is-drop' : ''}`} title="Click an hour to add a plan then" {...dropOn(drag, day.key)}
+        onClick={(event) => { const box = event.currentTarget.getBoundingClientRect(); const minute = at0 + Math.max(0, Math.min(total - 30, Math.floor(((event.clientY - box.top) / box.height) * total / 30) * 30)); openDay(day.key, '', `${String(Math.floor(minute / 60)).padStart(2, '0')}:${String(minute % 60).padStart(2, '0')} `) }}>
+        {placed[day.key].map(({ item, start, end, column, columns, span: wide }) => <button key={item.id} type="button"
+          className={`calendar-week-item${isComplete(item) ? ' is-complete' : ''}`} data-kind={item.kind} data-choice={item.choice} {...dragFrom(drag, item)}
+          style={{ '--item-accent': calendarArea(item.area).tone, top: `${((start - at0) / total) * 100}%`, height: `${((end - start) / total) * 100}%`, left: `${(column / columns) * 100}%`, width: `${(wide / columns) * 100}%` }}
+          onClick={(event) => { event.stopPropagation(); openDay(day.key, item.id) }} title={`${itemTime(item)} · ${item.title} · ${calendarArea(item.area).label}${canMove(item) ? ' · drag it to another day' : ''}`}>
           <small>{itemTime(item)}</small><span>{item.choice === 'maybe' ? 'Maybe · ' : ''}{item.title}</span>
         </button>)}
         {day.today && now >= at0 && now <= at0 + total ? <i className="calendar-week-now" style={{ top: `${((now - at0) / total) * 100}%` }} aria-hidden="true" /> : null}
@@ -121,17 +136,24 @@ function WeekView({ at, today, on, notesOn, openDay }) {
   </div>
 }
 
-function ListView({ at, on, calendar, openDay }) {
-  const days = []
+// The month day by day. This month starts at today; the days before it are one click away.
+function ListView({ at, today, on, calendar, openDay, justOpen }) {
+  const [earlier, setEarlier] = useState(false)
+  const all = []
   for (let day = `${at.month}-01`; day <= lastOfMonth(at.month); day = addDays(day, 1)) {
     const dayItems = on(day)
-    if (dayItems.length) days.push({ day, items: dayItems })
+    if (dayItems.length) all.push({ day, items: dayItems })
   }
-  if (!days.length) return calendar.loading ? null : <p className="empty-state">{calendarDisplay(calendar, { areas: at.areas, empty: at.q ? `Nothing this month matches “${at.q}”.` : at.areas.length ? 'Nothing dated this month in the chosen areas.' : 'Choose an area to see its dates.' }).emptyMessage}</p>
-  return <ol className="calendar-list">
-    {days.map(({ day, items: dayItems }) => <li key={day} className="calendar-list-day">
-      <button type="button" className="calendar-list-date" onClick={() => openDay(day)} aria-label={`${formatCalendarDay(day, { weekday: 'long', month: 'long' })}: open the day`}>
-        <strong>{formatCalendarDay(day, { weekday: 'short' })}</strong><small lang="fa" dir="rtl">{persianDay.format(dateForKey(day))}</small>
+  const from = at.month === today.slice(0, 7) && !earlier ? today : ''
+  const days = all.filter(({ day }) => day >= from)
+  const before = all.length - days.length
+  if (!all.length) return calendar.loading ? null : <p className="empty-state">{calendarDisplay(calendar, { areas: at.areas, empty: at.q ? `Nothing this month matches “${at.q}”.` : at.areas.length ? 'Nothing dated this month in the chosen areas.' : 'Choose an area to see its dates.' }).emptyMessage}</p>
+  return <>{before ? <button type="button" className="ghost-pill compact-pill calendar-list-earlier" onClick={() => setEarlier(true)}>Show the {counted(before, 'earlier day')} this month</button> : null}
+  <ol className="calendar-list">
+    {days.length ? null : <li className="calendar-list-day"><p className="empty-state">Nothing more this month.</p></li>}
+    {days.map(({ day, items: dayItems }) => <li key={day} className={`calendar-list-day${day === today ? ' is-today' : ''}${day === justOpen ? ' was-open' : ''}`}>
+      <button type="button" className="calendar-list-date" data-day={day} onClick={() => openDay(day)} aria-label={`${formatCalendarDay(day, { weekday: 'long', month: 'long' })}: open the day`}>
+        <strong>{day === today ? 'Today' : formatCalendarDay(day, { weekday: 'short' })}</strong>{day === today ? <span>{formatCalendarDay(day, { weekday: 'short' })}</span> : null}<small lang="fa" dir="rtl">{persianDay.format(dateForKey(day))}</small>
       </button>
       <ol className="calendar-list-items">
         {dayItems.map((item) => <li key={item.id} className={isComplete(item) ? 'is-complete' : undefined} data-kind={item.kind} style={{ '--item-accent': calendarArea(item.area).tone }}>
@@ -142,10 +164,10 @@ function ListView({ at, on, calendar, openDay }) {
         </li>)}
       </ol>
     </li>)}
-  </ol>
+  </ol></>
 }
 
-function YearView({ at, today, on, openDay, showMonth }) {
+function YearView({ at, today, on, openDay, showMonth, justOpen }) {
   return <div className="calendar-year">
     {yearMonths(at.year).map((month) => {
       const grid = monthGrid(month, today)
@@ -156,7 +178,7 @@ function YearView({ at, today, on, openDay, showMonth }) {
           {WEEKDAYS.map((label) => <span key={label} className="calendar-mini-weekday" aria-hidden="true">{label[0]}</span>)}
           {grid.weeks.flatMap((week) => week.days).map((day) => {
             const count = on(day.key).length
-            return day.current ? <button key={day.key} type="button" className={`calendar-mini-day${day.today ? ' today-day' : ''}`} data-load={count === 0 ? 0 : count < 3 ? 1 : count < 6 ? 2 : 3}
+            return day.current ? <button key={day.key} type="button" data-day={day.key} className={`calendar-mini-day${day.today ? ' today-day' : ''}${day.key === justOpen ? ' was-open' : ''}`} data-load={count === 0 ? 0 : count < 3 ? 1 : count < 6 ? 2 : 3}
               onClick={() => openDay(day.key)} aria-label={`${formatCalendarDay(day.key, { weekday: 'long', month: 'long' })}: ${counted(count, 'thing')}`}>{day.number}</button>
               : <span key={day.key} className="calendar-mini-day is-outside" aria-hidden="true" />
           })}
@@ -185,6 +207,15 @@ export default function CalendarView() {
   const [captureDate, setCaptureDate] = useState('')
   const [saving, setSaving] = useState(false)
   const [actionError, setActionError] = useState('')
+  // A plan being dragged, the day it is over, and the last move with its Undo.
+  const dragging = useRef(null)
+  const [over, setOver] = useState('')
+  const [moved, setMoved] = useState(null)
+  // What to put in the day's add line when it opens ('' just puts the cursor there; "14:00 " a time).
+  const [prefill, setPrefill] = useState(null)
+  // The day last opened: when it closes, it has the focus again and is marked for a moment.
+  const opened = useRef('')
+  const [justOpen, setJustOpen] = useState('')
   const heading = headings(at)
   const [before, after] = stepWords(at)
   // What the heading's count covers: the week, the month (not the days of the months around it), or the year.
@@ -206,7 +237,42 @@ export default function CalendarView() {
   const goToday = () => address.show(todayIn(at.view, today))
   const showView = (view) => address.show({ view: view === 'month' ? null : view, week: view === 'week' ? at.week : null })
   const showMonth = (month) => address.show({ view: at.view === 'agenda' ? 'agenda' : null, month, week: null })
-  const openDay = (day, item = '') => address.open('day', { day, item: item || null, tab: null })
+  const openDay = (day, item = '', add = null) => { setPrefill(add === null ? null : { day, text: add }); address.open('day', { day, item: item || null, tab: null }) }
+  async function moveTo(day) {
+    const item = dragging.current
+    dragging.current = null
+    setOver('')
+    if (!item || daySpan(item).first === day) return
+    try {
+      const done = await movePlan(item, day)
+      setMoved({ words: `Moved “${item.title}” to ${formatCalendarDay(day, { weekday: 'long', month: 'long' })}.`, undo: () => undoMove(item, done) })
+    } catch (failure) { setMoved({ words: `Could not move “${item.title}”: ${failure.message}` }) }
+    calendar.refetch()
+  }
+  async function undoMoved() {
+    const last = moved
+    if (!last?.undo) return
+    setMoved({ words: 'Taking it back…' })
+    try { await last.undo(); setMoved({ words: 'Taken back.' }) } catch (failure) { setMoved({ words: `Could not take it back: ${failure.message}` }) }
+    calendar.refetch()
+  }
+  const drag = { current: () => dragging.current, over, setOver, start: (item) => { dragging.current = item }, end: () => { dragging.current = null; setOver('') }, drop: moveTo }
+
+  useEffect(() => {
+    if (!moved || moved.words === 'Taking it back…') return undefined
+    const timer = window.setTimeout(() => setMoved(null), 12_000)
+    return () => window.clearTimeout(timer)
+  }, [moved])
+  useEffect(() => {
+    if (at.day) { opened.current = at.day; setJustOpen(''); return undefined }
+    if (!opened.current) return undefined
+    const key = opened.current
+    opened.current = ''
+    setJustOpen(key)
+    window.requestAnimationFrame(() => document.querySelector(`[data-day="${key}"]`)?.focus({ preventScroll: true }))
+    const timer = window.setTimeout(() => setJustOpen(''), 1800)
+    return () => window.clearTimeout(timer)
+  }, [at.day])
   const toggleArea = (key) => { const hidden = at.hidden.includes(key) ? at.hidden.filter((area) => area !== key) : [...at.hidden, key]; address.swap({ hide: hidden.join(',') || null }) }
 
   // Keys, when nothing is being typed and the day is not open: ← and → step, T is today, M W L Y the views.
@@ -286,10 +352,10 @@ export default function CalendarView() {
         <span>{calendarDisplay(calendar, { areas: at.areas, count: counting, noun: at.q ? 'match' : 'dated item' }).countLabel.replace('matchs', 'matches')}{notes.length ? ` · ${counted(notes.length, 'note')}` : ''}</span>
       </div>
       <CalendarStatus calendar={calendar} />
-      {at.view === 'week' ? <WeekView at={at} today={today} on={on} notesOn={notesOn} openDay={openDay} />
-        : at.view === 'agenda' ? <ListView at={at} on={on} calendar={calendar} openDay={openDay} />
-          : at.view === 'year' ? <YearView at={at} today={today} on={on} openDay={openDay} showMonth={showMonth} />
-            : <MonthView at={at} today={today} on={on} notesOn={notesOn} calendar={calendar} openDay={openDay} showWeek={(week) => address.show({ view: 'week', week, month: addDays(week, 3).slice(0, 7) })} />}
+      {at.view === 'week' ? <WeekView at={at} today={today} on={on} notesOn={notesOn} openDay={openDay} drag={drag} justOpen={justOpen} />
+        : at.view === 'agenda' ? <ListView at={at} today={today} on={on} calendar={calendar} openDay={openDay} justOpen={justOpen} />
+          : at.view === 'year' ? <YearView at={at} today={today} on={on} openDay={openDay} showMonth={showMonth} justOpen={justOpen} />
+            : <MonthView at={at} today={today} on={on} notesOn={notesOn} calendar={calendar} openDay={openDay} drag={drag} justOpen={justOpen} showWeek={(week) => address.show({ view: 'week', week, month: addDays(week, 3).slice(0, 7) })} />}
     </section>
 
     <form className="calendar-capture-bar calendar-explicit-capture" onSubmit={handleCapture}>
@@ -299,7 +365,10 @@ export default function CalendarView() {
       {actionError ? <p className="form-error" role="alert">{actionError}</p> : null}
     </form>
 
+    {moved ? <div className="calendar-toast" role="status"><span>{moved.words}</span>{moved.undo ? <button type="button" onClick={undoMoved}>Undo</button> : null}<button type="button" className="calendar-toast-close" onClick={() => setMoved(null)} aria-label="Close">×</button></div> : null}
+
     {at.day ? <CalendarDay key="day" date={at.day} itemKey={at.item} tab={at.tab} areas={at.areas} cardiffScope={at.cardiff}
+      prefill={prefill?.day === at.day ? prefill : null} onPrefilled={() => setPrefill(null)}
       onDay={(day) => address.swap({ day, month: day.slice(0, 7), item: null })}
       onItem={(item) => (item ? address.open('item', { item }) : address.close(['item']))}
       onTab={(tab) => address.swap({ tab: tab === 'day' ? null : tab, item: null })}

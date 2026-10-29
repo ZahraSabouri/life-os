@@ -1,6 +1,6 @@
 # Calendar: the day pop-up, more views, and everything in the address
 
-**Status:** direct request from Xar, 28 October 2026 (no separate approval asked; see Goal) · CP1–CP3 done on 28 October · waiting for her check
+**Status:** direct request from Xar, 28 October 2026 (no separate approval asked; see Goal) · CP1–CP3 done on 28 October · CP4–CP6 (her "elevate ux, cover uncovereds and test and finish the thing and push it to main branch") done on 29 October · waiting for her check
 **Branch:** `stage/4b-one-look` (where the other direct requests of this week went; the folder is shared with other sessions, so no branch switch)
 
 ## Goal
@@ -13,7 +13,7 @@ At the end: the Calendar's month, view, filters, search, the open day and the th
 
 ## In scope / not in scope
 - In: the Calendar page; the day pop-up; notes on any day and about one thing; the Journal's and the Guide's pictures, the Journal's Pages/Pictures and Find; the Guide's Calendar words and pictures.
-- Not in: the four apps in frames (Study hub, Cardiff Life, Budget, JobMap) keep their own addresses (they already put views in the part after `#`); dropdown menus (the bell, the style, the menu on a phone) are not pages and stay out of the address; Cardiff Life cannot yet open one event from a link (it is another session's app; "Open in Cardiff Life" opens its list).
+- Not in (CP1–CP3): the four apps in frames; dropdown menus; Cardiff Life opening one event. **All three covered in CP4–CP5**, apart from Budget's smaller dialogs (its views and meal and recipe cards were already in its address).
 
 ## Checkpoints
 
@@ -37,6 +37,23 @@ At the end: the Calendar's month, view, filters, search, the open day and the th
 - [x] The Guide's Calendar chapter: new marks for the calendar, a step and a picture for the open day, a "How do I" for it. Recipes in `scripts/guide-shots.mjs`.
 - **Commit:** `[calendar-cp3] …`
 
+### CP4: What was left out (29 October)
+- [x] Cardiff Life: `#event=<id>` opens that event and `#view=` its part; opening an event is a step Back closes. Added as the page is served (`hosting/skins/public/apps/cardiff-life.js`, tagged by `skins/index.mjs` for an app that has a script), so Cardiff Life's own files and Codex's research sync are untouched. Calendar items link to their event (`hosting/calendar/mappers.mjs`; `lib/calendar.js` `withEventLinks` for older answers).
+- [x] JobMap: its view, category and open job in its own address (`#view=…&tag=…&job=…`, `jobmap/app/page.tsx`); Back closes a job opened there and walks back through views; `#job=` links still open one.
+- [x] The bell, Focus, the style menu and the phone menu: `?panel=` (`usePanel` in `lib/addresses.js`); one at a time; Back or Esc closes; a click elsewhere closes in place; a page chosen from the phone menu takes the menu's place in history. The framed apps' address mirror keeps the search part (`App.jsx`).
+- [x] Week: a thing widens into free columns beside it (`span`).
+- [x] A failed source is named by its own label; "Mail and admin" is an area of the calendar.
+
+### CP5: Easier to use
+- [x] Drag her own one-day plans to another day (Month and Week), with Undo (`undoMove` in `lib/plans.js`).
+- [x] "+" on a day, and a click on an empty hour in Week, open the day with the add line ready (the time filled in).
+- [x] Undo after Done, Take off the day and Move: at the foot of the day, and under the add line on Today and the Court (`undoStatus`).
+- [x] On a phone, swipe sideways in the day. Closing a day puts the focus back on it and marks it for a moment. List starts at today ("Show the earlier days").
+- [x] Esc belongs to what is on top: a panel under an open day leaves it to the day. Two things done in one click (a panel closing as a day opens) read the address as it is that moment.
+
+### CP6: Checked and pushed
+- [x] Tests, the walks with every save caught (see the session note), the Guide's words; `main` brought level with this branch and pushed.
+
 ## Data safety
 No data was changed while building: every walk ran with saves caught in the browser. The new fields are optional (`about`, `about_title` on a note); notes written before keep working (read by the day they were written). No migration.
 
@@ -49,6 +66,10 @@ No data was changed while building: every walk ran with saves caught in the brow
 3. In the day, click a class's title: its details. "Open in Study hub" goes there; Back comes back to the same day and class.
 4. Tick a step, mark one of your plans Done, write "A note about it" and "A note for the day": the day shows ✎ on the month.
 5. On a phone: the month shows counts; a tap opens the day full screen.
+6. Week: drag "Job applications" to the next day; "Undo" at the foot takes it back. Click an empty hour: the day opens with that time in the add line.
+7. In a day, Done on one of your plans, then "Undo" at the foot of the day.
+8. A Cardiff event → "Open in Cardiff Life": that event opens; Back returns to the same day.
+9. JobMap: open a job, then Back; the bell, then Back. On a phone, Menu then Back.
 
 ## Risks and open questions
 - A note is a Life OS note even when it is about a JobMap job or a Cardiff event; those apps do not see it. Should a note about a job go into JobMap's own notes instead? (Her call.)

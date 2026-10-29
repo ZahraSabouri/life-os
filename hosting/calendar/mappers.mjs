@@ -250,6 +250,9 @@ export function londonInstant(date, time) {
   return londonDateTime(date, time) || null
 }
 
+// The event itself in Cardiff Life (hosting/skins/public/apps/cardiff-life.js opens it).
+export const cardiffEventHref = (id) => `/cardiff-life#event=${encodeURIComponent(id)}`
+
 export function mapEvents(value, range) {
   const output = []
   for (const event of array(value?.events ?? value)) {
@@ -262,7 +265,7 @@ export function mapEvents(value, range) {
     }
     const mapped = item({
       id: `events:cardiff:${event.event_id}`, area: 'events', kind: 'fixed', title: text(event.name, 'Cardiff event'),
-      start: start || event.date, end: start ? end : null, href: '/cardiff-life', ...(event.location ? { location: event.location } : {}),
+      start: start || event.date, end: start ? end : null, href: cardiffEventHref(event.event_id), ...(event.location ? { location: event.location } : {}),
       meta: { source: 'cardiff-life', readonly: true, eventId: event.event_id, status: event.status, candidate: event.own !== true, needsVerification: event.status === 'needs_verification', ...(event.own === true ? { own: true } : {}) },
     }, range)
     if (mapped) output.push(mapped)

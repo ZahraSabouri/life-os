@@ -6,6 +6,8 @@
 //   fonts.css      the shared fonts
 //   shared.css     what every app takes from the style whatever its own CSS says
 //   apps/<id>.css  that app's layer: its colours, type and shapes tied to the shared ones
+//   apps/<id>.js   for an app that has one: what Life OS adds to its behaviour (Cardiff Life's
+//                  address, so Back and a link can open one event)
 // An app that writes its colours straight into its CSS (Budget, Cardiff Life) also has those
 // colours rewritten as blends of the shared palette (recolor.mjs).
 import fs from 'node:fs'
@@ -27,12 +29,15 @@ export const SKINNED_APPS = {
   'cardiff-life': { anchors: { card: '#fffefa', bg: '#f5f4ee', ink: '#263b35', accent: '#285d48', red: '#a44935', amber: '#8c5b12', blue: '#326b8c' }, spread: 0.24 },
 }
 
+const appScript = (app) => fs.existsSync(path.join(publicDir, 'apps', `${app}.js`))
+
 export function skinTags(app) {
   return `<script ${MARK} src="/skins/boot.js"></script>`
     + `<link ${MARK} rel="stylesheet" href="/skins/palettes.css">`
     + `<link ${MARK} rel="stylesheet" href="/skins/fonts.css">`
     + `<link ${MARK} rel="stylesheet" href="/skins/shared.css">`
     + `<link ${MARK} rel="stylesheet" href="/skins/apps/${app}.css">`
+    + (appScript(app) ? `<script ${MARK} defer src="/skins/apps/${app}.js"></script>` : '')
 }
 
 const recolorers = new Map()

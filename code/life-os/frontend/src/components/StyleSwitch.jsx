@@ -1,4 +1,5 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef } from 'react'
+import { usePanel } from '../lib/addresses.js'
 import { GROUNDS, GROUND_LABELS, GROUND_SWATCHES, useGround } from '../lib/groundContext.jsx'
 
 function Swatch({ ground }) {
@@ -6,19 +7,20 @@ function Swatch({ ground }) {
   return <span className="style-switch-swatch" aria-hidden="true" style={{ '--swatch-base': base, '--swatch-accent': accent }} />
 }
 
-// One style control for every page: Court, boards, Study and the framed apps.
+// One style control for every page: Court, boards, Study and the framed apps. Its menu is in the
+// address (?panel=style), so Back closes it.
 export default function StyleSwitch({ className = '', placement = 'below', compact = false }) {
   const { ground, setGround } = useGround()
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = usePanel('style')
   const wrapRef = useRef(null)
   const menuId = useId()
 
   useEffect(() => {
     if (!open) return undefined
-    function onPointer(event) { if (!wrapRef.current?.contains(event.target)) setOpen(false) }
-    function onKey(event) { if (event.key === 'Escape') { setOpen(false); wrapRef.current?.querySelector('button')?.focus() } }
+    function onPointer(event) { if (!wrapRef.current?.contains(event.target)) setOpen(false, { inPlace: true }) }
+    function onKey(event) { if (event.key === 'Escape' && !document.querySelector('dialog[open]')) { setOpen(false); wrapRef.current?.querySelector('button')?.focus() } }
     // A framed app swallows clicks, so leaving the control also closes its menu.
-    function onBlur() { setOpen(false) }
+    function onBlur() { setOpen(false, { inPlace: true }) }
     document.addEventListener('pointerdown', onPointer)
     document.addEventListener('keydown', onKey)
     window.addEventListener('blur', onBlur)
@@ -27,7 +29,7 @@ export default function StyleSwitch({ className = '', placement = 'below', compa
       document.removeEventListener('keydown', onKey)
       window.removeEventListener('blur', onBlur)
     }
-  }, [open])
+  }, [open, setOpen])
 
   return (
     <div className={`style-switch style-switch-${placement}${open ? ' is-open' : ''}`} ref={wrapRef}>
@@ -38,7 +40,7 @@ export default function StyleSwitch({ className = '', placement = 'below', compa
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
         aria-label={`Change style. Current style: ${GROUND_LABELS[ground]}`}
-        onClick={() => setOpen(current => !current)}
+        onClick={() => setOpen(!open)}
       >
         <Swatch ground={ground} />
         <span className="style-switch-label">{compact ? 'Style' : `Style: ${GROUND_LABELS[ground]}`}</span>

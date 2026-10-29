@@ -127,7 +127,7 @@
 .calendar-day-dialog[open] { animation: calendar-day-in 0.16s ease-out; }
 @keyframes calendar-day-in { from { opacity: 0; transform: translateY(8px) scale(0.99); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .calendar-day-dialog[open] { animation: none; } }
-.calendar-day-sheet { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); width: auto; max-height: calc(100dvh - 2rem); margin: 0; gap: 0; }
+.calendar-day-sheet { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr) auto; width: auto; max-height: calc(100dvh - 2rem); margin: 0; gap: 0; }
 .calendar-day-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 0.75rem; padding: 1rem 1.15rem 0.7rem; border-bottom: 1px solid var(--m-line); }
 .calendar-day-titles { min-width: 0; text-align: center; }
 .calendar-day-titles h2 { margin: 0; font: var(--m-title-weight, 600) clamp(1.3rem, 2.4vw, 1.75rem)/1.15 var(--m-title-font, var(--m-display)); color: var(--m-ink); }
@@ -189,7 +189,41 @@
 .calendar-thing-notes { padding-top: 0.75rem; border-top: 1px solid var(--m-line); }
 .calendar-thing .day-card { margin: 0; }
 
+/* ---- Adding, dragging, and taking a step back ---- */
+.calendar-plus .calendar-day { position: relative; }
+.calendar-day-add {
+  position: absolute; top: 0.45rem; right: 0.45rem; width: 1.6rem; height: 1.6rem; display: grid; place-items: center; padding: 0;
+  border: 1px solid var(--m-line); border-radius: 50%; background: var(--m-card-fill); color: var(--m-accent-strong); cursor: pointer;
+  font: 600 1rem/1 var(--m-font); opacity: 0; transition: opacity 0.12s ease;
+}
+.calendar-day:hover .calendar-day-add, .calendar-day:focus-within .calendar-day-add, .calendar-day-add:focus-visible { opacity: 1; }
+@media (hover: none) { .calendar-day-add { opacity: 0.7; } }
+.calendar-plus .day-chip.is-movable, .calendar-week-item[draggable='true'] { cursor: grab; }
+.calendar-plus .is-drop { outline: 2px dashed var(--g-acc); outline-offset: -2px; background: color-mix(in srgb, var(--g-acc) 10%, var(--g-wash)); }
+.calendar-plus .was-open { animation: calendar-was-open 1.8s ease-out; }
+@keyframes calendar-was-open { from { box-shadow: 0 0 0 3px var(--g-acc); } to { box-shadow: 0 0 0 3px transparent; } }
+@media (prefers-reduced-motion: reduce) { .calendar-plus .was-open { animation: none; outline: 2px solid var(--g-acc); } }
+.calendar-toast, .calendar-day-undo {
+  display: flex; align-items: center; gap: 0.9rem; margin: 0; padding: 0.65rem 0.9rem;
+  color: var(--m-ink); font: 500 0.9rem/1.35 var(--m-font);
+}
+.calendar-toast {
+  position: fixed; left: 50%; bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px)); z-index: 40; transform: translateX(-50%);
+  max-width: min(36rem, calc(100vw - 2rem)); border: 1px solid var(--m-line-strong); border-radius: var(--m-radius-lg, 10px);
+  background: var(--m-card-fill, var(--g-bg2)); box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+}
+.calendar-day-undo { border-top: 1px solid var(--m-line); background: var(--m-sunken); }
+.calendar-toast span, .calendar-day-undo span { flex: 1; min-width: 0; }
+.calendar-toast button, .calendar-day-undo button { border: 0; padding: 0; background: transparent; color: var(--m-accent-strong); cursor: pointer; font: 700 0.88rem/1.2 var(--m-font); text-decoration: underline; text-underline-offset: 3px; }
+.calendar-toast .calendar-toast-close, .calendar-day-undo .calendar-toast-close { color: var(--m-faint); font-size: 1.15rem; text-decoration: none; }
+.calendar-day-undo button:disabled { opacity: 0.5; cursor: default; }
+.calendar-list-earlier { justify-self: start; margin-bottom: 0.5rem; }
+.calendar-list-day.is-today { border-top-color: var(--g-acc); }
+.calendar-list-day.is-today .calendar-list-date strong { color: var(--g-acc); }
+.calendar-list-date > span { color: var(--g-sub); font: 500 0.8rem/1.2 var(--m-font); }
+
 @media (max-width: 760px) {
+  .calendar-day-add { display: none; }
   .calendar-search { margin-left: 0; flex-basis: 100%; }
   .calendar-jump { margin-left: 0; }
   .calendar-plus .calendar-weekdays.has-weeks, .calendar-plus .month-grid.has-weeks { grid-template-columns: 1.4rem repeat(7, minmax(0, 1fr)); }

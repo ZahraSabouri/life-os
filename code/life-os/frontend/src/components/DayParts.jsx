@@ -22,8 +22,9 @@ const ADD = {
   buy: { label: 'To buy', button: 'Add', placeholder: () => 'Something to buy: “eggs, rice, 2 kg onions”' },
 }
 
-// One line that adds a plan, a note or something to buy. A hint says what will be saved.
-export function AddLine({ page, id = 'day-add-input', fixedArea = false }) {
+// One line that adds a plan, a note or something to buy. A hint says what will be saved. Under it,
+// the last change made on the day, with Undo (`undo={false}` where the page shows it elsewhere).
+export function AddLine({ page, id = 'day-add-input', fixedArea = false, undo = true }) {
   const { line } = page
   return <form className={`day-note${line.kind === 'buy' ? '' : ' has-filing'}`} onSubmit={line.save}>
     <div className="day-add-kind" role="group" aria-label="What to add">
@@ -52,6 +53,7 @@ export function AddLine({ page, id = 'day-add-input', fixedArea = false }) {
     </div> : null}
     {line.hint ? <p className="day-add-hint">{line.hint}{line.area && line.kind !== 'buy' ? ` Filed under ${roomName(line.area)}.` : ''}</p> : null}
     {!line.hint && page.notice ? <p className="day-add-hint day-add-done" role="status">{page.notice}</p> : null}
+    {undo && !line.hint && page.change ? <p className="day-add-hint day-add-done" role="status">{page.change.words} <button type="button" className="day-undo" onClick={page.undoChange} disabled={Boolean(page.savingId)}>Undo</button></p> : null}
     {page.error ? <p className="day-add-hint day-warn" role="alert">{page.error}</p> : null}
   </form>
 }
