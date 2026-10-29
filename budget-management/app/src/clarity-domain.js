@@ -30,5 +30,6 @@ function transactionRows(s, rows) {
   return out;
 }
 function transactionDialog(x) {
+  if(x.credit)return {type:'credit',id:x.id};
   return {type:x.receiptTotal ? 'receipt-detail' : x.refund ? 'refund-detail' : 'expense-detail', id:x.receiptTotal ? x.receiptId : x.id};
 }

@@ -991,6 +991,8 @@ h1{font-size:clamp(1.9rem,3vw,2.5rem);line-height:1.2}h2{font-size:1.25rem}h3{fo
 
 .original-plan{padding:24px}.reference-row{padding:18px 0;border-top:1px solid var(--line,#ddd)}.reference-row h3{margin:0 0 6px}.reference-row p{margin:6px 0}.reference-row small{display:block;margin-top:9px}.review-note{display:block;color:#78501a;line-height:1.5;margin:6px 0}
 
+.budget-numbers{width:100%;margin:8px 0 14px}.budget-numbers .summary-line{padding:7px 0}.monthly-totals{padding:22px 24px;margin-bottom:24px}.monthly-totals h2{margin-bottom:12px}.month-table-scroll{overflow-x:auto}.monthly-totals table{width:100%;border-collapse:collapse;font-size:.9rem;font-variant-numeric:tabular-nums}.monthly-totals th,.monthly-totals td{padding:12px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}.monthly-totals th:first-child{text-align:left}.monthly-totals thead th{color:var(--muted);font-weight:500}.monthly-totals tbody th{font-weight:500}.monthly-totals .selected{background:#315b4808}.monthly-totals .negative{color:var(--red);font-weight:650}@media(max-width:600px){.monthly-totals{padding:18px 12px}.monthly-totals th,.monthly-totals td{padding:10px 5px;font-size:.8rem}}
+
 .workflow-tools{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1rem}.food-plan-panel{margin-bottom:1rem;padding:1.2rem}.food-plan-panel h2,.prep-card h2{margin:0 0 .4rem}.food-budget{text-align:right;display:grid;gap:.25rem}.food-budget strong{font-size:1.8rem}.food-budget small{font-size:.8rem}.food-priorities,.prep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.8rem;margin:1rem 0}.food-priority{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem;border:1px solid var(--line,#d9dfd3);border-radius:var(--m-radius,12px)}.food-priority>div{display:grid;gap:.35rem;min-width:0}.food-priority small{line-height:1.4;overflow-wrap:anywhere}.food-priority.done{opacity:.65}.food-priority.done strong{text-decoration:line-through}.prep-card,.recipe-readiness{padding:1.2rem}.recipe-readiness .food-priority{margin:.6rem 0}.ingredient-link{grid-column:1/-1;display:grid;grid-template-columns:minmax(180px,1fr) auto;align-items:end;gap:.8rem}.prepared-summary{padding:1rem;border:1px solid var(--line,#d9dfd3);border-radius:var(--m-radius,12px)}.food-plan-panel ul{padding-left:1.3rem;line-height:1.7}@media(max-width:600px){.food-plan-panel .section-heading{align-items:start}.food-budget strong{font-size:1.4rem}.food-priorities,.prep-grid{grid-template-columns:1fr}.ingredient-link{grid-template-columns:1fr}.food-priority{gap:.5rem}}
 
 .payment-review{padding:1rem;margin-bottom:1rem}.payment-review .food-priority{margin:.6rem 0}
@@ -1257,9 +1259,10 @@ function budgetFigures(state,month){
   }
   // Recompute debt from the ledger, in pennies. Savings never increase a later
   // allowance; a missing budget contributes zero, so outstanding debt is retained.
-  const months=[...new Set([...Object.keys(state.budgets),...spending.keys()])].filter(key=>/^\d{4}-(0[1-9]|1[0-2])$/.test(key)&&key<month).sort();
+  const months=[...new Set([...Object.keys(state.budgets),...spending.keys()])].filter(key=>/^\d{4}-(0[1-9]|1[0-2])$/.test(key)&&key<month&&(!state.budgetStart||key>=state.budgetStart)).sort();
   let debt=0;
   for(const key of months)debt=Math.max(0,debt+(spending.get(key)?.total||0)-pence(state.budgets[key]?.total||0));
+  if(state.rolloverOverspend===false)debt=0;
   const spent=spending.get(month)||{total:0,grocery:0},base=pence(b.total),adjusted=base-debt,remaining=adjusted-spent.total;
   const groceryCap=b.grocery==null?Math.max(0,adjusted):pence(b.grocery);
   const groceryRemaining=Math.min(groceryCap-spent.grocery,remaining);
@@ -1451,6 +1454,9 @@ function positive(value){const n=Number(value);need(Number.isFinite(n)&&n>0&&n<=
 function category(s,id){return s.categories.find(c=>c.id===id)||s.categories.find(c=>c.id==='uncategorised');}
 function validateV4(s){
   need(s&&s.version===4,'Unsupported backup version.');
+  if(s.rolloverOverspend!=null)need(typeof s.rolloverOverspend==='boolean','Invalid overspending setting.');
+  if(s.budgetStart!=null)need(/^\d{4}-(0[1-9]|1[0-2])$/.test(s.budgetStart),'Invalid allowance start month.');
+  if(s.credits!=null){need(Array.isArray(s.credits),'Invalid money received.');const ids=new Set();for(const x of s.credits){need(x&&typeof x.id==='string'&&!ids.has(x.id)&&validDate(x.date)&&typeof x.from==='string'&&x.from.trim()&&['income','cashback','other'].includes(x.kind)&&Number.isSafeInteger(x.pence)&&x.pence>0&&x.pence<=100000000&&typeof x.includeInBudget==='boolean'&&(x.note==null||typeof x.note==='string'),'Invalid money received.');ids.add(x.id);}}
   if(s.trackingStart){need(validDate(s.trackingStart),'Invalid plan start.');for(const field of ['expenses','receipts','adjustments'])for(const row of s[field]||[])need(row.date>=s.trackingStart,'This plan starts on '+s.trackingStart+'. Keep older products in the catalogue, not in spending.');}
   upgradeState({...s,version:3});
   for(const field of ['categories','items','lists','receipts','lots','stockEvents','mealEntries','recipes','subscriptions','goals','adjustments']){
@@ -1493,7 +1499,24 @@ function migrateV4(input){
 }
 const originalBudgetFigures=budgetFigures;
 function ledger(s){return [...s.expenses.map(x=>({...x,type:x.categoryId?(category(s,x.categoryId).pool==='grocery'?'grocery':'other'):x.type})),...(s.adjustments||[]).map(x=>{const exp=s.expenses.find(e=>e.id===x.expenseId);return {...x,amount:x.pence/100,type:exp?.categoryId?(category(s,exp.categoryId).pool==='grocery'?'grocery':'other'):exp?.type||'other',categoryId:exp?.categoryId,category:exp?.category,note:x.kind==='moneyback'?'Money back from '+(x.from||'someone'):'Refund · '+(exp?.note||exp?.category||''),forNote:exp?.note||exp?.category||'',refund:true};})];}
-budgetFigures=function(s,m){return originalBudgetFigures(s.version===4?{...s,expenses:ledger(s)}:s,m);};
+budgetFigures=function(s,m){
+ if(s.version!==4)return originalBudgetFigures(s,m);
+ const budgets={...s.budgets};
+ for(const x of s.credits||[])if(x.includeInBudget){const month=dateMonth(x.date),b=budgets[month]||{total:0,grocery:null};budgets[month]={...b,total:(Math.round((b.total||0)*100)+x.pence)/100};}
+ const f=originalBudgetFigures({...s,budgets,expenses:ledger(s)},m),received=(s.credits||[]).filter(x=>dateMonth(x.date)===m);
+ return {...f,b:s.budgets[m]||{total:0,grocery:null},baseTotal:s.budgets[m]?.total||0,allowanceTotal:f.baseTotal,incomePence:received.reduce((n,x)=>n+x.pence,0),budgetIncomePence:received.filter(x=>x.includeInBudget).reduce((n,x)=>n+x.pence,0),...(s.rolloverOverspend===false||s.budgetStart&&m<s.budgetStart?{carryOut:0}:{} )};
+};
+function moneyTransactions(s){return [...ledger(s),...(s.credits||[]).map(x=>({...x,credit:true,amount:-x.pence/100,type:'other',category:'Money received',note:(x.kind==='cashback'?'Cashback':'Money received')+' from '+x.from}))];}
+function saveCredit(s,d){
+ const old=d.id?(s.credits||[]).find(x=>x.id===d.id):null;need(!d.id||old,'Money received record not found.');
+ const x={...old,id:old?.id||uid('credit'),date:d.date,from:String(d.from||'').trim(),pence:d.pence,kind:d.kind||old?.kind||'income',includeInBudget:d.includeInBudget===true,note:String(d.note||'').trim()};
+ const next={...s,credits:old?s.credits.map(c=>c.id===old.id?x:c):[...(s.credits||[]),x]};validateV4(next);return next;
+}
+function removeCredit(s,id){need((s.credits||[]).some(x=>x.id===id),'Money received record not found.');return {...s,credits:s.credits.filter(x=>x.id!==id)};}
+function monthlyBudgetRows(s,through=dateMonth(isoDate(new Date()))){
+ const months=[...new Set([...Object.keys(s.budgets),...s.expenses.map(x=>dateMonth(x.date)),...(s.credits||[]).map(x=>dateMonth(x.date))])].filter(m=>m<=through).sort();
+ return months.map(month=>{const f=budgetFigures(s,month),hasAllowance=!!s.budgets[month]||f.budgetIncomePence>0;return {month,allowancePence:hasAllowance?Math.round(f.allowanceTotal*100):null,spentPence:Math.round(f.totalSpent*100),overPence:hasAllowance?Math.max(0,Math.round((f.totalSpent-f.allowanceTotal)*100)):null};});
+}
 function subscriptionDates(sub,month){
   if(sub.paused)return [];
   let date=sub.nextDue,out=[],count=0;
@@ -2400,7 +2423,7 @@ function newBudgetState(){
  return validateV4({version:4,resources:[],expenses:[],meals:{},budgets:{},categories:clone(SEED.categories),items:[],lists:[],receipts:[],lots:[],stockEvents:[],mealEntries:[],recipes:[],subscriptions:[],goals:[],adjustments:[],resourceMeta:{},savingIntentions:{},categoryTargets:{},shops:[]});
 }
 
-function budgetMonthChoices(s,selected=dateMonth(isoDate(new Date()))){const now=dateMonth(isoDate(new Date())),future=Array.from({length:13},(_,i)=>{const d=new Date(now+'-01T12:00:00');d.setMonth(d.getMonth()+i);return dateMonth(isoDate(d));});return [...new Set([...future,...Object.keys(s.budgets),...s.resources.map(r=>r.allocatedMonth).filter(Boolean),selected])].sort();}
+function budgetMonthChoices(s,selected=dateMonth(isoDate(new Date()))){const now=dateMonth(isoDate(new Date())),future=Array.from({length:13},(_,i)=>{const d=new Date(now+'-01T12:00:00');d.setMonth(d.getMonth()+i);return dateMonth(isoDate(d));});return [...new Set([...future,...Object.keys(s.budgets),...s.resources.map(r=>r.allocatedMonth).filter(Boolean),...s.expenses.map(x=>dateMonth(x.date)),...(s.credits||[]).map(x=>dateMonth(x.date)),selected])].sort();}
 
 /* Presentation rules: keep the original records intact. */
 function historicalItem(s, item) {
@@ -2434,6 +2457,7 @@ function transactionRows(s, rows) {
   return out;
 }
 function transactionDialog(x) {
+  if(x.credit)return {type:'credit',id:x.id};
   return {type:x.receiptTotal ? 'receipt-detail' : x.refund ? 'refund-detail' : 'expense-detail', id:x.receiptTotal ? x.receiptId : x.id};
 }
 
@@ -3730,6 +3754,8 @@ function CountMoney({value,className}){const v=useCountUp(value);return e('span'
 // One money-back payment can be split across several purchases; show it as the single payment it was.
 function groupedLedger(rows,s){if(s)return transactionRows(s,rows);const out=[],seen={};for(const x of rows){if(x.refund&&x.groupId&&seen[x.groupId]){const g=seen[x.groupId];g.amount=Math.round(g.amount*100+x.amount*100)/100;g.fors.push(x.forNote);continue;}const row=x.refund?{...x,fors:[x.forNote]}:x;if(x.refund&&x.groupId)seen[x.groupId]=row;out.push(row);}return out;}
 function LedgerRow({state:s,x,onOpen}){
+ if(x.credit)return e('button',{type:'button',className:'plain-row moneyback-row',onClick:()=>onOpen(x)},e('span',{className:'item-glyph back-glyph'},e(Icon,{name:'back'})),e('div',null,e('strong',null,x.note),e('small',null,prettyDate(x.date))),e('b',{className:'money-in'},'+'+pounds(x.pence)));
+
  if(x.receiptTotal){const back=x.expenseIds.reduce((n,id)=>n+paidBackPence(s,id),0);return e('button',{type:'button',className:'plain-row receipt-row',onClick:()=>onOpen(x)},e('span',{className:'item-glyph'},e(Icon,{name:'bag'})),e('div',null,e('strong',null,x.note),e('small',null,prettyDate(x.date)+' · '+(s.receipts.find(r=>r.id===x.receiptId)?.lines.length===1&&s.receipts.find(r=>r.id===x.receiptId)?.lines[0].tracking==='none'?'Payment record':x.itemCount+' item lines · Itemised receipt'))),e('span',{className:'row-amount'},e('b',null,money(x.amount)),e('small',null,'View receipt →'),back>0&&e('small',{className:'money-in'},pounds(back)+' back')));}
 
  if(x.refund)return e('button',{type:'button',className:'plain-row moneyback-row',onClick:()=>onOpen(x)},e('span',{className:'item-glyph back-glyph'},e(Icon,{name:'back'})),e('div',null,e('strong',null,x.note),e('small',null,prettyDate(x.date)+(x.kind==='moneyback'?' · for '+x.fors.join(', '):''))),e('b',{className:'money-in'},'\u2212'+money(-x.amount)));
@@ -3738,9 +3764,9 @@ function LedgerRow({state:s,x,onOpen}){
 }
 function SpendingCalendar({state:s,month:m,onAdd,onOpen}){
  const [picked,setPicked]=useState(null);
- const f=budgetFigures(s,m),rows=ledger(s).filter(x=>dateMonth(x.date)===m);
+ const f=budgetFigures(s,m),rows=moneyTransactions(s).filter(x=>dateMonth(x.date)===m);
  const byDay={},backDay={};for(const x of rows){const p=Math.round(x.amount*100);if(p<0)backDay[x.date]=(backDay[x.date]||0)-p;else byDay[x.date]=(byDay[x.date]||0)+p;}
- const bought=transactionRows(s,rows).filter(x=>!x.refund).length;
+ const bought=transactionRows(s,rows).filter(x=>!x.refund&&!x.credit).length;
  const weeks=getWeeks(m),max=Math.max(1,...Object.values(byDay)),today=isoDate(new Date());
  const [y,mm]=m.split('-').map(Number),daysInMonth=new Date(y,mm,0).getDate();
  const current=m===today.slice(0,7);
@@ -3773,7 +3799,7 @@ function SpendingCalendar({state:s,month:m,onAdd,onOpen}){
    })),
   picked&&e('div',{className:'cal-day-detail'},
    e('strong',null,prettyDate(picked)),
-   dayRows.length?groupedLedger(dayRows,s).map(x=>e('button',{type:'button',className:'cal-line cal-open',key:x.id,onClick:()=>onOpen&&onOpen(x)},e('span',null,x.note||x.category,placeOf(s,x)&&e('small',null,' · '+placeOf(s,x))),e('b',{className:x.refund?'money-in':''},x.refund?'\u2212'+money(-x.amount):money(x.amount)))):e('p',{className:'muted'},'Nothing recorded on this day.'),
+   dayRows.length?groupedLedger(dayRows,s).map(x=>e('button',{type:'button',className:'cal-line cal-open',key:x.id,onClick:()=>onOpen&&onOpen(x)},e('span',null,x.note||x.category,placeOf(s,x)&&e('small',null,' · '+placeOf(s,x))),e('b',{className:x.refund||x.credit?'money-in':''},x.credit?'+'+money(-x.amount):x.refund?'\u2212'+money(-x.amount):money(x.amount)))):e('p',{className:'muted'},'Nothing recorded on this day.'),
    e(Btn,{kind:'secondary',onClick:()=>onAdd&&onAdd(picked)},'Add a purchase on this day')),
   !picked&&e('p',{className:'muted cal-hint'},busiest?('Highest day: '+prettyDate(busiest[0])+' · '+pounds(busiest[1])+(quiet?' · '+quiet+(quiet===1?' day':' days')+' with no spending':'')):'Tap a day to add a purchase.')
  );
@@ -4059,13 +4085,13 @@ function CupboardStarters({state:s,month:m,setDialog}){
   null);
 }
 function MoneyV2(p){
- const {state:s,selectedMonth:m,setDialog,act}=p,f=forecast(s,m),entries=ledger(s).filter(x=>dateMonth(x.date)===m).sort((a,b)=>b.date.localeCompare(a.date)),view=['overview','goals','subscriptions'].includes(p.route?.view)?p.route.view:'overview',setView=v=>p.go({view:v});
- const categories=[...new Set(entries.map(x=>x.categoryId||x.category))].map(id=>({id,name:s.categories.find(c=>c.id===id)?.name||id,amount:entries.filter(x=>(x.categoryId||x.category)===id).reduce((n,x)=>n+Math.round(x.amount*100),0)}));
+ const {state:s,selectedMonth:m,setDialog,act}=p,f=forecast(s,m),entries=moneyTransactions(s).filter(x=>dateMonth(x.date)===m).sort((a,b)=>b.date.localeCompare(a.date)),view=['overview','goals','subscriptions'].includes(p.route?.view)?p.route.view:'overview',setView=v=>p.go({view:v});
+ const categories=[...new Set(entries.filter(x=>!x.credit).map(x=>x.categoryId||x.category))].map(id=>({id,name:s.categories.find(c=>c.id===id)?.name||id,amount:entries.filter(x=>(x.categoryId||x.category)===id).reduce((n,x)=>n+Math.round(x.amount*100),0)}));
  const unresolved=entries.filter(x=>x.categoryId&&category(s,x.categoryId).pool==='unresolved').reduce((n,x)=>n+Math.round(x.amount*100),0);
  return e(React.Fragment,null,e(PageHeading,{eyebrow:'',title:'Money & saving',action:e(Btn,{onClick:()=>setDialog({type:'budget'})},'Monthly allowance')},''),e('div',{className:'page-tabs'},e(Segment,{label:'Money view',value:view,onChange:setView,options:[['overview','My month'],['goals','Saving goals'],['subscriptions','Subscriptions']]})),
- view==='overview'&&e(React.Fragment,null,null,e(SpendingCalendar,{state:s,month:m,onAdd:d=>setDialog({type:'receipt',date:d}),onOpen:x=>setDialog(transactionDialog(x))}),e('div',{className:'money-grid'},e('section',{className:'money-main'},e('span',{className:'eyebrow'},monthLabel(m)),e('span',null,'Actual balance'),e('strong',null,s.budgets[m]?money(f.totalRemaining):'No allowance set'),e('p',null,money(f.baseTotal)+' base − '+money(f.carryIn)+' earlier overspend − '+money(f.totalSpent)+' spent'),(()=>{const due=subscriptionsDue(s,m);return due.length?e('p',{className:'sub-note'},'Still to renew this month: '+due.map(x=>x.sub.name+' '+prettyDate(x.date)).join(', ')+' · '+pounds(due.reduce((n,x)=>n+x.sub.costPence,0))):null;})(),e(Meter,{value:f.totalSpent+f.carryIn,max:f.baseTotal,label:'Allowance used'}),f.carryOut>0&&e('p',null,carryForwardText(s,f))),e('section',{className:'surface forecast-card'},e(SectionTitle,{title:'Forecast',action:e(Btn,{small:true,onClick:()=>setDialog({type:'intention'})},'Set intention')}),[['Shopping plans',f.plannedPence],['Upcoming subscriptions',f.subscriptionPence],['I’d like to leave unspent',f.intentionPence]].map(([label,n])=>e('div',{className:'summary-line',key:label},e('span',null,label),e('b',null,pounds(n)))),e('div',{className:'forecast-total'},e('span',null,'After plans & intention'),e('strong',null,pounds(f.projectedPence))),e('small',null,f.unknown?f.unknown+' planned items still need a price.':'Plans and intentions do not count as paid spending.'))),
+ view==='overview'&&e(React.Fragment,null,null,e(SpendingCalendar,{state:s,month:m,onAdd:d=>setDialog({type:'receipt',date:d}),onOpen:x=>setDialog(transactionDialog(x))}),e('div',{className:'money-grid'},e('section',{className:'money-main'},e('span',{className:'eyebrow'},monthLabel(m)),e('span',null,'Actual balance'),e('strong',null,s.budgets[m]?money(f.totalRemaining):'No allowance set'),e('p',null,money(f.baseTotal)+' base'+(f.budgetIncomePence?' + '+pounds(f.budgetIncomePence)+' received':'')+' − '+money(f.carryIn)+' earlier overspend − '+money(f.totalSpent)+' spent'),(()=>{const due=subscriptionsDue(s,m);return due.length?e('p',{className:'sub-note'},'Still to renew this month: '+due.map(x=>x.sub.name+' '+prettyDate(x.date)).join(', ')+' · '+pounds(due.reduce((n,x)=>n+x.sub.costPence,0))):null;})(),e(Meter,{value:f.totalSpent+f.carryIn,max:f.baseTotal+(f.budgetIncomePence||0)/100,label:'Allowance used'}),f.carryOut>0&&e('p',null,carryForwardText(s,f))),e('section',{className:'surface forecast-card'},e(SectionTitle,{title:'Forecast',action:e(Btn,{small:true,onClick:()=>setDialog({type:'intention'})},'Set intention')}),[['Shopping plans',f.plannedPence],['Upcoming subscriptions',f.subscriptionPence],['I’d like to leave unspent',f.intentionPence]].map(([label,n])=>e('div',{className:'summary-line',key:label},e('span',null,label),e('b',null,pounds(n)))),e('div',{className:'forecast-total'},e('span',null,'After plans & intention'),e('strong',null,pounds(f.projectedPence))),e('small',null,f.unknown?f.unknown+' planned items still need a price.':'Plans and intentions do not count as paid spending.'))),
  e('div',{className:'two-col'},e('section',{className:'surface'},e(SectionTitle,{title:'Where it went',action:e(Btn,{small:true,onClick:()=>setDialog({type:'targets'})},'Category targets')}),unresolved>0&&e('p',{className:'error-box'},pounds(unresolved)+' awaits categorisation. It counts in total spending.'),categories.map(c=>{const target=s.categoryTargets[m]?.[c.id];return e('div',{className:'category-breakdown',key:c.id},e('div',null,e('span',null,c.name),e('b',null,pounds(c.amount)+(target?' / '+pounds(target):''))),e(Meter,{value:Math.max(0,c.amount),max:target||Math.max(1,Math.round(f.totalSpent*100)),label:c.name+' spending'}));}),!entries.length&&null,e('p',{className:'muted'},'Groceries: '+money(f.grocerySpent)+(s.budgets[m]?.grocery==null?' · shared allowance':' of '+money(s.budgets[m]?.grocery)+' ceiling'))),e('section',{className:'surface'},e(SectionTitle,{title:'Monthly summary'}),e('ul',{className:'review-list'},e('li',null,s.lists.filter(l=>dateMonth(l.date)===m).flatMap(l=>l.lines).filter(x=>x.status==='planned'&&x.priority==='optional').length+' optional purchases to revisit.'),e('li',null,s.stockEvents.filter(x=>x.action==='waste'&&dateMonth(x.date)===m).length+' waste records this month.'),e('li',null,s.subscriptions.filter(x=>!x.paused).length+' active subscriptions to review.'),e('li',null,s.mealEntries.filter(x=>x.status==='cooked'&&dateMonth(x.date)===m).length+' meals marked cooked.')))),
- e('section',{className:'surface ledger-panel'},e(SectionTitle,{title:'Purchases',note:'',action:e('div',{className:'ledger-actions'},e(Btn,{icon:'back',onClick:()=>setDialog({type:'money-back'})},'Money back'),e(Btn,{kind:'primary',icon:'plus',onClick:()=>setDialog({type:'receipt'})},'Add purchase'))}),groupedLedger(entries,s).map(x=>e(LedgerRow,{key:x.id,state:s,x,onOpen:x=>setDialog(transactionDialog(x))})),!entries.length&&e('p',{className:'empty-copy'},'Nothing recorded this month yet.'))) ,
+ e('section',{className:'surface ledger-panel'},e(SectionTitle,{title:'Purchases',note:'',action:e('div',{className:'ledger-actions'},e(Btn,{icon:'plus',onClick:()=>setDialog({type:'credit'})},'Money received'),e(Btn,{icon:'back',onClick:()=>setDialog({type:'money-back'})},'Money back'),e(Btn,{kind:'primary',icon:'plus',onClick:()=>setDialog({type:'receipt'})},'Add purchase'))}),groupedLedger(entries,s).map(x=>e(LedgerRow,{key:x.id,state:s,x,onOpen:x=>setDialog(transactionDialog(x))})),!entries.length&&e('p',{className:'empty-copy'},'Nothing recorded this month yet.'))) ,
  view==='goals'&&e(React.Fragment,null,e('div',{className:'collection-banner'},e('div',null,null,e('h2',null,'Saving goals'),null,e(Btn,{kind:'primary',onClick:()=>setDialog({type:'goal'})},'Create a saving goal')),e(Art,{file:'Savings goal05.png'})),e('div',{className:'goal-grid'},s.goals.map((g,index)=>{const saved=g.contributions.reduce((n,c)=>n+c.pence,0);return e('article',{className:'surface goal-card',key:g.id},e(Art,{file:goalArt(g,index)}),e('h2',null,g.name),e('strong',null,pounds(saved),e('small',null,' of '+pounds(g.targetPence))),e(Meter,{value:saved,max:g.targetPence,label:g.name+' progress'}),g.date&&e('p',{className:'muted'},'Target date: '+prettyDate(g.date)),e('div',{className:'inline-actions'},e(Btn,{kind:'primary',onClick:()=>setDialog({type:'contribution',id:g.id})},'I put money aside'),e(Btn,{onClick:()=>setDialog({type:'goal',id:g.id})},'Edit')),g.contributions.length>0&&e('details',null,e('summary',null,'Contribution history'),g.contributions.map(c=>e('div',{className:'plain-row',key:c.id},e('span',null,c.date+' · '+pounds(c.pence)),e(Btn,{small:true,onClick:()=>act(st=>({...st,goals:st.goals.map(x=>x.id===g.id?{...x,contributions:x.contributions.filter(a=>a.id!==c.id)}:x)}),'Contribution removed')},'Remove')))));})),!s.goals.length&&null),
  view==='subscriptions'&&e('div',{className:'two-col'},e('section',{className:'surface'},e(SectionTitle,{title:'Subscriptions',note:s.subscriptions.length?'About '+pounds(Math.round(s.subscriptions.reduce((n,x)=>n+monthlyCost(x),0)))+' a month, taken off each month’s allowance on the renewal day.':'',action:e(Btn,{kind:'primary',onClick:()=>setDialog({type:'subscription'})},'Add subscription')}),[...s.subscriptions].sort((a,b)=>a.nextDue.localeCompare(b.nextDue)).map(x=>e('article',{className:'subscription-row',key:x.id},e('div',null,e('h3',null,x.name),e('small',null,pounds(x.costPence)+' · '+({monthly:'every month',yearly:'every year',weekly:'every week'}[x.interval]||x.interval)+' · '+(x.paused?'Paused':(x.auto===false?'Next due ':'Renews ')+prettyDate(x.nextDue,{day:'numeric',month:'long'})+(x.auto===false?'':' · taken off automatically')))),e('div',{className:'inline-actions'},e(Btn,{small:true,onClick:()=>setDialog({type:'subscription',id:x.id})},'Edit'),!x.paused&&x.auto===false&&e(Btn,{small:true,kind:'primary',onClick:()=>setDialog({type:'pay-subscription',id:x.id})},'Confirm paid')))),!s.subscriptions.length&&e(Empty,{title:'No subscriptions'},'')),e('aside',{className:'art-aside'},e(Art,{file:ART.subscriptions}),e('p',null,'Pausing here does not cancel the subscription with its provider.'))));
 }
@@ -4424,9 +4450,12 @@ function MealDetail({state:s,dialog:d,setDialog,commit,onClose}){
 }
 function CopyWeek({state:s,dialog:d,commit,onClose}){const [date,set]=useState('');return e(FormModal,{title:'Copy this week',onClose,onSubmit:()=>{need(validDate(date),'Choose the first day of the new week.');return commit(st=>{let next=st;const start=new Date(d.dates[0]+'T12:00:00'),target=new Date(date+'T12:00:00');for(const meal of st.mealEntries.filter(m=>d.dates.includes(m.date)&&m.status!=='skipped')){const offset=Math.round((new Date(meal.date+'T12:00:00')-start)/86400000),day=new Date(target);day.setDate(day.getDate()+offset);next=planMeal(next,{...meal,id:uid('meal'),date:isoDate(day)});}const meals={...next.meals};for(let i=0;i<7;i++){const day=new Date(target);day.setDate(day.getDate()+i);const dest=isoDate(day);if(st.meals[d.dates[i]])meals[dest]={...st.meals[d.dates[i]],...meals[dest]};}return {...next,meals};},'Week copied as new plans');}},e('p',null,'Copies planned meals only. Past consumption is not copied.'),e(Input,{label:'First day of the new week',type:'date',value:date,onChange:set,required:true}));}
 function BudgetEditor({state:s,selectedMonth:m,commit,onClose}){
- const [month,setMonth]=useState(m),[total,setTotal]=useState(s.budgets[m]?.total==null?'':String(s.budgets[m].total)),[grocery,setGrocery]=useState(s.budgets[m]?.grocery==null?'':String(s.budgets[m].grocery));
- return e(FormModal,{title:'Monthly allowance',onClose,onSubmit:()=>{need(/^\d{4}-(0[1-9]|1[0-2])$/.test(month),'Choose a month.');const p=pennies(total),g=pennies(grocery,true);need(g==null||g<=p,'The grocery ceiling must fit within the total.');return commit(st=>({...st,budgets:{...st.budgets,[month]:{total:p/100,grocery:g==null?null:g/100,note:'Monthly allowance; overspending carries forward.'}}}),'Monthly allowance saved');}},e(Input,{label:'Month',type:'month',value:month,onChange:v=>{setMonth(v);setTotal(s.budgets[v]?.total==null?'':String(s.budgets[v].total));setGrocery(s.budgets[v]?.grocery==null?'':String(s.budgets[v].grocery));},required:true}),e(Input,{label:'Available to spend (£)',hint:'Enter your spending allowance for this month.',type:'number',min:0,step:'.01',value:total,onChange:setTotal,required:true}),e(Input,{label:'Grocery ceiling within that allowance (£)',type:'number',min:0,step:'.01',value:grocery,onChange:setGrocery,hint:'Leave blank for one shared balance.'}),e('p',{className:'muted'},'Overspending is deducted from later allowances.'));
+ const income=month=>(s.credits||[]).filter(x=>x.includeInBudget&&dateMonth(x.date)===month).reduce((n,x)=>n+x.pence,0);
+ const totalFor=month=>s.budgets[month]?.total==null?'':((Math.round(s.budgets[month].total*100)+income(month))/100).toFixed(2);
+ const [month,setMonth]=useState(m),[total,setTotal]=useState(totalFor(m)),[grocery,setGrocery]=useState(s.budgets[m]?.grocery==null?'':String(s.budgets[m].grocery));
+ return e(FormModal,{title:'Monthly allowance',onClose,onSubmit:()=>{need(/^\d{4}-(0[1-9]|1[0-2])$/.test(month),'Choose a month.');const p=pennies(total),g=pennies(grocery,true),base=p-income(month);need(base>=0,'Allowance must include the income already added.');need(g==null||g<=p,'Grocery limit exceeds the allowance.');return commit(st=>({...st,budgets:{...st.budgets,[month]:{...st.budgets[month],total:base/100,grocery:g==null?null:g/100}}}),'Allowance saved');}},e(Input,{label:'Month',type:'month',value:month,onChange:v=>{setMonth(v);setTotal(totalFor(v));setGrocery(s.budgets[v]?.grocery==null?'':String(s.budgets[v].grocery));},required:true}),e(Input,{label:'Allowance (£)',type:'number',min:0,step:'.01',value:total,onChange:setTotal,required:true}),e(Input,{label:'Grocery limit (£, optional)',type:'number',min:0,step:'.01',value:grocery,onChange:setGrocery}));
 }
+
 function IntentionEditor({state:s,selectedMonth:m,commit,onClose}){const [value,set]=useState(((s.savingIntentions[m]||0)/100).toFixed(2));return e(FormModal,{title:'Saving intention',kicker:monthLabel(m),onClose,onSubmit:()=>commit(st=>({...st,savingIntentions:{...st.savingIntentions,[m]:pennies(value)}}),'Saving intention updated')},e(Input,{label:'I’d like to leave this much (£)',type:'number',min:0,step:'.01',value,onChange:set,required:true}),e('p',{className:'muted'},'Used in the forecast only.'));
 }
 function GoalEditor({state:s,dialog:d,commit,onClose}){const old=s.goals.find(x=>x.id===d.id),[form,set]=useDraft({name:old?.name||'',target:old?(old.targetPence/100).toFixed(2):'',date:old?.date||'',image:old?.image||IMAGE_VARIANTS.saving[s.goals.length%IMAGE_VARIANTS.saving.length]});return e(FormModal,{title:old?'Edit saving goal':'New saving goal',onClose,onSubmit:()=>{need(form.name.trim(),'Give your goal a name.');return commit(st=>{const goal={id:old?.id||uid('goal'),name:form.name,date:form.date,image:form.image,targetPence:pennies(form.target),contributions:old?.contributions||[]};return {...st,goals:old?st.goals.map(x=>x.id===old.id?goal:x):[...st.goals,goal]};},'Saving goal saved');}},e(Input,{label:'What are you saving for?',value:form.name,onChange:v=>set('name',v),required:true}),e(Input,{label:'Goal amount (£)',type:'number',min:0,step:'.01',value:form.target,onChange:v=>set('target',v),required:true}),e(Input,{label:'Hoping for (optional)',type:'date',value:form.date,onChange:v=>set('date',v)}),e(ArtPicker,{value:form.image,onChange:v=>set('image',v)}));}
@@ -4672,9 +4701,9 @@ function HomeV2(p){
  const days=m===dateMonth(today)?new Date(Number(m.slice(0,4)),Number(m.slice(5)),0).getDate()-Number(today.slice(8))+1:new Date(Number(m.slice(0,4)),Number(m.slice(5)),0).getDate();
  return e(React.Fragment,null,
   e('div',{className:'home-heading home-heading-v3'},e('div',null,e('span',{className:'eyebrow'},historyDate(today,{weekday:'long',day:'numeric',month:'long'}).toUpperCase()),e('h1',null,'My everyday'),null),e(Btn,{icon:'plus',onClick:()=>setDialog({type:'use-stock',date:today})},'Log what I used')),
-  e(BudgetRule,{state:s,month:m}),
+
   e('div',{className:'home-overview'},
-   e('section',{className:'home-hero'},e('div',{className:'hero-copy'},e('span',{className:'eyebrow'},monthLabel(m).toUpperCase()),e('span',{className:'balance-label'},f.totalRemaining<0?'Over your allowance':'Left in your allowance'),e('strong',{className:'hero-amount '+(f.totalRemaining<0?'negative':'')},s.budgets[m]?money(Math.abs(f.totalRemaining)):'Not set'),e('p',null,s.budgets[m]?money(f.totalSpent)+' counted this month · '+money(f.baseTotal)+' base allowance':'Set your monthly allowance in Money & saving.'),e(Meter,{value:Math.max(0,f.totalSpent+f.carryIn),max:f.baseTotal,label:'Monthly spending'}),e('div',{className:'hero-bottom'},e('div',null,e('small',null,'After plans & saving intention'),e('b',null,(f.projectedPence<0?'−'+pounds(-f.projectedPence):pounds(f.projectedPence))+(f.unknown?' + unknown costs':''))),e(Btn,{onClick:()=>setTab('money')},'View money',e(Icon,{name:'arrow',size:16}))),f.carryOut>0&&e('small',{className:'carry-note'},carryForwardText(s,f))),e('div',{className:'hero-image'},e(Art,{file:SEASON_HOME[new Date().getMonth()]||ART.home,alt:'Illustrated home and everyday supplies'}))),
+   e('section',{className:'home-hero'},e('div',{className:'hero-copy'},e('span',{className:'eyebrow'},monthLabel(m).toUpperCase()),e('span',{className:'balance-label'},f.totalRemaining<0?'Over budget':'Remaining'),e('strong',{className:'hero-amount '+(f.totalRemaining<0?'negative':'')},s.budgets[m]?money(Math.abs(f.totalRemaining)):'Not set'),e('div',{className:'budget-numbers'},[['Allowance',f.allowanceTotal],['Spent',f.totalSpent],...(f.carryIn?[['Previous overspend',f.carryIn]]:[])].map(([label,n])=>e('div',{className:'summary-line',key:label},e('span',null,label),e('b',null,money(n))))),e(Meter,{value:Math.max(0,f.totalSpent+f.carryIn),max:f.allowanceTotal,label:'Monthly spending'}),e('div',{className:'hero-bottom'},e(Btn,{onClick:()=>setTab('money')},'Transactions',e(Icon,{name:'arrow',size:16})))),e('div',{className:'hero-image'},e(Art,{file:SEASON_HOME[new Date().getMonth()]||ART.home,alt:''}))),
    e(WeekSnapshot,{state:s,month:m,go,setDialog})),
   e('div',{className:'stat-strip'},e(Stat,{label:'On your shopping lists',value:pending.length+' items',detail:f.unknown?f.unknown+' prices to add':''}),e(Stat,{label:'Weekly spending guide',value:pounds(Math.max(0,Math.floor(f.projectedPence/days*7))),detail:''}),e(Stat,{label:'Meals planned',value:meals.length,detail:'In '+monthLabel(m)}),e(Stat,{label:'Stock alerts',value:low.length+' items',detail:''})),
   e(SectionTitle,{title:'Quick actions'}),e('div',{className:'action-cards'},[
@@ -4972,40 +5001,29 @@ function CatalogueBrowser({state:original,setDialog,act,chosen}){
 }
 
 /* A quieter overview. Detailed tools remain available in their existing views. */
-function BudgetRule({state:s, month:m}) {
-  const base = s.budgets[m]?.total;
-  return e('div',{className:'budget-rule'},
-    e('span',null,'Your monthly plan'),
-    e('strong',null,base == null ? 'Set a monthly allowance to start' : money(base) + ' spending allowance'),
-    e('small',null,(s.trackingStart?'Tracking from '+prettyDate(s.trackingStart,{day:'numeric',month:'long',year:'numeric'})+'. ':'')+'Receipt cost allocations are shown separately from cash paid. Using stock does not charge you again.'));
-}
 const FullMoneyView = MoneyV2;
 MoneyV2 = function MoneyClarity(p) {
-  const {state:s, selectedMonth:m, setDialog} = p;
-  if (['goals','subscriptions'].includes(p.route?.view)) return e(FullMoneyView,p);
-  const f = forecast(s,m), entries = ledger(s).filter(x => (!s.trackingStart||x.date>=s.trackingStart) && dateMonth(x.date) === m).sort((a,b) => b.date.localeCompare(a.date));
-  const rows = transactionRows(s,entries), paid = entries.filter(x=>!x.refund).reduce((n,x)=>n+Math.round(x.amount*100),0), returned = -entries.filter(x=>x.refund).reduce((n,x)=>n+Math.round(x.amount*100),0), shares=spreadNote(s,m);
-  const groups = [...new Set(entries.map(x=>x.categoryId||x.category))].map(id=>({id,name:s.categories.find(c=>c.id===id)?.name||id,amount:entries.filter(x=>(x.categoryId||x.category)===id).reduce((n,x)=>n+Math.round(x.amount*100),0)})).sort((a,b)=>b.amount-a.amount);
+  const {state:s,selectedMonth:m,setDialog}=p;
+  if(['goals','subscriptions'].includes(p.route?.view))return e(FullMoneyView,p);
+  const f=forecast(s,m),entries=moneyTransactions(s).filter(x=>(!s.trackingStart||x.date>=s.trackingStart)&&dateMonth(x.date)===m).sort((a,b)=>b.date.localeCompare(a.date));
+  const rows=transactionRows(s,entries),paid=entries.filter(x=>!x.refund&&!x.credit).reduce((n,x)=>n+Math.round(x.amount*100),0),returned=-entries.filter(x=>x.refund).reduce((n,x)=>n+Math.round(x.amount*100),0);
+  const groups=[...new Set(entries.filter(x=>!x.credit).map(x=>x.categoryId||x.category))].map(id=>({id,name:s.categories.find(c=>c.id===id)?.name||id,amount:entries.filter(x=>(x.categoryId||x.category)===id).reduce((n,x)=>n+Math.round(x.amount*100),0)})).sort((a,b)=>b.amount-a.amount);
   return e(React.Fragment,null,
-    e(PageHeading,{title:'Money & saving',action:e(Btn,{onClick:()=>setDialog({type:'budget'})},'Edit allowance')},'One payment, one entry. Open a receipt to see its items.'),
+    e(PageHeading,{title:'Money & saving',action:e(Btn,{onClick:()=>setDialog({type:'budget'})},'Edit allowance')}),
     e('div',{className:'page-tabs'},e(Segment,{label:'Money view',value:'overview',onChange:v=>p.go({view:v}),options:[['overview','My month'],['goals','Saving goals'],['subscriptions','Subscriptions']]})),
-    e(BudgetRule,{state:s,month:m}),
     e('div',{className:'money-summary'},
-      e('section',{className:'balance-card '+(f.totalRemaining<0?'over-budget':'')},e('span',null,monthLabel(m)),e('h2',null,f.totalRemaining<0?'Over your allowance':'Left in this month’s budget'),e('strong',null,s.budgets[m]?money(Math.abs(f.totalRemaining)):'Not set'),e('p',null,money(f.baseTotal)+' allowance'+(f.carryIn?' − '+money(f.carryIn)+' earlier overspend':'')+' − '+money(f.totalSpent)+' counted this month'),shares.map(x=>e('p',{key:x.receipt.id,className:'sub-note'},x.shop+': '+pounds(x.pence)+' counted this month from '+pounds(x.receipt.paidPence)+' paid, allocated over '+x.receipt.spreadMonths+' months.')),f.carryOut>0&&e('small',null,carryForwardText(s,f))),
-      e('section',{className:'surface payment-summary'},e('h2',null,'What actually happened'),
-        [['Payments',pounds(paid)],['Money back',pounds(returned)],['Net cash paid',pounds(paid-returned)]].map(([label,value])=>e('div',{className:'summary-line',key:label},e('span',null,label),e('b',null,value))),
-        e('small',null,rows.filter(x=>!x.refund).length+' payments · '+rows.filter(x=>x.receiptTotal&&s.receipts.find(r=>r.id===x.receiptId)?.lines.some(l=>l.tracking!=='none')).length+' receipts with stock details'))),
-    e('section',{className:'surface ledger-panel'},e(SectionTitle,{title:'Bills & receipts',note:'Saved payments and receipts. Open a payment to see its details.',action:e('div',{className:'ledger-actions'},e(Btn,{icon:'back',onClick:()=>setDialog({type:'money-back'})},'Money back'),e(Btn,{kind:'primary',icon:'plus',onClick:()=>setDialog({type:'receipt'})},'Add payment'))}),
-      rows.map(x=>e(LedgerRow,{key:x.id,state:s,x,onOpen:x=>setDialog(transactionDialog(x))})),!rows.length&&e('p',{className:'empty-copy'},'No payments recorded this month.')),
-    e('details',{className:'surface quiet-details'},e('summary',null,'Spending calendar'),e(SpendingCalendar,{state:s,month:m,onAdd:date=>setDialog({type:'receipt',date}),onOpen:x=>setDialog(transactionDialog(x))})),
-    e('details',{className:'surface quiet-details'},e('summary',null,'Spending by category'),e('div',{className:'details-content'},e(Btn,{small:true,onClick:()=>setDialog({type:'targets'})},'Edit category targets'),groups.map(c=>e('div',{className:'summary-line',key:c.id},e('span',null,c.name),e('b',null,pounds(c.amount)))))),
-    e('details',{className:'surface quiet-details'},e('summary',null,'Upcoming costs & saving plans'),e('div',{className:'details-content'},[['Shopping plans',f.plannedPence],['Upcoming subscriptions',f.subscriptionPence],['I want to leave unspent',f.intentionPence],['After these plans',f.projectedPence]].map(([label,n])=>e('div',{className:'summary-line',key:label},e('span',null,label),e('b',null,pounds(n)))),e('p',{className:'muted'},'Plans are estimates. '+(f.unknown?f.unknown+' planned items still need a price.':'')),e(Btn,{small:true,onClick:()=>setDialog({type:'intention'})},'Edit saving intention'))),
-    e('details',{className:'surface quiet-details'},e('summary',null,'Monthly review'),e('div',{className:'details-content'},e('ul',null,
-      e('li',null,s.lists.filter(l=>dateMonth(l.date)===m).flatMap(l=>l.lines).filter(x=>x.status==='planned'&&x.priority==='optional').length+' optional purchases on your lists'),
-      e('li',null,s.stockEvents.filter(x=>x.action==='waste'&&dateMonth(x.date)===m).length+' waste records'),
-      e('li',null,s.subscriptions.filter(x=>!x.paused).length+' active subscriptions'),
-      e('li',null,s.mealEntries.filter(x=>x.status==='cooked'&&dateMonth(x.date)===m).length+' meals marked cooked')))));
+      e('section',{className:'balance-card '+(f.totalRemaining<0?'over-budget':'')},e('span',null,monthLabel(m)),e('h2',null,f.totalRemaining<0?'Over budget':'Remaining'),e('strong',null,s.budgets[m]?money(Math.abs(f.totalRemaining)):'Not set'),e('div',{className:'budget-numbers'},[['Allowance',f.allowanceTotal],['Spent',f.totalSpent],...(f.carryIn?[['Previous overspend',f.carryIn]]:[])].map(([label,n])=>e('div',{className:'summary-line',key:label},e('span',null,label),e('b',null,money(n)))))),
+      e('section',{className:'surface payment-summary'},e('h2',null,'Cash flow'),[['Payments',paid],...(returned?[['Refunds',returned]]:[]),...(f.incomePence?[['Income',f.incomePence]]:[]),['Net spent',paid-returned-(f.incomePence||0)]].map(([label,n])=>e('div',{className:'summary-line',key:label},e('span',null,label),e('b',null,pounds(n)))))),
+    e(MonthlyTotals,{state:s,month:m}),
+    e('section',{className:'surface ledger-panel'},e(SectionTitle,{title:'Transactions',action:e('div',{className:'ledger-actions'},e(Btn,{icon:'plus',onClick:()=>setDialog({type:'credit'})},'Add income'),e(Btn,{icon:'back',onClick:()=>setDialog({type:'money-back'})},'Money back'),e(Btn,{kind:'primary',icon:'plus',onClick:()=>setDialog({type:'receipt'})},'Add payment'))}),rows.map(x=>e(LedgerRow,{key:x.id,state:s,x,onOpen:x=>setDialog(transactionDialog(x))})),!rows.length&&e('p',{className:'empty-copy'},'No transactions.')),
+    e('details',{className:'surface quiet-details'},e('summary',null,'Calendar'),e(SpendingCalendar,{state:s,month:m,onAdd:date=>setDialog({type:'receipt',date}),onOpen:x=>setDialog(transactionDialog(x))})),
+    e('details',{className:'surface quiet-details'},e('summary',null,'Categories'),e('div',{className:'details-content'},e(Btn,{small:true,onClick:()=>setDialog({type:'targets'})},'Edit targets'),groups.map(c=>e('div',{className:'summary-line',key:c.id},e('span',null,c.name),e('b',null,pounds(c.amount)))))),
+    e('details',{className:'surface quiet-details'},e('summary',null,'Forecast'),e('div',{className:'details-content'},[['Shopping',f.plannedPence],['Subscriptions',f.subscriptionPence],['Saving target',f.intentionPence],['Remaining after plans',f.projectedPence]].map(([label,n])=>e('div',{className:'summary-line',key:label},e('span',null,label),e('b',null,pounds(n)))),f.unknown>0&&e('p',{className:'muted'},f.unknown+' items without a price'),e(Btn,{small:true,onClick:()=>setDialog({type:'intention'})},'Edit saving target'))));
 };
+function MonthlyTotals({state:s,month:m}){
+ const through=m>dateMonth(isoDate(new Date()))?m:dateMonth(isoDate(new Date())),rows=monthlyBudgetRows(s,through);
+ return e('section',{className:'surface monthly-totals'},e('h2',null,'Monthly totals'),e('div',{className:'month-table-scroll'},e('table',null,e('thead',null,e('tr',null,['Month','Allowance','Spent','Over budget'].map(x=>e('th',{key:x,scope:'col'},x)))),e('tbody',null,rows.map(x=>e('tr',{key:x.month,className:x.month===m?'selected':''},e('th',{scope:'row'},monthLabel(x.month)),e('td',null,x.allowancePence==null?'—':pounds(x.allowancePence)),e('td',null,pounds(x.spentPence)),e('td',{className:x.overPence?'negative':''},x.overPence?pounds(x.overPence):'—')))))));
+}
 
 class PlannerErrorBoundary extends React.Component {
   constructor(props){super(props);this.state={failed:false};}
@@ -5539,6 +5557,20 @@ function FoodAtHome(p) {
           !picking && !kept && e('div', { className: 'inline-actions' }, e(Btn, { small: true, onClick: () => setDialog(level ? { type: 'stock-group', ids: ids(g), name: entryName(g) } : { type: 'use-stock', ids: ids(g) }) }, level ? 'Update' : 'Use some'), e(Btn, { small: true, onClick: () => setDialog({ type: 'finish-stock', ids: ids(g) }) }, 'Finished')));
       }))),
     !shown.length && e('p', { className: 'empty-copy' }, q ? 'Nothing at home matches “' + query + '”.' : 'Nothing recorded here. Choose another place, or add stock.'));
+}
+
+/* Standalone income/cashback is separate from spending and linked refunds. */
+const beforeMoneyInDialog=ProductDialog;
+ProductDialog=function moneyInDialog(p){return p.dialog.type==='credit'?e(CreditEditor,p):e(beforeMoneyInDialog,p);};
+function CreditEditor({state:s,dialog:d,selectedMonth:m,commit,onClose}){
+ const old=(s.credits||[]).find(x=>x.id===d.id),today=isoDate(new Date());
+ const [form,set]=useDraft(()=>old?{...old,amount:(old.pence/100).toFixed(2)}:{from:'',amount:'',date:dateMonth(today)===m?today:monthStart(m),kind:'income',includeInBudget:true,note:''});
+ return e(FormModal,{title:old?'Money received':'Record money received',onClose,label:'Save money received',onSubmit:()=>commit(st=>saveCredit(st,{...form,id:old?.id,pence:pennies(form.amount)}),'Money received saved')},
+  e('div',{className:'form-grid'},e(Input,{label:'From',value:form.from,onChange:v=>set('from',v),required:true}),e(Input,{label:'Amount (£)',type:'number',min:'.01',step:'.01',value:form.amount,onChange:v=>set('amount',v),required:true})),
+  e('div',{className:'form-grid'},e(Input,{label:'Day received',type:'date',value:form.date,onChange:v=>set('date',v),required:true}),e(Select,{label:'Type',value:form.kind,onChange:v=>set('kind',v),options:[['income','Income'],['cashback','Cashback'],['other','Other money received']]})),
+  e('label',{className:'checkbox-label'},e('input',{type:'checkbox',checked:form.includeInBudget,onChange:ev=>set('includeInBudget',ev.target.checked)}),'Add to this month’s allowance'),
+  e(Textarea,{label:'Note',value:form.note,onChange:v=>set('note',v),rows:3}),
+  old&&e('details',{className:'danger-zone'},e('summary',null,'Remove this record'),e(Btn,{kind:'danger',onClick:()=>{if(confirm('Remove this money received record?'))commit(st=>removeCredit(st,old.id),'Money received removed');}},'Remove money received')));
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(e(PlannerErrorBoundary,null,e(App)));</script></body></html>

@@ -4,6 +4,8 @@
 
 ## Now
 
+**Budget history reconciled.** Plain transaction names, editable income/cashback, and a monthly totals table. Monthly allowances are independent; each month's overspending remains visible in history. [Session](sessions/2026-10-29-codex-budget-bank-history.md). Reload Budget → Money & saving. Other-account evidence is still to come.
+
 **Health → Gym is live, with exercise pictures.** Saved plan, A/B templates, scheduled workouts, actual set/repetition/weight logging, rest timer, partial saves, move, skip/restore, reopen, milestones/history and desk routine. Pictures appear beside every A/B exercise and all three desk movements; tap to enlarge (phone views stack). All 20 gym times and logs preserved; nothing marked completed. Ledger workaround archived with original text preserved. [Session](sessions/2026-10-29-codex-health-gym-native-plans.md), [brief](briefs/health-gym-plans.md).
 
 **Calendar is live:** addresses/Back inside framed apps and panels, drag own plans between days with Undo, add at an hour, phone swipe. **Inbox is live:** another session migrated/imported 318 messages and 8 actions after testing/backups; automatic import enabled. Envelope, Waiting on you, Today, bell/calendar and new Guide pages retained in the final Health build. See the 29 October Calendar and Mail session notes.
@@ -25,6 +27,6 @@ Reload → **Health → Gym → Open workout**; tap an exercise picture to enlar
 
 ## Data and latest sessions
 
-Core 207; Study 54; Budget 110; JobMap 52/1,211. Health VACUUM backup and private receipts: session above; pictures change no records. 25 focused tests, fixture logging and live desktop/phone checks pass. Latest build preserves Calendar/Inbox/Guide; previous distributions retained. Mail backups: `Life_OS_backups/mail-2026-10-29/`.
+Core 207; Study 54; Budget 116; JobMap 52/1,211. Budget API snapshots and private reconciliation: session above; 193 Budget and 39 host checks pass. Health VACUUM backup and private receipts: Gym session; pictures change no records. Latest build preserves Calendar/Inbox/Guide; previous distributions retained. Mail backups: `Life_OS_backups/mail-2026-10-29/`.
 
-Last five: native Gym/pictures; Mail live/Guide; Calendar finished (29 Oct); Inbox CP2–CP5; Calendar/day addresses (28 Oct). Notes: `documents/sessions/`.
+Last five: Budget bank history; native Gym/pictures; Mail live/Guide; Calendar finished (29 Oct); Inbox CP2–CP5. Notes: `documents/sessions/`.

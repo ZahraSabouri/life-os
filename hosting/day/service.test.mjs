@@ -93,6 +93,9 @@ test('home shows lists that still have something to buy, meals for the day, stoc
   assert.equal(home.meals[1].href, `/budget#/meals/week?m=${DATE.slice(0, 7)}&meal=m1`, 'a meal opens its own card in Budget')
   assert.deepEqual(home.stock, { total: 3, places: [{ place: 'Fridge', count: 2 }, { place: 'Cupboard', count: 1 }] })
   assert.deepEqual(home.budget, { month: '2026-10', totalPence: 25000 })
+  const incomeState={budgets:{'2026-10':{total:250},'2026-11':{total:250}},credits:[{date:'2026-10-07',pence:17100,includeInBudget:true},{date:'2026-10-08',pence:9999,includeInBudget:false}]}
+  assert.deepEqual(homeDay({state:incomeState},DATE).budget,{month:'2026-10',totalPence:42100})
+  assert.deepEqual(homeDay({state:incomeState},'2026-11-03').budget,{month:'2026-11',totalPence:25000})
   assert.equal(homeDay({ state: {} }, DATE).budget, null)
 })
 

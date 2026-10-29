@@ -223,11 +223,12 @@ export function homeDay(value, date) {
   }
   const month = date.slice(0, 7)
   const budget = plain(plain(state.budgets)[month])
+  const received = array(state.credits).filter(x => x?.includeInBudget === true && day(x.date)?.slice(0, 7) === month && Number.isSafeInteger(x.pence) && x.pence > 0).reduce((sum, x) => sum + x.pence, 0)
   return {
     lists,
     meals,
     stock: { total: [...places.values()].reduce((sum, count) => sum + count, 0), places: [...places].map(([place, count]) => ({ place, count })).sort((a, b) => b.count - a.count).slice(0, 5) },
-    budget: Number.isFinite(Number(budget.total)) && budget.total !== null && budget.total !== '' ? { month, totalPence: Math.round(Number(budget.total) * 100) } : null,
+    budget: Number.isFinite(Number(budget.total)) && budget.total !== null && budget.total !== '' ? { month, totalPence: Math.round(Number(budget.total) * 100) + received } : null,
     recipes: array(state.recipes).length,
     href: '/budget',
   }

@@ -11,6 +11,9 @@ function positive(value){const n=Number(value);need(Number.isFinite(n)&&n>0&&n<=
 function category(s,id){return s.categories.find(c=>c.id===id)||s.categories.find(c=>c.id==='uncategorised');}
 function validateV4(s){
   need(s&&s.version===4,'Unsupported backup version.');
+  if(s.rolloverOverspend!=null)need(typeof s.rolloverOverspend==='boolean','Invalid overspending setting.');
+  if(s.budgetStart!=null)need(/^\d{4}-(0[1-9]|1[0-2])$/.test(s.budgetStart),'Invalid allowance start month.');
+  if(s.credits!=null){need(Array.isArray(s.credits),'Invalid money received.');const ids=new Set();for(const x of s.credits){need(x&&typeof x.id==='string'&&!ids.has(x.id)&&validDate(x.date)&&typeof x.from==='string'&&x.from.trim()&&['income','cashback','other'].includes(x.kind)&&Number.isSafeInteger(x.pence)&&x.pence>0&&x.pence<=100000000&&typeof x.includeInBudget==='boolean'&&(x.note==null||typeof x.note==='string'),'Invalid money received.');ids.add(x.id);}}
   if(s.trackingStart){need(validDate(s.trackingStart),'Invalid plan start.');for(const field of ['expenses','receipts','adjustments'])for(const row of s[field]||[])need(row.date>=s.trackingStart,'This plan starts on '+s.trackingStart+'. Keep older products in the catalogue, not in spending.');}
   upgradeState({...s,version:3});
   for(const field of ['categories','items','lists','receipts','lots','stockEvents','mealEntries','recipes','subscriptions','goals','adjustments']){
@@ -53,7 +56,24 @@ function migrateV4(input){
 }
 const originalBudgetFigures=budgetFigures;
 function ledger(s){return [...s.expenses.map(x=>({...x,type:x.categoryId?(category(s,x.categoryId).pool==='grocery'?'grocery':'other'):x.type})),...(s.adjustments||[]).map(x=>{const exp=s.expenses.find(e=>e.id===x.expenseId);return {...x,amount:x.pence/100,type:exp?.categoryId?(category(s,exp.categoryId).pool==='grocery'?'grocery':'other'):exp?.type||'other',categoryId:exp?.categoryId,category:exp?.category,note:x.kind==='moneyback'?'Money back from '+(x.from||'someone'):'Refund · '+(exp?.note||exp?.category||''),forNote:exp?.note||exp?.category||'',refund:true};})];}
-budgetFigures=function(s,m){return originalBudgetFigures(s.version===4?{...s,expenses:ledger(s)}:s,m);};
+budgetFigures=function(s,m){
+ if(s.version!==4)return originalBudgetFigures(s,m);
+ const budgets={...s.budgets};
+ for(const x of s.credits||[])if(x.includeInBudget){const month=dateMonth(x.date),b=budgets[month]||{total:0,grocery:null};budgets[month]={...b,total:(Math.round((b.total||0)*100)+x.pence)/100};}
+ const f=originalBudgetFigures({...s,budgets,expenses:ledger(s)},m),received=(s.credits||[]).filter(x=>dateMonth(x.date)===m);
+ return {...f,b:s.budgets[m]||{total:0,grocery:null},baseTotal:s.budgets[m]?.total||0,allowanceTotal:f.baseTotal,incomePence:received.reduce((n,x)=>n+x.pence,0),budgetIncomePence:received.filter(x=>x.includeInBudget).reduce((n,x)=>n+x.pence,0),...(s.rolloverOverspend===false||s.budgetStart&&m<s.budgetStart?{carryOut:0}:{} )};
+};
+function moneyTransactions(s){return [...ledger(s),...(s.credits||[]).map(x=>({...x,credit:true,amount:-x.pence/100,type:'other',category:'Money received',note:(x.kind==='cashback'?'Cashback':'Money received')+' from '+x.from}))];}
+function saveCredit(s,d){
+ const old=d.id?(s.credits||[]).find(x=>x.id===d.id):null;need(!d.id||old,'Money received record not found.');
+ const x={...old,id:old?.id||uid('credit'),date:d.date,from:String(d.from||'').trim(),pence:d.pence,kind:d.kind||old?.kind||'income',includeInBudget:d.includeInBudget===true,note:String(d.note||'').trim()};
+ const next={...s,credits:old?s.credits.map(c=>c.id===old.id?x:c):[...(s.credits||[]),x]};validateV4(next);return next;
+}
+function removeCredit(s,id){need((s.credits||[]).some(x=>x.id===id),'Money received record not found.');return {...s,credits:s.credits.filter(x=>x.id!==id)};}
+function monthlyBudgetRows(s,through=dateMonth(isoDate(new Date()))){
+ const months=[...new Set([...Object.keys(s.budgets),...s.expenses.map(x=>dateMonth(x.date)),...(s.credits||[]).map(x=>dateMonth(x.date))])].filter(m=>m<=through).sort();
+ return months.map(month=>{const f=budgetFigures(s,month),hasAllowance=!!s.budgets[month]||f.budgetIncomePence>0;return {month,allowancePence:hasAllowance?Math.round(f.allowanceTotal*100):null,spentPence:Math.round(f.totalSpent*100),overPence:hasAllowance?Math.max(0,Math.round((f.totalSpent-f.allowanceTotal)*100)):null};});
+}
 function subscriptionDates(sub,month){
   if(sub.paused)return [];
   let date=sub.nextDue,out=[],count=0;
@@ -960,4 +980,4 @@ function newBudgetState(){
  return validateV4({version:4,resources:[],expenses:[],meals:{},budgets:{},categories:clone(SEED.categories),items:[],lists:[],receipts:[],lots:[],stockEvents:[],mealEntries:[],recipes:[],subscriptions:[],goals:[],adjustments:[],resourceMeta:{},savingIntentions:{},categoryTargets:{},shops:[]});
 }
 
-function budgetMonthChoices(s,selected=dateMonth(isoDate(new Date()))){const now=dateMonth(isoDate(new Date())),future=Array.from({length:13},(_,i)=>{const d=new Date(now+'-01T12:00:00');d.setMonth(d.getMonth()+i);return dateMonth(isoDate(d));});return [...new Set([...future,...Object.keys(s.budgets),...s.resources.map(r=>r.allocatedMonth).filter(Boolean),selected])].sort();}
+function budgetMonthChoices(s,selected=dateMonth(isoDate(new Date()))){const now=dateMonth(isoDate(new Date())),future=Array.from({length:13},(_,i)=>{const d=new Date(now+'-01T12:00:00');d.setMonth(d.getMonth()+i);return dateMonth(isoDate(d));});return [...new Set([...future,...Object.keys(s.budgets),...s.resources.map(r=>r.allocatedMonth).filter(Boolean),...s.expenses.map(x=>dateMonth(x.date)),...(s.credits||[]).map(x=>dateMonth(x.date)),selected])].sort();}

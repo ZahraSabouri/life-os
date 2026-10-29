@@ -161,9 +161,10 @@ function budgetFigures(state,month){
   }
   // Recompute debt from the ledger, in pennies. Savings never increase a later
   // allowance; a missing budget contributes zero, so outstanding debt is retained.
-  const months=[...new Set([...Object.keys(state.budgets),...spending.keys()])].filter(key=>/^\d{4}-(0[1-9]|1[0-2])$/.test(key)&&key<month).sort();
+  const months=[...new Set([...Object.keys(state.budgets),...spending.keys()])].filter(key=>/^\d{4}-(0[1-9]|1[0-2])$/.test(key)&&key<month&&(!state.budgetStart||key>=state.budgetStart)).sort();
   let debt=0;
   for(const key of months)debt=Math.max(0,debt+(spending.get(key)?.total||0)-pence(state.budgets[key]?.total||0));
+  if(state.rolloverOverspend===false)debt=0;
   const spent=spending.get(month)||{total:0,grocery:0},base=pence(b.total),adjusted=base-debt,remaining=adjusted-spent.total;
   const groceryCap=b.grocery==null?Math.max(0,adjusted):pence(b.grocery);
   const groceryRemaining=Math.min(groceryCap-spent.grocery,remaining);
