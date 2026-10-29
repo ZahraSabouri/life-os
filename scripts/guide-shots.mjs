@@ -151,7 +151,7 @@ const RECIPES = {
   'inbox-digests.jpg': async () => { exampleOnly(); await go('/inbox/digests', '.mail-digest'); await settle(800); await view('inbox-digests.jpg', { marks: ['.mail-how', '.mail-headline', '.mail-sources'] }) },
   'inbox-today.jpg': async () => { exampleOnly(); await go('/today', '.day-path'); await panel('Waiting on you').locator('.mail-action').first().waitFor({ timeout: 20_000 }); await part('inbox-today.jpg', panel('Waiting on you')) },
   // ---- Finding your way
-  'topbar.jpg': async () => { await go('/court', '.court-topbar'); await part('topbar.jpg', page.locator('header.court-topbar'), { pad: 4, marks: ['text:Life OS', 'text:Court', 'text:Study hub', '.notice-bell', '.focus-button', '.guide-link', '.style-switch-trigger', 'text:Divan'] }) },
+  'topbar.jpg': async () => { await go('/court', '.court-topbar'); await part('topbar.jpg', page.locator('header.court-topbar'), { pad: 4, marks: ['text:Life OS', 'text:Court', 'text:Study hub', '.mail-envelope', '.notice-bell:not(.mail-envelope)', '.focus-button', '.guide-link', '.style-switch-trigger', 'text:Divan'] }) },
   // ---- Journal and People, with examples
   'journal.jpg': async () => { await go('/journal', '.journal-write'); await page.locator('.journal-write textarea').fill('Walked along the Taff after the lecture. The light on the water was gold.'); await page.locator('.journal-mood input').fill('Calm'); await part('journal.jpg', page.locator('.journal-write'), { pad: 14, marks: ['.journal-write input[type="date"]', '.journal-mood input', '.journal-write textarea', '.journal-add-pictures', '.journal-save'] }) },
   'journal-pages.jpg': () => withExamples(journalExamples, async () => { await go('/journal', '.journal-page'); await settle(1500); await part('journal-pages.jpg', page.locator('.journal-month').first()) }),
@@ -354,6 +354,8 @@ const RECIPES = {
     } finally { await context.unroute('**/apps/cardiff-life/api/own-events', serve) }
   },
   'cardiff-choices.jpg': async () => { await go('/cardiff-life'); const frame = await cardiff(); await frame.locator('[data-view="explore"]').click(); await settle(800); await view('cardiff-choices.jpg') },
+  'cardiff-university.jpg': async () => { await go('/cardiff-life'); const frame = await cardiff(); const panel = frame.locator('.university-first'); await panel.waitFor(); await settle(800); await part('cardiff-university.jpg', panel, { on: frame, marks: ['#university-coverage', '#university-list'] }) },
+  'cardiff-updates.jpg': async () => { await go('/cardiff-life'); const frame = await cardiff(); await frame.locator('[data-view="updates"]').click(); await frame.locator('#updates-view').waitFor(); await settle(800); await part('cardiff-updates.jpg', frame.locator('#updates-view'), { on: frame, marks: ['text:Your saved choices', 'text:Worth checking before you go', 'text:Weekly research'] }) },
   'cardiff-communities.jpg': async () => { await go('/cardiff-life'); const frame = await cardiff(); await frame.locator('[data-view="communities"]').click(); await settle(800); await view('cardiff-communities.jpg') },
   // ---- Budget
   'budget.jpg': async () => { await go('/budget'); const frame = await budget(); await view('budget.jpg', { on: frame, marks: ['text:My everyday', 'select', 'text:Add payment'] }) },

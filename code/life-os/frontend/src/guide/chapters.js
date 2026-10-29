@@ -16,7 +16,7 @@ export const CHAPTERS = [
   {
     id: 'top-bar', title: 'Finding your way', intro: 'The bar at the top is on every page. Everything in Life OS is one click from it.',
     steps: [
-      { title: 'The top bar', image: 'topbar.jpg', marks: ['“Life OS” goes to the Court from anywhere', 'The pages of Life OS itself: Court, Today, Calendar, Review, Journal, People', 'The four apps inside, and Health', 'The bell: notices from every part', 'Focus: the timer', 'This Guide', 'Style, and Light or Dark', 'Divan: the opening page'], text: 'On a laptop-sized window the date steps aside and Style and Light/Dark show only their marks (point at one for its name), so the bar stays on one line. On a phone it folds behind “Menu”.' },
+      { title: 'The top bar', image: 'topbar.jpg', marks: ['“Life OS” goes to the Court from anywhere', 'The pages of Life OS itself: Court, Today, Calendar, Review, Journal, People', 'The four apps inside, and Health', 'The envelope: what is waiting on you (the Inbox)', 'The bell: notices from every part', 'Focus: the timer', 'This Guide', 'Style, and Light or Dark', 'Divan: the opening page'], text: 'On a laptop-sized window the date steps aside and Style and Light/Dark show only their marks (point at one for its name), so the bar stays on one line. On a phone it folds behind “Menu”.' },
       { title: 'The strip under the bar', image: 'strip.jpg', text: 'Inside one of the four apps, a strip says what matters there today: what is due, what closes, what is next. Its first line is a link to the thing it names. “The whole day” on its right opens Today.' },
     ],
   },
@@ -30,7 +30,7 @@ export const CHAPTERS = [
     ],
   },
   {
-    id: 'today', title: 'Today', intro: 'Today is the working page: the day in order on the left, and Study, Home, Jobs, Health and Notes beside it.',
+    id: 'today', title: 'Today', intro: 'Today is the working page: the day in order on the left, and Waiting on you, Study, Home, Jobs, Health and Notes beside it.',
     steps: [
       { title: 'The whole page', image: 'today.jpg', marks: ['A day back, today, a day forward, or any date', 'The add line, for this day', 'Your day in order', 'Study', 'Jobs'], text: 'Every other day has the same page: the buttons at the top move between days. Home and Notes are further down.' },
       { title: 'Your day, in order', image: 'today-path.jpg', marks: ['When it starts and ends', 'The steps of the study card: tick one here and the Study hub has it too', '“Card done” finishes the whole card'], text: 'Things with a time come first, with a line at “now”. Then “Any time today”, then “Also today” (deadlines and all-day things).' },
@@ -70,7 +70,7 @@ export const CHAPTERS = [
     id: 'people', title: 'People', intro: 'The people in your life, and what you want to remember about them.',
     steps: [
       { title: 'Add a person', image: 'people.jpg', marks: ['Only a name is needed', 'A birthday goes on your calendar every year', 'How you know them, and how to reach them', 'Notes: gift ideas, what they like'], text: 'Open People in the top bar.' },
-      { title: 'Birthdays coming up, and everyone', image: 'people-list.jpg', text: '“Birthdays in the next two months” lists who is next and how old they turn. Under it is everyone, with “Change” and “Remove”. A birthday also shows on the Calendar, on Today, and in the bell on the day and the day before.' },
+      { title: 'Birthdays coming up, and everyone', image: 'people-list.jpg', text: '“Birthdays in the next two months” lists who is next and how old they turn. Under it is everyone, with “Change” and “Remove”. A birthday also shows on the Calendar, on Today, and in the bell on the day and the day before; on the day, “Wish them a happy birthday” is on Waiting on you. A person’s card also shows what you owe them and their latest messages, from the Inbox; “Owe them a text” adds one.' },
     ],
   },
   {
@@ -137,11 +137,13 @@ export const CHAPTERS = [
   {
     id: 'cardiff', title: 'Cardiff Life', intro: 'Events and communities in Cardiff: a researched list to choose from, and the events you add yourself.',
     steps: [
-      { title: 'A week in Cardiff', image: 'cardiff.jpg', marks: ['The pages of Cardiff Life', 'Move between weeks', 'Add an event of your own', 'Show or hide what else is on'], text: '“Maybe” keeps an event open; “Plan to go” puts it in your plan and on the Life OS calendar.' },
+      { title: 'A week in Cardiff', image: 'cardiff.jpg', marks: ['The pages of Cardiff Life', 'Move between weeks', 'Add an event of your own', 'Show or hide what else is on'], text: '“Maybe” keeps an event open; “Plan to go” puts it in your plan and on the Life OS calendar. Researched events you have not chosen show on the calendar too, marked “Available option”.' },
+      { title: 'University first: opportunities and deadlines', image: 'cardiff-university.jpg', marks: ['What the last research checked, and what it could not', 'Each opportunity: its deadline, the next step, and “Eligibility and source”'], text: 'At the top of every Cardiff Life page: careers events, schemes and grants found by the research, most pressing first, each with its deadline (and when a booking date is unknown, it says so), the next step and a link to the source. Under “My week”, a note on your saved teaching timetable says when a university email changed a class or two things overlap.' },
       { title: 'Add my own event', image: 'cardiff-add.jpg', text: 'Only the name is needed; day, time, place, kind, cost, link and notes can be filled in later. It is kept in Life OS and shows on your calendar.' },
       { title: 'Change or remove it', image: 'cardiff-detail.jpg', text: 'Open an event you added to see “Change this event” and “Remove this event”. A note of your own can be kept with any event you chose.' },
       { title: 'All choices', image: 'cardiff-choices.jpg', text: 'Every event on the list, with filters by kind, date, source and price, and a search. “Saved” shows only what you chose.' },
       { title: 'Communities', image: 'cardiff-communities.jpg', text: 'Clubs, societies and groups worth knowing, each with a link.' },
+      { title: 'Updates & backup', image: 'cardiff-updates.jpg', marks: ['Your saved choices: “Export my choices” and “Import a backup”', 'Worth checking before you go: tickets, sign-ups and closing dates', 'Weekly research: when the lists are searched again'], text: 'Your choices and notes are kept in this browser: “Export my choices” saves a backup before you change browser or clear its data, and “Import a backup” adds back what is missing without touching what is there. Below: what to check before an event (a ticket to book, a sign-up that closes), and when the research runs.' },
     ],
   },
   {
@@ -230,6 +232,7 @@ export const STEP_OPENS = {
 // "How do I…?": the things people come to do, each answered in a few steps, with the picture that
 // shows it and a button that goes to the place. `part` is the chapter that says more.
 export const TASKS = [
+  { id: 'uni-opportunities', q: 'See university opportunities and their deadlines', part: 'cardiff', open: ['/cardiff-life', 'Open Cardiff Life'], images: ['cardiff-university.jpg'], steps: ['Open Cardiff Life in the top bar.', '“Opportunities & deadlines” is at the top, most pressing first, each with its stages and dates.', 'The line under the heading says what the last research covered and what it could not check.', 'Open an opportunity’s link to apply on its own site.'] },
   { id: 'gather-mail', q: 'Gather my mail into Life OS', part: 'inbox', open: ['/inbox/digests', 'Open Digests'], images: ['inbox-digests.jpg'], steps: ['Once: connect Gmail in the Claude app (Settings → Connectors), and sign in to Cardiff Outlook and Learning Central in Claude’s own browser.', 'In the Claude app, open your scheduled tasks and run “Gather my inboxes”. Or give Codex or Claude Code the line on the Digests page.', 'Wait for it to finish; it ends with a short digest.', 'Open the Inbox: Waiting on you has who you owe, Mail has every message, Digests has the run.'] },
   { id: 'who-i-owe', q: 'See who I owe a reply, a text or a call', part: 'inbox', open: ['/inbox', 'Open the Inbox'], images: ['inbox.jpg', 'inbox-today.jpg'], steps: ['Press the envelope beside the bell, or look at “Waiting on you” on Today.', 'Today first, then This week and Whenever. The words on each line say what kind it is and how pressing.', 'Done when it is done; Tomorrow or Next week to put it off; Not needed to let it go.', '“Open the email” goes to the message in Outlook or Gmail.'] },
   { id: 'owe-text', q: 'Remember to text or call someone', part: 'inbox', open: ['/inbox', 'Open the Inbox'], images: ['inbox.jpg'], steps: ['On Today’s add line, or on Waiting on you, type it the way you would say it: “text Sam about Saturday”, “call the GP surgery”.', 'With no clock time it goes on Waiting on you; with one (“17:30 call mum”) it stays a plan.', 'A name you have in People puts it under them; if two people share the name, choose one on the Inbox page.', 'Or press “Owe them a text” on their card in People.'] },
