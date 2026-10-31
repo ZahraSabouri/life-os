@@ -408,6 +408,16 @@ Brief: `briefs/health-part.md`. Her words:
 - [x] 25 focused domain/API/render/picture tests and intercepted browser logging checks; desktop/mobile live checks. Final build retains the latest Calendar, Inbox and Guide. Guide screenshots and records updated.
 - [ ] **(Xar)** Reload Life OS → Health → Gym; open the next workout, inspect technique, then log only actual sets and duration when training.
 
+## AA. Reset for tomorrow again (31 October)
+
+> “reset again for tomorrow”
+> “i will only go to two of my classes next week on thursday. will be home for work or library all other days”
+
+- [x] Verify the Sunday 1 November reset already saved by the other session; do not duplicate it. Keep 72 cards/135 rules, all progress and the protected days/evenings.
+- [x] Independently check all future blocks, travel/breaks/daily limits, 83 source files and detailed step totals; inspect live Today, Study hub and Calendar without writes.
+- [x] Apply Thursday-only teaching attendance for 2–8 November: archive five personal class occurrences, retain their source records and Friday's Test 2. No early-lunch exception is needed.
+- [x] Bring eight existing Tuesday/Wednesday blocks earlier, retain 72 cards/135 rules and all ticks, preserve free days/gym/jobs and the rest of December. Backup and revision checks; post-save schedule/source checks and live app walkthrough pass (Study 59).
+
 ## L. Everything leads somewhere
 > "everything should be clickable in the LifeOS in the study hub. When I click on a schedule, when I click on LifeOS, it should redirect to the main URL for LifeOS. I'm not seeing this happening."
 > "when you click on [Life OS] … Click on the name above. It should, like directly direct to the main page, main URL. And if you click on a specific job role … on the today page … I should be able to kind of be directed to the same component … in the job map app." (12 October evening)
