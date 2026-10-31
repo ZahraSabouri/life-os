@@ -10,11 +10,11 @@
 
 **Calendar is live:** addresses/Back inside framed apps and panels, drag own plans between days with Undo, add at an hour, phone swipe. **Inbox is live:** another session migrated/imported 318 messages and 8 actions after testing/backups; automatic import enabled. Envelope, Waiting on you, Today, bell/calendar and new Guide pages retained in the final Health build. See the 29 October Calendar and Mail session notes.
 
-**Study/reset:** 72 cards/136 blocks through 31 December. Test 2: 6 November (20%); project: 13 November 23:59 (60%); CMT309 cautious finish 17 December (portal 27 December); MAT021 starts 16 November. Mondays/Saturdays, Friday/Sunday evenings and 24–27 December protected. Budget history/allowance/subscriptions preserved; old lists archived. Cardiff: 149 events/90 communities/11 opportunities; Outlook backfill partial.
+**Study/reset:** reset again on 31 October for Sunday 1 November: Thursday's three unfinished cards fitted in, 8 blocks moved, nothing marked done; the Test 2 formula sheet is linked ([session](sessions/2026-10-31-claude-code-reset-for-sunday.md)). 72 cards/135 blocks through 31 December. Test 2: 6 November (20%); project: 13 November 23:59 (60%); CMT309 cautious finish 17 December (portal 27 December); MAT021 starts 16 November. Mondays/Saturdays, Friday/Sunday evenings and 24–27 December protected. Budget history/allowance/subscriptions preserved; old lists archived. Cardiff: 149 events/90 communities/11 opportunities; Outlook backfill partial.
 
 ## Exact next step
 
-Reload → **Health → Gym → Open workout**; tap an exercise picture to enlarge. First session Friday 30 October 08:30. Log only actual work. Try Calendar's acceptance checklist (brief items 1–9). Study: Today/Study hub → Week; check unreleased Test 2 material.
+**Sunday 1 November:** Today from 09:00 (MLE/MAP, z-tests, Gym B 13:15, t-tests, project brief, weekly reset 17:20). Gym A of 30 October has no log: log it if she went, Skip it in Health → Gym if not. Log only actual work. Try Calendar's acceptance checklist (brief items 1–9). Study: Today/Study hub → Week; Test 2's formula sheet is in; the official exam-style questions are not yet.
 
 **Next prompt:** “Check the newly released Test 2 material and adjust my plan around what I actually completed.”
 
@@ -27,6 +27,6 @@ Reload → **Health → Gym → Open workout**; tap an exercise picture to enlar
 
 ## Data and latest sessions
 
-Core 207; Study 54; Budget 116; JobMap 52/1,211. Budget API snapshots and private reconciliation: session above; 193 Budget and 39 host checks pass. Health VACUUM backup and private receipts: Gym session; pictures change no records. Latest build preserves Calendar/Inbox/Guide; previous distributions retained. Mail backups: `Life_OS_backups/mail-2026-10-29/`.
+Core 207; Study 58; Budget 116; JobMap 52/1,211. Budget API snapshots and private reconciliation: session above; 193 Budget and 39 host checks pass. Health VACUUM backup and private receipts: Gym session; pictures change no records. Latest build preserves Calendar/Inbox/Guide; previous distributions retained. Mail backups: `Life_OS_backups/mail-2026-10-29/`.
 
-Last five: Budget bank history; native Gym/pictures; Mail live/Guide; Calendar finished (29 Oct); Inbox CP2–CP5. Notes: `documents/sessions/`.
+Last five: Reset for Sunday (31 Oct); Budget bank history; native Gym/pictures; Mail live/Guide; Calendar finished (29 Oct); Inbox CP2–CP5. Notes: `documents/sessions/`.

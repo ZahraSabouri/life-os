@@ -4,6 +4,10 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 31 October 2026 — reset for Sunday 1 November
+
+- **"reset everything for tomorrow again"**, then "go on". The plan starts again from Sunday 1 November inside the rules of 28 October (Saturday and Monday free, Friday and Sunday evenings free, at most six hours a day). Thursday's three unfinished cards are fitted in: MLE/MAP on Sunday, Regression 1 and the Colab setup on Tuesday 3 November, Python basics on Sunday 8 November using its catch-up hour. Nothing is marked done. *Why this shape (proposal, hers to change):* Statistics first through 13 November, topics in course order, the eve of Test 2 kept light.
+
 ## 29 October 2026 — Back inside the framed apps and for every panel; plans dragged between days (Xar with Claude Code)
 
 - Xar: "elevate ux, cover uncovereds and test and finish the thing and push it to main branch".
