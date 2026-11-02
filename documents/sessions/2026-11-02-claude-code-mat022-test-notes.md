@@ -11,3 +11,6 @@ Seven MAT022 knowledge notes, saved through the guarded state API (`.runtime/stu
 
 ## Checks and data
 Dry run, PGDMP backup `Life_OS_backups/study-2026-11-02/before-mat022-knowledge-2026-11-02-1793622773511.dump`, If-Match PUT, readback equal. One follow-up guarded PUT replaced `Pr(>|t|)` in a table cell, where its pipes would split the row. Study revision 71 → 73 (66 → 71 came from Xar's own use in between). Knowledge notes 4 → 11; nothing else changed. Not checked in a browser.
+
+## Follow-up: step-by-step notes
+Xar sent the exponential MLE in four steps: "add this to the app and things like this useful for the test". Four more Test 2 notes (`knowledge-notes-2.mjs`), laid out as Step 1 → 4 with `$$` display maths, like her screenshot: MLE Exponential (her four steps plus the working and a numeric example); MLE Bernoulli/Poisson/Geometric/Normal; MAP Bernoulli with a Beta prior (the Test 2 app uses Beta, never Gamma); step-by-step recipes for a CI, t-test, χ² independence, ANOVA and regression by hand. Backup `before-mat022-knowledge-2-2026-11-02-1793627485675.dump`; revision 77 → 78; notes 11 → 15.
