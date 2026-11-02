@@ -33,6 +33,8 @@ export function MaterialPreview({ material, frameRef }) {
         : viewer === 'markdown' ? <Markdown text={text} />
         : viewer === 'notebook' ? <Notebook text={text} />
         : ['text', 'code'].includes(viewer) ? <pre>{text}</pre>
+        // A study app the server lists runs unsandboxed so it can keep its progress in this browser.
+        : viewer === 'app' && url.startsWith('/study-apps/') ? <iframe ref={frame} title={titleOf(material)} src={url} />
         : viewer === 'frame' || viewer === 'html' ? <iframe ref={frame} title={titleOf(material)} src={url} {...(/\.pdf(\?|$)/i.test(url) ? {} : { sandbox: 'allow-scripts allow-forms allow-popups' })} />
         : <p>This file opens in its own application. Use Open in new tab.</p>}
     </div>

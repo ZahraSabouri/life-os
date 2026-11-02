@@ -122,6 +122,17 @@ export function createLifeOsApp(options = {}) {
       if (/\.(md|csv)$/i.test(filePath)) res.setHeader('Content-Type', 'text/plain; charset=utf-8')
     },
   }))
+  // Self-contained study apps (one offline index.html each), listed in Life_OS_data/study/study-apps.json as
+  // [{ "id": "...", "file": "<absolute path to index.html>" }]. Unlike /study-files these run their scripts, so only
+  // listed files are served, read where they are (never copied), and kept from calling out.
+  app.get('/study-apps/:id/', (req, res) => {
+    let apps = []
+    try { apps = JSON.parse(fs.readFileSync(options.studyApps ?? path.resolve(projectRoot, '../Life_OS_data/study/study-apps.json'), 'utf8')) } catch {}
+    const file = Array.isArray(apps) ? apps.find((row) => row?.id === req.params.id)?.file : null
+    if (typeof file !== 'string' || !path.isAbsolute(file) || !/index\.html?$/i.test(file) || !fs.existsSync(file)) return res.status(404).json({ error: 'No such study app' })
+    res.set({ 'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'self' data: blob: 'unsafe-inline'; connect-src data: blob:; frame-ancestors 'self'" })
+    res.sendFile(file)
+  })
   app.use('/study-files', express.static(studyFilesRoot(projectRoot), {
     fallthrough: false, dotfiles: 'deny',
     setHeaders(res, filename) {
