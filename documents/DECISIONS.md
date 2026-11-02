@@ -4,7 +4,12 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
-## 31 October 2026 — next week: Thursday classes, home/library otherwise
+## 2 November 2026 — reset from Monday 12:00; Friday classes only this week
+
+- Xar: “we need a reset again for all the app from 12 noon today. got an emergency exam and will only go to my classes on friday.” Read as Test 2 (Friday 6 November 14:10) being the emergency. Supersedes the 31 October attendance choice for 2–8 November: Thursday's CMT309 lecture/practical archived as not attending; Friday's MAT022 lab and lecture restored. Original timetable records kept.
+- Monday 2 November afternoon is used for study this once, at her request; the Monday/Saturday rule otherwise stands. Sunday's unticked Test 2 cards run 13:00–17:40 today; Tuesday is reordered so topics stay in course order; Thursday's freed morning takes the project brief and Colab setup. Sunday 1 November's weekly-reset block is removed because this reset did that job. No study or gym completion inferred.
+
+## 31 October 2026 — next week: Thursday classes, home/library otherwise (superseded 2 November for this week)
 
 - Xar: “i will only go to two of my classes next week on thursday. will be home for work or library all other days”. Applies to 2–8 November only. Keep Thursday's CMT309 lecture and practical; archive the other five personal teaching occurrences with original timetable records/source metadata preserved. Friday's Test 2 remains an assessment to attend.
 - Use the freed time to bring eight Tuesday/Wednesday study blocks earlier, without increasing their study totals. Tuesday ends 17:50, Wednesday 16:25. Lunch fits the original window; no earlier-lunch exception is needed. Monday/Saturday and the existing evening/holiday protections remain.
