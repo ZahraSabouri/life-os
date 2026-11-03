@@ -80,11 +80,13 @@ code/life-os/frontend/dist-next/
 /mail/gather-log.md
 /mail/gather-state.json
 /mail/import-log.md
+/mail/suggestions.md
 
 # Loose mail exports, intake checkpoints and backfills are private too.
 /mail/*.json
 !/mail/mail-batch.schema.json
 !/mail/example-batch.json
+!/mail/example-batch-v2.json
 !/mail/sources.example.json
 /mail/*.json.part
 /mail/archive/
@@ -101,3 +103,6 @@ code/life-os/frontend/dist-next/
 *.dump
 *.pgdump
 *.sqlite3
+
+# Harvest raw archive: private mail, course and web captures
+/harvest/

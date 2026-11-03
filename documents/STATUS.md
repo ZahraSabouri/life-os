@@ -10,7 +10,7 @@
 
 ## Exact next step
 
-CP1 of the Harvest brief: the v2 format, its checker and the routing rule. Nothing visible in the app yet.
+CP1 is done (`[5-cp1]`: the v2 format, its checker, the routing rule in `shared/harvest.js`, `mail/HARVEST.md`). Next: CP2, storing items (a migration on `lifeos_test`, then `lifeos`, each dumped first). Xar added on 3 November: a "Came in" strip on each part's page, the sources panel on the log, sender rules in Mail, app suggestions to `mail/suggestions.md` (in the brief).
 
 **Next prompt:** "Read AGENTS.md and documents/STATUS.md, then do the next unchecked checkpoint of documents/briefs/stage-5-harvest.md on branch stage/5-harvest."
 

@@ -1,0 +1,77 @@
+{
+  "format": "life-os.mail-batch",
+  "version": 2,
+  "runId": "2026-11-02-0700-ex4mp2",
+  "gatheredAt": "2026-11-02T07:00:00Z",
+  "agent": "Example data for tests and the Guide (not real mail)",
+  "sources": [
+    { "id": "uni-outlook", "label": "University Outlook", "kind": "outlook", "route": "browser", "status": "read", "window": { "from": "2026-10-30T00:00:00Z", "to": "2026-11-02T06:50:00Z" }, "coverage": "Inbox (Focused and Other), 30 October to 2 November: 3 messages." },
+    { "id": "gmail", "label": "Gmail", "kind": "gmail", "route": "connector", "status": "read", "window": { "from": "2026-10-30T00:00:00Z", "to": "2026-11-02T06:55:00Z" }, "coverage": "Primary, Updates and Promotions, 30 October to 2 November: 3 messages." },
+    { "id": "learning-platform", "label": "Learning platform", "kind": "learning-central", "route": "browser", "status": "read", "window": { "from": "2026-10-30T00:00:00Z", "to": "2026-11-02T06:58:00Z" }, "coverage": "Announcements and new content in 3 courses." },
+    { "id": "web-events", "label": "Event sites", "kind": "other", "route": "browser", "status": "read", "window": { "from": "2026-11-01T00:00:00Z", "to": "2026-11-01T12:00:00Z" }, "coverage": "Students' union and city listings, next 21 days." }
+  ],
+  "messages": [
+    {
+      "ref": "m1", "source": "learning-platform", "sourceId": "lc:ds101-ann-0042", "kind": "announcement", "receivedAt": "2026-10-30T09:15:00Z",
+      "from": { "name": "Dr A. Example" }, "subject": "DS101: week 7 lab moved", "course": "DS101 Data Science", "folder": "Announcements",
+      "link": "https://learning.example.ac.uk/ultra/courses/_101_1/announcements",
+      "text": "The week 7 lab on Thursday 5 November moves to Room 0.12, same time (14:00 to 16:00).",
+      "summary": "The week 7 lab on Thursday 5 November moves to Room 0.12, 14:00 to 16:00.", "category": "announcement", "priority": "high", "priorityReason": "Changes where to be on Thursday."
+    },
+    {
+      "ref": "m2", "source": "learning-platform", "sourceId": "lc:ds101-content-0107", "kind": "notification", "receivedAt": "2026-10-30T16:40:00Z",
+      "from": { "name": "Learning platform" }, "subject": "New content: Coursework 2 brief", "course": "DS101 Data Science", "folder": "Content",
+      "link": "https://learning.example.ac.uk/ultra/courses/_101_1/outline",
+      "summary": "The Coursework 2 brief is published; submission is due 4 December.", "category": "announcement", "priority": "normal"
+    },
+    {
+      "ref": "m3", "source": "gmail", "sourceId": "18c2f0a1b2c3d4e5", "threadId": "18c2f0a1b2c3d4e5", "kind": "email", "receivedAt": "2026-10-31T08:05:00Z",
+      "from": { "name": "Job alerts", "address": "alerts@jobs.example.com" }, "subject": "3 new jobs for data analyst in Cardiff",
+      "link": "https://mail.google.com/mail/u/0/#inbox/18c2f0a1b2c3d4e5",
+      "text": "Graduate Data Analyst, Example Health Board, Cardiff. GBP 28,000. Closes 7 November.\nJunior Data Engineer, Example Ltd, remote (UK). Closes 20 November.\nResearch Assistant (Machine Learning), Example University. Closes 30 November.",
+      "links": [
+        { "href": "https://jobs.example.com/view/graduate-data-analyst-1001", "text": "Graduate Data Analyst" },
+        { "href": "https://jobs.example.com/view/junior-data-engineer-1002", "text": "Junior Data Engineer" },
+        { "href": "https://jobs.example.ac.uk/vacancy/ra-ml-77", "text": "Research Assistant (Machine Learning)" }
+      ],
+      "summary": "Three data roles: graduate analyst (Cardiff, closes 7 November), junior engineer (remote, closes 20 November), research assistant (closes 30 November).", "category": "automated", "priority": "normal"
+    },
+    {
+      "ref": "m4", "source": "gmail", "sourceId": "18c30b9d8e7f6a51", "threadId": "18c30b9d8e7f6a51", "kind": "email", "receivedAt": "2026-10-31T19:30:00Z",
+      "from": { "name": "Example Books", "address": "hello@books.example.com" }, "subject": "Students: 20% off until 4 November",
+      "link": "https://mail.google.com/mail/u/0/#inbox/18c30b9d8e7f6a51",
+      "links": [ { "href": "https://books.example.com/student-offer", "text": "Student offer" } ],
+      "summary": "20% off books with a student card, in shop and online, until 4 November.", "category": "newsletter", "priority": "low"
+    },
+    {
+      "ref": "m5", "source": "uni-outlook", "sourceId": "AAQkADExampleItemId0001", "kind": "email", "receivedAt": "2026-11-01T10:20:00Z",
+      "from": { "name": "Student Finance Office", "address": "finance@example.ac.uk" }, "subject": "Library fine: GBP 4.50",
+      "link": "https://outlook.office.com/mail/inbox/id/AAQkADExampleItemId0001AAAAAAAAAAAAAAAAAAAAAAAA%3D",
+      "text": "A fine of GBP 4.50 is due by 15 November for two overdue books. Pay online in the library account.",
+      "links": [ { "href": "https://library.example.ac.uk/account/fines", "text": "Library account" } ],
+      "summary": "A library fine of GBP 4.50 for two overdue books is due by 15 November.", "category": "needs-you", "priority": "normal", "deadline": "2026-11-15"
+    },
+    {
+      "ref": "m6", "source": "uni-outlook", "sourceId": "AAQkADExampleItemId0002", "kind": "email", "receivedAt": "2026-11-01T14:00:00Z",
+      "from": { "name": "Careers Service", "address": "careers@example.ac.uk" }, "subject": "Data science hackathon: applications open",
+      "link": "https://outlook.office.com/mail/inbox/id/AAQkADExampleItemId0002AAAAAAAAAAAAAAAAAAAAAAAA%3D",
+      "text": "Teams of three to five. Applications close 20 November; the hackathon runs 28 to 29 November. Open to taught postgraduates.",
+      "links": [ { "href": "https://careers.example.ac.uk/hackathon-2026", "text": "Apply" } ],
+      "summary": "A data science hackathon for teams of three to five, open to taught postgraduates; applications close 20 November.", "category": "announcement", "priority": "normal", "deadline": "2026-11-20"
+    }
+  ],
+  "actions": [
+    { "ref": "a1", "kind": "do", "title": "Pay the library fine (GBP 4.50)", "why": "Due by 15 November.", "due": "2026-11-15", "priority": "normal", "messageRefs": ["m5"], "dedupeKey": "do:uni-outlook:AAQkADExampleItemId0001:library-fine" }
+  ],
+  "items": [
+    { "ref": "i1", "key": "learning-platform:lc:ds101-ann-0042:lab-room", "area": "academic", "kind": "announcement", "title": "DS101 week 7 lab moves to Room 0.12", "summary": "Thursday 5 November, 14:00 to 16:00, Room 0.12 instead of the usual room.", "day": "2026-10-30", "start": "2026-11-05T14:00:00Z", "end": "2026-11-05T16:00:00Z", "location": "Room 0.12", "course": "DS101 Data Science", "messageRefs": ["m1"] },
+    { "ref": "i2", "key": "learning-platform:lc:ds101-content-0107:cw2-brief", "area": "academic", "kind": "material", "title": "DS101 Coursework 2 brief", "summary": "Coursework 2 brief published; submission due 4 December.", "day": "2026-10-30", "deadline": "2026-12-04", "course": "DS101 Data Science", "messageRefs": ["m2"] },
+    { "ref": "i3", "key": "gmail:18c2f0a1b2c3d4e5:graduate-data-analyst", "area": "jobs", "kind": "vacancy", "title": "Graduate Data Analyst, Example Health Board", "summary": "Cardiff, GBP 28,000, graduate entry.", "day": "2026-10-31", "deadline": "2026-11-07", "url": "https://jobs.example.com/view/graduate-data-analyst-1001?utm_source=alert", "employer": "Example Health Board", "salary": "GBP 28,000", "location": "Cardiff", "messageRefs": ["m3"] },
+    { "ref": "i4", "key": "gmail:18c2f0a1b2c3d4e5:junior-data-engineer", "area": "jobs", "kind": "vacancy", "title": "Junior Data Engineer, Example Ltd", "summary": "Remote within the UK.", "day": "2026-10-31", "deadline": "2026-11-20", "url": "https://jobs.example.com/view/junior-data-engineer-1002", "employer": "Example Ltd", "location": "Remote (UK)", "messageRefs": ["m3"] },
+    { "ref": "i5", "key": "gmail:18c2f0a1b2c3d4e5:ra-ml", "area": "research", "kind": "vacancy", "title": "Research Assistant (Machine Learning), Example University", "summary": "Fixed-term research post in a machine learning group.", "day": "2026-10-31", "deadline": "2026-11-30", "url": "https://jobs.example.ac.uk/vacancy/ra-ml-77", "employer": "Example University", "messageRefs": ["m3"] },
+    { "ref": "i6", "key": "gmail:18c30b9d8e7f6a51:student-books", "area": "perks", "kind": "offer", "title": "20% off books with a student card", "summary": "In shop and online at Example Books.", "day": "2026-10-31", "deadline": "2026-11-04", "url": "https://books.example.com/student-offer", "organiser": "Example Books", "messageRefs": ["m4"] },
+    { "ref": "i7", "key": "uni-outlook:AAQkADExampleItemId0001:library-fine", "area": "money", "kind": "info", "title": "Library fine: GBP 4.50", "summary": "Two overdue books; due by 15 November.", "day": "2026-11-01", "deadline": "2026-11-15", "cost": "GBP 4.50", "messageRefs": ["m5"], "actionRefs": ["a1"] },
+    { "ref": "i8", "key": "uni-outlook:AAQkADExampleItemId0002:hackathon", "area": "academic", "kind": "opportunity", "title": "Data science hackathon, 28 to 29 November", "summary": "Teams of three to five; taught postgraduates eligible; applications close 20 November.", "day": "2026-11-01", "deadline": "2026-11-20", "url": "https://careers.example.ac.uk/hackathon-2026", "organiser": "Careers Service", "messageRefs": ["m6"] },
+    { "ref": "i9", "key": "web-events:su-example-501:board-games", "area": "events", "kind": "event", "title": "Board games social", "summary": "Weekly drop-in board games evening at the students' union; free, no booking.", "day": "2026-11-01", "start": "2026-11-04T18:30:00Z", "end": "2026-11-04T21:00:00Z", "location": "Students' union, room 2A", "cost": "Free", "url": "https://su.example.ac.uk/events/501", "organiser": "Board Games Society", "foundAt": { "url": "https://su.example.ac.uk/events", "checkedAt": "2026-11-01T11:00:00Z" } }
+  ]
+}

@@ -1,23 +1,71 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "life-os.mail-batch.v1",
-  "title": "Life OS mail batch, version 1",
-  "description": "What one gathering run found in Xar's mailboxes: the sources it read, a digest, the messages, and what she owes people. Written by an agent into mail/inbox/, imported by Life OS. Priorities and actions are suggestions; her own changes in Life OS always win.",
+  "$id": "life-os.mail-batch",
+  "title": "Life OS mail batch, versions 1 and 2",
+  "description": "What one harvest found: the sources it read, the messages, what she owes people (actions) and, in version 2, what came in (items: vacancies, events, announcements, materials, offers, dated notes). Written by an agent into mail/inbox/, imported by Life OS. Version 1 needs a digest; in version 2 it is optional and not shown. Priorities, actions and items are suggestions; her own changes in Life OS always win. What a schema cannot say is checked by mail/check-batch.mjs and written down in mail/HARVEST.md.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "version", "runId", "gatheredAt", "agent", "sources", "digest", "messages", "actions"],
+  "required": ["format", "version", "runId", "gatheredAt", "agent", "sources", "messages", "actions"],
   "properties": {
     "format": { "const": "life-os.mail-batch" },
-    "version": { "const": 1 },
+    "version": { "enum": [1, 2] },
     "runId": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}-\\d{4}-[a-z0-9]{6}$" },
     "gatheredAt": { "type": "string", "format": "date-time" },
     "agent": { "type": "string", "minLength": 1, "maxLength": 200 },
     "sources": { "type": "array", "minItems": 1, "maxItems": 20, "items": { "$ref": "#/$defs/source" } },
     "digest": { "$ref": "#/$defs/digest" },
     "messages": { "type": "array", "maxItems": 2000, "items": { "$ref": "#/$defs/message" } },
-    "actions": { "type": "array", "maxItems": 300, "items": { "$ref": "#/$defs/action" } }
+    "actions": { "type": "array", "maxItems": 300, "items": { "$ref": "#/$defs/action" } },
+    "items": { "type": "array", "maxItems": 2000, "items": { "$ref": "#/$defs/item" } }
   },
   "$defs": {
+    "httpsLink": { "type": "string", "format": "uri", "pattern": "^https://", "maxLength": 2000 },
+    "link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["href"],
+      "properties": {
+        "href": { "$ref": "#/$defs/httpsLink" },
+        "text": { "type": "string", "maxLength": 300 }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "key", "area", "kind", "title", "summary", "day"],
+      "properties": {
+        "ref": { "type": "string", "pattern": "^i[0-9]{1,5}$" },
+        "key": { "type": "string", "minLength": 3, "maxLength": 400 },
+        "area": { "enum": ["admin", "academic", "jobs", "research", "events", "money", "perks", "health", "home"] },
+        "kind": { "enum": ["vacancy", "opportunity", "event", "announcement", "material", "offer", "info"] },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "day": { "type": "string", "format": "date" },
+        "start": { "type": "string", "minLength": 10, "maxLength": 40 },
+        "end": { "type": "string", "minLength": 10, "maxLength": 40 },
+        "allDay": { "type": "boolean" },
+        "deadline": { "type": "string", "format": "date" },
+        "location": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "url": { "$ref": "#/$defs/httpsLink" },
+        "course": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "organiser": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "employer": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "salary": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "cost": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "tags": { "type": "array", "maxItems": 10, "items": { "type": "string", "minLength": 1, "maxLength": 40 } },
+        "messageRefs": { "type": "array", "maxItems": 20, "items": { "type": "string", "pattern": "^m[0-9]{1,5}$" } },
+        "actionRefs": { "type": "array", "maxItems": 10, "items": { "type": "string", "pattern": "^a[0-9]{1,5}$" } },
+        "foundAt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["url", "checkedAt"],
+          "properties": {
+            "url": { "$ref": "#/$defs/httpsLink" },
+            "checkedAt": { "type": "string", "format": "date-time" }
+          }
+        }
+      }
+    },
     "sourceId": { "type": "string", "pattern": "^[a-z0-9-]{1,40}$" },
     "priority": { "enum": ["urgent", "high", "normal", "low"] },
     "person": {
@@ -121,6 +169,7 @@
           }
         },
         "link": { "type": "string", "format": "uri", "pattern": "^https://", "maxLength": 2000 },
+        "links": { "type": "array", "maxItems": 50, "items": { "$ref": "#/$defs/link" } },
         "text": { "type": "string", "maxLength": 20000 },
         "textComplete": { "type": "boolean" },
         "summary": { "type": "string", "minLength": 1, "maxLength": 600 },

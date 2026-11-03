@@ -46,3 +46,66 @@ test('notes, without refusing, a newsletter that keeps its text', () => {
   assert.equal(result.ok, true)
   assert.equal(result.warnings.length, 1)
 })
+
+// Version 2: items, links, and the rules for what came in.
+const example2 = JSON.parse(fs.readFileSync(new URL('./example-batch-v2.json', import.meta.url), 'utf8'))
+const changed2 = (change) => { const batch = structuredClone(example2); change(batch); return checkBatch(batch) }
+
+test('the version 2 example passes with no notes, and needs no digest', () => {
+  const result = checkBatch(structuredClone(example2))
+  assert.equal(result.ok, true, result.problems.join('\n'))
+  assert.equal(result.warnings.length, 0)
+  assert.equal('digest' in example2, false)
+})
+
+test('a version 2 batch may still carry a digest, and an empty one is valid', () => {
+  assert.equal(changed2((b) => { b.digest = { headline: 'Nothing new.' } }).ok, true)
+  assert.equal(changed2((b) => { b.messages = []; b.actions = []; b.items = [] }).ok, true)
+})
+
+test('a version 1 batch still needs its digest and cannot carry items or links', () => {
+  assert.match(changed((b) => { delete b.digest }).problems.join('\n'), /digest/)
+  assert.match(changed((b) => { b.items = [] }).problems.join('\n'), /version 2/)
+  assert.match(changed((b) => { b.messages[0].links = [{ href: 'https://example.com' }] }).problems.join('\n'), /version 2/)
+})
+
+const refused2 = {
+  'an item ref used twice': [(b) => { b.items[1].ref = 'i1' }, /used twice/],
+  'an item key used twice': [(b) => { b.items[1].key = b.items[0].key }, /used twice/],
+  'a vacancy outside jobs and research': [(b) => { b.items[2].area = 'events' }, /not in area/],
+  'a kind the format does not know': [(b) => { b.items[0].kind = 'bill' }, /must be one of/],
+  'a summary that talks to her': [(b) => { b.items[0].summary = 'You should go to the new room.' }, /talks to her/],
+  'a message summary that talks to her': [(b) => { b.messages[0].summary = 'I recommend reading this first.' }, /talks to her/],
+  'a start that is not a day or a time': [(b) => { b.items[0].start = 'next Thursday' }, /day like/],
+  'an end before the start': [(b) => { b.items[0].end = '2026-11-05T13:00:00Z' }, /ends before/],
+  'an all-day item with a time': [(b) => { b.items[0].allDay = true }, /all-day/],
+  'a safe-link wrapper as an item link': [(b) => { b.items[3].url = 'https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fexample.com' }, /safe-link/],
+  'an unsubscribe link in a message': [(b) => { b.messages[3].links.push({ href: 'https://books.example.com/unsubscribe' }) }, /unsubscribe/],
+  'a vacancy with no link': [(b) => { delete b.items[2].url }, /needs the link/],
+  'an event with no link': [(b) => { delete b.items[8].url }, /needs the link/],
+  'an item pointing to a missing message': [(b) => { b.items[0].messageRefs = ['m99'] }, /not in the batch/],
+  'an item pointing to a missing action': [(b) => { b.items[6].actionRefs = ['a9'] }, /not in the batch/],
+  'an item that says nowhere it came from': [(b) => { delete b.items[8].foundAt }, /neither which message nor which page/],
+  'an item on a day its message did not come': [(b) => { b.items[0].day = '2026-10-31' }, /London day its first message/],
+  'a web find on a day it was not found': [(b) => { b.items[8].day = '2026-11-02' }, /London day it was found/],
+  'a field items do not have': [(b) => { b.items[0].priority = 'high' }, /does not know/],
+}
+for (const [name, [change, reason]] of Object.entries(refused2)) {
+  test(`version 2 refuses ${name}`, () => {
+    const result = changed2(change)
+    assert.equal(result.ok, false)
+    assert.match(result.problems.join('\n'), reason)
+  })
+}
+
+test('automated mail an item cites keeps its text without a note; uncited, it gets one', () => {
+  assert.equal(changed2(() => {}).warnings.length, 0)
+  const uncited = changed2((b) => { b.items = b.items.filter((item) => !(item.messageRefs ?? []).includes('m3')) })
+  assert.equal(uncited.ok, true)
+  assert.equal(uncited.warnings.length, 1)
+})
+
+test('the London day: a message just after midnight in summer time belongs to the new day', () => {
+  const result = changed2((b) => { b.messages[0].receivedAt = '2026-10-24T23:30:00Z'; b.items[0].day = '2026-10-25' })
+  assert.equal(result.ok, true, result.problems.join('\n'))
+})
