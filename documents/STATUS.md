@@ -1,28 +1,29 @@
 # Life OS: status
 
-**Updated 3 November 2026 by Codex.** Branch: `main`, at Xar's explicit request to commit pending work. Local app: http://127.0.0.1:47850. Standalone JobMap remains frozen.
+**Updated 3 November 2026 by Codex.** Branch: `stage/jobmap-workflow`; local app http://127.0.0.1:47850. Standalone JobMap remains frozen.
 
 ## Now
 
-- Cardiff planner, mail instructions and technical documentation are consolidated onto local `main`, together with the existing stage work. This Git operation does not imply acceptance of outstanding visual or feature reviews. No push is authorised by this session.
-- Health includes native gym plans, exercise pictures, logging and history. Budget includes independent monthly allowances and editable incoming funds. Study can open configured local study apps. Calendar and Inbox retain their existing integrations.
-- The scheduled workflow authority remains the external `Scheduled Workflows` folder. This session changes no schedules, imports, saved plans or source coverage.
-- Personal workspaces, databases, mail exports/checkpoints, workbook outputs and personal application-update notes stay local. The ignore rules now cover loose mail JSON and archive files as well as existing protected data folders.
+**JobMap CP1 is live:** My profile keeps sourced experience/project examples, goals and recovery drafts. A reviewed JSON import adds examples without replacing conflicting content. Each opened job has Requirements and evidence, quoting saved advert wording beside supported, partial or unknown evidence. Existing matching, priorities, application progress and documents are preserved. [Brief](briefs/stage-jobmap-workflow.md) · [Session](sessions/2026-11-03-codex-jobmap-workflow-cp1.md).
+
+**GitHub main published:** the previously reviewed work is pushed and independently verified at `029d2c7`. New JobMap development is committed separately on its stage branch, awaiting Xar's check. This does not imply acceptance of unrelated stages or UI reviews.
+
+Health, Budget, Study, Calendar and Inbox remain available. Scheduled workflow authority stays in the external Scheduled Workflows folder. Current personal schedules and records stay in the live app and local notes; data, mail exports, application-update notes and workbook outputs remain excluded from git.
 
 ## Exact next step
 
-Use Today and Study for the current personal schedule. Review the JobMap integration proposal in the conversation before authorising feature work; that review made no application changes. Existing stage acceptance checks remain open.
+Refresh Life OS → JobMap → My profile. Add one sourced example, or use Build or update from my CV to prepare and review a profile JSON. Open a job and inspect Requirements and evidence. The profile starts empty: no CV was sent or personal claims filled automatically.
 
-**Next prompt:** "Review the JobMap proposal and choose the first checkpoint."
+**Next prompt:** "Review JobMap CP1, then scope application packs and independent review."
 
 ## Waiting and limits
 
-- Preserve personal edits and revision checks. Never start the frozen standalone JobMap or run `hosting/app.test.mjs`, which reseeds core.
-- Existing feature/UI issues remain in TODO and the relevant briefs. Git consolidation is not a resolution of those issues.
-- Private operational details remain in the live app and retained local notes. The previous detailed STATUS is preserved under the ignored session audit folder.
+- CP1 acceptance; other existing feature/UI issues remain in TODO and their briefs. One unrelated new stage-5 planning draft was preserved, unstaged.
+- Requirement extraction is bounded and based on explicit text/skill names; it is not a full AI assessment. Read the complete advert. Existing graduate/later-start ranking treatment needs a separate scoped update.
+- Never start the frozen standalone JobMap or run `hosting/app.test.mjs`, which reseeds core. Personal changes use owning APIs and revision checks.
 
 ## Verification and data
 
-Frontend production build verified in an ignored scratch folder, leaving the served build in place. Cardiff planner, mail validation, training, Budget, calendar, day and stale-save checks: 69 pass. Live services respond. Private file hashes and read-only core/Study/JobMap/Budget snapshots are checked around the Git operation. No app-data writes or service restart are required.
+Full JobMap suites, nine new profile/API tests, TypeScript, focused lint and production build pass. Six fixture browser flows cover save/import/recovery, four styles and phone width. A final read-only live iframe check has no errors, overflow or writes. Full JobMap backup verified before its server restart: revision 67 and 1,306 jobs, all personal progress/preferences and checked private files compare equal. Life OS's main process stayed up. Evidence is private under `.runtime/jobmap-workflow-cp1/`.
 
-Latest session: [private-data-safe main consolidation](sessions/2026-11-03-codex-main-private-data-safe-commit.md). Previous technical sessions: [data structure explanation](sessions/2026-11-01-codex-data-structure-explanation.md), [linked dictionary](sessions/2026-10-31-codex-data-dictionary-links.md), [dictionary](sessions/2026-10-31-codex-data-dictionary.md), [scheduled workflows](sessions/2026-10-30-codex-scheduled-workflows.md).
+Last five technical sessions: [JobMap CP1](sessions/2026-11-03-codex-jobmap-workflow-cp1.md), [main consolidation](sessions/2026-11-03-codex-main-private-data-safe-commit.md), [data explanation](sessions/2026-11-01-codex-data-structure-explanation.md), [linked dictionary](sessions/2026-10-31-codex-data-dictionary-links.md), [dictionary](sessions/2026-10-31-codex-data-dictionary.md).

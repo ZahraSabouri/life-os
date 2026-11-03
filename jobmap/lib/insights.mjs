@@ -83,7 +83,7 @@ export function progress(jobs,today=dayNow(),{quietDays=WAITING_DAYS,weeks=12}={
 
 // Tech an advert can name: [shown as, the words that mean it, whether case matters]. Case matters
 // where the lower-case word is ordinary English ("excel at", "react to") or another field's term (DBT).
-const TERMS=[
+export const TERMS=[
  ['Python'],['Java'],['JavaScript'],['TypeScript'],['C#',['c#','c sharp']],['C++'],['Golang'],['Rust'],['Ruby'],['PHP'],['Kotlin'],['Swift',['Swift'],true],['Scala'],['MATLAB'],
  ['SQL'],['PostgreSQL',['postgresql','postgres']],['MySQL'],['SQL Server',['sql server','mssql','t-sql']],['Oracle'],['MongoDB'],['Redis'],['Elasticsearch'],['Snowflake'],['BigQuery'],['Databricks'],
  ['Spark',['Spark','PySpark'],true],['Hadoop'],['Kafka'],['Airflow'],['dbt',['dbt'],true],['Power BI',['power bi','powerbi']],['Tableau'],['Looker'],['Excel',['Excel'],true],

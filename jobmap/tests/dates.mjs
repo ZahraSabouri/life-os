@@ -34,7 +34,8 @@ await reopened.restore(backup,3);assert.equal(reopened.jobs().find(j=>j.id===id)
 const manual=await reopened.add({role:'Manual date check',company:'Test',advertisedOn:'2026-10-05'},4);
 assert.equal(manual.job.addedOn,localDay());assert.equal(manual.job.advertisedOn,'2026-10-05');
 const rows=[{...updated,id:'unknown',addedOn:'',advertisedOn:''},{...updated,id:'older',addedOn:'2026-09-13',advertisedOn:'2026-08-01'},{...updated,id:'newer',addedOn:'2026-10-06',advertisedOn:'2026-10-01'}];
-for(const sort of ['added','advertised'])assert.deepEqual(selectJobs(rows,{scope:'all',sort}).map(r=>r.job.id),['newer','older','unknown']);
+// Test sorting before the fixture's closing date; the real clock must not close all three jobs.
+for(const sort of ['added','advertised'])assert.deepEqual(selectJobs(rows,{scope:'all',sort},undefined,'2026-10-06').map(r=>r.job.id),['newer','older','unknown']);
 const legacy=structuredClone(backup.progress);
 legacy.observations={};legacy.overrides={};
 legacy.customJobs=['CUSTOM-f2dbe053-b374-4f29-8455-254b7a3940ec','CUSTOM-e71d6ad7-bc73-413d-b8f2-17c8797fc2df','CUSTOM-unknown-legacy'].map(id=>{const j={...legacy.customJobs[0],id};delete j.addedOn;return j;});

@@ -9,6 +9,18 @@ JobMap now runs inside Life OS: double-click **Start Life OS.cmd** in the Life_O
 - Open a job to change its status, notes, priority and dates, read its full saved advert or open the original link. Text fields save automatically. Wait for **Saved locally** before closing.
 - **Preferences:** edit your matching skills, role focus and preferred hours. Download or restore a full workspace backup here.
 
+## My profile and requirements review (3 November 2026)
+
+Open **My profile** to keep examples from your experience and projects, with the skills they support, a source and an exact supporting quote. You can also distinguish your own account, something you are learning and a known gap. Matching preferences remain separate. Save explicitly; unfinished drafts are kept in this browser.
+
+For a CV-assisted start, open **Build or update from my CV**, copy the profile instructions into your chosen AI chat and attach only the documents you choose. Import its JobMap profile JSON, inspect the proposed additions and conflicts, apply additions to the draft, then save. Imports add examples and fill blank summary/goals; existing conflicting content is kept. Source quotes are supplied by you or your chosen AI and must be checked against the document. Nothing is uploaded automatically.
+
+Each opened job now has **Requirements and evidence**, derived from its saved advert and the current profile. Explicit headings/wording distinguish essential, desirable, mentioned and not-required terms; mixed wording is marked for review. Linked examples do not establish years of experience, qualifications, language level or work eligibility. Missing evidence stays unknown. This is a bounded text review, not a full AI reading or a hiring prediction; read the full advert for requirements it does not capture. Existing matching and priority ordering are unchanged.
+
+Profiles live in the owning server's private workspace and are included in its full backup. Old workspaces and backups remain readable without adding or saving a default profile. Profile saves require both the current workspace revision and the profile version. Do not put profile JSON, CVs, generated examples or user quotes in source control.
+
+Workflow inspiration: [ai-job-search](https://github.com/ai-job-search-dev/ai-job-search) (MIT), especially profile onboarding and evidence-based evaluation. CP1 is implemented for JobMap's existing server and UI; no upstream code or candidate content is bundled.
+
 ## Progress, the board, gaps and Write it with Claude (28 October 2026)
 
 - **Progress** (menu → Applying): what is worth a look now (offers, interviews, follow-ups due, applications being prepared, applications with no reply for 14 days, starred jobs closing within a week), how far your applications got, where they stand, and the last 12 weeks. It only reads your jobs.

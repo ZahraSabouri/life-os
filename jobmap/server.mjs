@@ -19,7 +19,7 @@ let store=null,files=null,inboxes=[],ready;
 // Scheduled searches drop batch files here; they cannot reach this loopback API themselves.
 let connecting=null;
 async function connected(){connecting??=ensureWorkspaceService(connection).finally(()=>{connecting=null;});await connecting;}
-const publicRoot=path.join(root,'dist/client');
+const publicRoot=process.env.JOBMAP_PUBLIC_DIR?path.resolve(process.env.JOBMAP_PUBLIC_DIR):path.join(root,'dist/client');
 const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Cross-Origin-Resource-Policy':'same-origin'};
 function json(res,data,status=200){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8',...headers});res.end(JSON.stringify(data));}
 async function body(req,limit=15*1024*1024){let data='';for await(const c of req){data+=c;if(Buffer.byteLength(data)>limit){const e=new Error('File is too large.');e.status=413;throw e;}}try{return JSON.parse(data)}catch{throw new Error('Invalid JSON.');}}
@@ -65,7 +65,9 @@ const server=http.createServer(async(req,res)=>{
    if(req.method==='GET'&&fileId){const meta=store.jobs().find(j=>j.id===jobId)?.files?.find(f=>f.id===fileId);if(!meta){json(res,{error:'File not found.'},404);return;}const content=await files.read(jobId,meta.id);res.writeHead(200,{...headers,'Content-Type':files.typeOf(meta.name),'Content-Length':content.byteLength,'Content-Disposition':`${files.inline(meta.name)?'inline':'attachment'}; filename*=UTF-8''${encodeURIComponent(meta.name)}`});res.end(content);return;}
    if(req.method==='DELETE'&&fileId){const b=await body(req);const result=await store.detach(jobId,fileId,b.revision);await files.remove(jobId,fileId).catch(()=>{});json(res,result);return;}
   }
-  if(url.pathname==='/api/jobs'&&req.method==='GET'){json(res,{jobs:store.jobs(),revision:store.state.revision,updatedAt:store.state.updatedAt,preferences:store.state.preferences});return;}
+  if(url.pathname==='/api/career-profile'&&req.method==='GET'){json(res,{careerProfile:store.careerProfile(),revision:store.state.revision});return;}
+  if(url.pathname==='/api/career-profile'&&req.method==='PUT'){const b=await body(req,1024*1024);json(res,await store.saveCareerProfile(b.profile,b.revision,b.profileVersion));return;}
+  if(url.pathname==='/api/jobs'&&req.method==='GET'){json(res,{jobs:store.jobs(),revision:store.state.revision,updatedAt:store.state.updatedAt,preferences:store.state.preferences,careerProfile:store.careerProfile()});return;}
   if(url.pathname==='/api/preferences'&&req.method==='PUT'){const b=await body(req);json(res,await store.preferences(b.preferences,b.revision));return;}
   if(url.pathname==='/api/jobs'&&req.method==='POST'){const b=await body(req);json(res,await store.add(b.job,b.revision),201);return;}
   if(url.pathname.startsWith('/api/jobs/')&&req.method==='PATCH'){const b=await body(req);json(res,await store.patch(decodeURIComponent(url.pathname.slice(10)),b.patch,b.revision));return;}

@@ -7,6 +7,7 @@ import {calendarDay,isDate} from './job-dates.mjs';
 import {validFiles,MAX_FILES_PER_JOB} from './files.mjs';
 import {validDocuments} from './documents.mjs';
 import legacyDates from './legacy-dates.json' with {type:'json'};
+import {EMPTY_CAREER_PROFILE,validateCareerProfile} from './career-profile.mjs';
 
 export const STATUSES = ['To review','Check details','Preparing','Applied','Interview','Offer','Rejected','Archived'];
 const strings = {notes:30000,feedback:20000,nextStep:1000,decidedOn:10,followUp:10,applied:10,cv:2000,coverLetter:2000,tags:500,folder:1000,attachments:6000,hours:500,role:500,company:300,location:1000,salary:3000,url:4000,deadline:10,advertisedOn:10};
@@ -63,6 +64,7 @@ export class Store {
   for(const j of state.customJobs){if(!object(j)||typeof j.id!=='string'||!/^CUSTOM-[\w-]+$/.test(j.id)||ids.has(j.id))throw new Error('Invalid added job.');ids.add(j.id);validatePatch({role:j.role,company:j.company,url:j.url||'',location:j.location||'',salary:j.salary||'',deadline:j.deadline||'',hours:j.hours||''});if(typeof j.description!=='string'||j.description.length>100000)throw new Error('Invalid job description.');}
   for(const [id,override] of Object.entries(state.overrides)){if(!ids.has(id)||!object(override))throw new Error('Unknown job in backup.');const {history,files,...fields}=override;validatePatch(fields);if(!validFiles(files))throw new Error('Invalid kept files.');if(history!==undefined&&(!Array.isArray(history)||history.length>100||history.some(e=>!object(e)||typeof e.at!=='string'||typeof e.label!=='string'||e.label.length>200)))throw new Error('Invalid activity history.');}
   if(!validDocuments(state.documents))throw new Error('Invalid documents folder.');
+  if(state.careerProfile!==undefined)validateCareerProfile(state.careerProfile,true);
   if(state.observations!==undefined){if(!object(state.observations))throw new Error('Invalid vacancy observations.');for(const [id,entry]of Object.entries(state.observations)){if(!ids.has(id))throw new Error('Unknown observed job.');validateObservation(entry,validatePatch);}}
   if(state.importRuns!==undefined&&(!Array.isArray(state.importRuns)||state.importRuns.length>200||state.importRuns.some(r=>!object(r)||typeof r.id!=='string'||typeof r.at!=='string'||!['added','updated','skipped'].every(k=>Number.isSafeInteger(r[k])&&r[k]>=0))))throw new Error('Invalid search history.');
   // A joined listing points at a job that is itself shown, never at itself or along a chain.
@@ -88,6 +90,8 @@ export class Store {
  ingest(raw,revision,dryRun=false){return this.run(async()=>{this.check(revision);const {state,...result}=planImport(this.state,this.base,raw,validatePatch);if(!dryRun&&!result.repeated)await this.persist(state,'search');return {...result,dryRun,revision:this.state.revision};});}
  run(action){const next=this.queue.then(action);this.queue=next.catch(()=>{});return next;}
  preferences(raw,revision){return this.run(async()=>{this.check(revision);const preferences=validateProfile(raw);const next=structuredClone(this.state);next.preferences=preferences;await this.persist(next);return {preferences,revision:this.state.revision};});}
+ careerProfile(){return structuredClone(this.state.careerProfile||EMPTY_CAREER_PROFILE);}
+ saveCareerProfile(raw,revision,expectedVersion){return this.run(async()=>{this.check(revision);if(expectedVersion!==(this.state.careerProfile?.version||0)){const error=new Error('Your profile changed elsewhere. Reload the workspace and review your kept draft against the latest profile.');error.status=409;throw error;}const content=validateCareerProfile(raw);const next=structuredClone(this.state);next.careerProfile={...content,version:this.state.revision+1,updatedAt:new Date().toISOString()};await this.persist(next,'profile');return {careerProfile:this.careerProfile(),revision:this.state.revision};});}
  check(revision){if(revision!==this.state.revision){const e=new Error('This workspace changed in another window. Reload and try again.');e.status=409;throw e;}}
  async persist(next,label='auto'){
   await mkdir(path.join(this.directory,'backups'),{recursive:true});
