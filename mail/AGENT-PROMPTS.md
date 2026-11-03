@@ -1,6 +1,6 @@
 # Prompts for your agents: gathering your mail into Life OS
 
-Your agents gather; Life OS reads what they leave. Every run follows `mail/GATHER.md`: it **reads** Cardiff Outlook, Gmail, Learning Central and Teams, **changes nothing** in them, and leaves one batch file in `mail/inbox/`. Life OS takes it in within a minute and shows it in the Inbox (the envelope beside the bell).
+Your agents gather; Life OS reads what they leave. Every run follows `mail/GATHER.md`: it **reads** Cardiff Outlook, Gmail, Learning Central and Teams, **changes nothing** in them, and leaves one batch file in `mail/inbox/`. Once the first-batch review is complete and live import is enabled, Life OS takes it in within a minute and shows it in the Inbox (the envelope beside the bell).
 
 ## Once, before the first run
 
@@ -14,7 +14,7 @@ After that, every batch is taken in by itself.
 
 ## Claude app (the task is already made)
 
-The scheduled task **Gather my inboxes** exists, with no schedule. To run it: open **Scheduled tasks**, choose it, press **Run now**.
+Since 30 October the Claude task is **Claude intake takeover (manual)**: open **Scheduled tasks**, choose it, press **Run now** only when Codex is unavailable. It follows `Scheduled Workflows/instructions/claude.md` and this folder's GATHER.md. The old **Gather my inboxes** task is paused; do not give it a schedule (Codex owns the daily intake).
 
 To have it run by itself, open it, choose a schedule, and leave the prompt as it is. Suggested: **weekdays at 08:30**, and **Sunday at 18:00** before the weekly reset. The computer must be on and the Claude app open.
 
@@ -32,7 +32,11 @@ Open Codex (or Claude Code) in the `Life_OS` folder and give it:
 Gather my inboxes: follow mail/GATHER.md in the Life_OS folder exactly. Read only. Use the sources in mail/sources.json; for Outlook, Learning Central and Teams use a browser where I am signed in. Check the batch with node mail/check-batch.mjs before renaming it from .part to .json. Do not touch Life OS's database or any other folder. End with the digest.
 ```
 
-To schedule it in Codex, make an automation with that prompt in the `Life_OS` folder (for example weekdays at 08:30).
+The Codex automation **Gather my inboxes** (`gather-my-inboxes`) is active on the schedule Xar selected: **weekdays at 08:30 and Sundays at 18:00, Europe/London**. It is one task with both times. Keep this computer on and Codex open. The full saved prompt is [CODEX-GATHER-PROMPT.txt](CODEX-GATHER-PROMPT.txt).
+
+Codex's saved **Life OS** project currently points to `C:\Users\ctrlz\Documents`. The task explicitly sets every command's working folder to `C:\Users\ctrlz\Documents\Personal\Projects\Life_OS` and limits project file access to `mail/`. It uses connected Gmail tools when available, then an already signed-in browser. Outlook, Learning Central and optional Teams need a signed-in session accessible to Codex; Claude's browser sessions must not be assumed to carry over. Missing access is recorded in each digest.
+
+The existing Claude task remains manual. Gathering never performs the test-database review, imports a batch itself or enables live import; those are the separate first-batch steps above.
 
 ## What to expect
 

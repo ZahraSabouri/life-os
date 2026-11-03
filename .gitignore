@@ -80,3 +80,24 @@ code/life-os/frontend/dist-next/
 /mail/gather-log.md
 /mail/gather-state.json
 /mail/import-log.md
+
+# Loose mail exports, intake checkpoints and backfills are private too.
+/mail/*.json
+!/mail/mail-batch.schema.json
+!/mail/example-batch.json
+!/mail/sources.example.json
+/mail/*.json.part
+/mail/archive/
+
+# Local workbooks, reports and personal application-update notes.
+/outputs/
+/documents/sessions/2026-10-31-codex-jobmap-two-applications.md
+/documents/sessions/2026-10-31-codex-jobmap-lineup-application.md
+/documents/sessions/2026-10-31-codex-jobmap-ldms-application.md
+
+# Additional local secrets and database-backup formats.
+.env.*
+!.env.example
+*.dump
+*.pgdump
+*.sqlite3

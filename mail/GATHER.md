@@ -1,10 +1,21 @@
 # Gathering Xar's inboxes into Life OS
 
-**Written 28 October 2026.** For any agent asked to "gather my inboxes": the Claude scheduled task "Gather my inboxes", Codex, or her own AI. It runs only when Xar starts it, never on a timer. A run **reads** her mailboxes, **never changes them**, and leaves one batch for Life OS plus a digest she can read straight away. This file is the authority; a task prompt is only a summary of it.
+## Scheduled workflow consolidation, 30 October 2026
+
+The user approved one shared daily intake at **08:30 every day, Europe/London**, replacing the earlier weekday/Sunday pattern and the duplicate Cardiff Outlook searches. Current workflow authority: `C:\Users\ctrlz\Documents\Scheduled Workflows\instructions\common.md` and `instructions\daily.md`. This note supersedes conflicting schedule, browser-route and output-scope statements below; the existing schema, validation, privacy, read-only and user-state protections remain.
+
+Use **Codex's in-app browser** for university and other signed-in accounts; the user handles login. Outlook, Learning Central, LinkedIn and Gmail signed-in pages were verified there on 30 October; this is access-only evidence, not complete collection. A missing connector is not proof a source is unavailable. Gmail's verified connector is an alternative. Never fall back to unrelated Chrome/Claude sessions or enter credentials.
+
+The intake may additionally write concise handoffs, source checkpoints and its brief to `C:\Users\ctrlz\Documents\Scheduled Workflows`. It may read the saved timetable configuration and worker summaries. It does not bulk-write JobMap/Cardiff Life/Budget or the database. Important deadline-bound handoffs may be verified and queued using the domain worker's existing validators and authorised sinks; ordinary discovery stays with the workers. All Gmail Inbox categories are covered without sender filters. Every job-bearing digest contributes its visible vacancy titles and safe original URLs to the handoff, without opening mail links or attachments.
+
+Only intake scans mail/announcements/timetable routinely; workers reuse those records. Preserve `completeTo` for partial/unavailable sources and resume cursors under the shared budget. Live mail importing was enabled separately on 29 October; leave its existing activation untouched and report importer receipts honestly. The gatherer never enables or directly performs an import.
+
+
+**Written 28 October 2026.** For any agent asked to "gather my inboxes": the Claude scheduled task "Gather my inboxes", Codex, or her own AI. Xar has authorised Codex to run on weekdays at 08:30 and Sundays at 18:00, Europe/London time; she can also start a run by hand. The existing Claude task remains manual. A run **reads** her mailboxes, **never changes them**, and leaves one batch for Life OS plus a digest she can read straight away. This file is the authority; a task prompt is only a summary of it.
 
 ## What a run leaves behind
 
-1. `mail/inbox/<runId>.json`: one batch in the format `mail/mail-batch.schema.json` (version 1). Write it as `<runId>.json.part`, check it, then rename it to `.json`, so Life OS never picks up half a file. Until Life OS's Mail part exists, batches simply wait here.
+1. `mail/inbox/<runId>.json`: one batch in the format `mail/mail-batch.schema.json` (version 1). Write it as `<runId>.json.part`, check it, then rename it to `.json`, so Life OS never picks up half a file. Until the first batch has passed its test-database review and live import is enabled, batches simply wait here. A gathering run must never enable live import itself.
 2. `mail/digests/<runId>.md`: the digest as a page (headline, what needs her, deadlines, each source in a few lines, what could not be read).
 3. One line appended to `mail/gather-log.md`: `<runId> | <when> | <each source and its status> | <messages> messages, <actions> actions`.
 4. `mail/gather-state.json` updated (see "The window").

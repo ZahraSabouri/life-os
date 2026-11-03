@@ -1,5 +1,10 @@
 # Cardiff Life
 
+## Current scheduling, 30 October 2026
+
+The user approved one shared daily intake at 08:30 and one combined event discovery on Thursday at 12:00, Europe/London. Current authority is C:\Users\ctrlz\Documents\Scheduled Workflows, especially instructions/common.md and instructions/events.md. Intake alone scans university email, intranet announcements and timetable changes; event workers consume its saved handoffs. Use Codex's in-app browser with user-managed login. The old three-search schedule and repeated Outlook-first scans below are superseded; all preservation, source-quality, deadline, builder and managed-sync safeguards remain.
+
+
 Read `Codex Project Instructions — Cardiff Life.md` before doing project work. It contains the user's permanent objectives, interests, source preferences and autonomy limits. Also read README.md, events.csv, events.md, communities.md and history.md before each research run.
 
 Research and maintain this local Markdown and CSV project. Prioritise repeated contact, conversation and communities that welcome postgraduate or returning students. Keep social value separate from professional value. Do not build an app unless requested.

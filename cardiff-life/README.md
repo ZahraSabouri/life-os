@@ -1,5 +1,10 @@
 # Cardiff Life
 
+## Current scheduling, 30 October 2026
+
+The user approved one shared daily intake at 08:30 and one combined event discovery on Thursday at 12:00, Europe/London. Current authority is C:\Users\ctrlz\Documents\Scheduled Workflows, especially instructions/common.md and instructions/events.md. Intake alone scans university email, intranet announcements and timetable changes; event workers consume its saved handoffs. Use Codex's in-app browser with user-managed login. The old three-search schedule and repeated Outlook-first scans below are superseded; all preservation, source-quality, deadline, builder and managed-sync safeguards remain.
+
+
 A lasting list of places to meet people, return regularly, and build a fuller life in Cardiff. The priority is friendship and community, alongside intellectual interests and professional or academic connections.
 
 Open **[Cardiff Life](index.html)** in your browser. **My week** shows Monday–Sunday, available options and your own **Maybe / Plan to go** choices. **All choices** offers the wider catalogue, a smaller shortlist and your saved choices, with filters for activity, date, source and free admission. Double-click index.html to open it; no server is needed. Reload the page after a scheduled search updates it.

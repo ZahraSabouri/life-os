@@ -6,7 +6,25 @@ const vm=require('node:vm');
 const P=require('../planner.js');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-const data=JSON.parse(html.match(/<script type="application\/json" id="cardiff-data">([\s\S]*?)<\/script>/)[1]);
+const embedded=JSON.parse(html.match(/<script type="application\/json" id="cardiff-data">([\s\S]*?)<\/script>/)[1]);
+// Behaviour tests use fixed synthetic examples, independent of changing research/statuses.
+const event=(event_id,extra={})=>({event_id,name:event_id,organiser:'Fixture organiser',date:'2026-10-04',start_time:'10:00',end_time:'11:00',location:'Fixture room',source_url:'https://example.org/'+event_id,activity:'social',category:'Fixture',status:'upcoming',cost:'Not stated',description:'Fixture activity',last_checked:'2026-09-29',community_id:'fixture',...extra});
+const data={events:[
+ event('su-43429',{activity:'sport'}),
+ event('su-43351',{activity:'sport',cost:'GBP 3 nonmembers; free for members'}),
+ event('aiwales-rag-2026-10-07',{activity:'professional',date:'2026-10-07',cost:'Membership is free; event cost unknown'}),
+ event('su-43441',{date:'2026-10-02',cost:'Free'}),
+ event('series-global-gardens-volunteering',{date:'',status:'recurring',activity:'volunteering'}),
+ event('su-43388',{date:'2026-10-06'}),
+ event('su-43270',{start_time:'12:00',end_time:'14:00'}),
+ event('su-43426',{start_time:'13:00',end_time:'15:00'}),
+ event('su-43801',{date:'2026-10-02',start_time:'11:00',end_time:'12:00'})
+],ranked:['su-43441','su-43388'],communities:[],featured:[],deadlines:[],schedules:[],built:'2026-09-29T12:00:00Z'};
+class FixtureDate extends Date {
+ constructor(...args){super(...(args.length?args:['2026-09-29T12:00:00Z']));}
+ static now(){return Date.parse('2026-09-29T12:00:00Z');}
+}
+
 const today='2026-09-29';
 const find=id=>data.events.find(e=>e.event_id===id);
 
@@ -17,13 +35,12 @@ test('Monday weeks survive year boundaries and British clock changes',()=>{
  assert.equal(P.monday('2026-03-29'),'2026-03-23');
 });
 test('catalogue includes researched sports independently of shortlist ranking',()=>{
- // Counts follow the researched file, which grows with every search: the rule is tested, not one day's total.
- assert.equal(P.filter(data.events,{scope:'all'}, {},today,data.ranked).length,data.events.length);
+ assert.equal(P.filter(data.events,{scope:'all'}, {},today,data.ranked).length,9);
  const sport=P.filter(data.events,{scope:'all',category:'sport'}, {},today,data.ranked);
- assert.equal(sport.length,data.events.filter(e=>e.activity==='sport').length);assert(sport.length>0);
+ assert.equal(sport.length,2);
  assert(sport.some(e=>e.event_id==='su-43429'));
  assert(!data.ranked.includes('su-43429'));
- assert.equal(P.filter(data.events,{scope:'shortlist'}, {},today,data.ranked).length,data.ranked.length);assert(data.ranked.length>0);
+ assert.equal(P.filter(data.events,{scope:'shortlist'}, {},today,data.ranked).length,2);
  assert.deepEqual(P.filter(data.events,{scope:'shortlist'}, {},today,data.ranked).map(e=>e.event_id),data.ranked);
 });
 test('free filter does not treat free membership or member-only tickets as free entry',()=>{
@@ -81,23 +98,23 @@ function boot(payload=data,saved=null){
  parse(html.split('<script')[0]);
  const d=new Element({id:'cardiff-data'});d.textContent=JSON.stringify(payload);ids.set(d.id,d);
  document={getElementById:id=>ids.get(id)||null,querySelectorAll:s=>nodes.filter(n=>matches(n,s)),querySelector:s=>nodes.find(n=>matches(n,s)),addEventListener:(k,fn)=>handlers[k]=fn,activeElement:null};
- const context={document,window:{addEventListener(){}},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},Intl,Date,console,setTimeout,Blob,URL};
+ const context={document,window:{addEventListener(){}},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},Intl,Date:FixtureDate,console,setTimeout,Blob,URL};
  vm.runInNewContext(fs.readFileSync(path.join(root,'planner.js'),'utf8'),context);
  const click=dataset=>handlers.click({target:{dataset,closest(){return this;},hasAttribute:k=>k==='data-reset'&&dataset.reset!==undefined}});
  return {ids,storage,click};
 }
 test('generated UI boots, saves a choice/note and retains it through refreshed data',()=>{
  const app=boot();
+ assert.equal(app.ids.get('choice-total').textContent,'0 saved');
  assert.equal((app.ids.get('week-grid').innerHTML.match(/class="day /g)||[]).length,7);
- // The page opens on what is still to come, by its own clock: as many cards as its own rule gives for today.
- const now=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/London'}).format(new Date());
- assert.equal((app.ids.get('event-grid').innerHTML.match(/<article/g)||[]).length,P.filter(data.events,{scope:'all',category:'all',search:'',when:'all',source:'all',free:false,date:'',week:P.monday(now)},{},now,data.ranked).length);
+ assert.equal((app.ids.get('event-grid').innerHTML.match(/<article/g)||[]).length,9);
  app.click({detail:'su-43429'});assert(app.ids.get('event-detail').open);
  app.click({choice:'maybe',id:'su-43429'});
  app.ids.get('personal-note').value='Bring water';
  app.ids.get('detail-body').handlers.click({target:{id:'save-note'}});
  const stored=app.storage.get('cardiff-life-choices-v1');
  assert.equal(JSON.parse(stored).choices['su-43429'].note,'Bring water');
+ assert.equal(app.ids.get('choice-total').textContent,'1 saved');
  const refreshed=structuredClone(data);refreshed.events.find(e=>e.event_id==='su-43429').location='Updated venue';
  const reload=boot(refreshed,stored);
  reload.click({scope:'saved'});
@@ -117,7 +134,7 @@ test('cancelled and missing saved listings remain visible after an update',()=>{
  const other=boot(cancelled,backup);other.click({scope:'saved'});assert.match(other.ids.get('event-grid').innerHTML,/cancelled/);
 });
 test('standalone HTML embeds data and script, without network dependencies',()=>{
- assert(data.events.length>0);assert.equal(new Set(data.events.map(e=>e.event_id)).size,data.events.length);assert(data.communities.length>0);
+ assert(embedded.events.length>0);assert.equal(new Set(embedded.events.map(e=>e.event_id)).size,embedded.events.length);assert(embedded.communities.length>0);
  assert(!/__CARDIFF_(DATA|SCRIPT)__/.test(html));
  assert(!/<script[^>]+src=/i.test(html));assert(!/<link[^>]+stylesheet/i.test(html));
  assert(!/url\s*\(/i.test(html.match(/<style>([\s\S]*?)<\/style>/)[1]));

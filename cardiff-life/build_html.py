@@ -60,8 +60,8 @@ def communities(markdown):
 def schedules():
     result = []
     days = {"MO":"Monday", "TU":"Tuesday", "WE":"Wednesday", "TH":"Thursday", "FR":"Friday", "SA":"Saturday", "SU":"Sunday"}
-    for slug, label in [("su-university", "SU + University"), ("eventbrite-wider-cardiff", "Wider Cardiff"), ("university-outlook", "University Outlook")]:
-        path = Path.home() / ".codex" / "automations" / ("cardiff-life-" + slug) / "automation.toml"
+    for automation_id, label in [("gather-my-inboxes", "Daily intake and priorities"), ("cardiff-life-eventbrite-wider-cardiff", "Events and opportunities")]:
+        path = Path.home() / ".codex" / "automations" / automation_id / "automation.toml"
         try:
             cfg = tomllib.loads(path.read_text(encoding="utf-8"))
             rule = dict(p.split("=", 1) for p in cfg["rrule"].removeprefix("RRULE:").split(";") if "=" in p)
