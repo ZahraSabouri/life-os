@@ -4,6 +4,13 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 3 November 2026 — Stage 5 Harvest approved: one way in, each part the writer of its own data (Xar with Claude Code)
+
+- Xar's answers: (1) events go to the Calendar only when she marks them going; (2) offers live in Budget as an Offers list; (3) the Gmail account index is a setting, default 1. On the review's changes: "you know how much i care about sensibility and integrity of data structure of the app and how much actions make sense. and reusablity of actions for this as an automated smart machine/app (life os/ job mapp). choose the best route based on that". On offers: "budget app if you think it's related. but if you think we need different integration even new parts etc, have a thought and let me know".
+- **Chosen on that basis:** version 2 of the mail batch is the one way in; the Life OS server writes only the mail store (one transaction, history, undo). Things to do are actions; what came in is an item. JobMap and Cardiff Life keep their own validated routes (`queue-jobs.mjs`, the events workflow); Life OS checks where things landed by matching links against their data, read only. One routing rule in `shared/harvest.js`.
+- **(1)** is met by the Calendar's existing Cardiff filter starting on Plan to go; no core "plan" entry. **(2)** offers show on the Budget page but are stored by Life OS, because Budget's only way in is a whole-`state.json` save and an offer is not yet a money record; they move into Budget when it becomes native. **(3)** setting `mail-gmail-account`, default 1. Outlook links appear only when the harvester captured Outlook's own item id.
+- Brief: `briefs/stage-5-harvest.md`. Branch `stage/5-harvest` starts from `stage/jobmap-workflow` so the live app keeps JobMap CP1 during its review.
+
 ## 2 November 2026 — reset from Monday 12:00; Friday classes only this week
 
 - Xar: “we need a reset again for all the app from 12 noon today. got an emergency exam and will only go to my classes on friday.” Read as Test 2 (Friday 6 November 14:10) being the emergency. Supersedes the 31 October attendance choice for 2–8 November: Thursday's CMT309 lecture/practical archived as not attending; Friday's MAT022 lab and lecture restored. Original timetable records kept.
