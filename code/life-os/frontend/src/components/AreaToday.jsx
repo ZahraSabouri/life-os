@@ -7,6 +7,7 @@ import { clockOf } from '../lib/day.js'
 import { useCalendar, useLondonToday } from '../lib/useCalendar.js'
 import { useDay, useLondonClock } from '../lib/useDay.js'
 import { count, hours, pounds } from './DayParts.jsx'
+import CameInStrip from './inbox/CameInStrip.jsx'
 
 function studyLine(day, clock) {
   const study = day.study
@@ -64,6 +65,8 @@ function EventsLine({ today }) {
 }
 
 const LINES = { study: studyLine, career: jobsLine, home: homeLine }
+// The harvest's part for each framed part's strip (shared/harvest.js partOf).
+const CAME_IN = { study: 'study', career: 'jobmap', home: 'budget', events: 'cardiff-life' }
 
 export default function AreaToday({ area }) {
   const today = useLondonToday()
@@ -75,6 +78,6 @@ export default function AreaToday({ area }) {
     <p>
       {area === 'events' ? <EventsLine today={today} /> : day.data ? parts.map((part, index) => <span key={index}>{typeof part === 'object' && part.to ? <Link to={part.to}>{part.text}</Link> : part.text ?? part}</span>) : <span>{day.error ? 'The day could not be read.' : 'Reading the day…'}</span>}
     </p>
-    <Link className="area-today-all" to="/today">The whole day</Link>
+    <span className="area-today-end"><CameInStrip part={CAME_IN[area]} /><Link className="area-today-all" to="/today">The whole day</Link></span>
   </aside>
 }

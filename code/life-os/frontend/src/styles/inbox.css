@@ -120,3 +120,42 @@
   .mail-list { max-height: none; }
   .mail-back { display: inline-flex; margin-bottom: 0.6rem; }
 }
+
+/* ---- What came in for one part, in the part's strip under the top bar (stage 5) ---- */
+.came-in { position: relative; display: inline-block; }
+.came-in-toggle {
+  border: 1px solid var(--m-line-strong); border-radius: 999px; background: transparent; color: var(--m-ink);
+  padding: 0.05rem 0.65rem; font: 600 0.78rem/1.5 var(--m-font); cursor: pointer; white-space: nowrap;
+}
+.came-in-toggle:hover, .came-in-toggle[aria-expanded='true'] { border-color: var(--m-accent); color: var(--m-accent-strong); }
+.came-in-count { font-variant-numeric: tabular-nums; font-weight: 700; }
+.came-in-panel {
+  position: absolute; right: 0; top: calc(100% + 0.45rem); z-index: 40; width: min(30rem, calc(100vw - 2rem)); max-height: min(70vh, 34rem); overflow: auto;
+  padding: 0.75rem 1rem; border: 1px solid var(--m-line-strong); border-radius: var(--m-radius-sm, 0.5rem); background: var(--m-card-fill, var(--m-surface));
+  box-shadow: var(--m-shadow, 0 14px 40px rgb(0 0 0 / 0.16)); text-align: left;
+}
+.came-in-panel > header { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: 0.3rem; }
+.came-in-panel h2 { margin: 0; color: var(--m-accent-strong); font: 700 0.68rem/1.2 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase; }
+.came-in-panel > header a { color: var(--m-accent-strong); font-size: 0.8rem; font-weight: 600; }
+.came-in-panel ul, .came-in-list { list-style: none; margin: 0; padding: 0; }
+.came-in-item { padding: 0.55rem 0; border-top: 1px solid var(--m-line); }
+.came-in-item:first-child { border-top: 0; }
+.came-in-line { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.15rem 0.5rem; }
+.came-in-line a, .came-in-line b { color: var(--m-ink); font-weight: 600; }
+.came-in-kind { color: var(--m-muted); font: 700 0.6rem/1.2 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase; }
+.came-in-when { margin-left: auto; color: var(--m-muted); font-size: 0.8rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.came-in-summary { margin: 0.15rem 0 0; font-weight: var(--m-text-weight); color: var(--m-muted); font-size: 0.84rem; }
+.came-in-actions { margin: 0.3rem 0 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.9rem; font-size: 0.8rem; }
+.came-in-actions a { color: var(--m-accent-strong); }
+.came-in-actions button { padding: 0; border: 0; background: none; color: var(--m-accent-strong); font: 600 0.8rem var(--m-font); cursor: pointer; }
+.came-in-actions button:hover, .came-in-actions a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.came-in-place.is-waiting, .came-in-kept { color: var(--m-muted); }
+.area-today-end { display: inline-flex; align-items: baseline; gap: 0.8rem; }
+.health-came-in { margin: 0 0 1rem; }
+.health-came-in .came-in-panel { left: 0; right: auto; }
+/* On a narrow screen the list hangs from the whole strip, not from the button in its middle. */
+@media (max-width: 760px) {
+  .area-today { position: relative; }
+  .area-today .came-in { position: static; }
+  .area-today .came-in-panel { left: 0.75rem; right: 0.75rem; width: auto; }
+}

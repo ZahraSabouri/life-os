@@ -4,6 +4,8 @@ import assert from 'node:assert/strict'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MessageText, ActionLine } from '../src/components/inbox/parts.jsx'
 import { MessageReader } from '../src/components/inbox/InboxMail.jsx'
+import { MemoryRouter } from 'react-router-dom'
+import { CameInItem, whenOf } from '../src/components/inbox/CameInStrip.jsx'
 
 const message = {
   id: 'm1', revision: 1, subject: 'Saturday?', from_name: 'Sam Taylor', from_address: 'sam.taylor@example.com', to_list: [{ name: 'You', address: 'you@example.com' }],
@@ -37,4 +39,18 @@ test('a thing she owes shows its kind and priority in words, and its buttons', (
   assert.match(compact, /Open again/)
   assert.match(compact, /You replied on 27 October\./)
   assert.ok(!compact.includes('Not needed'))
+})
+
+test('what came in: its kind, its own page, the one date that matters, where it is, Keep and Dismiss', () => {
+  const vacancy = { id: 'i3', revision: 1, kind: 'vacancy', area: 'jobs', status: 'new', day: '2026-10-31', title: 'Graduate Data Analyst', summary: 'Cardiff, GBP 28,000.', deadline: '2026-11-07', url: 'https://jobs.example.com/view/1001', place: { app: 'jobmap', missing: true } }
+  const markup = renderToStaticMarkup(<MemoryRouter><ul><CameInItem item={vacancy} /></ul></MemoryRouter>)
+  for (const words of ['Vacancy', 'Graduate Data Analyst', 'Cardiff, GBP 28,000.', 'Closes Sat 7 Nov', 'Not in JobMap yet', 'Where it came from', 'Keep', 'Dismiss']) assert.ok(markup.includes(words), words)
+  assert.ok(markup.includes('href="https://jobs.example.com/view/1001" target="_blank" rel="noopener noreferrer"'))
+  assert.ok(markup.includes('href="/inbox/log?day=2026-10-31&amp;item=i3"'))
+  const placed = renderToStaticMarkup(<MemoryRouter><ul><CameInItem item={{ ...vacancy, status: 'kept', place: { app: 'jobmap', href: '/jobmap#job=JOB-7' } }} /></ul></MemoryRouter>)
+  assert.ok(placed.includes('href="/jobmap#job=JOB-7"') && placed.includes('>In JobMap</a>'))
+  assert.ok(placed.includes('Kept') && !placed.includes('>Keep<'))
+  assert.equal(whenOf({ kind: 'offer', deadline: '2026-11-04', day: '2026-10-31' }), 'Ends Wed 4 Nov')
+  assert.equal(whenOf({ kind: 'announcement', start_at: '2026-11-05T14:00:00Z', day: '2026-10-30' }), 'Thu 5 Nov, 14:00')
+  assert.equal(whenOf({ kind: 'info', day: '2026-10-30' }), 'Came in 30 Oct')
 })

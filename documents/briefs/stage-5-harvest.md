@@ -91,10 +91,10 @@ Read back against her original request (everything in its place, the app working
 - **Commit:** `[5-cp3] Harvested dates on the Calendar; Cardiff events start on Plan to go`
 
 ### CP4: places outside Life OS, and a "Came in" strip on each part's page
-- [ ] `hosting/mail/places.mjs`: matches vacancy items to JobMap jobs, and event items to Cardiff Life events, by canonical link (read only, the Calendar's loaders); gives `{app, href}` or "not there yet".
-- [ ] `GET /api/mail/items` (filters: day, area, kind, part, open) with places attached.
-- [ ] `frontend/src/components/inbox/CameInStrip.jsx`, one component above each framed part (`/study`, `/jobmap`, `/cardiff-life`, `/budget`) and on Health: that part's open items, soonest first, Keep and Dismiss; folded to one line until opened. Budget's strip is the Offers list.
-- [ ] `mail/HARVEST.md`: how Integrate queues JobMap (`queue-jobs.mjs`) and hands events to Cardiff Life (written in CP1); suggestions go to `mail/suggestions.md`.
+- [x] `hosting/mail/places.mjs`: matches vacancy items to JobMap jobs, and event items to Cardiff Life events, by canonical link (read only, the Calendar's loaders); gives `{app, href}` or "not there yet".
+- [x] `GET /api/mail/items` (filters: day, area, kind, part, open) with places attached.
+- [x] `frontend/src/components/inbox/CameInStrip.jsx`, one component above each framed part (`/study`, `/jobmap`, `/cardiff-life`, `/budget`) and on Health: that part's open items, soonest first, Keep and Dismiss; folded to one line until opened. Budget's strip is the Offers list.
+- [x] `mail/HARVEST.md`: how Integrate queues JobMap (`queue-jobs.mjs`) and hands events to Cardiff Life (written in CP1); suggestions go to `mail/suggestions.md`.
 - **Done when:** a test vacancy whose link is in JobMap shows "In JobMap" with a working link, an unknown one shows on JobMap's strip as not there yet, a test offer is on the Budget page and can be dismissed, and a course announcement is on the Study page.
 - **Verify:** `node --test hosting/mail/places.test.mjs`, the mail tests on `lifeos_test`, the build, the browser.
 - **Commit:** `[5-cp4] Harvested items in their places: linked to JobMap and Cardiff Life, a Came in strip on each part`

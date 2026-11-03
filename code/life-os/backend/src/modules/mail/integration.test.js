@@ -209,6 +209,17 @@ test('mail import v2 on lifeos_test: items with their places, links, her status,
     await repository.patchHers('items', brief.id, saved.revision, { status: 'new' })
   })
 
+  await t.test('open items: not dismissed and not over, or undated and recent', async () => {
+    const { createMailReads } = await import('./reads.js')
+    const reads = createMailReads({ pool })
+    const keys = async (today) => (await reads.items({ open: true, today })).filter((row) => row.dedupe_key.endsWith(`:${tag}`)).map((row) => row.dedupe_key.split(':').at(-2)).sort()
+    // On 3 November: the offer (ends 4 Nov) is open; on 5 November it is over and the lab (5 Nov) is the last day.
+    assert.deepEqual(await keys('2026-11-03'), ['board-games', 'cw2-brief', 'graduate-data-analyst', 'hackathon', 'junior-data-engineer', 'lab-room', 'library-fine', 'ra-ml', 'student-books'])
+    assert.deepEqual(await keys('2026-11-05'), ['cw2-brief', 'graduate-data-analyst', 'hackathon', 'junior-data-engineer', 'lab-room', 'library-fine', 'ra-ml'])
+    assert.deepEqual(await keys('2026-12-05'), [])
+    assert.equal((await reads.items({ day: '2026-10-31' })).filter((row) => row.dedupe_key.endsWith(`:${tag}`)).length, 4)
+  })
+
   await t.test('her status on an item survives an import that changes it', async () => {
     const job = await item('gmail:18c2f0a1b2c3d4e5:graduate-data-analyst')
     const dismissed = await repository.patchHers('items', job.id, job.revision, { status: 'dismissed' })

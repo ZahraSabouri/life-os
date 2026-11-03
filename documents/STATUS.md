@@ -10,7 +10,7 @@
 
 ## Exact next step
 
-CP1 to CP3 are done (`[5-cp1]` the v2 format and routing rule; `[5-cp2]` items stored, imported and undone; `[5-cp3]` a "Came in" layer on the Calendar for dated course items, materials, notes and opportunities, and Cardiff events now start on Plan to go in the Calendar, Today, Planner and Court). Next: CP4, places in JobMap and Cardiff Life and the "Came in" strip on each part's page. Xar added on 3 November: a "Came in" strip on each part's page, the sources panel on the log, sender rules in Mail, app suggestions to `mail/suggestions.md` (in the brief).
+CP1 to CP4 are done (`[5-cp1]` format and routing rule; `[5-cp2]` items stored; `[5-cp3]` Calendar "Came in" layer and Plan to go; `[5-cp4]` vacancies and events linked to where they are in JobMap and Cardiff Life, and a "Came in" count with Keep and Dismiss in the strip of Study, JobMap, Cardiff Life and Budget, and on Health). Next: CP5, the Harvest log in place of Digests. Xar added on 3 November: a "Came in" strip on each part's page, the sources panel on the log, sender rules in Mail, app suggestions to `mail/suggestions.md` (in the brief).
 
 **Next prompt:** "Read AGENTS.md and documents/STATUS.md, then do the next unchecked checkpoint of documents/briefs/stage-5-harvest.md on branch stage/5-harvest."
 

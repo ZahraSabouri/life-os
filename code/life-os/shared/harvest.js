@@ -40,6 +40,21 @@ export function placeOf(item, today = '') {
   }
 }
 
+// The part of Life OS an item belongs to, for the "Came in" line on that part's page: offers to
+// Budget, vacancies and job or research opportunities to JobMap, events to Cardiff Life, the rest
+// by area. Admin has no part of its own: it is on Waiting on you and in the Harvest log.
+export const PARTS = { study: 'Study', jobmap: 'JobMap', 'cardiff-life': 'Cardiff Life', budget: 'Budget', health: 'Health' }
+export function partOf(item) {
+  const { kind, area } = item ?? {}
+  if (kind === 'offer') return 'budget'
+  if (kind === 'vacancy' || (kind === 'opportunity' && ['jobs', 'research'].includes(area))) return 'jobmap'
+  if (kind === 'event') return 'cardiff-life'
+  if (area === 'academic') return 'study'
+  if (area === 'health') return 'health'
+  if (['money', 'perks', 'home'].includes(area)) return 'budget'
+  return null
+}
+
 // The log's factual line for a day: "12 messages, 2 to do, 3 vacancies, 1 event". Never advice.
 export function dayLine({ messages = 0, actions = 0, kinds = {} } = {}) {
   const plural = (count, [one, many]) => `${count} ${count === 1 ? one : many}`

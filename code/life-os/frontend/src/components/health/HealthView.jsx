@@ -12,6 +12,7 @@ import HealthExercise from './HealthExercise.jsx'
 import HealthFood from './HealthFood.jsx'
 import HealthCare from './HealthCare.jsx'
 import GymPlans from './GymPlans.jsx'
+import CameInStrip from '../inbox/CameInStrip.jsx'
 
 export const HEALTH_PAGES = [['week', 'This week'], ['gym', 'Gym'], ['exercise', 'Exercise'], ['food', 'Food'], ['care', 'Appointments & tests']]
 
@@ -38,6 +39,7 @@ export default function HealthView() {
     <nav className="day-add-kind health-tabs" aria-label="Health pages">
       {HEALTH_PAGES.map(([key, label]) => <button key={key} type="button" aria-pressed={view === key} onClick={() => go(key)}>{label}</button>)}
     </nav>
+    <CameInStrip part="health" className="health-came-in" />
     {health.error ? <p className="form-error" role="alert">Health could not be read: {health.error}</p> : null}
     {view === 'week' ? <HealthWeek page={page} /> : view === 'gym' ? <GymPlans page={page} /> : view === 'exercise' ? <HealthExercise page={page} /> : view === 'food' ? <HealthFood page={page} /> : <HealthCare page={page} />}
   </section>

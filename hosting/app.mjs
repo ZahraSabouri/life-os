@@ -31,6 +31,7 @@ import { createStudyRuntime } from './study/runtime.mjs'
 import { createStudyRouter } from '../code/life-os/backend/src/modules/study/router.js'
 import { createMailRuntime } from './mail/inbox.mjs'
 import { createMailRouter } from '../code/life-os/backend/src/modules/mail/router.js'
+import { createPlaces } from './mail/places.mjs'
 import { saveStudyUpload, studyFilesRoot } from './study/storage.mjs'
 import { createHubRouter } from './study/hub/router.mjs'
 import { skinFiles, skinnedPage } from './skins/index.mjs'
@@ -176,7 +177,9 @@ export function createLifeOsApp(options = {}) {
     } catch (error) { next(error) }
   })
   app.use('/api/study', createStudyRouter({ repository: study.repository, imports: study.imports }))
-  if (mail) app.use('/api/mail', createMailRouter(mail))
+  // Where a harvested vacancy or event is now, from the calendar's own readers (set up below).
+  let placeItems = async (items) => items
+  if (mail) app.use('/api/mail', createMailRouter({ ...mail, places: (items) => placeItems(items) }))
   else app.use('/api/mail', (_req, res) => res.status(503).json({ error: 'Mail storage is not configured.' }))
   // A page asks for the day, the calendar, the notices and the week at once, and each of those
   // needs Study, JobMap and Budget. While one read of a part is under way, everyone who asks is
@@ -216,6 +219,7 @@ export function createLifeOsApp(options = {}) {
   // A part gets eight seconds before the calendar says it could not be read (it was two and a half).
   // What she owes with a day, from the mail part.
   if (mail) calendarLoaders.loadMail = (range) => mail.reads.dated(range.from, range.to)
+  placeItems = createPlaces({ loadCareer: () => calendarLoaders.loadCareer(), loadEvents: () => calendarLoaders.loadEvents() })
   // What came in with a day: a moved lab, a brief's due date, a hackathon's closing day (stage 5).
   if (mail) calendarLoaders.loadHarvest = (range) => mail.reads.datedItems(range.from, range.to)
   const calendarService = createCalendarService({ ...calendarLoaders, timeoutMs: 8000 })

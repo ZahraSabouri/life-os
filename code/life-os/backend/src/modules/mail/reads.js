@@ -70,6 +70,24 @@ export function createMailReads({ pool }) {
     AND i.kind IN ('announcement', 'material', 'info', 'opportunity')
     AND coalesce((i.start_at AT TIME ZONE 'Europe/London')::date, i.start_day, i.deadline) BETWEEN $1::date AND $2::date`, [from, to])
 
+  // What came in, with its source. day: one London day. open: not dismissed and not over: its
+  // last day (closing, ending or starting) is today or later, or, with no day at all, it came in
+  // within the last fortnight.
+  async function items({ day = '', open = false, today = '', limit = 1000 } = {}) {
+    const where = ['i.deleted_at IS NULL']
+    const values = []
+    const add = (value) => { values.push(value); return `$${values.length}` }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(day)) where.push(`i.day = ${add(day)}::date`)
+    if (open && /^\d{4}-\d{2}-\d{2}$/.test(today)) {
+      const last = "greatest(i.deadline, i.end_day, i.start_day, (i.end_at AT TIME ZONE 'Europe/London')::date, (i.start_at AT TIME ZONE 'Europe/London')::date)"
+      const at = add(today)
+      where.push(`i.status <> 'dismissed' AND (${last} >= ${at}::date OR (${last} IS NULL AND i.day >= ${at}::date - 14))`)
+    }
+    return rows(`SELECT to_jsonb(i) || jsonb_build_object('source_label', s.label, 'source_kind', s.kind) AS row
+      FROM mail.items i LEFT JOIN mail.sources s ON s.id = i.source_id WHERE ${where.join(' AND ')}
+      ORDER BY coalesce(i.deadline, i.start_day, (i.start_at AT TIME ZONE 'Europe/London')::date, i.day), i.title LIMIT ${Math.max(1, Math.min(5000, Number(limit) || 1000))}`, values)
+  }
+
   // For the bell: what is open, and the announcements the latest applied batch brought.
   async function forNotices() {
     const open = await rows("SELECT to_jsonb(a) AS row FROM mail.actions a WHERE a.deleted_at IS NULL AND a.status IN ('open', 'snoozed')")
@@ -78,5 +96,5 @@ export function createMailReads({ pool }) {
     return { actions: open, announcements, batchId: latest?.id ?? null }
   }
 
-  return { actions, action, messages, message, person, digests, lastGathered, dated, datedItems, forNotices }
+  return { actions, action, messages, message, person, digests, lastGathered, dated, datedItems, items, forNotices }
 }

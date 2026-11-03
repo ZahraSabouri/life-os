@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { placeOf, dayLine, canonicalUrl, junkLink, gmailLink, outlookLink, originalLink, chatty, fitsArea, itemDate } from './harvest.js'
+import { placeOf, partOf, dayLine, canonicalUrl, junkLink, gmailLink, outlookLink, originalLink, chatty, fitsArea, itemDate } from './harvest.js'
 
 test('placeOf: events through Cardiff Life, vacancies through JobMap, offers on the Offers list', () => {
   assert.deepEqual(placeOf({ kind: 'event', start: '2026-11-05T18:00:00Z' }, '2026-11-03'), { calendar: false, linkTo: 'cardiff-life', offers: false, today: false })
@@ -83,4 +83,16 @@ test('chatty: a summary that talks to her is caught; a record is not', () => {
   assert.equal(chatty('I recommend booking early.'), true)
   assert.equal(chatty('Graduate data analyst role, Cardiff, closes 20 November.'), false)
   assert.equal(chatty('Week 7 lab moved to Room 0.12.'), false)
+})
+
+test('partOf: offers to Budget, vacancies and job opportunities to JobMap, events to Cardiff Life, the rest by area', () => {
+  assert.equal(partOf({ kind: 'offer', area: 'health' }), 'budget')
+  assert.equal(partOf({ kind: 'vacancy', area: 'research' }), 'jobmap')
+  assert.equal(partOf({ kind: 'opportunity', area: 'jobs' }), 'jobmap')
+  assert.equal(partOf({ kind: 'opportunity', area: 'academic' }), 'study')
+  assert.equal(partOf({ kind: 'event', area: 'academic' }), 'cardiff-life')
+  assert.equal(partOf({ kind: 'material', area: 'academic' }), 'study')
+  assert.equal(partOf({ kind: 'info', area: 'health' }), 'health')
+  assert.equal(partOf({ kind: 'info', area: 'money' }), 'budget')
+  assert.equal(partOf({ kind: 'announcement', area: 'admin' }), null)
 })

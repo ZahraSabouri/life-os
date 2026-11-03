@@ -2,10 +2,12 @@ import { Router } from 'express'
 import { MailError } from './repository.js'
 import { dateKey } from '../../../../shared/calendar.js'
 import { birthdayWishes, groupActions, parseOwe, peopleNamed, priorityOf } from '../../../../shared/mail.js'
+import { partOf, PARTS } from '../../../../shared/harvest.js'
 
 // /api/mail. inbox is hosting/mail/inbox.mjs (status, scan); importer undoes batches; reads serves
-// the pages; findPeople reads the core's People (only read: Life OS never creates a person from mail).
-export function createMailRouter({ repository, importer, inbox, reads, findPeople = () => [], now = () => new Date() }) {
+// the pages; findPeople reads the core's People (only read: Life OS never creates a person from mail);
+// places finds where harvested vacancies and events are now (hosting/mail/places.mjs, read only).
+export function createMailRouter({ repository, importer, inbox, reads, findPeople = () => [], places = async (items) => items, now = () => new Date() }) {
   if (!repository || !importer || !inbox || !reads) throw new TypeError('The mail router needs a repository, an importer, an inbox and reads')
   const router = Router()
   const handler = (callback) => async (req, res, next) => {
@@ -85,6 +87,16 @@ export function createMailRouter({ repository, importer, inbox, reads, findPeopl
     res.json({ ...found, seen_at: seen.seen_at, revision: seen.revision })
   }))
   router.patch('/messages/:id', handler(async (req, res) => res.json(await repository.patchHers('messages', req.params.id, revisionOf(req.body), without(req.body, 'revision')))))
+  // What came in, with where each vacancy and event is now. ?part= one part's (shared/harvest.js
+  // partOf), ?day= one London day's, ?open=1 only what is not dismissed or over.
+  router.get('/items', handler(async (req, res) => {
+    const query = req.query ?? {}
+    const today = dateKey(now())
+    const part = String(query.part ?? '')
+    if (part && !Object.hasOwn(PARTS, part)) throw new MailError(400, `Unknown part: ${part}`)
+    const rows = (await reads.items({ day: String(query.day ?? ''), open: query.open === '1', today })).filter((row) => !part || partOf(row) === part)
+    res.json({ today, items: await places(rows) })
+  }))
   // What came in: Keep, Dismiss, seen. Only her fields, with the revision she last saw.
   router.patch('/items/:id', handler(async (req, res) => res.json(await repository.patchHers('items', req.params.id, revisionOf(req.body), without(req.body, 'revision')))))
 
