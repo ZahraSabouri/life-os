@@ -9,6 +9,16 @@ import { KIND_NAMES, PRIORITIES, priorityOf, replyPrompt, textPieces, titleOf } 
 const PRIORITY_NAMES = { urgent: 'Urgent', high: 'High', normal: 'Normal', low: 'Low' }
 export const SIGN_NAME_KEY = 'mail-sign-name'
 
+// What the Inbox remembers for her, at the end of the Harvest log: the name Claude signs replies
+// with (it was on the Digests page).
+export function MailSettings() {
+  const [name, setName] = useSetting(SIGN_NAME_KEY, '')
+  return <details className="day-panel mail-settings">
+    <summary>Settings</summary>
+    <label className="mail-sign"><span>Your name for signing replies Claude writes</span><input value={name ?? ''} onChange={(event) => setName(event.target.value)} maxLength={80} placeholder="Leave empty to sign them yourself" /></label>
+  </details>
+}
+
 export const KindMark = ({ kind }) => <span className={`mail-kind is-${kind}`}>{KIND_NAMES[kind] ?? kind}</span>
 export const PriorityMark = ({ row }) => <span className={`mail-priority is-${priorityOf(row)}`}>{PRIORITY_NAMES[priorityOf(row)]}</span>
 

@@ -72,21 +72,79 @@ export function createMailReads({ pool }) {
 
   // What came in, with its source. day: one London day. open: not dismissed and not over: its
   // last day (closing, ending or starting) is today or later, or, with no day at all, it came in
-  // within the last fortnight.
-  async function items({ day = '', open = false, today = '', limit = 1000 } = {}) {
+  // within the last fortnight. The Everything view's filters: area, kind, status (new, kept,
+  // dismissed, live = not dismissed), closing (week, month, past: by its closing day), words (q),
+  // sort (closing soonest, or newest first).
+  const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/
+  async function items({ day = '', open = false, today = '', area = '', kind = '', status = '', closing = '', q = '', sort = 'closing', limit = 1000 } = {}) {
     const where = ['i.deleted_at IS NULL']
     const values = []
     const add = (value) => { values.push(value); return `$${values.length}` }
-    if (/^\d{4}-\d{2}-\d{2}$/.test(day)) where.push(`i.day = ${add(day)}::date`)
-    if (open && /^\d{4}-\d{2}-\d{2}$/.test(today)) {
+    if (ISO_DAY.test(day)) where.push(`i.day = ${add(day)}::date`)
+    if (open && ISO_DAY.test(today)) {
       const last = "greatest(i.deadline, i.end_day, i.start_day, (i.end_at AT TIME ZONE 'Europe/London')::date, (i.start_at AT TIME ZONE 'Europe/London')::date)"
       const at = add(today)
       where.push(`i.status <> 'dismissed' AND (${last} >= ${at}::date OR (${last} IS NULL AND i.day >= ${at}::date - 14))`)
     }
+    if (area) where.push(`i.area = ${add(area)}`)
+    if (kind) where.push(`i.kind = ${add(kind)}`)
+    if (status === 'live') where.push("i.status <> 'dismissed'")
+    else if (['new', 'kept', 'dismissed'].includes(status)) where.push(`i.status = ${add(status)}`)
+    if (ISO_DAY.test(today) && closing) {
+      const at = add(today)
+      if (closing === 'week') where.push(`i.deadline BETWEEN ${at}::date AND ${at}::date + 6`)
+      else if (closing === 'month') where.push(`i.deadline BETWEEN ${at}::date AND ${at}::date + 30`)
+      else if (closing === 'past') where.push(`i.deadline < ${at}::date`)
+    }
+    const words = String(q ?? '').trim().slice(0, 200)
+    if (words) where.push(`concat_ws(' ', i.title, i.summary, i.location, i.details->>'organiser', i.details->>'employer', i.details->>'course') ILIKE ${add(like(words))}`)
+    const order = sort === 'newest' ? 'i.day DESC, i.title' : "coalesce(i.deadline, i.start_day, (i.start_at AT TIME ZONE 'Europe/London')::date, i.day), i.title"
     return rows(`SELECT to_jsonb(i) || jsonb_build_object('source_label', s.label, 'source_kind', s.kind) AS row
       FROM mail.items i LEFT JOIN mail.sources s ON s.id = i.source_id WHERE ${where.join(' AND ')}
-      ORDER BY coalesce(i.deadline, i.start_day, (i.start_at AT TIME ZONE 'Europe/London')::date, i.day), i.title LIMIT ${Math.max(1, Math.min(5000, Number(limit) || 1000))}`, values)
+      ORDER BY ${order} LIMIT ${Math.max(1, Math.min(5000, Number(limit) || 1000))}`, values)
   }
+
+  // The Harvest log (stage 5): every London day something came in, newest first, with its counts:
+  // messages by source, items by kind, things to do that started that day.
+  const MESSAGE_DAY = "(m.received_at AT TIME ZONE 'Europe/London')::date"
+  const ACTION_DAY = "(coalesce(a.since, a.created_at) AT TIME ZONE 'Europe/London')::date"
+  const days = ({ limit = 400 } = {}) => rows(`WITH
+      m AS (SELECT ${MESSAGE_DAY} AS day, m.source_id, count(*)::int AS n FROM mail.messages m WHERE m.deleted_at IS NULL GROUP BY 1, 2),
+      i AS (SELECT i.day, i.kind, count(*)::int AS n FROM mail.items i WHERE i.deleted_at IS NULL GROUP BY 1, 2),
+      a AS (SELECT ${ACTION_DAY} AS day, count(*)::int AS n FROM mail.actions a WHERE a.deleted_at IS NULL AND a.origin = 'gathered' GROUP BY 1),
+      d AS (SELECT day FROM m UNION SELECT day FROM i UNION SELECT day FROM a)
+    SELECT jsonb_build_object('day', d.day::text,
+      'messages', coalesce((SELECT sum(n) FROM m WHERE m.day = d.day), 0),
+      'sources', coalesce((SELECT jsonb_object_agg(source_id, n) FROM m WHERE m.day = d.day), '{}'::jsonb),
+      'kinds', coalesce((SELECT jsonb_object_agg(kind, n) FROM i WHERE i.day = d.day), '{}'::jsonb),
+      'actions', coalesce((SELECT n FROM a WHERE a.day = d.day), 0)) AS row
+    FROM d ORDER BY d.day DESC LIMIT ${Math.max(1, Math.min(2000, Number(limit) || 400))}`)
+
+  // One day of the log: what came in (items), the messages, what to do that started then, and the
+  // runs that brought them.
+  async function day(when) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(when ?? ''))) return null
+    const [items_, messages_, actions_, runs] = await Promise.all([
+      items({ day: when }),
+      rows(`SELECT jsonb_build_object('id', m.id, 'subject', m.subject, 'from_name', m.from_name, 'from_address', m.from_address, 'received_at', m.received_at,
+          'summary', m.summary, 'category', m.category, 'priority', coalesce(m.her_priority, m.priority), 'course', m.course, 'source_id', m.source_id,
+          'source_label', s.label, 'source_kind', s.kind, 'hidden_at', m.hidden_at) AS row
+        FROM mail.messages m LEFT JOIN mail.sources s ON s.id = m.source_id WHERE m.deleted_at IS NULL AND ${MESSAGE_DAY} = $1::date ORDER BY m.received_at`, [when]),
+      rows(`SELECT to_jsonb(a) AS row FROM mail.actions a WHERE a.deleted_at IS NULL AND a.origin = 'gathered' AND ${ACTION_DAY} = $1::date ORDER BY a.due NULLS LAST, a.title`, [when]),
+      rows(`SELECT jsonb_build_object('id', b.id, 'run_id', b.run_id, 'gathered_at', b.gathered_at, 'imported_at', b.imported_at, 'agent', b.agent, 'status', b.status,
+          'version', b.version, 'counts', b.counts, 'sources', b.sources) AS row FROM mail.batches b
+        WHERE b.id IN (SELECT first_batch_id FROM mail.items WHERE day = $1::date AND deleted_at IS NULL
+          UNION SELECT first_batch_id FROM mail.messages m WHERE ${MESSAGE_DAY} = $1::date AND deleted_at IS NULL)
+        ORDER BY b.gathered_at`, [when]),
+    ])
+    return { day: when, items: items_, messages: messages_, actions: actions_, runs }
+  }
+
+  // Each source as an instrument reads: how far it is read, when, how, and what it could not read.
+  const sources = () => rows(`SELECT jsonb_build_object('id', s.id, 'label', s.label, 'kind', s.kind, 'route', s.route, 'status', s.last_status,
+      'coverage', s.coverage, 'window_from', s.window_from, 'window_to', s.window_to, 'gathered_at', b.gathered_at, 'messages',
+      (SELECT count(*)::int FROM mail.messages m WHERE m.source_id = s.id AND m.deleted_at IS NULL)) AS row
+    FROM mail.sources s LEFT JOIN mail.batches b ON b.id = s.last_batch_id WHERE s.deleted_at IS NULL ORDER BY b.gathered_at DESC NULLS LAST, s.label`)
 
   // For the bell: what is open, and the announcements the latest applied batch brought.
   async function forNotices() {
@@ -96,5 +154,5 @@ export function createMailReads({ pool }) {
     return { actions: open, announcements, batchId: latest?.id ?? null }
   }
 
-  return { actions, action, messages, message, person, digests, lastGathered, dated, datedItems, items, forNotices }
+  return { actions, action, messages, message, person, digests, lastGathered, dated, datedItems, items, days, day, sources, forNotices }
 }

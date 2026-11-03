@@ -100,15 +100,16 @@ Read back against her original request (everything in its place, the app working
 - **Commit:** `[5-cp4] Harvested items in their places: linked to JobMap and Cardiff Life, a Came in strip on each part`
 
 ### CP5: the Harvest log, replacing Digests
-- [ ] `reads.js` and `router.js`: `GET /api/mail/days` (London days with counts by kind and source) and `GET /api/mail/days/:day` (that day's items by area with their places, its messages count, and the runs that brought them, with undo on the latest).
-- [ ] `frontend/src/components/inbox/InboxLog.jsx` at `/inbox/log` (the Digests tab becomes "Harvest log"; `/inbox/digests` goes there). It opens with the sources (each one's last read, how far, what could not be read). Then one day at a time, newest first, back to the first harvested day: the day's factual line, then items grouped by area, each linking to its place; area chips. "How to gather" and the line for an AI move to the Guide.
-- [ ] The Guide's Inbox page (`frontend/src/guide/chapters.js`).
+- [x] `reads.js` and `router.js`: `GET /api/mail/days` (London days with counts by kind and source) and `GET /api/mail/days/:day` (that day's items by area with their places, its messages count, and the runs that brought them, with undo on the latest).
+- [x] `frontend/src/components/inbox/InboxLog.jsx` at `/inbox/log` (the Digests tab becomes "Harvest log"; `/inbox/digests` goes there). It opens with the sources (each one's last read, how far, what could not be read). Then one day at a time, newest first, back to the first harvested day: the day's factual line, then items grouped by area, each linking to its place; area chips. "How to gather" and the line for an AI move to the Guide.
+- [x] The Guide's Inbox page (`frontend/src/guide/chapters.js`).
+- [x] Added on Xar's request ("PRO MANAGEMENT. best filters"): an **Everything** view of all items: area, kind, status, closing, where it is (in JobMap or Cardiff Life or not yet), words, soonest or newest; tick several and Keep, Dismiss or put back to new (`POST /api/mail/items/bulk`, each with its revision; one changed since is named and left alone). Her sign-off name moved from Digests to the log's Settings.
 - **Done when:** the test batches give one page per day, each reading like a record, and the old digests' runs are still listed with their sources.
 - **Verify:** the mail tests on `lifeos_test` (days), `frontend/test/inbox-render.test.jsx` (bundled), the build, the browser.
 - **Commit:** `[5-cp5] The Harvest log: one page per day, in place of Digests`
 
 ### CP6: Mail as a reading room
-- [ ] `reads.messages`: area (through its items), date range and "has a deadline" filters; newsletters and automated mail folded to one line per sender per day.
+- [ ] `reads.messages`: area (through its items), date range, priority, "has a deadline", "led to something" and "not opened in Life OS" filters; newsletters and automated mail folded to one line per sender per day; several messages hidden or marked seen at once.
 - [ ] The reader: "Taken from this" (its items and actions, each with where it went), the cleaned text, its real links; "Open in Gmail" from the setting, "Open in Outlook" only with the message's own address, otherwise nothing.
 - [ ] Sender rules: "Fold this sender" and "Hide this sender" from the reader, and a list to undo them (`mail.senders`, revision checked).
 - [ ] The Gmail account setting on the Mail page (`mail-gmail-account`, default 1).

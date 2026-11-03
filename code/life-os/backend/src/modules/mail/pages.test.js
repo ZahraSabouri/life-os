@@ -109,3 +109,67 @@ test('mail pages on lifeos_test: hers, birthdays, reading, search, a person, dig
     assert.ok((await reads.forNotices()).actions.length > 0)
   })
 })
+
+// Stage 5: what came in, through the routes the strips, the Harvest log and Everything use.
+test('harvest routes on lifeos_test: a part, places, the log, bulk Keep and Dismiss', { skip: !enabled }, async (t) => {
+  const { postgresConfig, createPostgresPool } = await import('../../postgres.js')
+  const pool = createPostgresPool(postgresConfig(projectRoot), { database: 'lifeos_test', role: 'app' })
+  t.after(() => pool.end())
+  assert.equal((await pool.query('SELECT current_database() AS name')).rows[0].name, 'lifeos_test', 'Refusing to use a non-test database')
+  const repository = createMailRepository({ pool })
+  const importer = createMailImporter({ repository })
+  const reads = createMailReads({ pool })
+  const mark = `${tag.slice(0, 4)}pg`
+  const v2 = JSON.parse(fs.readFileSync(path.join(projectRoot, 'mail/example-batch-v2.json'), 'utf8'))
+  v2.runId = `2026-11-02-0701-${mark}`
+  v2.sources.forEach((entry) => { entry.id = `${entry.id}-${mark}` })
+  v2.messages.forEach((message) => { message.source = `${message.source}-${mark}` })
+  v2.actions.forEach((entry) => { entry.dedupeKey = `${entry.dedupeKey}:${mark}` })
+  v2.items.forEach((item) => { item.key = `${item.key}:${mark}` })
+  await importer.apply(v2, { fileName: 'pages-v2.json' })
+  const places = async (rows) => rows.map((row) => (row.kind === 'vacancy' ? { ...row, place: row.url?.includes('1002') ? { app: 'jobmap', href: '/jobmap#job=EX-1' } : { app: 'jobmap', missing: true } } : row))
+  const app = express()
+  app.use(express.json())
+  app.use('/api/mail', createMailRouter({ repository, importer, inbox: { status: async () => ({}), scan: async () => ({}) }, reads, places, now: () => new Date('2026-11-03T09:00:00Z') }))
+  const server = app.listen(0, '127.0.0.1')
+  t.after(() => server.close())
+  await new Promise((resolve) => server.once('listening', resolve))
+  const call = async (route, method = 'GET', body) => {
+    const response = await fetch(`http://127.0.0.1:${server.address().port}/api/mail${route}`, { method, headers: { 'content-type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) })
+    return { status: response.status, body: await response.json() }
+  }
+  const ours = (rows) => rows.filter((row) => row.dedupe_key.endsWith(`:${mark}`))
+
+  await t.test('a part gets only its own open items, with where each vacancy is now', async () => {
+    const jobs = ours((await call('/items?part=jobmap&open=1')).body.items)
+    assert.equal(jobs.length, 3)
+    assert.deepEqual(jobs.map((row) => Boolean(row.place?.href)).sort(), [false, false, true])
+    assert.deepEqual(ours((await call('/items?part=budget&open=1')).body.items).map((row) => row.kind).sort(), ['info', 'offer'])
+    assert.equal(ours((await call('/items?part=study&open=1')).body.items).length, 3)
+    assert.equal((await call('/items?part=nowhere')).status, 400)
+    assert.equal(ours((await call('/items?kind=vacancy&where=missing')).body.items).length, 2)
+  })
+
+  await t.test('the log: days, one day with places, the sources', async () => {
+    const days = (await call('/days')).body.days
+    assert.ok(days.some((entry) => entry.day === '2026-10-30'))
+    const day = (await call('/days/2026-10-31')).body
+    assert.equal(ours(day.items).length, 4)
+    assert.ok(ours(day.items).filter((row) => row.kind === 'vacancy').every((row) => row.place))
+    assert.equal((await call('/days/yesterday')).status, 400)
+    assert.ok((await call('/sources')).body.sources.some((source) => source.id === `gmail-${mark}`))
+  })
+
+  await t.test('Keep and Dismiss for several at once; one that changed since is named and left alone', async () => {
+    const rows = ours((await call('/items?area=academic')).body.items)
+    const stale = { id: rows[0].id, revision: rows[0].revision }
+    const kept = await call(`/items/${rows[0].id}`, 'PATCH', { revision: rows[0].revision, status: 'kept' })
+    assert.equal(kept.status, 200)
+    const bulk = await call('/items/bulk', 'POST', { status: 'dismissed', items: [stale, ...rows.slice(1).map((row) => ({ id: row.id, revision: row.revision }))] })
+    assert.deepEqual(bulk.body, { saved: rows.length - 1, changed: [rows[0].id] })
+    assert.deepEqual(ours((await call('/items?area=academic&status=dismissed')).body.items).length, rows.length - 1)
+    assert.equal((await call('/items/bulk', 'POST', { status: 'gone', items: [stale] })).status, 400)
+    assert.equal((await call('/items/bulk', 'POST', { status: 'kept', items: [{ id: rows[1].id }] })).status, 400)
+    assert.equal((await call(`/items/${rows[1].id}`, 'PATCH', { revision: 1, status: 'kept' })).status, 409)
+  })
+})

@@ -54,3 +54,31 @@ test('what came in: its kind, its own page, the one date that matters, where it 
   assert.equal(whenOf({ kind: 'announcement', start_at: '2026-11-05T14:00:00Z', day: '2026-10-30' }), 'Thu 5 Nov, 14:00')
   assert.equal(whenOf({ kind: 'info', day: '2026-10-30' }), 'Came in 30 Oct')
 })
+
+test('one day of the Harvest log: a factual line, what came in by area, to do, messages folded, the runs', async () => {
+  const { LogDay, SourcesPanel } = await import('../src/components/inbox/InboxLog.jsx')
+  const detail = {
+    day: '2026-10-31', latestBatchId: 'b1',
+    items: [
+      { id: 'i3', revision: 1, kind: 'vacancy', area: 'jobs', status: 'new', day: '2026-10-31', title: 'Graduate Data Analyst', summary: 'Cardiff.', deadline: '2026-11-07', place: { app: 'jobmap', missing: true } },
+      { id: 'i6', revision: 1, kind: 'offer', area: 'perks', status: 'kept', day: '2026-10-31', title: '20% off books', summary: 'Student card.', deadline: '2026-11-04' },
+    ],
+    actions: [{ id: 'a1', title: 'Pay the library fine', due: '2026-11-15', status: 'open' }],
+    messages: [
+      { id: 'm1', subject: 'Lab moved', from_name: 'Dr A. Example', category: 'announcement', summary: 'Room 0.12.', source_label: 'Learning platform' },
+      { id: 'm2', subject: 'Weekly digest', category: 'newsletter', summary: 'News.' },
+      { id: 'm3', subject: 'Receipt', category: 'automated', summary: 'Paid.' },
+    ],
+    runs: [{ id: 'b1', gathered_at: '2026-11-02T07:00:00Z', agent: 'Integrate', status: 'applied', counts: { items: { new: 9, updated: 0, unchanged: 0 } }, sources: [{ label: 'Gmail', status: 'read' }] }],
+  }
+  const entry = { day: '2026-10-31', messages: 3, actions: 1, kinds: { vacancy: 1, offer: 1 } }
+  const markup = renderToStaticMarkup(<MemoryRouter><LogDay detail={detail} entry={entry} area="" setArea={() => {}} focus="i3" /></MemoryRouter>)
+  for (const words of ['Saturday 31 October', '3 messages, 1 to do, 1 vacancy, 1 offer', 'Jobs', 'Perks', 'Graduate Data Analyst', 'Not in JobMap yet', 'To do', 'Pay the library fine', 'Lab moved', '2 more: newsletters, notifications and the rest', 'Brought by', 'Integrate', 'Gmail read', 'items 9 new, 0 changed', 'Undo']) assert.ok(markup.includes(words), words)
+  assert.ok(markup.includes('is-focused'))
+  assert.ok(!markup.includes('Weekly digest'))
+  assert.ok(!/you should|I recommend/i.test(markup))
+  const onlyJobs = renderToStaticMarkup(<MemoryRouter><LogDay detail={detail} entry={entry} area="jobs" setArea={() => {}} /></MemoryRouter>)
+  assert.ok(onlyJobs.includes('Graduate Data Analyst') && !onlyJobs.includes('20% off books') && !onlyJobs.includes('Pay the library fine'))
+  const sources = renderToStaticMarkup(<SourcesPanel sources={[{ id: 's', label: 'Gmail', status: 'partial', window_to: '2026-11-03T07:00:00Z', messages: 797, coverage: 'Primary and Updates.' }]} lastGathered="2026-11-03T07:05:00Z" />)
+  for (const words of ['Sources', 'Gmail', 'Partly read', 'to Tue 3 Nov, 07:00', '797 messages', 'Primary and Updates.', 'Last harvest Tue 3 Nov, 07:05']) assert.ok(sources.includes(words), words)
+})

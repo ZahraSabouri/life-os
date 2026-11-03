@@ -30,7 +30,8 @@ export function PlaceOf({ item }) {
   return <span className="came-in-place is-waiting">{place.unknown ? `${name} could not be checked` : `Not in ${name} yet`}</span>
 }
 
-export function CameInItem({ item, onSaved }) {
+// onSelect: a list that can act on several at once (the Everything view) gives each a tick box.
+export function CameInItem({ item, onSaved, focused = false, selected = false, onSelect }) {
   const [said, setSaid] = useState('')
   async function mark(status) {
     try {
@@ -39,8 +40,8 @@ export function CameInItem({ item, onSaved }) {
     } catch (failure) { setSaid(`Not saved: ${failure.message}`) }
   }
   // Divisions, not paragraphs: the part's strip styles its own paragraphs as one dotted line.
-  return <li className={`came-in-item is-${item.status}`}>
-    <div className="came-in-line"><span className="came-in-kind">{KIND_NAMES[item.kind] ?? item.kind}</span>
+  return <li id={`came-in-${item.id}`} className={`came-in-item is-${item.status}${focused ? ' is-focused' : ''}`}>
+    <div className="came-in-line">{onSelect ? <input type="checkbox" checked={selected} onChange={(event) => onSelect(event.target.checked)} aria-label={`Choose ${item.title}`} /> : null}<span className="came-in-kind">{KIND_NAMES[item.kind] ?? item.kind}</span>
       {item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer" dir="auto">{item.title}</a> : <b dir="auto">{item.title}</b>}
       <span className="came-in-when">{whenOf(item)}</span></div>
     <div className="came-in-summary" dir="auto">{item.summary}</div>

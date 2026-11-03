@@ -19,6 +19,6 @@ export default function InboxPanel() {
       {open > top.length ? <Link to="/inbox">{open - top.length} more on Waiting on you</Link> : null}
       <span>{lastGathered ? `Last gathered ${london(lastGathered, { weekday: 'short', day: 'numeric', month: 'short' })}` : 'Not gathered yet'}</span>
     </p>
-    {staleDays !== null && staleDays >= 3 ? <p className="day-quiet">Nothing has been gathered for {staleDays} days. <Link to="/inbox/digests">How to gather</Link></p> : null}
+    {staleDays !== null && staleDays >= 3 ? <p className="day-quiet">Nothing has been gathered for {staleDays} days. <Link to="/inbox/log">The Harvest log</Link></p> : null}
   </>
 }

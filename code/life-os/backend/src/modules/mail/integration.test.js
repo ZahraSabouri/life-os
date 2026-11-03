@@ -251,6 +251,40 @@ test('mail import v2 on lifeos_test: items with their places, links, her status,
     assert.equal(alert.links.length, 3)
   })
 
+  await t.test('the Harvest log: days with their counts, one day in full, the sources as last read', async () => {
+    const { createMailReads } = await import('./reads.js')
+    const reads = createMailReads({ pool })
+    const days = await reads.days()
+    const october31 = days.find((entry) => entry.day === '2026-10-31')
+    assert.ok(october31.kinds.vacancy >= 3 && october31.kinds.offer >= 1 && october31.sources[`gmail-${tag}`] === 2)
+    assert.ok(days.findIndex((entry) => entry.day === '2026-11-01') < days.findIndex((entry) => entry.day === '2026-10-31'), 'newest first')
+    const day = await reads.day('2026-10-31')
+    const items = day.items.filter((row) => row.dedupe_key.endsWith(`:${tag}`))
+    const messages = day.messages.filter((row) => row.source_id.endsWith(`-${tag}`))
+    assert.deepEqual(items.map((row) => row.dedupe_key.split(':').at(-2)).sort(), ['graduate-data-analyst', 'junior-data-engineer', 'ra-ml', 'student-books'])
+    assert.deepEqual(messages.map((row) => row.subject).sort(), ['3 new jobs for data analyst in Cardiff', 'Students: 20% off until 4 November'])
+    assert.ok(day.runs.some((run) => run.run_id === first.runId && run.version === 2))
+    assert.equal(await reads.day('31 October'), null)
+    const v2Sources = new Set(first.sources.map((source) => source.id))
+    const sources = (await reads.sources()).filter((source) => v2Sources.has(source.id))
+    assert.equal(sources.length, 4)
+    assert.ok(sources.every((source) => source.status === 'read' && source.window_to && source.gathered_at))
+  })
+
+  await t.test('Everything: filters by area, kind, status, closing and words; newest first', async () => {
+    const { createMailReads } = await import('./reads.js')
+    const reads = createMailReads({ pool })
+    const keys = async (filters) => (await reads.items({ today: '2026-11-03', ...filters })).filter((row) => row.dedupe_key.endsWith(`:${tag}`)).map((row) => row.dedupe_key.split(':').at(-2))
+    assert.deepEqual((await keys({ kind: 'vacancy' })).sort(), ['graduate-data-analyst', 'junior-data-engineer', 'ra-ml'])
+    assert.deepEqual((await keys({ area: 'research' })), ['ra-ml'])
+    assert.deepEqual((await keys({ status: 'dismissed' })), ['graduate-data-analyst'])
+    assert.ok(!(await keys({ status: 'live' })).includes('graduate-data-analyst'))
+    assert.deepEqual((await keys({ closing: 'week' })).sort(), ['graduate-data-analyst', 'student-books'])
+    assert.deepEqual((await keys({ closing: 'past', today: '2026-11-21' })).sort(), ['graduate-data-analyst', 'hackathon', 'junior-data-engineer', 'library-fine', 'student-books'])
+    assert.deepEqual((await keys({ q: 'health board' })), ['graduate-data-analyst'])
+    assert.equal((await keys({ sort: 'newest' }))[0], 'board-games') // 1 November; the 30 October ones last
+  })
+
   await t.test('undo of a batch that added items removes them all', async () => {
     const mark = `${tag.slice(0, 3)}v2n`
     const added = await importer.apply(variant2(() => {}, mark))

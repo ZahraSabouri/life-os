@@ -89,14 +89,43 @@ export function createMailRouter({ repository, importer, inbox, reads, findPeopl
   router.patch('/messages/:id', handler(async (req, res) => res.json(await repository.patchHers('messages', req.params.id, revisionOf(req.body), without(req.body, 'revision')))))
   // What came in, with where each vacancy and event is now. ?part= one part's (shared/harvest.js
   // partOf), ?day= one London day's, ?open=1 only what is not dismissed or over.
+  // The Everything view adds area, kind, status, closing, q, sort and where (there: found in
+  // JobMap or Cardiff Life; missing: not there yet).
   router.get('/items', handler(async (req, res) => {
     const query = req.query ?? {}
     const today = dateKey(now())
-    const part = String(query.part ?? '')
+    const word = (key) => String(query[key] ?? '')
+    const part = word('part')
     if (part && !Object.hasOwn(PARTS, part)) throw new MailError(400, `Unknown part: ${part}`)
-    const rows = (await reads.items({ day: String(query.day ?? ''), open: query.open === '1', today })).filter((row) => !part || partOf(row) === part)
-    res.json({ today, items: await places(rows) })
+    const rows = (await reads.items({ day: word('day'), open: query.open === '1', today, area: word('area'), kind: word('kind'), status: word('status'), closing: word('closing'), q: word('q'), sort: word('sort') }))
+      .filter((row) => !part || partOf(row) === part)
+    const placed = await places(rows)
+    const where = word('where')
+    res.json({ today, items: where === 'there' ? placed.filter((row) => row.place?.href) : where === 'missing' ? placed.filter((row) => row.place?.missing) : placed })
   }))
+  // Keep, Dismiss or back to new for several at once: each with the revision she saw; one that
+  // changed since is left as it is and named, the rest are saved.
+  router.post('/items/bulk', handler(async (req, res) => {
+    const { items: chosen = [], status } = req.body ?? {}
+    if (!['new', 'kept', 'dismissed'].includes(status)) throw new MailError(400, 'Say new, kept or dismissed')
+    if (!Array.isArray(chosen) || !chosen.length || chosen.length > 500) throw new MailError(400, 'Choose between 1 and 500 items')
+    if (!chosen.every((entry) => entry?.id && Number.isInteger(Number(entry.revision)))) throw new MailError(400, 'Send each item with the revision you last saw')
+    const saved = []
+    const changed = []
+    for (const entry of chosen) {
+      try { saved.push(await repository.patchHers('items', String(entry?.id ?? ''), Number(entry?.revision), { status })) }
+      catch (error) { if (error.status === 409 || error.status === 404) changed.push(String(entry?.id ?? '')); else throw error }
+    }
+    res.json({ saved: saved.length, changed })
+  }))
+  // The Harvest log: the days, one day with its items placed, and the sources as last read.
+  router.get('/days', handler(async (_req, res) => res.json({ days: await reads.days(), lastBatch: await repository.lastBatch() })))
+  router.get('/days/:day', handler(async (req, res) => {
+    const found = await reads.day(req.params.day)
+    if (!found) throw new MailError(400, 'A day is written YYYY-MM-DD')
+    res.json({ ...found, items: await places(found.items), latestBatchId: (await repository.lastBatch())?.id ?? null })
+  }))
+  router.get('/sources', handler(async (_req, res) => res.json({ sources: await reads.sources(), lastGathered: await reads.lastGathered() })))
   // What came in: Keep, Dismiss, seen. Only her fields, with the revision she last saw.
   router.patch('/items/:id', handler(async (req, res) => res.json(await repository.patchHers('items', req.params.id, revisionOf(req.body), without(req.body, 'revision')))))
 
