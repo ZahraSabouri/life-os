@@ -1,7 +1,7 @@
 // What a harvest brings besides mail and things to do: items (a vacancy, an event, an announcement,
 // a material, an offer, a dated note), and the one rule for where each shows. The batch checker,
 // the server, the pages and the agents' instructions (mail/HARVEST.md) all go by this file.
-import { addDays, isDateKey } from './calendar.js'
+import { addDays, dateKey, isDateKey } from './calendar.js'
 
 export const AREAS = ['admin', 'academic', 'jobs', 'research', 'events', 'money', 'perks', 'health', 'home']
 export const AREA_NAMES = { admin: 'Admin', academic: 'Study', jobs: 'Jobs', research: 'Research', events: 'Events', money: 'Money', perks: 'Perks', health: 'Health', home: 'Home' }
@@ -19,9 +19,10 @@ export const fitsArea = (kind, area) => KINDS.includes(kind) && AREAS.includes(a
 // The calendar area an item's area is drawn in.
 export const CALENDAR_AREA = { admin: 'admin', academic: 'study', jobs: 'career', research: 'career', events: 'events', money: 'money', perks: 'money', health: 'body', home: 'home' }
 
-const dayOf = (value) => (typeof value === 'string' ? value.slice(0, 10) : '')
-// The day an item belongs on: when it starts, else when it closes.
-export const itemDate = (item) => [item?.start ?? item?.start_at, item?.deadline].map(dayOf).find(isDateKey) ?? ''
+// A day as it is, a time as its London day.
+const dayOf = (value) => (typeof value === 'string' && value ? dateKey(value) : '')
+// The day an item belongs on: when it starts, else when it closes. Batch items say start; stored ones start_at or start_day.
+export const itemDate = (item) => [item?.start ?? item?.start_at ?? item?.start_day, item?.deadline].map(dayOf).find(isDateKey) ?? ''
 
 // Where an item shows. Events reach the calendar only through Cardiff Life (Plan to go), vacancies
 // through JobMap, offers through the Offers list; Today gets what closes within a week (offers:

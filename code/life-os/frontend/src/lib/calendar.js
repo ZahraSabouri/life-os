@@ -97,7 +97,8 @@ export function readCardiffChoices(storageOrGetter) {
   }
 }
 
-export function filterCalendarItems(items, { areas, cardiffScope = 'saved', choices = {} } = {}) {
+// Cardiff events show once she marks them Plan to go (Xar, 3 November); 'saved' adds Maybe, 'all' every researched option.
+export function filterCalendarItems(items, { areas, cardiffScope = 'going', choices = {} } = {}) {
   return items.filter(item => {
     if (areas && !areas.includes(item.area)) return false
     if (item.area !== 'events' || cardiffScope === 'all') return true

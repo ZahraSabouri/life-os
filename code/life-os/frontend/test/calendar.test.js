@@ -16,7 +16,8 @@ test('a Cardiff event from an older server answer still opens itself in Cardiff 
 
 test('Cardiff scope follows the same browser choices without treating research as personal plans', () => {
   const items = [item(), ...['going', 'maybe', 'option'].map(id => item({ id, area: 'events', meta: { eventId: id } }))]
-  assert.deepEqual(filterCalendarItems(items, { choices }).map(row => row.id), ['example', 'going', 'maybe'])
+  assert.deepEqual(filterCalendarItems(items, { choices }).map(row => row.id), ['example', 'going'])
+  assert.deepEqual(filterCalendarItems(items, { choices, cardiffScope: 'saved' }).map(row => row.id), ['example', 'going', 'maybe'])
   assert.deepEqual(filterCalendarItems(items, { choices, cardiffScope: 'going' }).map(row => row.id), ['example', 'going'])
   assert.equal(filterCalendarItems(items, { choices, cardiffScope: 'all' }).length, 4)
   assert.deepEqual(filterCalendarItems(items, { areas: ['core'], choices }).map(row => row.id), ['example'])

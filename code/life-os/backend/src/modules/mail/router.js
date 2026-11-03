@@ -85,6 +85,8 @@ export function createMailRouter({ repository, importer, inbox, reads, findPeopl
     res.json({ ...found, seen_at: seen.seen_at, revision: seen.revision })
   }))
   router.patch('/messages/:id', handler(async (req, res) => res.json(await repository.patchHers('messages', req.params.id, revisionOf(req.body), without(req.body, 'revision')))))
+  // What came in: Keep, Dismiss, seen. Only her fields, with the revision she last saw.
+  router.patch('/items/:id', handler(async (req, res) => res.json(await repository.patchHers('items', req.params.id, revisionOf(req.body), without(req.body, 'revision')))))
 
   // Everyone with something open or a recent message, keyed by their People id.
   router.get('/people', handler(async (_req, res) => {

@@ -323,7 +323,7 @@ export default function CalendarView() {
         <input type="checkbox" checked={!at.hidden.includes(area.key)} onChange={() => toggleArea(area.key)} /><span className="calendar-area-dot" aria-hidden="true" /><strong>{area.label}</strong>
       </label>)}
       <label className="calendar-scope-label" htmlFor="calendar-cardiff-scope">Cardiff events</label>
-      <select id="calendar-cardiff-scope" value={at.cardiff} onChange={(event) => address.swap({ cardiff: event.target.value === 'all' ? null : event.target.value })}>
+      <select id="calendar-cardiff-scope" value={at.cardiff} onChange={(event) => address.swap({ cardiff: event.target.value === 'going' ? null : event.target.value })}>
         <option value="saved">Saved plans & maybe</option><option value="going">Plan to go</option><option value="all">All researched options</option>
       </select>
       <p className="calendar-filter-note">Showing researched options does not add them to your plans. Choose Maybe or Plan to go in Cardiff Life. <Link to="/cardiff-life">Open Cardiff Life</Link></p>

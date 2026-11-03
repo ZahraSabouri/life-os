@@ -64,6 +64,12 @@ export function createMailReads({ pool }) {
   const dated = (from, to) => rows(`SELECT to_jsonb(a) AS row FROM mail.actions a WHERE a.deleted_at IS NULL AND a.status <> 'not-needed'
     AND coalesce(CASE WHEN a.status = 'snoozed' THEN a.snoozed_until END, a.due) BETWEEN $1::date AND $2::date`, [from, to])
 
+  // What came in with a day in the stretch, for the calendar's "Came in" layer: the kinds
+  // shared/harvest.js placeOf sends there, unless she dismissed them. Its day is London's.
+  const datedItems = (from, to) => rows(`SELECT to_jsonb(i) AS row FROM mail.items i WHERE i.deleted_at IS NULL AND i.status <> 'dismissed'
+    AND i.kind IN ('announcement', 'material', 'info', 'opportunity')
+    AND coalesce((i.start_at AT TIME ZONE 'Europe/London')::date, i.start_day, i.deadline) BETWEEN $1::date AND $2::date`, [from, to])
+
   // For the bell: what is open, and the announcements the latest applied batch brought.
   async function forNotices() {
     const open = await rows("SELECT to_jsonb(a) AS row FROM mail.actions a WHERE a.deleted_at IS NULL AND a.status IN ('open', 'snoozed')")
@@ -72,5 +78,5 @@ export function createMailReads({ pool }) {
     return { actions: open, announcements, batchId: latest?.id ?? null }
   }
 
-  return { actions, action, messages, message, person, digests, lastGathered, dated, forNotices }
+  return { actions, action, messages, message, person, digests, lastGathered, dated, datedItems, forNotices }
 }

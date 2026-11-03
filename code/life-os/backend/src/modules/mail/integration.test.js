@@ -197,6 +197,18 @@ test('mail import v2 on lifeos_test: items with their places, links, her status,
     assert.equal((await importer.apply(first)).repeated, true)
   })
 
+  await t.test('the calendar gets the dated items placeOf sends there, by London day, and not dismissed ones', async () => {
+    const { createMailReads } = await import('./reads.js')
+    const reads = createMailReads({ pool })
+    const keys = async (from, to) => (await reads.datedItems(from, to)).filter((row) => row.dedupe_key.endsWith(`:${tag}`)).map((row) => row.dedupe_key.split(':').at(-2)).sort()
+    assert.deepEqual(await keys('2026-11-01', '2026-12-31'), ['cw2-brief', 'hackathon', 'lab-room', 'library-fine'])
+    assert.deepEqual(await keys('2026-11-05', '2026-11-05'), ['lab-room'])
+    const brief = await item('learning-platform:lc:ds101-content-0107:cw2-brief')
+    const saved = await repository.patchHers('items', brief.id, brief.revision, { status: 'dismissed' })
+    assert.deepEqual(await keys('2026-12-04', '2026-12-04'), [])
+    await repository.patchHers('items', brief.id, saved.revision, { status: 'new' })
+  })
+
   await t.test('her status on an item survives an import that changes it', async () => {
     const job = await item('gmail:18c2f0a1b2c3d4e5:graduate-data-analyst')
     const dismissed = await repository.patchHers('items', job.id, job.revision, { status: 'dismissed' })

@@ -1,6 +1,6 @@
 import { isDateKey } from '../../code/life-os/shared/calendar.js'
 import { mapEntries, mapPeople, mapStudy, mapCareer, mapBudget, mapHome, mapEvents } from './mappers.mjs'
-import { mapMail } from '../mail/notices.mjs'
+import { mapMail, mapHarvest } from '../mail/notices.mjs'
 
 function bounded(load, range, timeoutMs) {
   return new Promise((resolve, reject) => {
@@ -18,7 +18,7 @@ function validateSource(id, value) {
   if (id === 'people' && (Array.isArray(value) || Array.isArray(value?.people))) return
   if (id === 'career' && (Array.isArray(value) || Array.isArray(value?.jobs))) return
   if (id === 'events' && (Array.isArray(value) || Array.isArray(value?.events))) return
-  if (id === 'mail' && Array.isArray(value)) return
+  if ((id === 'mail' || id === 'harvest') && Array.isArray(value)) return
   if (id === 'study') {
     if (value === null) return // Summer Rescue's 204 means no saved state yet.
     if (object(value?.nativeWorkspace) && ['semesters', 'modules', 'cards', 'assessments', 'sessions'].every(entity => Array.isArray(value.nativeWorkspace[entity]))) return
@@ -58,6 +58,7 @@ export function createCalendarService(options = {}) {
       ['home', 'home', 'Shopping and meals', () => budget, mapHome],
       ['events', 'events', 'Cardiff events', options.loadEvents, mapEvents],
       ...(options.loadMail ? [['mail', 'admin', 'Mail and admin', options.loadMail, mapMail]] : []),
+      ...(options.loadHarvest ? [['harvest', 'admin', 'Came in', options.loadHarvest, mapHarvest]] : []),
     ]
     const results = await Promise.all(specs.map(async ([id, area, label, load, map]) => {
       try {

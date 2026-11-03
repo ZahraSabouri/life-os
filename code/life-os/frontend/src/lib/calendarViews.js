@@ -65,7 +65,7 @@ export function readCalendarAddress(params, today, areaKeys = []) {
     tab: DAY_TABS.some((entry) => entry.key === get('tab')) ? get('tab') : 'day',
     hidden,
     areas: areaKeys.filter((key) => !hidden.includes(key)),
-    cardiff: CARDIFF_SCOPES.includes(get('cardiff')) ? get('cardiff') : 'all',
+    cardiff: CARDIFF_SCOPES.includes(get('cardiff')) ? get('cardiff') : 'going',
     q: get('q').slice(0, 100),
   }
 }

@@ -55,7 +55,7 @@ function homeLine(day) {
 function EventsLine({ today }) {
   const calendar = useCalendar(today, today)
   if (calendar.loading) return <span>Reading your choices…</span>
-  const chosen = filterCalendarItems(calendar.items, { choices: calendar.choices }).filter((item) => item.area === 'events' && itemOverlaps(item, today, today))
+  const chosen = filterCalendarItems(calendar.items, { cardiffScope: 'saved', choices: calendar.choices }).filter((item) => item.area === 'events' && itemOverlaps(item, today, today))
   const offered = calendar.items.filter((item) => item.area === 'events').length
   return <>
     <span>{chosen.length ? chosen.map((item) => `${item.all_day ? '' : `${clockOf(item.start)} `}${item.title}${item.choice === 'maybe' ? ' (maybe)' : ''}`).join('; ') : 'Nothing chosen for today'}</span>

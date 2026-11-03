@@ -216,6 +216,8 @@ export function createLifeOsApp(options = {}) {
   // A part gets eight seconds before the calendar says it could not be read (it was two and a half).
   // What she owes with a day, from the mail part.
   if (mail) calendarLoaders.loadMail = (range) => mail.reads.dated(range.from, range.to)
+  // What came in with a day: a moved lab, a brief's due date, a hackathon's closing day (stage 5).
+  if (mail) calendarLoaders.loadHarvest = (range) => mail.reads.datedItems(range.from, range.to)
   const calendarService = createCalendarService({ ...calendarLoaders, timeoutMs: 8000 })
   app.use('/api/calendar', createCalendarRouter(calendarService))
   // What a day needs beyond its dated items: study blocks with their cards, and the current

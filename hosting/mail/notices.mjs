@@ -1,6 +1,7 @@
 // The mail part's lines for the bell and its items for the calendar. Read only.
 import { addDays } from '../../code/life-os/shared/calendar.js'
 import { priorityOf, titleOf, KIND_NAMES } from '../../code/life-os/shared/mail.js'
+import { CALENDAR_AREA, placeOf } from '../../code/life-os/shared/harvest.js'
 
 const text = (value, limit = 200) => String(value ?? '').trim().slice(0, limit)
 const plural = (count, one, many = `${one}s`) => `${count} ${count === 1 ? one : many}`
@@ -32,4 +33,15 @@ export function mapMail(rows = []) {
     title: text(titleOf(row)), start: dayOf(row), end: null, all_day: true, href: '/inbox',
     meta: { source: 'mail', readonly: true, status: row.status, done: row.status === 'done', completed: row.status === 'done', type: row.kind },
   })).filter((item) => /^\d{4}-\d{2}-\d{2}$/.test(item.start))
+}
+
+// Calendar items for what came in (stage 5): only what placeOf sends to the calendar. A time is a
+// fixed item, a day a note, a closing day a deadline; each opens its day in the Harvest log.
+export function mapHarvest(rows = []) {
+  return rows.filter((row) => placeOf(row).calendar).map((row) => ({
+    id: `came-in:${row.id}`, area: CALENDAR_AREA[row.area] ?? 'admin', kind: row.start_at ? 'fixed' : row.start_day ? 'note' : 'deadline',
+    title: text(row.title), start: row.start_at ?? row.start_day ?? row.deadline, end: row.start_at ? row.end_at ?? null : row.start_day ? row.end_day ?? null : null,
+    all_day: !row.start_at, href: `/inbox/log?day=${row.day}&item=${row.id}`, ...(row.location ? { location: text(row.location, 300) } : {}),
+    meta: { source: 'harvest', readonly: true, cameIn: true, type: row.kind, summary: text(row.summary, 300), ...(row.url ? { url: row.url } : {}) },
+  })).filter((item) => /^\d{4}-\d{2}-\d{2}/.test(String(item.start ?? '')))
 }

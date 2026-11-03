@@ -21,7 +21,7 @@ function savedKind() { try { const saved = window.localStorage.getItem(ADD_KIND_
 // The calendar's pop-up asks for the day alone (`only`), with the calendar's own filters
 // (`areas`, `cardiffScope`), a note for any day it shows (`notesAnyDay`), and `onChanged` to
 // have the month behind it read again after a change.
-export function useDayPage(requested, { area: fixedArea = '', onSaved, only = false, areas, cardiffScope = 'saved', notesAnyDay = false, onChanged } = {}) {
+export function useDayPage(requested, { area: fixedArea = '', onSaved, only = false, areas, cardiffScope = 'going', notesAnyDay = false, onChanged } = {}) {
   const today = useLondonToday()
   const clock = useLondonClock()
   const date = isDateKey(requested ?? '') ? requested : today

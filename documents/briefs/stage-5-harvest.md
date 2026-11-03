@@ -83,9 +83,9 @@ Read back against her original request (everything in its place, the app working
 - **Commit:** `[5-cp2] Harvest items stored, imported and undone with their batch`
 
 ### CP3: places inside Life OS: the Calendar
-- [ ] `reads.js`: dated items for a stretch; `hosting/mail/notices.mjs`: `mapHarvest` (only what `placeOf` sends to the Calendar); `hosting/app.mjs`: a "Came in" source in the Calendar service.
-- [ ] The Calendar's Cardiff filter starts on Plan to go (`frontend/src/lib/calendarViews.js`).
-- [ ] `PATCH /api/mail/items/:id` for her fields, with the revision check (409).
+- [x] `reads.js`: dated items for a stretch; `hosting/mail/notices.mjs`: `mapHarvest` (only what `placeOf` sends to the Calendar); `hosting/app.mjs`: a "Came in" source in the Calendar service.
+- [x] The Calendar's Cardiff filter starts on Plan to go (`frontend/src/lib/calendarViews.js`).
+- [x] `PATCH /api/mail/items/:id` for her fields, with the revision check (409).
 - **Done when:** a dated course item from a test batch is on the Calendar on its day, an undated one is not, an event is not (except through Cardiff Life), and the Calendar opens on Plan to go.
 - **Verify:** `node --test hosting/mail/notices.test.mjs`, the bundled `frontend/test/calendar-views.test.js`, the mail tests, the build.
 - **Commit:** `[5-cp3] Harvested dates on the Calendar; Cardiff events start on Plan to go`
