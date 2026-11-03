@@ -1,8 +1,9 @@
-// Applies one gathered mail batch (mail/GATHER.md) to schema mail, and undoes the latest.
+// Applies one gathered mail batch (mail/GATHER.md; version 2 with items, mail/HARVEST.md) to schema mail, and undoes the latest.
 // Check → back up → apply in one transaction → log. Imports write source fields only;
 // her fields are never written, except closing an open action the source shows as done.
 import { randomUUID } from 'node:crypto'
 import { checkBatch } from '../../../../../../mail/check-batch.mjs'
+import { canonicalUrl } from '../../../../shared/harvest.js'
 import { MailError, COLUMNS, same, snapshot, write } from './repository.js'
 
 const RELATIONSHIP_KINDS = new Set(['text', 'call', 'congratulate'])
@@ -26,7 +27,9 @@ const sourceValues = (source, batchId) => ({
   window_from: source.window?.from ?? null, window_to: source.window?.to ?? null, last_batch_id: batchId, deleted_at: null,
 })
 
-const messageValues = (message) => ({
+// Version 1 knows nothing of links, so a v1 batch leaves a message's stored links as they are.
+const messageValues = (message, v2) => ({
+  ...(v2 ? { links: message.links ?? [] } : {}),
   source_id: message.source, source_message_id: message.sourceId, thread_id: message.threadId ?? null, kind: message.kind,
   received_at: message.receivedAt, from_name: message.from?.name ?? null, from_address: message.from?.address ?? null,
   to_list: message.to ?? [], cc_list: message.cc ?? [], subject: message.subject ?? '', course: message.course ?? null,
@@ -41,6 +44,19 @@ const actionSourceValues = (action, messageIds) => ({
   resolved_at_source: action.resolvedAtSource === true, resolved_note: action.resolvedNote ?? null,
 })
 
+// An item's source fields. Its when is a time or a day; details keeps the rest of what it says.
+const isDay = (value) => /^\d{4}-\d{2}-\d{2}$/.test(String(value ?? ''))
+const DETAILS = ['course', 'organiser', 'employer', 'salary', 'cost', 'tags']
+const itemValues = (item, { messageIds, actionIds, sourceId }) => ({
+  area: item.area, kind: item.kind, title: item.title, summary: item.summary, day: item.day,
+  start_at: item.start && !isDay(item.start) ? item.start : null, start_day: isDay(item.start) ? item.start : null,
+  end_at: item.end && !isDay(item.end) ? item.end : null, end_day: isDay(item.end) ? item.end : null,
+  all_day: item.allDay ?? isDay(item.start), deadline: item.deadline ?? null, location: item.location ?? null,
+  url: item.url ?? null, canonical_url: item.url ? canonicalUrl(item.url) || null : null,
+  details: Object.fromEntries(DETAILS.filter((key) => item[key] !== undefined).map((key) => [key, item[key]])),
+  source_id: sourceId, message_ids: messageIds, action_ids: actionIds, found_url: item.foundAt?.url ?? null, found_at: item.foundAt?.checkedAt ?? null,
+})
+
 export function createMailImporter({ repository, backup = async () => null, findPeople = () => [], log = () => {} }) {
   const { transaction } = repository
 
@@ -53,24 +69,26 @@ export function createMailImporter({ repository, backup = async () => null, find
     const people = await findPeople()
     const backupFile = await backup()
     const batchId = randomUUID()
-    const counts = { messages: { new: 0, updated: 0, unchanged: 0 }, actions: { new: 0, updated: 0, unchanged: 0 } }
+    const v2 = batch.version === 2
+    const counts = { messages: { new: 0, updated: 0, unchanged: 0 }, actions: { new: 0, updated: 0, unchanged: 0 }, ...(v2 ? { items: { new: 0, updated: 0, unchanged: 0 } } : {}) }
     const tally = (kind, before, after) => { counts[kind][!before ? 'new' : after ? 'updated' : 'unchanged'] += 1 }
 
     await transaction(async (client) => {
-      await client.query('INSERT INTO mail.batches (id, run_id, file_name, gathered_at, agent, sources, digest, backup_file) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-        [batchId, batch.runId, fileName, batch.gatheredAt, batch.agent ?? '', JSON.stringify(batch.sources), JSON.stringify(batch.digest), backupFile])
+      await client.query('INSERT INTO mail.batches (id, run_id, file_name, gathered_at, agent, sources, digest, backup_file, version) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+        [batchId, batch.runId, fileName, batch.gatheredAt, batch.agent ?? '', JSON.stringify(batch.sources), JSON.stringify(batch.digest ?? {}), backupFile, batch.version])
       for (const source of batch.sources) {
         await write(client, 'sources', source.id, sourceValues(source, batchId), { batchId })
       }
       const idByRef = new Map()
       for (const message of batch.messages) {
         const found = (await client.query('SELECT to_jsonb(t) AS row FROM mail.messages t WHERE source_id = $1 AND source_message_id = $2 AND deleted_at IS NULL', [message.source, message.sourceId])).rows[0]?.row ?? null
-        const values = messageValues(message)
+        const values = messageValues(message, v2)
         const after = !found ? await write(client, 'messages', null, { ...values, first_batch_id: batchId, last_batch_id: batchId }, { batchId, before: null })
           : differs('messages', found, values) ? await write(client, 'messages', found.id, { ...values, last_batch_id: batchId }, { batchId, before: found }) : null
         tally('messages', found, after)
         idByRef.set(message.ref, (after ?? found).id)
       }
+      const actionIdByRef = new Map()
       for (const action of batch.actions) {
         const found = (await client.query('SELECT to_jsonb(t) AS row FROM mail.actions t WHERE dedupe_key = $1 AND deleted_at IS NULL', [action.dedupeKey])).rows[0]?.row ?? null
         const values = actionSourceValues(action, (action.messageRefs ?? []).map((ref) => idByRef.get(ref)))
@@ -91,11 +109,24 @@ export function createMailImporter({ repository, backup = async () => null, find
           after = differs('actions', found, { ...values, ...extra }) ? await write(client, 'actions', found.id, { ...values, ...extra, last_batch_id: batchId }, { batchId, before: found }) : null
         }
         tally('actions', found, after)
+        actionIdByRef.set(action.ref, (after ?? found).id)
+      }
+      // What came in. Her status (kept, dismissed) and when she saw it are never written here.
+      const sourceOf = new Map(batch.messages.map((message) => [message.ref, message.source]))
+      for (const item of batch.items ?? []) {
+        const found = (await client.query('SELECT to_jsonb(t) AS row FROM mail.items t WHERE dedupe_key = $1 AND deleted_at IS NULL', [item.key])).rows[0]?.row ?? null
+        const values = itemValues(item, {
+          messageIds: (item.messageRefs ?? []).map((ref) => idByRef.get(ref)), actionIds: (item.actionRefs ?? []).map((ref) => actionIdByRef.get(ref)),
+          sourceId: sourceOf.get(item.messageRefs?.[0]) ?? null,
+        })
+        const after = !found ? await write(client, 'items', null, { ...values, dedupe_key: item.key, first_batch_id: batchId, last_batch_id: batchId }, { batchId, before: null })
+          : differs('items', found, values) ? await write(client, 'items', found.id, { ...values, last_batch_id: batchId }, { batchId, before: found }) : null
+        tally('items', found, after)
       }
       counts.urgent = (await client.query("SELECT count(*)::int AS n FROM mail.actions WHERE last_batch_id = $1 AND status = 'open' AND coalesce(her_priority, priority) = 'urgent' AND deleted_at IS NULL", [batchId])).rows[0].n
       await client.query('UPDATE mail.batches SET counts = $2 WHERE id = $1', [batchId, JSON.stringify(counts)])
     })
-    log(`mail: batch applied: messages ${counts.messages.new} new, ${counts.messages.updated} updated, ${counts.messages.unchanged} unchanged; actions ${counts.actions.new} new, ${counts.actions.updated} updated, ${counts.actions.unchanged} unchanged`)
+    log(`mail: batch applied: ${countLine(counts)}`)
     return { repeated: false, batchId, counts, backupFile, warnings: checked.warnings }
   }
 
@@ -119,7 +150,7 @@ export function createMailImporter({ repository, backup = async () => null, find
       }
       if (changedSince.length) throw new MailError(409, "You've changed some of this since, so it can't be undone", changedSince)
       // Children first, so a removed source is never left with live messages.
-      const order = { actions: 0, messages: 1, sources: 2 }
+      const order = { items: 0, actions: 1, messages: 2, sources: 3 }
       for (const record of [...last.values()].sort((a, b) => order[a.table] - order[b.table])) {
         const values = record.before
           ? Object.fromEntries(Object.keys(COLUMNS[record.table]).map((column) => [column, record.before[column]]))
@@ -134,5 +165,9 @@ export function createMailImporter({ repository, backup = async () => null, find
 
   return { apply, undo }
 }
+
+// The receipt's words: "messages 3 new, 0 updated, 1 unchanged; actions …; items …".
+export const countLine = (counts) => ['messages', 'actions', 'items'].filter((kind) => counts[kind])
+  .map((kind) => `${kind} ${counts[kind].new} new, ${counts[kind].updated} updated, ${counts[kind].unchanged} unchanged`).join('; ')
 
 const differs = (table, before, values) => Object.keys(values).some((column) => !same(COLUMNS[table][column], before[column], values[column]))

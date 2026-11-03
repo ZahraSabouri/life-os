@@ -146,3 +146,93 @@ test('mail import on lifeos_test: apply, repeat, update, fail, her fields, undo'
     await assert.rejects(importer.undo(added.batchId), { status: 409 })
   })
 })
+
+// Version 2 (stage 5): items, links, her status on an item, undo.
+const example2 = JSON.parse(fs.readFileSync(path.join(projectRoot, 'mail/example-batch-v2.json'), 'utf8'))
+function variant2(edit = () => {}, mark = tag) {
+  const batch = structuredClone(example2)
+  const id = (source) => `${source}-${mark}`
+  batch.runId = `2026-11-02-0700-${mark.slice(0, 4)}${String(runs++).padStart(2, '0')}`
+  batch.sources.forEach((source) => { source.id = id(source.id) })
+  batch.messages.forEach((message) => { message.source = id(message.source) })
+  batch.actions.forEach((entry) => { entry.dedupeKey = `${entry.dedupeKey}:${mark}` })
+  batch.items.forEach((item) => { item.key = `${item.key}:${mark}` })
+  edit(batch)
+  return batch
+}
+
+test('mail import v2 on lifeos_test: items with their places, links, her status, undo', { skip: !enabled }, async (t) => {
+  const { postgresConfig, createPostgresPool } = await import('../../postgres.js')
+  const pool = createPostgresPool(postgresConfig(projectRoot), { database: 'lifeos_test', role: 'app' })
+  t.after(() => pool.end())
+  assert.equal((await pool.query('SELECT current_database() AS name')).rows[0].name, 'lifeos_test', 'Refusing to use a non-test database')
+  const repository = createMailRepository({ pool })
+  const importer = createMailImporter({ repository })
+  const item = async (key, mark = tag) => (await pool.query('SELECT *, day::text AS day FROM mail.items WHERE dedupe_key = $1 AND deleted_at IS NULL', [`${key}:${mark}`])).rows[0]
+  const first = variant2()
+
+  await t.test('the example is applied: 6 messages, 1 action, 9 items', async () => {
+    const result = await importer.apply(first, { fileName: 'v2.json' })
+    assert.deepEqual(result.counts, { messages: { new: 6, updated: 0, unchanged: 0 }, actions: { new: 1, updated: 0, unchanged: 0 }, items: { new: 9, updated: 0, unchanged: 0 }, urgent: 0 })
+    assert.equal((await pool.query('SELECT version FROM mail.batches WHERE id = $1', [result.batchId])).rows[0].version, 2)
+    const lab = await item('learning-platform:lc:ds101-ann-0042:lab-room')
+    assert.equal(lab.day, '2026-10-30')
+    assert.equal(lab.start_at.toISOString(), '2026-11-05T14:00:00.000Z')
+    assert.equal(lab.start_day, null)
+    assert.equal(lab.source_id, `learning-platform-${tag}`)
+    assert.equal(lab.status, 'new')
+    assert.equal((await item('gmail:18c2f0a1b2c3d4e5:graduate-data-analyst')).canonical_url, 'https://jobs.example.com/view/graduate-data-analyst-1001')
+    const fine = await item('uni-outlook:AAQkADExampleItemId0001:library-fine')
+    const pay = (await pool.query('SELECT id FROM mail.actions WHERE dedupe_key = $1', [`do:uni-outlook:AAQkADExampleItemId0001:library-fine:${tag}`])).rows[0]
+    assert.deepEqual(fine.action_ids, [pay.id])
+    assert.deepEqual(fine.details, { cost: 'GBP 4.50' })
+    const web = await item('web-events:su-example-501:board-games')
+    assert.equal(web.source_id, null)
+    assert.equal(web.found_url, 'https://su.example.ac.uk/events')
+    const alert = (await pool.query('SELECT links FROM mail.messages WHERE source_id = $1 AND source_message_id = $2', [`gmail-${tag}`, '18c2f0a1b2c3d4e5'])).rows[0]
+    assert.equal(alert.links.length, 3)
+  })
+
+  await t.test('the same run again changes nothing', async () => {
+    assert.equal((await importer.apply(first)).repeated, true)
+  })
+
+  await t.test('her status on an item survives an import that changes it', async () => {
+    const job = await item('gmail:18c2f0a1b2c3d4e5:graduate-data-analyst')
+    const dismissed = await repository.patchHers('items', job.id, job.revision, { status: 'dismissed' })
+    assert.equal(dismissed.status, 'dismissed')
+    await assert.rejects(repository.patchHers('items', job.id, job.revision, { status: 'kept' }), { status: 409 })
+    await assert.rejects(repository.patchHers('items', job.id, dismissed.revision, { title: 'not hers' }), { status: 400 })
+    const result = await importer.apply(variant2((batch) => { batch.items[2].summary = 'Cardiff, GBP 28,500, graduate entry.' }))
+    assert.deepEqual(result.counts.items, { new: 0, updated: 1, unchanged: 8 })
+    const after = await item('gmail:18c2f0a1b2c3d4e5:graduate-data-analyst')
+    assert.equal(after.summary, 'Cardiff, GBP 28,500, graduate entry.')
+    assert.equal(after.status, 'dismissed')
+    // Undoing that batch puts the summary back and keeps her dismissal, which came before it.
+    assert.deepEqual(await importer.undo(result.batchId), { undone: true, records: 5 }) // four sources and the item
+    const back = await item('gmail:18c2f0a1b2c3d4e5:graduate-data-analyst')
+    assert.equal(back.summary, 'Cardiff, GBP 28,000, graduate entry.')
+    assert.equal(back.status, 'dismissed')
+  })
+
+  await t.test('a version 1 batch leaves stored links alone', async () => {
+    const other = await importer.apply(variant2((batch) => { batch.items[0].title = 'DS101 week 7 lab: Room 0.12' }))
+    assert.deepEqual(other.counts.items, { new: 0, updated: 1, unchanged: 8 })
+    const v1 = { format: 'life-os.mail-batch', version: 1, runId: `2026-11-02-0800-${tag}`, gatheredAt: '2026-11-02T08:00:00Z', agent: 'test',
+      sources: first.sources, digest: { headline: 'One job alert.' }, actions: [],
+      messages: [{ ...first.messages[2], links: undefined }] }
+    delete v1.messages[0].links
+    const result = await importer.apply(v1)
+    assert.deepEqual(result.counts.messages, { new: 0, updated: 0, unchanged: 1 })
+    const alert = (await pool.query('SELECT links FROM mail.messages WHERE source_id = $1 AND source_message_id = $2', [`gmail-${tag}`, '18c2f0a1b2c3d4e5'])).rows[0]
+    assert.equal(alert.links.length, 3)
+  })
+
+  await t.test('undo of a batch that added items removes them all', async () => {
+    const mark = `${tag.slice(0, 3)}v2n`
+    const added = await importer.apply(variant2(() => {}, mark))
+    assert.equal(added.counts.items.new, 9)
+    assert.deepEqual(await importer.undo(added.batchId), { undone: true, records: 20 }) // 4 sources, 6 messages, 1 action, 9 items
+    assert.equal((await pool.query('SELECT count(*)::int AS n FROM mail.items WHERE first_batch_id = $1 AND deleted_at IS NULL', [added.batchId])).rows[0].n, 0)
+  })
+})

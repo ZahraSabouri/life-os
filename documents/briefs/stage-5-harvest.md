@@ -75,9 +75,9 @@ Read back against her original request (everything in its place, the app working
 - **Commit:** `[5-cp1] Harvest batch v2: format, checker and routing rule`
 
 ### CP2: storing items, with import and undo
-- [ ] `code/life-os/backend/src/migrations/mail/0002_items.sql`: `mail.items` (source fields; her fields `status` new/kept/dismissed and `seen_at`; revision; soft delete; unique live `dedupe_key`; indexes on day, kind and deadline); `mail.messages` gains `links jsonb`; `mail.batches` gains `version`; `mail.senders` (her sender rules: address, rule fold or hide, revision); `mail.history` accepts `items` and `senders`; grants.
-- [ ] `repository.js` (columns and her fields for items), `importer.js` (items applied after messages and actions; source fields only, her status kept; counts; undo covers items first), `hosting/mail/inbox.mjs` (the receipt line counts items).
-- [ ] Migrate `lifeos_test`, then `lifeos` (`migrate.js` dumps first). Restart Life OS.
+- [x] `code/life-os/backend/src/migrations/mail/0002_items.sql`: `mail.items` (source fields; her fields `status` new/kept/dismissed and `seen_at`; revision; soft delete; unique live `dedupe_key`; indexes on day, kind and deadline); `mail.messages` gains `links jsonb`; `mail.batches` gains `version`; `mail.senders` (her sender rules: address, rule fold or hide, revision); `mail.history` accepts `items` and `senders`; grants.
+- [x] `repository.js` (columns and her fields for items), `importer.js` (items applied after messages and actions; source fields only, her status kept; counts; undo covers items first), `hosting/mail/inbox.mjs` (the receipt line counts items).
+- [x] Migrate `lifeos_test`, then `lifeos` (`migrate.js` dumps first). Restart Life OS.
 - **Done when:** a v2 batch imports on `lifeos_test`, a repeat changes nothing, a changed item updates without touching her status, undo removes it, and a v1 batch still imports.
 - **Verify:** `LIFE_OS_MAIL_TEST_DB=lifeos_test node --test code/life-os/backend/src/modules/mail/integration.test.js` (PowerShell: the Bash sandbox can't reach PostgreSQL), plus CP1's tests.
 - **Commit:** `[5-cp2] Harvest items stored, imported and undone with their batch`

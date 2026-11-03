@@ -18,7 +18,7 @@ export const COLUMNS = {
   messages: {
     source_id: 'text', source_message_id: 'text', thread_id: 'text', kind: 'text', received_at: 'ts', from_name: 'text', from_address: 'text',
     to_list: 'json', cc_list: 'json', subject: 'text', course: 'text', folder: 'text', unread_at_source: 'text', replied_at_source: 'text',
-    attachments: 'json', link: 'text', body: 'text', text_complete: 'text', summary: 'text', category: 'text', priority: 'text',
+    attachments: 'json', link: 'text', links: 'json', body: 'text', text_complete: 'text', summary: 'text', category: 'text', priority: 'text',
     priority_reason: 'text', deadline: 'date', first_batch_id: 'text', last_batch_id: 'text',
     her_priority: 'text', seen_at: 'ts', hidden_at: 'ts', pinned: 'text', deleted_at: 'ts',
   },
@@ -28,11 +28,21 @@ export const COLUMNS = {
     resolved_note: 'text', first_batch_id: 'text', last_batch_id: 'text', status: 'text', snoozed_until: 'date', done_at: 'ts',
     done_by: 'text', her_priority: 'text', her_title: 'text', her_note: 'text', reopened: 'text', deleted_at: 'ts',
   },
+  // What came in besides mail and things to do (stage 5): a vacancy, an event, an offer, …
+  items: {
+    dedupe_key: 'text', area: 'text', kind: 'text', title: 'text', summary: 'text', day: 'date', start_at: 'ts', end_at: 'ts',
+    start_day: 'date', end_day: 'date', all_day: 'text', deadline: 'date', location: 'text', url: 'text', canonical_url: 'text',
+    details: 'json', source_id: 'text', message_ids: 'json', action_ids: 'json', found_url: 'text', found_at: 'ts',
+    first_batch_id: 'text', last_batch_id: 'text', status: 'text', seen_at: 'ts', deleted_at: 'ts',
+  },
+  // Her rules for a sender's mail: fold or hide. Every field is hers.
+  senders: { address: 'text', name: 'text', rule: 'text', deleted_at: 'ts' },
 }
 
 export const HER_FIELDS = {
   messages: ['her_priority', 'seen_at', 'hidden_at', 'pinned'],
   actions: ['status', 'snoozed_until', 'done_at', 'done_by', 'her_priority', 'her_title', 'her_note', 'reopened'],
+  items: ['status', 'seen_at'],
 }
 
 const stable = (value) => Array.isArray(value) ? `[${value.map(stable).join(',')}]`

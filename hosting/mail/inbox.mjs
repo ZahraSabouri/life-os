@@ -10,7 +10,7 @@ import { readdir, readFile, writeFile, rename, mkdir, appendFile, stat } from 'n
 import path from 'node:path'
 import { postgresConfig, createPostgresPool, postgresBackup } from '../../code/life-os/backend/src/postgres.js'
 import { createMailRepository, MailError } from '../../code/life-os/backend/src/modules/mail/repository.js'
-import { createMailImporter } from '../../code/life-os/backend/src/modules/mail/importer.js'
+import { createMailImporter, countLine } from '../../code/life-os/backend/src/modules/mail/importer.js'
 import { createMailReads } from '../../code/life-os/backend/src/modules/mail/reads.js'
 
 const MAX_BYTES = 15 * 1024 * 1024
@@ -59,8 +59,7 @@ export function createMailInbox({ directory, importer, logFile, enabled = () => 
       try { batch = JSON.parse((await readFile(file, 'utf8')).replace(/^﻿/, '')) } catch { throw new MailError(422, 'The file is not valid JSON', ['The file is not valid JSON']) }
       const result = await importer.apply(batch, { fileName: name })
       await retire(file, name, processed)
-      const counts = result.repeated ? 'already imported, no change'
-        : `messages ${result.counts.messages.new} new, ${result.counts.messages.updated} updated, ${result.counts.messages.unchanged} unchanged; actions ${result.counts.actions.new} new, ${result.counts.actions.updated} updated, ${result.counts.actions.unchanged} unchanged`
+      const counts = result.repeated ? 'already imported, no change' : countLine(result.counts)
       await note(`- ${at} · ${name} · ${counts}`)
       if (!result.repeated) await Promise.resolve(onApplied(result)).catch(() => {})
       return { name, ok: true, repeated: result.repeated, batchId: result.batchId, counts: result.counts }

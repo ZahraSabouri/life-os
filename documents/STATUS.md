@@ -10,7 +10,7 @@
 
 ## Exact next step
 
-CP1 is done (`[5-cp1]`: the v2 format, its checker, the routing rule in `shared/harvest.js`, `mail/HARVEST.md`). Next: CP2, storing items (a migration on `lifeos_test`, then `lifeos`, each dumped first). Xar added on 3 November: a "Came in" strip on each part's page, the sources panel on the log, sender rules in Mail, app suggestions to `mail/suggestions.md` (in the brief).
+CP1 and CP2 are done (`[5-cp1]` the v2 format, checker and routing rule; `[5-cp2]` `mail.items` and `mail.senders` stored, imported and undone with their batch, live database migrated and Life OS restarted). Next: CP3, harvested dates on the Calendar and the Plan-to-go default. Xar added on 3 November: a "Came in" strip on each part's page, the sources panel on the log, sender rules in Mail, app suggestions to `mail/suggestions.md` (in the brief).
 
 **Next prompt:** "Read AGENTS.md and documents/STATUS.md, then do the next unchecked checkpoint of documents/briefs/stage-5-harvest.md on branch stage/5-harvest."
 
@@ -27,6 +27,6 @@ CP1 is done (`[5-cp1]`: the v2 format, its checker, the routing rule in `shared/
 
 ## Data
 
-Mail store (read only today): 1,171 messages (797 Gmail, 355 Outlook, 19 Learning Central), 18 batches, 25 actions. No data changed in this session.
+Mail store: 1,171 messages (797 Gmail, 355 Outlook, 19 Learning Central), 18 batches, 25 actions, 1,587 history rows; unchanged by migration `mail/0002_items.sql` (dumps in `Life_OS_backups/study-2026-11-03/`). No items yet: they arrive with the first v2 batch.
 
 Last five sessions: [Stage 5 planning](sessions/2026-11-03-claude-code-5-planning.md), [JobMap CP1](sessions/2026-11-03-codex-jobmap-workflow-cp1.md), [main consolidation](sessions/2026-11-03-codex-main-private-data-safe-commit.md), [data explanation](sessions/2026-11-01-codex-data-structure-explanation.md), [linked dictionary](sessions/2026-10-31-codex-data-dictionary-links.md).
