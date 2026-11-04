@@ -215,7 +215,7 @@ export function revisitNotes(notes) {
   return notes.filter((note) => note.meta.status === 'revisit')
 }
 
-// The seed content is authored per session ("AML S2 —"), lecture ("MAT700 — L3–L4"),
+// The seed content is authored per session ("ML S2 —"), lecture ("STATS — L3–L4"),
 // or pack ("TS Pack C — Read L5–L7"), and the notes carry the matching key in their
 // topic/id ("S2 · Foundations", "TS · L6 Forecasting"). We mine those keys from a
 // string so a card and a note can be matched even where no explicit `cards=` link was

@@ -56,13 +56,12 @@ test('buildCatchUp groups by module, orders oldest-first, and buckets by age', (
   assert.ok(result.behindModules.has('Applied ML'))
 })
 
-test('buildCatchUp honours the MAT700 toggle', () => {
+test('buildCatchUp counts every module of the semester', () => {
   const cards = [
-    card({ id: 'm', dueDate: '2026-07-10', moduleGroup: 'MAT700', module: 'Data Mining' }),
+    card({ id: 'm', dueDate: '2026-07-10', moduleGroup: 'OPT101', module: 'Optimisation' }),
     card({ id: 'a', dueDate: '2026-07-10' }),
   ]
-  assert.equal(buildCatchUp(cards, REF, true).total, 2)
-  assert.equal(buildCatchUp(cards, REF, false).total, 1)
+  assert.equal(buildCatchUp(cards, REF).total, 2)
 })
 
 test('buildCatchUp reports hoursBehind and oldestDue per module group', () => {

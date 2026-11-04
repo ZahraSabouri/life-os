@@ -565,8 +565,6 @@ export default function App() {
 
   const configuredReferenceDate = tracker.state.settings.referenceDate
   const referenceDate = configuredReferenceDate < todayString() ? todayString() : configuredReferenceDate
-  // Every module of the semester is in play; pausing one is not offered.
-  const mat700Active = true
   const theme = tracker.state.settings.theme ?? 'light'
   const referenceDateRef = useRef(referenceDate)
   const updateSettingsRef = useRef(tracker.updateSettings)
@@ -873,12 +871,12 @@ export default function App() {
     [activeView, filteredCards, referenceDate],
   )
   const stats = useMemo(
-    () => deriveStats(filteredCards, referenceDate, mat700Active),
-    [filteredCards, referenceDate, mat700Active],
+    () => deriveStats(filteredCards, referenceDate),
+    [filteredCards, referenceDate],
   )
   const allStats = useMemo(
-    () => deriveStats(tracker.cards, referenceDate, mat700Active),
-    [tracker.cards, referenceDate, mat700Active],
+    () => deriveStats(tracker.cards, referenceDate),
+    [tracker.cards, referenceDate],
   )
   const selectedCard = tracker.cards.find((card) => card.id === selectedCardId)
   const activeTimerCard = tracker.cards.find((card) => card.id === activeTimerCardId) ?? null
@@ -1056,7 +1054,6 @@ export default function App() {
         examLabel: examTarget.label,
         unsavedSinceBackup,
         lastBackupAt,
-        mat700Active,
         campaignStart: schedule.campaignStart,
         createdAt: tracker.state.createdAt,
       }),
@@ -1065,7 +1062,6 @@ export default function App() {
       examTarget.confirmed,
       examTarget.label,
       lastBackupAt,
-      mat700Active,
       referenceDate,
       schedule.campaignStart,
       tracker.cards,
@@ -1760,7 +1756,6 @@ export default function App() {
           cards={tracker.cards}
           snapshots={tracker.snapshots}
           referenceDate={referenceDate}
-          mat700Active={mat700Active}
           actions={actions}
           examCountdown={examCountdown}
           examLabel={examTarget.label}
@@ -1794,7 +1789,6 @@ export default function App() {
             cards={tracker.cards}
             actions={actions}
             referenceDate={referenceDate}
-            mat700Active={mat700Active}
             setActiveView={(view) => openModuleView(view, studyModuleMap[activeView].moduleGroup)}
             activeTab={activeModuleTab}
             onTabChange={openModuleTab}
@@ -1827,7 +1821,6 @@ export default function App() {
             snapshots={tracker.snapshots}
             referenceDate={referenceDate}
             weekReferenceDate={dayScheduleDate}
-            mat700Active={mat700Active}
             actions={actions}
             schedule={schedule}
             scopeLabel={(filters.modules ?? []).join(', ')}
@@ -1858,7 +1851,6 @@ export default function App() {
           cards={tracker.cards}
           snapshots={tracker.snapshots}
           referenceDate={referenceDate}
-          mat700Active={mat700Active}
           schedule={schedule}
           onNavigateMeta={openCardFacet}
         />

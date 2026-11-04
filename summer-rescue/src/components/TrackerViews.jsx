@@ -19,13 +19,12 @@ import {
   sortCards,
   sumHours,
 } from '../utils/progress'
+import { groupAccent, groupLabel } from '../data/semesterProfile'
 import { CardSummary } from './CardSummary'
 import { BarSeries, CalendarHeatmap, DonutRing, LineChart, StackedModuleBars } from './Charts'
 
+// Lanes that are not a semester module keep a colour of their own; a module has its own accent.
 const MODULE_COLORS = {
-  'Applied ML': '--chart-aml',
-  'Time Series': '--chart-ts',
-  MAT700: '--chart-mat700',
   'Group Project': '--chart-project',
   Admin: '--chart-admin',
   Health: '--chart-health',
@@ -59,7 +58,7 @@ function Pagination({ page, pageCount, setPage, total, start, pageSize, showAll,
 }
 
 function moduleColor(label) {
-  return MODULE_COLORS[label] ?? '--chart-1'
+  return MODULE_COLORS[label] ?? groupAccent(label, '--chart-1')
 }
 
 function percent(done, total) {
@@ -146,8 +145,8 @@ function ModuleCardInventory({ cards, scopeLabel, actions }) {
   )
 }
 
-export function DashboardView({ cards, stats, referenceDate, weekReferenceDate = referenceDate, mat700Active, actions, schedule, scopeLabel = '' }) {
-  const displayScope = scopeLabel === 'MAT700' ? 'Data Mining' : scopeLabel
+export function DashboardView({ cards, stats, referenceDate, weekReferenceDate = referenceDate, actions, schedule, scopeLabel = '' }) {
+  const displayScope = scopeLabel ? scopeLabel.split(', ').map(groupLabel).join(', ') : ''
   const donePct = percent(stats.done, stats.total)
   const weekOpen = cards.filter(
     (card) => !card.done && isCurrentWeek(getCardDate(card), weekReferenceDate),
@@ -156,7 +155,7 @@ export function DashboardView({ cards, stats, referenceDate, weekReferenceDate =
   const next7End = addDays(referenceDate, 7)
   const phaseMax = Math.max(...stats.byPhase.map((item) => item.total), 1)
   const moduleMax = Math.max(...stats.byModule.map((item) => item.estimated), 1)
-  const scopedCards = mat700Active ? cards : cards.filter((card) => card.moduleGroup !== 'MAT700')
+  const scopedCards = cards
   const pace = buildPace(scopedCards, referenceDate, { schedule })
   const burn = buildBurnUp(scopedCards, referenceDate, { schedule })
   const burnSeries = bucketSeries(
@@ -199,7 +198,7 @@ export function DashboardView({ cards, stats, referenceDate, weekReferenceDate =
             value={pace.done}
             total={pace.total}
             sublabel="done"
-            color={pace.onTrack ? '--chart-ts' : '--chart-mat700'}
+            color={pace.onTrack ? '--chart-ts' : '--chart-rose'}
             size={112}
           />
         </article>
@@ -248,9 +247,6 @@ export function DashboardView({ cards, stats, referenceDate, weekReferenceDate =
         <MetricTile label="Next 7 days" value={stats.nextSevenCards.length} detail={`${formatDate(referenceDate)} - ${formatDate(next7End)}`} onClick={() => actions.onNavigateMeta?.('dateMode', 'next7')} />
         {!displayScope && <MetricTile label="Rescue lane" value={stats.rescueCards.length} detail="Buffer and recovery cards" tone="amber" onClick={() => actions.onNavigateMeta?.('status', 'Rescue Lane')} />}
         <MetricTile label="Waiting" value={stats.waitingCards.length} detail="Blocked or date-dependent" onClick={() => actions.onNavigateMeta?.('status', 'Waiting / Blocked')} />
-        {(!displayScope || scopeLabel === 'MAT700') && (
-          <MetricTile label="Data Mining" value={mat700Active ? 'Study lane active' : 'Paused'} detail="Tutorial-first recovery lane" tone="green" />
-        )}
         {(!displayScope || scopeLabel === 'Group Project') && (
           <MetricTile
             label="Project ship"

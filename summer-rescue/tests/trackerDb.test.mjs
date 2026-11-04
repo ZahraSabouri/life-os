@@ -86,7 +86,7 @@ test('projectState mirrors live progress, checklist done-state, notes, and setti
 
     db.projectState({
       state: {
-        settings: { theme: 'dark', mat700Active: true },
+        settings: { theme: 'dark', opt101Active: true },
         moduleNotes: { aml: 'Focus on labs' },
         cards: {
           'card-001': {

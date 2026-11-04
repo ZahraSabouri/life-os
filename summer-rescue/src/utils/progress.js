@@ -1,3 +1,5 @@
+import { groupKind } from '../data/semesterProfile.js'
+
 export function localDateString(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
@@ -58,10 +60,8 @@ export function isCurrentWeek(dateString, referenceDate) {
 // module group. The kind decides which behaviours apply. Evidence requirements
 // remain a study/project concept; date accountability is shared by every card so
 // Table, Today, Review, and Columns cannot disagree about unfinished past work.
+// A module's own `kind` wins; a semester's modules are study unless they say otherwise.
 const KIND_BY_MODULE_GROUP = {
-  'Applied ML': 'study',
-  'Time Series': 'study',
-  MAT700: 'study',
   'Cross-module': 'study',
   'Group Project': 'project',
   'Job Hunt': 'job',
@@ -79,7 +79,8 @@ export const KIND_META = {
 }
 
 export function cardKind(card) {
-  return KIND_BY_MODULE_GROUP[card?.moduleGroup] ?? 'study'
+  const own = groupKind(card?.moduleGroup)
+  return KIND_META[own] ? own : KIND_BY_MODULE_GROUP[card?.moduleGroup] ?? 'study'
 }
 
 export function kindFeatures(card) {
@@ -233,9 +234,8 @@ function buildGroupStats(cards, keyGetter) {
     .sort((a, b) => b.total - a.total)
 }
 
-export function deriveStats(cards, referenceDate, mat700Active = true) {
-  const plannedCards = cards.filter(isTrackableCard)
-  const visibleCards = mat700Active ? plannedCards : plannedCards.filter((card) => card.moduleGroup !== 'MAT700')
+export function deriveStats(cards, referenceDate) {
+  const visibleCards = cards.filter(isTrackableCard)
   const weekCards = visibleCards.filter((card) => isCurrentWeek(getCardDate(card), referenceDate))
   const next7 = addDays(referenceDate, 7)
   const dueToday = visibleCards.filter((card) => getCardDate(card) === referenceDate && !card.done)
@@ -252,7 +252,7 @@ export function deriveStats(cards, referenceDate, mat700Active = true) {
 
   return {
     total: visibleCards.length,
-    baseTotal: plannedCards.length,
+    baseTotal: visibleCards.length,
     done: visibleCards.filter((card) => card.done).length,
     notDone: visibleCards.filter((card) => !card.done).length,
     estimatedHours: sumHours(visibleCards, 'estimatedHours'),

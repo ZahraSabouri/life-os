@@ -599,7 +599,7 @@ button:disabled {
 .work-card {
   min-width: 0;
   display: grid;
-  /* The title column had no floor (minmax(0, 1fr)), so a long title (MAT700's
+  /* The title column had no floor (minmax(0, 1fr)), so a long title (an
      "L2 — rebuild concepts, formula sheet, and question-bank recall" style)
      could get squeezed toward zero width by the other two columns' own
      minimums, wrapping one word per line for 8+ lines. A 220px floor keeps
@@ -2047,7 +2047,7 @@ rect.heat-future { fill: transparent; stroke: var(--line); stroke-dasharray: 2 2
 }
 .pace-banner.behind {
   background:
-    radial-gradient(120% 160% at 100% 0%, color-mix(in srgb, var(--chart-mat700) 18%, transparent), transparent 55%),
+    radial-gradient(120% 160% at 100% 0%, color-mix(in srgb, var(--chart-rose) 18%, transparent), transparent 55%),
     var(--panel);
 }
 .pace-banner h2 {
@@ -2124,7 +2124,7 @@ rect.heat-future { fill: transparent; stroke: var(--line); stroke-dasharray: 2 2
 
 .pace-card.behind {
   background:
-    radial-gradient(120% 130% at 100% 0%, color-mix(in srgb, var(--chart-mat700) 14%, transparent), transparent 55%),
+    radial-gradient(120% 130% at 100% 0%, color-mix(in srgb, var(--chart-rose) 14%, transparent), transparent 55%),
     var(--panel);
 }
 
@@ -4791,8 +4791,7 @@ h1,
 }
 
 /* ============================================================
-   CARDIFF CREST (intro + sidebar). Uses /cardiff-logo.svg —
-   replace that file with the official logo to swap it in.
+   CREST (intro + sidebar): the institution's mark, when there is one.
    ============================================================ */
 .intro-head {
   gap: 14px;

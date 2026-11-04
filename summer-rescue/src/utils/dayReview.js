@@ -5,8 +5,8 @@
 
 import { completionDay } from './history.js'
 import { addDays, cardsDueOn } from './progress.js'
+import { EXAM_GROUPS } from '../data/semesterProfile.js'
 
-const FIXED_EXAM_MODULES = new Set(['Applied ML', 'Time Series', 'MAT700'])
 const CLOCK = /^([01]\d|2[0-3]):[0-5]\d$/
 
 function isoDay(value) {
@@ -21,14 +21,14 @@ export function blockLogKey(block) {
   return `${block?.id ?? 'block'}@${block?.start ?? ''}`
 }
 
-// Only the exam spine, confirmed teaching, and sleep have immovable times.
-// `protected` intentionally does not imply fixed: admin, project, travel,
-// meals, recovery and the rest of daily life remain movable.
-export function isFixedScheduleBlock(block) {
+// Only the exam spine (the semester's exam modules), confirmed teaching, and sleep
+// have immovable times. `protected` intentionally does not imply fixed: admin,
+// project, travel, meals, recovery and the rest of daily life remain movable.
+export function isFixedScheduleBlock(block, examGroups = EXAM_GROUPS) {
   return Boolean(
     block?.category === 'sleep' ||
     block?.category === 'class' ||
-    FIXED_EXAM_MODULES.has(block?.moduleGroup),
+    (block?.moduleGroup && examGroups.includes(block.moduleGroup)),
   )
 }
 

@@ -10,8 +10,13 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { KIND_META, cardKind, isOverdue, kindFeatures, requiresEvidence } from '../src/utils/progress.js'
-import { buildReplan, computeReplanSchedule } from '../src/utils/replan.js'
+import { buildReplan as replan, computeReplanSchedule as schedule } from '../src/utils/replan.js'
 import { buildWeeklyLifeCardInputs } from '../src/utils/lifeCards.js'
+
+// The semester these tests plan for: its exam modules and when preparation should be done.
+const SEMESTER = { examGroups: ['Applied ML', 'Time Series', 'OPT101'], readiness: '2026-08-16' }
+const buildReplan = (cards, options) => replan(cards, { ...SEMESTER, ...options })
+const computeReplanSchedule = (cards, options) => schedule(cards, { ...SEMESTER, ...options })
 
 const REFERENCE = '2026-07-30'
 const WEEK_START = '2026-07-20'
@@ -92,7 +97,7 @@ test('every generated weekly routine remains outside academic evidence rules', (
     // carry deadlines. It still must never be an exam-group card.
     assert.notEqual(input.module, 'Time Series')
     assert.notEqual(input.module, 'Applied ML')
-    assert.notEqual(input.module, 'MAT700')
+    assert.notEqual(input.module, 'OPT101')
   }
 })
 
@@ -100,7 +105,7 @@ test('every generated weekly routine remains outside academic evidence rules', (
 
 test('re-planning never reschedules a life or health routine', () => {
   const cards = [studyCard(), lifeCard(), lifeCard({ id: 'health-1', moduleGroup: 'Health' })]
-  const plan = buildReplan(cards, { referenceDate: REFERENCE, mat700Active: true })
+  const plan = buildReplan(cards, { referenceDate: REFERENCE })
   const movedIds = (plan.assignments ?? []).map((assignment) => assignment.cardId)
   assert.ok(!movedIds.includes('life-1'), 'the grocery run stays where it is')
   assert.ok(!movedIds.includes('health-1'), 'the movement breaks stay where they are')
@@ -110,7 +115,6 @@ test('re-plan capacity scheduling only ever touches exam-group cards', () => {
   const cards = [studyCard(), lifeCard(), lifeCard({ id: 'health-1', moduleGroup: 'Health' })]
   const schedule = computeReplanSchedule(cards, {
     referenceDate: REFERENCE,
-    mat700Active: true,
     expandForDate: () => [],
   })
   for (const assignment of schedule.assignments ?? []) {
@@ -123,7 +127,7 @@ test('a life routine cannot be dragged into re-planning by an exam-shaped phase'
   // A routine carrying the same phase/priority as exam work must still be
   // excluded — the filter is by module group, not by how urgent it looks.
   const disguised = lifeCard({ id: 'life-disguised', phase: 'Phase 2', priority: 'High', status: 'Today' })
-  const plan = buildReplan([studyCard(), disguised], { referenceDate: REFERENCE, mat700Active: true })
+  const plan = buildReplan([studyCard(), disguised], { referenceDate: REFERENCE })
   const movedIds = (plan.assignments ?? []).map((assignment) => assignment.cardId)
   assert.ok(!movedIds.includes('life-disguised'))
 })

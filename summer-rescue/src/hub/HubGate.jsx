@@ -188,9 +188,8 @@ export function HubGate() {
         if (has(named)) return open(named)
         if (staysInSemester() && has(tabSemesterId())) return open(tabSemesterId())
         if (opensLastSemester() && has(lastSemesterId())) return open(lastSemesterId())
-        // By default the semester that is running now opens by itself (Xar, 12 October: "go to
-        // … the current semester by default"). The list shows when she asked for it with
-        // "Change semester", or when no single semester is current.
+        // By default the semester that is running now opens by itself. The list shows when the
+        // owner asked for it with "Change semester", or when no single semester is current.
         const current = list.filter((semester) => semesterStanding(semester).id === 'current')
         if (!wantsToChoose() && current.length === 1) return open(current[0].id)
         setStage('choose')

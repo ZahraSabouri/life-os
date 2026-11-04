@@ -28,7 +28,7 @@ const ROUTES = [
   ['aml', 'Applied ML'],
   ['time-series', 'Time Series'],
   ['project', 'Team Project'],
-  ['mat700', 'Data Mining'],
+  ['opt101', 'Data Mining'],
   ['interview', 'Sati Interview'],
   ['schedule', 'Schedule'],
   ['review', 'Review'],
@@ -231,7 +231,7 @@ test('Settings exposes the three confirmed module exam dates', { skip: SKIP }, a
     for (const [label, expected] of [
       [/Applied ML exam/i, '2026-08-26'],
       [/Time Series exam/i, '2026-08-19'],
-      [/MAT700 exam/i, '2026-08-18'],
+      [/OPT101 exam/i, '2026-08-18'],
     ]) {
       const field = page.getByLabel(label).first()
       await field.waitFor({ state: 'visible', timeout: 5000 })

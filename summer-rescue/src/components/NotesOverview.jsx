@@ -29,7 +29,6 @@ const SORTS = [
   { id: 'az', label: 'A–Z' },
 ]
 
-const MODULE_SHORT = { aml: 'ML', 'time-series': 'TS', 'team-project': 'TP', mat700: 'DM' }
 const TRAILING_GROUPS = [
   { key: 'history', label: 'History', icon: '⏱' },
   { key: 'life', label: 'Life', icon: '♡' },
@@ -241,7 +240,7 @@ export function NotesOverview({
     const moduleGroups = studyModules.map((module) => ({
       key: module.id,
       label: module.title,
-      code: MODULE_SHORT[module.id] ?? module.code,
+      code: module.shortCode || module.code,
       icon: '◆',
       emptyHint: `Nothing yet for ${module.title} — module, card, resource, and revisit-flagged concept notes will show up here.`,
       items: [],

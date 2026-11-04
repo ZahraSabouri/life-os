@@ -6,6 +6,7 @@ import { focusRewards } from '../utils/focusRewards'
 import { kindMeta, splitSequenceNotes } from '../utils/knowledge'
 import { averageResourceProgress, normaliseResourceProgressEntry } from '../utils/resourceProgress'
 import { STATUS_OPTIONS } from '../data/constants'
+import { groupLabel } from '../data/semesterProfile'
 import { AmbientSoundPlayer } from './AmbientSoundPlayer'
 import { FloatingVideoPlayer } from './FloatingVideoPlayer'
 import { MarkdownDoc, MarkdownPreview } from './MarkdownDoc'
@@ -62,10 +63,8 @@ function formatStamp(value) {
   }).format(new Date(value))
 }
 
-const MODULE_LABELS = {
-  'Applied ML': 'Applied Machine Learning',
-  'Time Series': 'Time Series',
-  MAT700: 'Data Mining',
+// Lanes that are not a semester module; a module is named by its own record.
+const LANE_LABELS = {
   'Group Project': 'Team Project',
   'Job Hunt': 'Job Hunt',
   Admin: 'Admin & Dates',
@@ -551,7 +550,7 @@ export function FocusRoom({
 
   const totalSeconds = Math.max(1, Number(durations?.[mode] ?? 1) * 60)
   const progress = Math.max(0, Math.min(1, 1 - remaining / totalSeconds))
-  const moduleName = MODULE_LABELS[activeCard.moduleGroup] || activeCard.module || activeCard.moduleGroup || 'Study'
+  const moduleName = LANE_LABELS[activeCard.moduleGroup] || activeCard.module || groupLabel(activeCard.moduleGroup) || 'Study'
   const hasBoundaries = Boolean(currentBoundary || nextBoundary)
 
   function addNote() {

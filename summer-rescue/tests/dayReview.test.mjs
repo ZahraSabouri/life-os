@@ -33,14 +33,17 @@ test('blockLogKey combines id and start so repeated rule ids stay distinct', () 
 })
 
 test('only exam modules, confirmed classes, and sleep have fixed times', () => {
-  assert.equal(isFixedScheduleBlock({ moduleGroup: 'Applied ML', category: 'study' }), true)
-  assert.equal(isFixedScheduleBlock({ moduleGroup: 'Time Series', category: 'study' }), true)
-  assert.equal(isFixedScheduleBlock({ moduleGroup: 'MAT700', category: 'admin' }), true)
-  assert.equal(isFixedScheduleBlock({ moduleGroup: 'Group Project', category: 'class' }), true)
-  assert.equal(isFixedScheduleBlock({ category: 'sleep' }), true)
-  assert.equal(isFixedScheduleBlock({ moduleGroup: 'Admin', category: 'admin', protected: true }), false)
-  assert.equal(isFixedScheduleBlock({ moduleGroup: 'Group Project', category: 'project', protected: true }), false)
-  assert.equal(isFixedScheduleBlock({ category: 'commute' }), false)
+  // The semester's exam modules (semesterProfile.js); a semester without any has no exam spine.
+  const exams = ['Applied ML', 'Time Series', 'OPT101']
+  assert.equal(isFixedScheduleBlock({ moduleGroup: 'Applied ML', category: 'study' }, exams), true)
+  assert.equal(isFixedScheduleBlock({ moduleGroup: 'Time Series', category: 'study' }, exams), true)
+  assert.equal(isFixedScheduleBlock({ moduleGroup: 'OPT101', category: 'admin' }, exams), true)
+  assert.equal(isFixedScheduleBlock({ moduleGroup: 'OPT101', category: 'admin' }), false)
+  assert.equal(isFixedScheduleBlock({ moduleGroup: 'Group Project', category: 'class' }, exams), true)
+  assert.equal(isFixedScheduleBlock({ category: 'sleep' }, exams), true)
+  assert.equal(isFixedScheduleBlock({ moduleGroup: 'Admin', category: 'admin', protected: true }, exams), false)
+  assert.equal(isFixedScheduleBlock({ moduleGroup: 'Group Project', category: 'project', protected: true }, exams), false)
+  assert.equal(isFixedScheduleBlock({ category: 'commute' }, exams), false)
 })
 
 test('flexible time overrides preserve the original log key and fixed blocks ignore overrides', () => {
@@ -52,7 +55,7 @@ test('flexible time overrides preserve the original log key and fixed blocks ign
   assert.equal(moved.timeAdjusted, true)
 
   const fixed = applyBlockTimeOverride(
-    { id: 'aml', start: '09:00', end: '11:00', category: 'study', moduleGroup: 'Applied ML' },
+    { id: 'lecture', start: '09:00', end: '11:00', category: 'class', moduleGroup: 'Applied ML' },
     { scheduledStart: '14:00', scheduledEnd: '16:00' },
   )
   assert.equal(fixed.start, '09:00')

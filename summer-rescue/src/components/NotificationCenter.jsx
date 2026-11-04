@@ -51,7 +51,6 @@ export function NotificationCenter({
     if (notice.cardId) onOpenCard?.(notice.cardId)
     else if (notice.rule === 'exam-countdown') onGoView?.('progress')
     else if (notice.rule === 'backup-stale') onGoView?.('dashboard')
-    else if (notice.rule === 'mat700-paused') onGoView?.('mat700')
     setOpen(false)
   }
 

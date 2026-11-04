@@ -1,12 +1,25 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { buildReplan, computeReplanSchedule } from '../src/utils/replan.js'
+import { buildReplan as replan, computeReplanSchedule as schedule } from '../src/utils/replan.js'
+
+// The semester these tests plan for: its exam modules and when preparation should be done.
+const SEMESTER = { examGroups: ['Applied ML', 'Time Series', 'OPT101'], readiness: '2026-08-16' }
+const buildReplan = (cards, options) => replan(cards, { ...SEMESTER, ...options })
+const computeReplanSchedule = (cards, options) => schedule(cards, { ...SEMESTER, ...options })
 
 function card(overrides) {
   return { number: 1, moduleGroup: 'Applied ML', done: false, estimatedHours: 10, ...overrides }
 }
 
 const REF = '2026-07-14' // 34 usable calendar days, including today and 16 Aug
+
+test('a semester without exam modules or a readiness date re-plans nothing, four weeks ahead', () => {
+  const r = replan([card({ estimatedHours: 30 })], { referenceDate: REF, dailyHours: 8, projectHours: 0, examGroups: [], readiness: '' })
+  assert.equal(r.daysLeft, 28)
+  assert.equal(r.examHours, 0)
+  assert.deepEqual(r.modules, [])
+  assert.deepEqual(schedule([card({ id: 'x' })], { referenceDate: REF, dailyHours: 8, examGroups: [], readiness: '' }).assignments, [])
+})
 
 test('capacity = days left x daily hours', () => {
   const r = buildReplan([], { referenceDate: REF, dailyHours: 8, projectHours: 0 })
@@ -52,7 +65,7 @@ test('done and non-exam cards are excluded from exam hours', () => {
 })
 
 test('supports the hours field as well as estimatedHours', () => {
-  const cards = [{ number: 2, moduleGroup: 'MAT700', done: false, hours: 40 }]
+  const cards = [{ number: 2, moduleGroup: 'OPT101', done: false, hours: 40 }]
   const r = buildReplan(cards, { referenceDate: REF, projectHours: 0 })
   assert.equal(r.examHours, 40)
 })

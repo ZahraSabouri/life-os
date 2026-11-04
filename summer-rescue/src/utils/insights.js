@@ -4,6 +4,7 @@
 
 import { addDays, getCardDate, isOverdue, isTrackableCard, localDateString, sumHours } from './progress.js'
 import { completionDay, resolveSchedule } from './history.js'
+import { SPLIT_TARGETS, groupLabel } from '../data/semesterProfile.js'
 
 const DAY_RE = /^\d{4}-\d{2}-\d{2}$/
 
@@ -17,35 +18,18 @@ function isoDay(value) {
 }
 
 // ---------------------------------------------------------------------------
-// Priority split guardrail mirrors the protected pre-exam timetable:
-// 80h AML / 96h Time Series / 58h MAT700 (rounded to whole percentages).
+// Priority split guardrail: the share of study time each module should get, as
+// the semester sets it ({ module group: percent }, semesterProfile.js). A
+// semester without one has no guardrail.
 // ---------------------------------------------------------------------------
-
-export const SPLIT_TARGETS_FULL = {
-  'Applied ML': 34,
-  'Time Series': 41,
-  MAT700: 25,
-}
-
-export const SPLIT_TARGETS_NO_MAT700 = {
-  'Applied ML': 52,
-  'Time Series': 48,
-}
-
-export const SPLIT_LABELS = {
-  'Applied ML': 'Applied ML',
-  'Time Series': 'Time Series',
-  MAT700: 'Data Mining',
-}
 
 // Drift beyond this many percentage points (with enough hours logged to be
 // meaningful) is flagged.
 const DRIFT_TOLERANCE = 8
 const MIN_MEANINGFUL_HOURS = 4
 
-export function buildSplitGuardrail(cards, mat700Active = true) {
-  const targets = mat700Active ? SPLIT_TARGETS_FULL : SPLIT_TARGETS_NO_MAT700
-  const moduleGroups = Object.keys(targets)
+export function buildSplitGuardrail(cards, targets = SPLIT_TARGETS) {
+  const moduleGroups = Object.keys(targets ?? {})
   const tracked = cards.filter(
     (card) => isTrackableCard(card) && moduleGroups.includes(card.moduleGroup),
   )
@@ -59,7 +43,7 @@ export function buildSplitGuardrail(cards, mat700Active = true) {
     const drift = actualPct - targetPct
     return {
       group,
-      label: SPLIT_LABELS[group] ?? group,
+      label: groupLabel(group),
       hours: Math.round(hours * 10) / 10,
       actualPct,
       targetPct,
@@ -91,8 +75,8 @@ export function buildSplitGuardrail(cards, mat700Active = true) {
 
 // Per-module hours deficit in percentage points (positive = module is behind
 // its target share). Used to bias the daily card picks.
-export function splitDeficits(cards, mat700Active = true) {
-  const { rows, meaningful } = buildSplitGuardrail(cards, mat700Active)
+export function splitDeficits(cards, targets = SPLIT_TARGETS) {
+  const { rows, meaningful } = buildSplitGuardrail(cards, targets)
   const deficits = {}
   for (const row of rows) {
     deficits[row.group] = meaningful ? Math.max(0, -row.drift) : 0
@@ -132,14 +116,13 @@ export function scoreCard(card, referenceDate, deficits = {}) {
   return score
 }
 
-export function buildTodayPicks(cards, referenceDate, mat700Active = true, count = 3) {
-  const deficits = splitDeficits(cards, mat700Active)
+export function buildTodayPicks(cards, referenceDate, targets = SPLIT_TARGETS, count = 3) {
+  const deficits = splitDeficits(cards, targets)
   const candidates = cards.filter(
     (card) =>
       isTrackableCard(card) &&
       !card.done &&
-      card.status !== 'Waiting / Blocked' &&
-      (mat700Active || card.moduleGroup !== 'MAT700'),
+      card.status !== 'Waiting / Blocked',
   )
 
   const scored = candidates
@@ -174,7 +157,7 @@ export function pickReason(card, referenceDate, deficits = {}) {
   if (cardDate === referenceDate) return 'Due today'
   if (cardDate && cardDate <= addDays(referenceDate, 3)) return 'Due in the next 3 days'
   if ((deficits[card.moduleGroup] ?? 0) >= DRIFT_TOLERANCE)
-    return `${SPLIT_LABELS[card.moduleGroup] ?? card.moduleGroup} is behind its target split`
+    return `${groupLabel(card.moduleGroup)} is behind its target split`
   if (card.priority === 'Critical') return 'Critical priority'
   if (card.status === 'Today') return 'Planned for today'
   return 'Next best use of an hour'
@@ -201,13 +184,9 @@ export function isActionableOverdue(card, referenceDate) {
   )
 }
 
-export function buildCatchUp(cards, referenceDate, mat700Active = true) {
+export function buildCatchUp(cards, referenceDate) {
   const behind = (cards ?? [])
-    .filter(
-      (card) =>
-        isActionableOverdue(card, referenceDate) &&
-        (mat700Active || card.moduleGroup !== 'MAT700'),
-    )
+    .filter((card) => isActionableOverdue(card, referenceDate))
     .map((card) => ({ card, dueDate: card.dueDate, daysLate: Math.max(1, daysLate(card, referenceDate)) }))
 
   const groupsMap = new Map()
@@ -222,7 +201,7 @@ export function buildCatchUp(cards, referenceDate, mat700Active = true) {
       const sorted = items.slice().sort((a, b) => a.dueDate.localeCompare(b.dueDate) || b.daysLate - a.daysLate)
       return {
         group,
-        label: sorted[0].card.module || SPLIT_LABELS[group] || group,
+        label: sorted[0].card.module || groupLabel(group),
         items: sorted,
         count: sorted.length,
         maxDaysLate: Math.max(...sorted.map((entry) => entry.daysLate)),

@@ -90,7 +90,7 @@ function ClassForm({ record, onCancel }) {
   })
   return (
     <form className="hub-form" onSubmit={save}>
-      <label className="hub-field hub-field-wide"><span>What it is</span><input value={form.title} onChange={set('title')} placeholder="MAT022 · Lecture" maxLength={300} required autoFocus /></label>
+      <label className="hub-field hub-field-wide"><span>What it is</span><input value={form.title} onChange={set('title')} placeholder="STAT101 · Lecture" maxLength={300} required autoFocus /></label>
       <ModuleSelect value={form.module} onChange={set('module')} />
       <label className="hub-field"><span>Day</span><input type="date" value={form.date} onChange={set('date')} required /></label>
       <label className="hub-field"><span>Starts</span><input type="time" value={form.from} onChange={set('from')} required /></label>
@@ -123,7 +123,7 @@ function AssessmentForm({ record, onCancel }) {
   })
   return (
     <form className="hub-form" onSubmit={save}>
-      <label className="hub-field hub-field-wide"><span>What it is</span><input value={form.title} onChange={set('title')} placeholder="MAT022 · In-class test 2" maxLength={300} required autoFocus /></label>
+      <label className="hub-field hub-field-wide"><span>What it is</span><input value={form.title} onChange={set('title')} placeholder="STAT101 · In-class test 2" maxLength={300} required autoFocus /></label>
       <ModuleSelect value={form.module} onChange={set('module')} />
       <label className="hub-field"><span>Kind</span><select value={form.kind} onChange={set('kind')}>{KINDS.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
       <label className="hub-field"><span>Date (leave empty if not published)</span><input type="date" value={form.date} onChange={set('date')} /></label>

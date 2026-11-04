@@ -41,8 +41,8 @@ const SEEDS = [
     body: 'Logistic regression is classification.',
   },
   {
-    id: 'kn-mat700-axes',
-    moduleId: 'mat700',
+    id: 'kn-opt101-axes',
+    moduleId: 'opt101',
     title: 'Four axes',
     kind: 'cheatsheet',
     topic: 'Foundations',
@@ -60,7 +60,7 @@ test('seeds resolve per module and ignore other modules', () => {
     aml.map((note) => note.id).sort(),
     ['kn-aml-traps', 'kn-aml-types'],
   )
-  assert.equal(resolve(emptyKnowledge(), 'mat700').length, 1)
+  assert.equal(resolve(emptyKnowledge(), 'opt101').length, 1)
 })
 
 test('a user note under a seed id takes over from the seed', () => {

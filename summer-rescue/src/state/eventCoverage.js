@@ -303,7 +303,7 @@ export const EVENT_COVERAGE = [
     replayed: false,
     identified: false,
     tombstoned: false,
-    note: 'Campaign window, theme and MAT700 policy are JSON-only.',
+    note: 'Campaign window, theme and module policy are JSON-only.',
   },
   {
     family: 'Module exam dates',

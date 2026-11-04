@@ -30,7 +30,7 @@ const SYMBOLS = {
   quad: ' ', qquad: '  ', ',': ' ', ';': ' ', '!': '',
 }
 
-// Proof-writing vocabulary, merged in below. MAT700's answers are proofs, so
+// Proof-writing vocabulary, merged in below. Mathematics answers are often proofs, so
 // these carry real weight — an unrendered \implies mid-derivation is worse
 // than useless.
 Object.assign(SYMBOLS, {

@@ -233,7 +233,6 @@ export function TodayView({
   cards,
   snapshots,
   referenceDate,
-  mat700Active,
   actions,
   examCountdown,
   examLabel,
@@ -251,16 +250,16 @@ export function TodayView({
     [cards, snapshots, referenceDate],
   )
   const guardrail = useMemo(
-    () => buildSplitGuardrail(cards, mat700Active),
-    [cards, mat700Active],
+    () => buildSplitGuardrail(cards),
+    [cards],
   )
   const { picks, queue, deficits } = useMemo(
-    () => buildTodayPicks(cards, referenceDate, mat700Active),
-    [cards, referenceDate, mat700Active],
+    () => buildTodayPicks(cards, referenceDate),
+    [cards, referenceDate],
   )
   const catchUp = useMemo(
-    () => buildCatchUp(cards, referenceDate, mat700Active),
-    [cards, referenceDate, mat700Active],
+    () => buildCatchUp(cards, referenceDate),
+    [cards, referenceDate],
   )
   const streak = useMemo(
     () => buildStudyStreak(cards, snapshots, referenceDate, { schedule: { campaignStart } }),

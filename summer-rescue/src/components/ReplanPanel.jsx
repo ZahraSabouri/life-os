@@ -2,12 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { buildReplan, buildStudyCapacityLookup, computeReplanSchedule } from '../utils/replan'
 import { expandScheduleForDate } from '../utils/schedule'
 import { scheduleRules, scheduleExceptions } from '../data/plan'
+import { EXAM_GROUPS, PROJECT_DEADLINE, groupLabel } from '../data/semesterProfile'
+import { formatDate } from '../utils/progress'
 
-const MODULE_LABELS = {
-  'Applied ML': 'Applied ML',
-  'Time Series': 'Time Series',
-  MAT700: 'Data Mining (MAT700)',
-}
+// "A, B and C"
+const listed = (names) => (names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0] ?? '')
 
 const STORAGE_KEY = 'summer-rescue-replan-config-v2'
 
@@ -133,7 +132,7 @@ export function ReplanPanel({ cards, referenceDate, onApply, onUndo, canUndo }) 
           return (
             <div className="replan-module" key={module.group}>
               <div className="replan-module-head">
-                <strong>{MODULE_LABELS[module.group] ?? module.group}</strong>
+                <strong>{groupLabel(module.group)}</strong>
                 <span>
                   {module.outstanding}h → <em>keep {module.target}h</em>
                   {module.cut > 0 ? ` · trim ${module.cut}h` : ''} · ~{module.perDay}h/day
@@ -152,8 +151,9 @@ export function ReplanPanel({ cards, referenceDate, onApply, onUndo, canUndo }) 
         {plan.compressionPct > 0 ? (
           <>
             To fit, run a <strong>single high-yield pass</strong>: keep one lab/paper run per session and drop the duplicate
-            timed re-runs except on weak spots. Protect the <strong>6 Aug project</strong> deadline first, then split the rest
-            across {MODULE_LABELS['Applied ML']}, {MODULE_LABELS['Time Series']}, and {MODULE_LABELS.MAT700}.
+            timed re-runs except on weak spots.
+            {PROJECT_DEADLINE && <> Protect the <strong>{formatDate(PROJECT_DEADLINE)} project</strong> deadline first.</>}
+            {EXAM_GROUPS.length > 0 && <> Split the rest across {listed(EXAM_GROUPS.map(groupLabel))}.</>}
           </>
         ) : (
           <>You have headroom — hold the pace and keep the backlog cleared.</>

@@ -40,7 +40,6 @@ export function generateNotifications({
   examLabel = 'exams',
   unsavedSinceBackup,
   lastBackupAt,
-  mat700Active,
   campaignStart,
   createdAt,
 }) {
@@ -130,7 +129,7 @@ export function generateNotifications({
           : `${examCountdown} days to the exam window`,
         detail: examConfirmed
           ? 'Keep the high-yield lanes moving.'
-          : 'Module dates are still unconfirmed — add them in Settings once Cardiff publishes them.',
+          : 'Module dates are still unconfirmed — add them in Settings once they are published.',
         createdAt: referenceDate,
       }),
     )
@@ -164,19 +163,6 @@ export function generateNotifications({
         }),
       )
     }
-  }
-
-  if (!mat700Active) {
-    records.push(
-      notification({
-        id: 'mat700-paused',
-        rule: 'mat700-paused',
-        type: 'info',
-        title: 'Data Mining lane is paused',
-        detail: 'Turn it on in Settings if this study lane is still needed.',
-        createdAt: referenceDate,
-      }),
-    )
   }
 
   return records

@@ -28,7 +28,7 @@ function materialResource(row, module) {
   }
 }
 
-const ACCENTS = ['--chart-aml', '--chart-ts', '--chart-project', '--chart-mat700', '--chart-interview']
+const ACCENTS = ['--chart-aml', '--chart-ts', '--chart-project', '--chart-rose', '--chart-interview']
 
 // A module without a picture of its own gets a plain one with its code or name on it.
 function plainPicture(module, index) {

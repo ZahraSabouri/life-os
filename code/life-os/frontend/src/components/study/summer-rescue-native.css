@@ -328,7 +328,7 @@
 
 .study-native.srp-native .study-insight-summary.behind {
   background:
-    radial-gradient(120% 160% at 100% 0%, color-mix(in srgb, var(--chart-mat700) 18%, transparent), transparent 55%),
+    radial-gradient(120% 160% at 100% 0%, color-mix(in srgb, var(--chart-rose) 18%, transparent), transparent 55%),
     var(--panel);
 }
 

@@ -18,7 +18,7 @@ const TODAY = '2026-07-22'
 
 const MODULES = [
   { id: 'aml', code: 'CMT307', title: 'Applied Machine Learning' },
-  { id: 'mat700', code: 'MAT700', title: 'Mathematical Methods for Data Mining' },
+  { id: 'opt101', code: 'OPT101', title: 'Optimisation Methods' },
 ]
 
 test('normaliseGeneralKnowledgeEntry requires an id and non-empty text', () => {
@@ -114,7 +114,7 @@ test('groupEntriesByDate orders multiple same-day entries newest-created first',
 test('moduleForTag matches title, code, or id case-insensitively and returns null otherwise', () => {
   assert.equal(moduleForTag('applied machine learning', MODULES).id, 'aml')
   assert.equal(moduleForTag('CMT307', MODULES).id, 'aml')
-  assert.equal(moduleForTag('mat700', MODULES).id, 'mat700')
+  assert.equal(moduleForTag('opt101', MODULES).id, 'opt101')
   assert.equal(moduleForTag('Extenuating Circumstances', MODULES), null)
   assert.equal(moduleForTag('', MODULES), null)
 })
@@ -127,7 +127,7 @@ test('knownTags offers module titles plus every tag already used, sorted and ded
   const tags = knownTags(entries, MODULES)
   assert.deepEqual(tags, [
     'Applied Machine Learning',
-    'Mathematical Methods for Data Mining',
+    'Optimisation Methods',
     'Session 1',
   ])
 })

@@ -48,7 +48,7 @@ html[data-life-os-ground]:root:root {
   --chart-ideal: var(--m-faint);
   --chart-aml: var(--m-blue);
   --chart-ts: var(--m-green);
-  --chart-mat700: var(--m-red);
+  --chart-rose: var(--m-red);
   --chart-project: color-mix(in srgb, var(--m-blue) 55%, var(--m-red));
   --chart-interview: color-mix(in srgb, var(--m-green) 70%, var(--m-blue));
   --chart-admin: var(--m-amber);

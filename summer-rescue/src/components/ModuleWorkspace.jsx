@@ -17,6 +17,8 @@ import { CardSummary } from './CardSummary'
 import { ResourceStudyEditor } from './ResourceStudyEditor'
 import { LazyRichTextEditor } from './LazyRichTextEditor'
 import { ThemeToggle } from './ThemeToggle'
+import { STUDY_MODULES } from '../data/studyModules'
+import { resourceGroupOrder } from '../data/semesterProfile'
 
 function percent(done, total) {
   if (!total) return 0
@@ -28,12 +30,12 @@ function hours(value) {
   return Number.isInteger(number) ? `${number}h` : `${number.toFixed(1)}h`
 }
 
-const MODULE_VIEW_BY_KEY = {
-  aml: 'aml',
-  mat700: 'mat700',
-  teamProject: 'team-project',
-  timeSeries: 'time-series',
-  interview: 'interview',
+// A resource names its module by key, sometimes in camelCase ("teamProject"); the module's view
+// is the key in kebab-case ("team-project"), when the semester has that module.
+const kebab = (value) => String(value ?? '').replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
+function moduleViewOfKey(key) {
+  const view = kebab(key)
+  return view && STUDY_MODULES.some((module) => module.viewId === view || module.id === view) ? view : ''
 }
 const MAX_LOCAL_RESOURCE_BYTES = 25 * 1024 * 1024
 
@@ -54,7 +56,7 @@ function resourceAppTabUrl(resource) {
   if (typeof window === 'undefined' || !resource?.id) return resource?.url ?? '#'
   const url = new URL(window.location.href)
   const currentView = url.hash.replace(/^#\/?/, '').split('?')[0]
-  const viewId = resource.moduleId || MODULE_VIEW_BY_KEY[resource.moduleKey] || currentView || 'today'
+  const viewId = resource.moduleId || moduleViewOfKey(resource.moduleKey) || currentView || 'today'
   url.hash = `/${viewId}?resource=${encodeURIComponent(resource.id)}&mode=reader`
   return url.toString()
 }
@@ -309,65 +311,9 @@ function NotebookPreview({ resource }) {
 }
 
 
-const GROUP_ORDER = {
-  interview: [
-    'Prep pack',
-    'Final sheet',
-    'Practical',
-    'Verified facts',
-    'Travel',
-  ],
-  aml: [
-    'Study notes',
-    'Session 1',
-    'Session 2',
-    'Session 3',
-    'Session 4',
-    'Session 5',
-    'Weekly maps',
-    'Video lectures',
-    'Project',
-    'Project figures',
-    'Supplementary reading',
-    'Python support',
-    'Python bootcamp exercises',
-  ],
-  'time-series': [
-    'Study packs',
-    'Quick reference',
-    'Past papers',
-    'Exam-like exercises',
-    'Exam-like solutions',
-    'Lecture notes',
-    'Lecture notes with gaps',
-    'Video walkthroughs',
-    'Visual maps',
-  ],
-  'team-project': [
-    'Module admin',
-    'Assessment',
-    'Session 1',
-    'Session 2',
-    'Transcripts',
-    'Practice',
-  ],
-  mat700: [
-    'Formula sheets',
-    'Lecture slides',
-    'Lecture notes',
-    'Question banks',
-    'Past papers',
-    'Tutorials',
-    'Images',
-    'Derivation notes',
-    'Transcripts',
-    'Module admin',
-  ],
-}
-
+// A module's resource groups show in the order its record gives (`resourceGroupOrder`), then by name.
 function groupRank(moduleId, group) {
-  const order = GROUP_ORDER[moduleId] ?? []
-  const index = order.indexOf(group)
+  const index = resourceGroupOrder(moduleId).indexOf(group)
   return index === -1 ? 999 : index
 }
 
@@ -852,7 +798,6 @@ export function ModuleWorkspace({
   cards,
   actions,
   referenceDate,
-  mat700Active,
   setActiveView,
   activeTab = 'overview',
   onTabChange,
@@ -941,7 +886,6 @@ export function ModuleWorkspace({
       ),
     [knowledge, module.id, referenceDate],
   )
-  const mat700Inactive = module.id === 'mat700' && !mat700Active
 
   // Print-card decks (Foundation/Formula/R Syntax) are PNGs among otherwise
   // PDF/HTML resources — worth their own browsable gallery, not just another
@@ -999,12 +943,6 @@ export function ModuleWorkspace({
         )}
       </section>
 
-      {mat700Inactive && (
-        <div className="insurance-status-banner">
-          <strong>MAT700 study lane is currently paused.</strong>
-          <span>Resources remain available, but planner metrics exclude MAT700 unless the MAT700 active toggle is on.</span>
-        </div>
-      )}
 
       {moduleBehind.length > 0 && (
         <section className="module-behind" aria-label="Overdue tasks in this module">

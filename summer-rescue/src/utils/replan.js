@@ -1,16 +1,19 @@
-// Capacity-aware re-planning. The plan was built for 70+ days; with ~33 left and
-// nothing done it is far over capacity, so this computes — honestly, from the live
-// card data — how much has to compress to fit the days remaining at a chosen daily
-// load, module by module. Pure and testable: no state, no fabrication.
+// Capacity-aware re-planning. When a plan has more work than days left before the
+// exams, this computes — honestly, from the live card data — how much has to
+// compress to fit the days remaining at a chosen daily load, module by module.
+// Pure and testable: no state, no fabrication. The exam modules, the readiness
+// date and the project deadline are the semester's (semesterProfile.js).
 
 import { addDays, isTrackableCard } from './progress.js'
+import { EXAM_GROUPS, PROJECT_DEADLINE, READINESS_DATE } from '../data/semesterProfile.js'
+
+export { EXAM_GROUPS, PROJECT_DEADLINE, READINESS_DATE }
 
 const PRIORITY_RANK = { Critical: 0, High: 1, Medium: 2, Low: 3 }
 const PHASE_RANK = { 'Phase 0': 0, 'Phase 1': 1, 'Phase 2': 2 }
-
-export const READINESS_DATE = '2026-08-16'
-export const PROJECT_DEADLINE = '2026-08-06'
-export const EXAM_GROUPS = ['Applied ML', 'Time Series', 'MAT700']
+// Without a readiness date, re-planning looks four weeks ahead.
+const DEFAULT_HORIZON_DAYS = 28
+const readinessFrom = (readiness, referenceDate) => readiness || addDays(referenceDate, DEFAULT_HORIZON_DAYS - 1)
 
 function hoursOf(list) {
   return Math.round(list.reduce((sum, card) => sum + Number(card.estimatedHours ?? card.hours ?? 0), 0) * 10) / 10
@@ -25,9 +28,9 @@ export function buildReplan(cards, options = {}) {
     referenceDate,
     dailyHours = 8,
     projectHours = 40,
-    readiness = READINESS_DATE,
     examGroups = EXAM_GROUPS,
   } = options
+  const readiness = readinessFrom(options.readiness ?? READINESS_DATE, referenceDate)
 
   const daysLeft = Math.max(1, daysBetween(referenceDate, readiness) + 1)
   const capacity = Math.round(daysLeft * dailyHours * 10) / 10
@@ -36,7 +39,7 @@ export function buildReplan(cards, options = {}) {
   const examCards = outstanding.filter((card) => examGroups.includes(card.moduleGroup))
   const examHours = hoursOf(examCards)
 
-  // The team project is deadline-locked (6 Aug); reserve the user's share off the top.
+  // A team project is deadline-locked; reserve its share off the top.
   const reservedProject = Math.max(0, projectHours)
   const studyCapacity = Math.max(0, Math.round((capacity - reservedProject) * 10) / 10)
   const ratio = examHours > 0 ? Math.min(1, studyCapacity / examHours) : 1
@@ -75,9 +78,9 @@ export function buildReplan(cards, options = {}) {
 }
 
 // Titles matching this are second-pass repeats of work another card already covers
-// (every AML session has both a lab run AND a "timed re-run"). In a compressed
-// 30-day rescue these are the first thing to trade away, so they are scheduled
-// after everything else and usually land in the stretch zone.
+// (a lab run and its "timed re-run"). In a compressed rescue these are the first
+// thing to trade away, so they are scheduled after everything else and usually
+// land in the stretch zone.
 const LOW_YIELD_RE = /timed re-run/i
 
 // Build a per-date study-hours lookup from the protected timetable. Only blocks
@@ -112,11 +115,11 @@ export function computeReplanSchedule(cards, options = {}) {
   const {
     referenceDate,
     dailyHours = 8,
-    readiness = READINESS_DATE,
     examGroups = EXAM_GROUPS,
     capacityForDate = null,
     trimLowYield = true,
   } = options
+  const readiness = readinessFrom(options.readiness ?? READINESS_DATE, referenceDate)
 
   const outstanding = cards.filter(
     (card) => isTrackableCard(card) && !card.done && examGroups.includes(card.moduleGroup),

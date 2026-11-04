@@ -114,7 +114,7 @@ function representativeState() {
         campaignEnd: '2026-08-16',
         examWindowStart: '2026-08-17',
         moduleExamDates: {},
-        mat700Active: true,
+        opt101Active: true,
         theme: 'light',
       },
       createdAt: '2026-07-16T00:00:00.000Z',

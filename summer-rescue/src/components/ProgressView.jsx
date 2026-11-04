@@ -15,18 +15,17 @@ import {
   buildPace,
 } from '../utils/history'
 import { formatDate, groupBy, isTrackableCard, sumHours } from '../utils/progress'
+import { SPLIT_TARGETS, groupAccent, groupLabel } from '../data/semesterProfile'
 
-const MODULE_COLORS = {
-  'Applied ML': '--chart-aml',
-  'Time Series': '--chart-ts',
-  MAT700: '--chart-mat700',
+// Lanes that are not a semester module keep a colour of their own; a module has its own accent.
+const LANE_COLORS = {
   'Group Project': '--chart-project',
   Admin: '--chart-admin',
   Health: '--chart-health',
 }
 
 function moduleColor(name) {
-  return MODULE_COLORS[name] ?? '--chart-1'
+  return LANE_COLORS[name] ?? groupAccent(name, '--chart-1')
 }
 
 const GRAINS = [
@@ -40,14 +39,10 @@ function rate(value) {
   return Number.isInteger(number) ? String(number) : number.toFixed(1)
 }
 
-function moduleTargets(mat700Active) {
-  return mat700Active
-    ? { 'Applied ML': 40, 'Time Series': 35, MAT700: 25 }
-    : { 'Applied ML': 52, 'Time Series': 48 }
-}
-
-function PrioritySplitGuardrail({ cards, mat700Active, onNavigateMeta }) {
-  const targets = moduleTargets(mat700Active)
+// The semester's split of study time between its modules (semesterProfile.js); shown only when it has one.
+function PrioritySplitGuardrail({ cards, onNavigateMeta }) {
+  const targets = SPLIT_TARGETS
+  if (!Object.keys(targets).length) return null
   const rows = Object.entries(targets).map(([module, target]) => {
     const moduleCards = cards.filter((card) => card.moduleGroup === module)
     return {
@@ -79,7 +74,7 @@ function PrioritySplitGuardrail({ cards, mat700Active, onNavigateMeta }) {
         </div>
         {drift && Math.abs(drift.diff) >= 8 && (
           <span className="status-pill amber">
-            {drift.module} {drift.diff > 0 ? '+' : ''}{drift.diff} pts
+            {groupLabel(drift.module)} {drift.diff > 0 ? '+' : ''}{drift.diff} pts
           </span>
         )}
       </div>
@@ -87,7 +82,7 @@ function PrioritySplitGuardrail({ cards, mat700Active, onNavigateMeta }) {
         {withShare.map((row) => (
           <button type="button" key={row.module} className="priority-split-row" onClick={() => onNavigateMeta?.('module', row.module)}>
             <div>
-              <strong>{row.module}</strong>
+              <strong>{groupLabel(row.module)}</strong>
               <span>Target {row.target}% / actual {row.share}%</span>
             </div>
             <div className="priority-bar" aria-hidden="true">
@@ -104,13 +99,9 @@ function PrioritySplitGuardrail({ cards, mat700Active, onNavigateMeta }) {
   )
 }
 
-export function ProgressView({ cards, snapshots, referenceDate, mat700Active, schedule, onNavigateMeta }) {
+export function ProgressView({ cards, snapshots, referenceDate, schedule, onNavigateMeta }) {
   const [grain, setGrain] = useState('day')
-
-  const scopedCards = useMemo(
-    () => (mat700Active ? cards : cards.filter((c) => c.moduleGroup !== 'MAT700')),
-    [cards, mat700Active],
-  )
+  const scopedCards = cards
 
   const pace = useMemo(() => buildPace(scopedCards, referenceDate, { schedule }), [scopedCards, referenceDate, schedule])
 
@@ -161,14 +152,14 @@ export function ProgressView({ cards, snapshots, referenceDate, mat700Active, sc
             {pace.delta} vs plan. Exam window {formatDate(schedule.examWindowStart)} ({pace.daysToExam} days away).
           </p>
         </div>
-        <DonutRing value={pace.done} total={pace.total} sublabel="done" color={pace.onTrack ? '--chart-ts' : '--chart-mat700'} />
+        <DonutRing value={pace.done} total={pace.total} sublabel="done" color={pace.onTrack ? '--chart-ts' : '--chart-rose'} />
         <div className="pace-actions">
           <button type="button" className="secondary-button" onClick={() => onNavigateMeta?.('status', 'Done')}>Completed history</button>
           <button type="button" className="secondary-button" onClick={() => onNavigateMeta?.('status', 'Backlog')}>Open backlog</button>
         </div>
       </section>
 
-      <PrioritySplitGuardrail cards={scopedCards} mat700Active={mat700Active} onNavigateMeta={onNavigateMeta} />
+      <PrioritySplitGuardrail cards={scopedCards} onNavigateMeta={onNavigateMeta} />
 
       <section className="workspace-section">
         <div className="section-heading with-toggle">

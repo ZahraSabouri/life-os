@@ -1,7 +1,7 @@
 // Local day keys.
 //
 // Every "which day is this?" decision in the app is a LOCAL day: the campaign
-// runs on Cardiff wall-clock time, not UTC. `toISOString().slice(0, 10)` yields
+// runs on local (London) wall-clock time, not UTC. `toISOString().slice(0, 10)` yields
 // the UTC day, which under BST (UTC+1) is still yesterday between midnight and
 // 01:00 local. A focus session finished at 00:30 after a late push would be
 // filed against the previous day, rolling the forest, the daily goal, and the

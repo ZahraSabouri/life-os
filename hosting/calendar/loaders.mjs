@@ -1,7 +1,6 @@
 import http from 'node:http'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
-import { pathToFileURL } from 'node:url'
 
 export function parseEventsCsv(csv) {
   const rows = [], row = []
@@ -55,15 +54,14 @@ export function getLocalJson(port, pathname, { timeoutMs = 2000, maxBytes = 16 *
   })
 }
 
-export function createCalendarLoaders({ projectRoot, summerRoot = path.join(projectRoot, 'summer-rescue-plan-app'), cardiffRoot = path.join(projectRoot, 'cardiff-life'), getBudgetPort, getJobMapPort, loadEntries, loadPeople, loadStudy, timeoutMs = 2000 }) {
+export function createCalendarLoaders({ projectRoot, cardiffRoot = path.join(projectRoot, 'cardiff-life'), getBudgetPort, getJobMapPort, loadEntries, loadPeople, loadStudy, timeoutMs = 2000 }) {
   return {
     loadEntries, loadPeople,
     loadStudy: async range => {
       if (typeof loadStudy !== 'function') throw new Error('Study source is unavailable')
+      // Study is read from the Life OS database (the semester's own plan); there is nothing else to fall back on.
       const state = await loadStudy(range)
-      if (state?.nativeWorkspace) return state
-      const plan = await import(pathToFileURL(path.join(summerRoot, 'src/data/baseCards.js')).href)
-      return state ? { state, baseCards: plan.baseCards } : null
+      return state?.nativeWorkspace ? state : null
     },
     loadCareer: () => getLocalJson(getJobMapPort?.(), '/api/jobs', { timeoutMs }),
     loadBudget: () => getLocalJson(getBudgetPort?.(), '/api/state', { timeoutMs }),

@@ -9,7 +9,6 @@ function noticesFor(card) {
     referenceDate: '2026-07-17',
     examCountdown: null,
     unsavedSinceBackup: false,
-    mat700Active: true,
     campaignStart: '2026-07-16',
     createdAt: '2026-07-16T00:00:00.000Z',
   })
