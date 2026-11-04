@@ -30,7 +30,7 @@ Life OS's functionality is generic code; everything that is Xar's (her records, 
 - [x] Every path, port, key and personal choice from config with a committed `.example`: no code names her, her machine or her folders. Done: `code/life-os/backend/src/paths.js` (data and backup folders, port, address from the environment, beside the app by default), `code/life-os/backend/.env.example` (every setting), `code/life-os/backend/postgres.example.json`; the scan finds no home folder left in code. Kept for later: Europe/London as the time zone everywhere (AGENTS rule; a setting when accounts come).
 
 ### CP3: the core into PostgreSQL
-- [ ] `core` schema with an owner column; a move with backup, counts and spot-checks; every reader and route on PostgreSQL; the SQLite file untouched.
+- [x] `core` schema with an owner column; a move with backup, counts and spot-checks; every reader and route on PostgreSQL; the SQLite file untouched. *(4 November: `migrations/core/0001_core.sql`, `scripts/move-core-to-postgres.mjs`; 226 rows in 12 tables compared value by value; the running app's answers compared with the old code's before the switch, row order included. Added within scope: `entries.seq` keeps the old order of entries made at the same moment, and `core.day_of()` keeps SQLite's day rule.)*
 
 ### CP4: content out of code
 - [ ] The Study hub's courses, cards and plans as data, with an example set; "Cardiff Life" as Events with a city setting; the Guide, labels and samples anyone's.

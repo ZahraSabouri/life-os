@@ -4,13 +4,13 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import entriesRouter from '../code/life-os/backend/src/routes/entries.js'
 import peopleRouter from '../code/life-os/backend/src/routes/people.js'
-import settingsRouter from '../code/life-os/backend/src/routes/settings.js'
+import settingsRouter, { readSetting, writeSetting } from '../code/life-os/backend/src/routes/settings.js'
 import filesRouter from '../code/life-os/backend/src/routes/files.js'
 import { createLocalTrackerApi } from '../summer-rescue/src/server/localTrackerApi.js'
 import { BUDGET_PATH, budgetProxy } from './budget.mjs'
 import { budgetBrowserRoutes } from './budget-browser-data.mjs'
 import { JOBMAP_PATH, jobMapProxy } from './jobmap.mjs'
-import db from '../code/life-os/backend/src/db.js'
+import db, { ENTRY_COLUMNS, PERSON_COLUMNS } from '../code/life-os/backend/src/db.js'
 import { createCalendarService } from './calendar/service.mjs'
 import { createCalendarLoaders } from './calendar/loaders.mjs'
 import { createCalendarRouter } from './calendar-route.mjs'
@@ -106,8 +106,8 @@ export function createLifeOsApp(options = {}) {
   app.use(SUMMER_PATH.slice(0, -1), express.static(summerDist, { fallthrough: false }))
   // Events she adds to Cardiff Life herself: one setting in the core holds the list.
   const ownEvents = options.ownEvents ?? createOwnEvents({
-    read: () => { try { return JSON.parse(db.prepare("SELECT value FROM settings WHERE key = 'cardiff-own-events'").get()?.value ?? '[]') } catch { return [] } },
-    write: (list) => db.prepare("INSERT INTO settings (key, value, updated_at) VALUES ('cardiff-own-events', ?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at").run(JSON.stringify(list), new Date().toISOString()),
+    read: () => readSetting('cardiff-own-events', []),
+    write: (list) => writeSetting('cardiff-own-events', list),
   })
   app.use(`${CARDIFF_PATH}api/own-events`, createOwnEventsRouter({ express, events: ownEvents }))
   // "Retake the pictures" on the Guide page.
@@ -199,8 +199,8 @@ export function createLifeOsApp(options = {}) {
     // The range filter happens in the provider so it can include spanning
     // events, type-specific deadlines and annual dates without the old cap.
     // With the days of her repeating plans in the stretch that is asked for.
-    loadEntries: (range) => withRoutines(db.prepare('SELECT * FROM entries').all(), range?.from, range?.to),
-    loadPeople: () => db.prepare('SELECT * FROM people').all(),
+    loadEntries: async (range) => withRoutines(await db.prepare(`SELECT ${ENTRY_COLUMNS} FROM entries ORDER BY seq`).all(), range?.from, range?.to),
+    loadPeople: () => db.prepare(`SELECT ${PERSON_COLUMNS} FROM people`).all(),
     loadStudy: together(async () => {
       const nativeWorkspace = await loadWorkspace()
       // Each open semester's Study hub plan, for its study blocks. A plan that cannot be read
@@ -215,7 +215,9 @@ export function createLifeOsApp(options = {}) {
   calendarLoaders.loadCareer = together(calendarLoaders.loadCareer)
   // The researched events, and with them the ones she added herself.
   const researchedEvents = calendarLoaders.loadEvents
-  calendarLoaders.loadEvents = async () => [...await researchedEvents(), ...ownEvents.list()]
+  // If her own list cannot be read, the researched events still show (a save then fails rather
+  // than writing over the list, since read() throws instead of answering empty).
+  calendarLoaders.loadEvents = async () => [...await researchedEvents(), ...await ownEvents.list().catch(() => [])]
   calendarLoaders.loadBudget = together(calendarLoaders.loadBudget)
   // A part gets eight seconds before the calendar says it could not be read (it was two and a half).
   // What she owes with a day, from the mail part.
@@ -238,7 +240,7 @@ export function createLifeOsApp(options = {}) {
     loadPlans: async (semesterId) => (study.hub ? study.hub.plan(semesterId) : {}),
     loadCareer: calendarLoaders.loadCareer,
     loadBudget: calendarLoaders.loadBudget,
-    loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('note', 'time-block', 'task', 'repeat')").all(),
+    loadEntries: () => db.prepare(`SELECT ${ENTRY_COLUMNS} FROM entries WHERE type IN ('note', 'time-block', 'task', 'repeat') ORDER BY seq`).all(),
     ...options.dayLoaders,
   })
   app.use('/api/day', createDayRouter({ express, service: dayService }))
@@ -247,7 +249,7 @@ export function createLifeOsApp(options = {}) {
   // Notices for the whole app: what is on now, starts soon, is asked of today, has slipped, is close ahead. Read only.
   const noticesService = options.notices ?? createNoticesService({
     dayOf: dayService, calendarOf: calendarService,
-    loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('task', 'time-block')").all(),
+    loadEntries: () => db.prepare(`SELECT ${ENTRY_COLUMNS} FROM entries WHERE type IN ('task', 'time-block') ORDER BY seq`).all(),
     loadBudget: calendarLoaders.loadBudget, budgetFigures,
     loadMail: mail ? () => mail.reads.forNotices() : undefined,
   })
@@ -258,7 +260,7 @@ export function createLifeOsApp(options = {}) {
   let browserSeenAt = Date.now()
   const notifier = options.desktopNotices ? createDesktopNotifier({
     load: noticesService, show: options.showToast ?? windowsToast(), origin: options.origin ?? lifeOsOrigin(), browserSeenAt: () => browserSeenAt,
-    prefs: () => { try { return JSON.parse(db.prepare("SELECT value FROM settings WHERE key = 'notices'").get()?.value ?? '{}') ?? {} } catch { return {} } },
+    prefs: () => readSetting('notices', {}).catch(() => ({})),
   }) : null
   app.locals.desktopNotifier = notifier
   // A gathered batch that brings urgent things says so once, through Windows.
@@ -272,7 +274,7 @@ export function createLifeOsApp(options = {}) {
     loadEvents: async (semesterId) => (study.hub ? study.hub.recentEvents(semesterId, 1000) : []),
     loadCareer: calendarLoaders.loadCareer,
     loadBudget: calendarLoaders.loadBudget,
-    loadEntries: () => db.prepare("SELECT * FROM entries WHERE type IN ('note', 'task', 'event', 'time-block', 'repeat')").all(),
+    loadEntries: () => db.prepare(`SELECT ${ENTRY_COLUMNS} FROM entries WHERE type IN ('note', 'task', 'event', 'time-block', 'repeat') ORDER BY seq`).all(),
     budgetFigures,
     ...options.reviewLoaders,
   }

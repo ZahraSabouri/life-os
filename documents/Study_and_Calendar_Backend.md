@@ -10,7 +10,7 @@
 | Study files (PDFs, notebooks, uploads) | `../Life_OS_data/study/materials/` | Outside git. Files are only ever added, never overwritten. |
 | Backups | `../Life_OS_backups/study-YYYY-MM-DD/` | Database dumps and file snapshots. Nothing prunes them. |
 | Folder connections | `.runtime/study-folders.json` | Which module watches which folder. Outside git. |
-| Core entries and people | SQLite `code/life-os/backend/data/life-os.db` | Still SQLite until the core moves (Stage 1a). |
+| Core entries and people | PostgreSQL, database `lifeos`, schema `core` | Moved from SQLite `code/life-os/backend/data/life-os.db` on 4 November 2026 (stage 7 CP3); the old file is kept untouched. |
 | Calendar | no storage of its own | Read fresh from seven sources on every request. |
 
 ## 2. Study: the tables
@@ -92,8 +92,8 @@ Returns `items`, `sources` and `knownEventIds`.
 
 | Source | Area | Read from | Gives |
 |---|---|---|---|
-| core | Life OS | SQLite entries | dated entries that are not finished |
-| people | Relationships | SQLite people | birthdays, each year |
+| core | Life OS | `core.entries` | dated entries that are not finished |
+| people | Relationships | `core.people` | birthdays, each year |
 | study | Study | native Study (PostgreSQL) | card starts and deadlines, assessments, timetable |
 | career | Career | JobMap, `GET /api/jobs` | application deadlines, explicit follow-ups |
 | money | Money | Budget, `GET /api/state` | subscription renewals, budget month starts |
@@ -108,4 +108,4 @@ Each source has 2.5 seconds. One that fails or returns something unexpected is m
 - Each Study page refresh loads the whole workspace (about 1.5 MB now). Fine locally; worth splitting when the phone uses it.
 - History keeps a full copy before and after each save, so it grows with use. Nothing trims it.
 - Backups stay on this laptop. A second copy elsewhere is still to set up.
-- Core entries and people are still in SQLite.
+- Core entries and people moved to PostgreSQL (schema `core`) on 4 November 2026.

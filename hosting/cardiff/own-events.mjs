@@ -39,24 +39,33 @@ export function cleanOwnEvent(input, id) {
 
 const listOf = (value) => (Array.isArray(value) ? value.filter((row) => row && typeof row.event_id === 'string' && typeof row.name === 'string') : [])
 
-// `read()` gives the kept list, `write(list)` keeps it.
+// `read()` gives the kept list, `write(list)` keeps it (either may answer with a promise).
+// Changes are made one after another, so two saves at once cannot drop one of them.
 export function createOwnEvents({ read, write }) {
-  const all = () => listOf(read())
+  const all = async () => listOf(await read())
+  let queue = Promise.resolve()
+  const inTurn = (work) => { const turn = queue.then(work); queue = turn.catch(() => {}); return turn }
   return {
     list: all,
-    add(input) { const event = cleanOwnEvent(input); if (all().length >= 2000) throw new OwnEventError(413, 'That is more events than can be kept'); write([...all(), event]); return event },
-    change(id, input) {
-      const list = all()
+    add: (input) => inTurn(async () => {
+      const event = cleanOwnEvent(input)
+      const list = await all()
+      if (list.length >= 2000) throw new OwnEventError(413, 'That is more events than can be kept')
+      await write([...list, event])
+      return event
+    }),
+    change: (id, input) => inTurn(async () => {
+      const list = await all()
       if (!list.some((row) => row.event_id === id)) throw new OwnEventError(404, 'That event is no longer here')
       const event = cleanOwnEvent(input, id)
-      write(list.map((row) => (row.event_id === id ? event : row)))
+      await write(list.map((row) => (row.event_id === id ? event : row)))
       return event
-    },
-    remove(id) {
-      const list = all()
+    }),
+    remove: (id) => inTurn(async () => {
+      const list = await all()
       if (!list.some((row) => row.event_id === id)) throw new OwnEventError(404, 'That event is no longer here')
-      write(list.filter((row) => row.event_id !== id))
-    },
+      await write(list.filter((row) => row.event_id !== id))
+    }),
   }
 }
 
@@ -76,16 +85,16 @@ export function createOwnEventsRouter({ express, events }) {
     next()
   })
   router.use(express.json({ limit: '200kb' }))
-  const handle = (work) => (req, res) => {
-    try { res.json({ ok: true, ...work(req) }) } catch (error) {
+  const handle = (work) => async (req, res) => {
+    try { res.json({ ok: true, ...await work(req) }) } catch (error) {
       const status = error instanceof OwnEventError ? error.status : 500
       if (status === 500) console.error('Cardiff Life:', error.message)
       res.status(status).json({ ok: false, error: status === 500 ? 'That could not be saved. Try again.' : error.message })
     }
   }
-  router.get('/', handle(() => ({ events: events.list() })))
-  router.post('/', handle((req) => ({ event: events.add(req.body) })))
-  router.patch('/:id', handle((req) => ({ event: events.change(req.params.id, req.body) })))
-  router.delete('/:id', handle((req) => { events.remove(req.params.id); return {} }))
+  router.get('/', handle(async () => ({ events: await events.list() })))
+  router.post('/', handle(async (req) => ({ event: await events.add(req.body) })))
+  router.patch('/:id', handle(async (req) => ({ event: await events.change(req.params.id, req.body) })))
+  router.delete('/:id', handle(async (req) => { await events.remove(req.params.id); return {} }))
   return router
 }

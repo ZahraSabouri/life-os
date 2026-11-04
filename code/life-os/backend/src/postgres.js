@@ -11,11 +11,13 @@ export function postgresConfig(projectRoot) {
   return config
 }
 
-export function createPostgresPool(config, { role = 'app', database = config.database } = {}) {
+// searchPath: the schemas unqualified names are looked up in (the core's tables are in schema core).
+export function createPostgresPool(config, { role = 'app', database = config.database, searchPath = '' } = {}) {
   if (!['lifeos', 'lifeos_test'].includes(database)) throw new Error('Unknown Life OS database')
   const account = config[role]
   if (!account?.user || !account.password) throw new Error('PostgreSQL role is not configured')
-  return new pg.Pool({ host: config.host, port: config.port, database, ...account, max: 4, connectionTimeoutMillis: 2500, idleTimeoutMillis: 10000 })
+  if (searchPath && !/^[a-z_][a-z0-9_]*(,\s*[a-z_][a-z0-9_]*)*$/.test(searchPath)) throw new Error('A search path is schema names')
+  return new pg.Pool({ host: config.host, port: config.port, database, ...account, ...(searchPath ? { options: `-c search_path=${searchPath.replace(/\s/g, '')}` } : {}), max: 4, connectionTimeoutMillis: 2500, idleTimeoutMillis: 10000 })
 }
 
 // area names the backup folder (study-<day>, mail-<day>).

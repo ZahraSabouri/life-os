@@ -38,13 +38,11 @@ if (database === 'lifeos') {
     process.exit(1)
   }
 }
-// People are only read, through SQLite, read-only (the server owns the core database).
+// People are only read (from the core's schema; nothing here writes to it).
 let people = []
 if (database === 'lifeos') {
-  const { DatabaseSync } = await import('node:sqlite')
-  const core = new DatabaseSync(path.join(projectRoot, 'code/life-os/backend/data/life-os.db'), { readOnly: true })
-  people = core.prepare('SELECT id, name, contact FROM people').all()
-  core.close()
+  const core = createPostgresPool(postgresConfig(projectRoot), { database, searchPath: 'core' })
+  try { people = (await core.query('SELECT id, name, contact FROM people')).rows } finally { await core.end() }
 }
 const mail = createMailRuntime(projectRoot, { database, findPeople: () => people, background: false, enabled: () => true })
 try {

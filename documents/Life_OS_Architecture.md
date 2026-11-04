@@ -55,6 +55,8 @@ What we deliberately don't use, and what would change that:
 
 **Schemas per area.** Each module gets its own PostgreSQL schema: `core`, `study`, `career`, `money`, `home`, `events`. A module owns its schema and reaches other areas only through the core (§4).
 
+**The core's schema (stage 7, 4 November 2026).** `core` (migration `core/0001_core.sql`) holds entries, tags, people, places, files, links, rooms (`spaces`), settings and person identities. Written reason for not following the conventions below yet: its tables mirror the old SQLite tables exactly (dates as ISO text, details as JSON text, flags as 0/1), so every page reads exactly what it read before the move. Two additions: `owner_id` on every owned table (one owner, `'owner'`, until accounts), and `entries.seq`, the order entries were added (SQLite's row number, carried over), which orders entries that tie on a date. `core.day_of(text)` gives a stored date's UTC day as SQLite's `date()` did. Typed columns (`timestamptz`, `jsonb`, `revision`, `deleted_at`) come as their own migration. The server keeps SQLite's calling shape (`db.prepare(sql).all/get/run`, now returning promises; `db.transaction(work)`), in `backend/src/db.js`.
+
 **Conventions** (for every table unless there's a written reason):
 - Names in `snake_case`; table names plural.
 - **IDs:** UUIDs (time-ordered `uuidv7()` if the installed version has it, otherwise `gen_random_uuid()`). Imported rows also keep their source's ID.
@@ -147,7 +149,7 @@ Built in from Stage 1, because it's cheap now and painful to add later:
 - **Counts at each move.** When an attached app's data moves into its native module: record counts before and after, spot-check a few records, and keep the source untouched until Xar accepts. Full hash manifests and automated verification reports are left for the late stages.
 - **Git.** Commit before every agent session, keep each session's work in its own commits, and never overwrite uncommitted work.
 
-**SQLite lessons, kept.** The July disk I/O error with WAL most likely came through the shared-folder link that Cowork agents use, where WAL's shared-memory file doesn't work. WAL also means that copying only the `.db` file can miss recent saves. Any SQLite file that remains (the core's old database until it moves, Summer Rescue's mirror) is read through SQLite itself, never copied as a bare file, and never opened by two programs across that shared-folder link.
+**SQLite lessons, kept.** The July disk I/O error with WAL most likely came through the shared-folder link that Cowork agents use, where WAL's shared-memory file doesn't work. WAL also means that copying only the `.db` file can miss recent saves. Any SQLite file that remains (the core's old database, kept untouched since its move to PostgreSQL on 4 November 2026 until Xar accepts it; Summer Rescue's mirror) is read through SQLite itself, never copied as a bare file, and never opened by two programs across that shared-folder link.
 
 ## 11. Owning the data
 

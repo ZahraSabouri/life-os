@@ -1,7 +1,7 @@
 // The people in her life: a name, and whatever she knows of them (a birthday, how she knows
 // them, how to reach them, notes). A birthday shows on the calendar every year. A person is a
-// record of hers; `person_identities` (migrations.sql) is where a person could later be tied to
-// a real account, and nothing writes to it yet.
+// record of hers; `person_identities` (migrations/core) is where a person could later be tied
+// to a real account, and nothing writes to it yet.
 import { randomUUID } from 'node:crypto'
 import { Router } from 'express'
 import db from '../db.js'
@@ -28,42 +28,46 @@ function clean(body, existing = {}) {
     notes: 'notes' in source ? text(source.notes, 8000) : existing.notes ?? null,
   }
 }
-const one = db.prepare('SELECT * FROM people WHERE id = ?')
+// The columns the pages are given (owner_id stays in the database, for accounts later).
+const COLUMNS = 'id, name, birthday, notes, relation, contact'
+const one = (id) => db.prepare(`SELECT ${COLUMNS} FROM people WHERE id = ?`).get(id)
 
-router.get('/', (_req, res) => {
-  res.json(db.prepare('SELECT * FROM people ORDER BY name COLLATE NOCASE ASC').all())
+router.get('/', async (_req, res) => {
+  try { res.json(await db.prepare(`SELECT ${COLUMNS} FROM people ORDER BY lower(name) ASC, name ASC`).all()) } catch (error) { res.status(500).json({ error: error.message }) }
 })
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const person = clean(req.body)
     const id = randomUUID()
-    db.prepare('INSERT INTO people (id, name, birthday, notes, relation, contact) VALUES (?, ?, ?, ?, ?, ?)').run(id, person.name, person.birthday, person.notes, person.relation, person.contact)
-    res.status(201).json(one.get(id))
+    await db.prepare('INSERT INTO people (id, name, birthday, notes, relation, contact) VALUES (?, ?, ?, ?, ?, ?)').run(id, person.name, person.birthday, person.notes, person.relation, person.contact)
+    res.status(201).json(await one(id))
   } catch (error) { res.status(400).json({ error: error.message }) }
 })
 
-router.patch('/:id', (req, res) => {
+router.patch('/:id', async (req, res) => {
   try {
-    const existing = one.get(req.params.id)
+    const existing = await one(req.params.id)
     if (!existing) return res.status(404).json({ error: 'not found' })
     const person = clean(req.body, existing)
-    db.prepare('UPDATE people SET name = ?, birthday = ?, notes = ?, relation = ?, contact = ? WHERE id = ?').run(person.name, person.birthday, person.notes, person.relation, person.contact, req.params.id)
-    res.json(one.get(req.params.id))
+    await db.prepare('UPDATE people SET name = ?, birthday = ?, notes = ?, relation = ?, contact = ? WHERE id = ?').run(person.name, person.birthday, person.notes, person.relation, person.contact, req.params.id)
+    res.json(await one(req.params.id))
   } catch (error) { res.status(400).json({ error: error.message }) }
 })
 
 // Removes the person and what exists only because of them (their ties to entries). The entries stay.
-router.delete('/:id', (req, res) => {
-  if (!one.get(req.params.id)) return res.status(404).json({ error: 'not found' })
-  db.exec('BEGIN')
+router.delete('/:id', async (req, res) => {
   try {
-    db.prepare('DELETE FROM entry_people WHERE person_id = ?').run(req.params.id)
-    db.prepare('DELETE FROM person_identities WHERE person_id = ?').run(req.params.id)
-    db.prepare('DELETE FROM people WHERE id = ?').run(req.params.id)
-    db.exec('COMMIT')
+    const found = await db.transaction(async (tx) => {
+      if (!await tx.prepare('SELECT 1 FROM people WHERE id = ? FOR UPDATE').get(req.params.id)) return false
+      await tx.prepare('DELETE FROM entry_people WHERE person_id = ?').run(req.params.id)
+      await tx.prepare('DELETE FROM person_identities WHERE person_id = ?').run(req.params.id)
+      await tx.prepare('DELETE FROM people WHERE id = ?').run(req.params.id)
+      return true
+    })
+    if (!found) return res.status(404).json({ error: 'not found' })
     res.json({ ok: true })
-  } catch (error) { db.exec('ROLLBACK'); res.status(500).json({ error: error.message }) }
+  } catch (error) { res.status(500).json({ error: error.message }) }
 })
 
 export default router

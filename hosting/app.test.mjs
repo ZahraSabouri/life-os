@@ -6,6 +6,8 @@ import { after, test } from 'node:test'
 import { createLifeOsApp } from './app.mjs'
 import db from '../code/life-os/backend/src/db.js'
 
+// The core's routes answer from the test database, never her own.
+process.env.LIFE_OS_CORE_DATABASE = 'lifeos_test'
 after(() => db.close())
 
 async function fixture(fn) {

@@ -56,11 +56,14 @@ globalThis.__resetCoreTestDb = {
     if (sql.includes('UPDATE entries')) return { run(...args) { updates++; const [title, status, start_at, end_at, all_day, favorite, details, updated_at] = args; entry = { ...entry, title, status, start_at, end_at, all_day, favorite, details, updated_at } } }
     return { run() { throw Error('Unexpected write in fixture') } }
   },
+  // The route reads and writes inside one transaction; the fixture runs the work as it is.
+  async transaction(work) { return work(this) },
 }
 source = fs.readFileSync(path.join(sourceRoot, 'code/life-os/backend/src/routes/entries.js'), 'utf8')
 source = source.replace("from 'express'", `from ${JSON.stringify(uri('code/life-os/backend/node_modules/express/index.js'))}`)
 source = source.replace("import db from '../db.js'", 'const db = globalThis.__resetCoreTestDb')
-source = source.replace("import { picturesOf, removePictureFile } from './files.js'", 'const picturesOf = () => new Map(); const removePictureFile = () => {}')
+assert.ok(source.includes('const db = globalThis.__resetCoreTestDb'), 'The entries route still imports its database as db')
+source = source.replace("import { picturesOf, removePictureFile } from './files.js'", 'const picturesOf = async () => new Map(); const removePictureFile = () => {}')
 source = source.replace("'../../../shared/entryTypes.js'", JSON.stringify(uri('code/life-os/shared/entryTypes.js')))
 source = source.replace("import { buildEntriesQuery } from '../query.js'", 'const buildEntriesQuery = () => ({})')
 const coreRouter = (await mod(source)).default

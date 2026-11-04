@@ -7,7 +7,7 @@ import { buildEntriesQuery } from '../query.js'
 
 const router = Router()
 
-const insertEntry = db.prepare(`
+const INSERT_ENTRY = `
   INSERT INTO entries (
     id,
     type,
@@ -23,14 +23,9 @@ const insertEntry = db.prepare(`
     updated_at
   )
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`)
-
-const selectEntryById = db.prepare(`
-  SELECT * FROM entries
-  WHERE id = ?
-`)
-
-const updateEntry = db.prepare(`
+`
+const SELECT_ENTRY = 'SELECT * FROM entries WHERE id = ?'
+const UPDATE_ENTRY = `
   UPDATE entries
      SET title = ?,
          status = ?,
@@ -41,7 +36,7 @@ const updateEntry = db.prepare(`
          details = ?,
          updated_at = ?
    WHERE id = ?
-`)
+`
 
 function parseDetails(value) {
   if (!value) return {}
@@ -71,7 +66,9 @@ function cleanOptionalDate(value, fieldName) {
   return value.trim()
 }
 
-function serializeEntry(row, pictures = picturesOf([row.id])) {
+// owner_id (for accounts later) and seq (the order entries were added) stay in the database;
+// the pages are given the entry as before.
+function serializeEntry({ owner_id: _owner, seq: _seq, ...row }, pictures) {
   return {
     ...row,
     all_day: Boolean(row.all_day),
@@ -81,7 +78,10 @@ function serializeEntry(row, pictures = picturesOf([row.id])) {
   }
 }
 // A list is given its pictures with one question to the database, not one for each entry.
-const serializeEntries = (rows) => { const pictures = picturesOf(rows.length <= 400 ? rows.map((row) => row.id) : null); return rows.map((row) => serializeEntry(row, pictures)) }
+const serializeEntries = async (rows) => { const pictures = await picturesOf(rows.length <= 400 ? rows.map((row) => row.id) : null); return rows.map((row) => serializeEntry(row, pictures)) }
+const serializeOne = async (row) => serializeEntry(row, await picturesOf([row.id]))
+// Ends a request early with this status (inside a transaction, which it rolls back).
+class Answer extends Error { constructor(status, message) { super(message); this.status = status } }
 
 function cleanDetailsForType(type, details) {
   const result = validateDetails(type, details ?? {})
@@ -97,7 +97,7 @@ function cleanDetailsForType(type, details) {
   return result.value
 }
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const {
       type = 'note',
@@ -131,7 +131,7 @@ router.post('/', (req, res) => {
     const cleanDetails = cleanDetailsForType(cleanType, details)
     if (cleanType === 'workout') validateWorkoutCompletion(cleanDetails, cleanStatus)
 
-    insertEntry.run(
+    await db.prepare(INSERT_ENTRY).run(
       id,
       cleanType,
       cleanArchetype,
@@ -165,7 +165,7 @@ router.post('/', (req, res) => {
   }
 })
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const requestedLimit = Number(req.query.limit)
     const limit = Number.isFinite(requestedLimit)
@@ -185,38 +185,42 @@ router.get('/', (req, res) => {
         end: cleanOptionalDate(req.query.end, 'end'),
         limit: Math.max(limit, 100)
       })
-      const rows = db.prepare(query.sql).all(...query.params)
-      return res.json(serializeEntries(rows))
+      const rows = await db.prepare(query.sql).all(...query.params)
+      return res.json(await serializeEntries(rows))
     }
 
-    const rows = db.prepare('SELECT * FROM entries ORDER BY created_at DESC LIMIT ?').all(limit)
+    const rows = await db.prepare('SELECT * FROM entries ORDER BY created_at DESC, seq ASC LIMIT ?').all(limit)
 
-    res.json(serializeEntries(rows))
+    res.json(await serializeEntries(rows))
   } catch (error) {
     res.status(400).json({ error: error.message })
   }
 })
 
 // One entry by its id, for changing it from the page that shows it.
-router.get('/:id', (req, res) => {
-  const existing = selectEntryById.get(req.params.id)
-  if (!existing) return res.status(404).json({ error: 'not found' })
-  res.json(serializeEntry(existing))
+router.get('/:id', async (req, res) => {
+  try {
+    const existing = await db.prepare(SELECT_ENTRY).get(req.params.id)
+    if (!existing) return res.status(404).json({ error: 'not found' })
+    res.json(await serializeOne(existing))
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
 })
 
-router.patch('/:id', (req, res) => {
+router.patch('/:id', async (req, res) => {
   try {
-    const existing = selectEntryById.get(req.params.id)
+    // The read holds the row (FOR UPDATE) until the change is written, so no other save
+    // can come between them.
+    const saved = await db.transaction(async (tx) => {
+    const existing = await tx.prepare(`${SELECT_ENTRY} FOR UPDATE`).get(req.params.id)
 
-    if (!existing) {
-      return res.status(404).json({ error: 'not found' })
-    }
+    if (!existing) throw new Answer(404, 'not found')
 
-    // A caller can guard its patch with the updated_at value it read. SQLite's
-    // read and update below are synchronous, so no request can interleave them.
+    // A caller can guard its patch with the updated_at value it read.
     if (req.headers['if-match'] !== undefined) {
       const expected = String(req.headers['if-match']).trim().replace(/^W\//, '').replace(/^"|"$/g, '')
-      if (expected !== existing.updated_at) return res.status(409).json({ error: 'Entry changed. Load it again before saving.' })
+      if (expected !== existing.updated_at) throw new Answer(409, 'Entry changed. Load it again before saving.')
     }
     const body = req.body ?? {}
     const title = 'title' in body
@@ -243,35 +247,34 @@ router.patch('/:id', (req, res) => {
     const now = new Date().toISOString()
 
     if (existing.type === 'workout') validateWorkoutCompletion(JSON.parse(details), status)
-    updateEntry.run(title, status, startAt, endAt, allDay, favorite, details, now, req.params.id)
-
-    res.json(serializeEntry(selectEntryById.get(req.params.id)))
+    await tx.prepare(UPDATE_ENTRY).run(title, status, startAt, endAt, allDay, favorite, details, now, req.params.id)
+    return tx.prepare(SELECT_ENTRY).get(req.params.id)
+    })
+    res.json(await serializeOne(saved))
   } catch (error) {
-    res.status(400).json({ error: error.message })
+    res.status(error instanceof Answer ? error.status : 400).json({ error: error.message })
   }
 })
 
 // Removes an entry for good, with the ties that exist only because of it (its tags, people,
 // places and links). An entry with files is refused: the files would be left without an owner.
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    const existing = selectEntryById.get(req.params.id)
-    if (!existing) return res.status(404).json({ error: 'not found' })
-    // Its pictures go with it: the rows here, the files once the rows are gone.
-    const pictures = db.prepare('SELECT path FROM files WHERE entry_id = ?').all(req.params.id)
-    db.exec('BEGIN')
-    try {
-      for (const table of ['entry_tags', 'entry_people', 'entry_places']) db.prepare(`DELETE FROM ${table} WHERE entry_id = ?`).run(req.params.id)
-      db.prepare('DELETE FROM entry_links WHERE from_entry_id = ? OR to_entry_id = ?').run(req.params.id, req.params.id)
-      db.prepare('DELETE FROM files WHERE entry_id = ?').run(req.params.id)
-      db.prepare('DELETE FROM entries WHERE id = ?').run(req.params.id)
-      db.exec('COMMIT')
-      for (const picture of pictures) removePictureFile(picture.path)
-    } catch (error) {
-      db.exec('ROLLBACK')
-      throw error
-    }
-    res.json({ ok: true, deleted: serializeEntry(existing) })
+    const gone = await db.transaction(async (tx) => {
+      const existing = await tx.prepare(`${SELECT_ENTRY} FOR UPDATE`).get(req.params.id)
+      if (!existing) return null
+      // Its pictures go with it: the rows here, the files once the rows are gone.
+      const pictures = await tx.prepare('SELECT id, path, mime_type, size, created_at FROM files WHERE entry_id = ? ORDER BY created_at').all(req.params.id)
+      for (const table of ['entry_tags', 'entry_people', 'entry_places']) await tx.prepare(`DELETE FROM ${table} WHERE entry_id = ?`).run(req.params.id)
+      await tx.prepare('DELETE FROM entry_links WHERE from_entry_id = ? OR to_entry_id = ?').run(req.params.id, req.params.id)
+      await tx.prepare('DELETE FROM files WHERE entry_id = ?').run(req.params.id)
+      await tx.prepare('DELETE FROM entries WHERE id = ?').run(req.params.id)
+      return { existing, pictures }
+    })
+    if (!gone) return res.status(404).json({ error: 'not found' })
+    for (const picture of gone.pictures) removePictureFile(picture.path)
+    const files = new Map([[gone.existing.id, gone.pictures.map(({ path: _path, ...picture }) => picture)]])
+    res.json({ ok: true, deleted: serializeEntry(gone.existing, files) })
   } catch (error) {
     res.status(400).json({ error: error.message })
   }

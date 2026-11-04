@@ -16,13 +16,14 @@ let jobmap = null
 function stop() {
   if (stopping) return
   stopping = true
+  if (!server) process.exit(0)
   server.close(async () => {
     app.locals.desktopNotifier?.stop()
     await budgetKeeper.stop()
     await jobmapKeeper.stop()
     await app.locals.studyRuntime?.close().catch(() => {})
     await app.locals.mailRuntime?.close().catch(() => {})
-    db.close()
+    await db.close().catch(() => {})
     process.exit(0)
   })
   server.closeIdleConnections()
@@ -44,6 +45,9 @@ const jobmapKeeper = keepUp({
   name: 'JobMap behind /apps/jobmap/', start: () => startJobMap({ root: path.join(projectRoot, 'jobmap') }),
   alive: (handle) => jobMapAnswers(handle.port), onChange: (value) => { jobmap = value },
 })
+// The rooms (shared/rooms.js) into the core's database. If PostgreSQL is not answering, the
+// pages that need it say so and the rest still opens.
+await db.init().catch((error) => console.error(`The core database did not answer: ${error.message}`))
 server = app.listen(port, '127.0.0.1', () => console.log(`Life OS ready at http://127.0.0.1:${port}/`))
 server.on('error', (error) => { console.error(error.message); process.exit(1) })
 process.on('SIGINT', stop)

@@ -52,7 +52,7 @@ Older documents (the Blueprint, the July architecture and Taxonomy, the Implemen
 - Moving an attached app's data into its native module: back up both sides, record counts before and after, spot-check records, and leave the source untouched until Xar accepts the new module.
 - Never delete Xar's data or the standalone app folders. Deleting is Xar's step.
 - PostgreSQL: schema changes only through numbered migrations; never touch the PostgreSQL data directory.
-- SQLite files that still exist (`code/life-os/backend/data/life-os.db` until it moves, Summer Rescue's `local-data/app.sqlite`): never force WAL mode; never copy a bare `.db` file (read it through SQLite so the WAL contents come along); never open them across the Cowork shared-folder link while the Windows app is running.
+- SQLite files that still exist (`code/life-os/backend/data/life-os.db`, which nothing reads since the core moved to PostgreSQL on 4 November and which stays untouched until Xar accepts the move; Summer Rescue's `local-data/app.sqlite`): never force WAL mode; never copy a bare `.db` file (read it through SQLite so the WAL contents come along); never open them across the Cowork shared-folder link while the Windows app is running.
 - Personal data stays out of git (see `.gitignore`).
 
 ## Code rules

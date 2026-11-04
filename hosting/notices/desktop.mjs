@@ -44,7 +44,7 @@ const LONDON_HOUR = new Intl.DateTimeFormat('en-GB', { timeZone: CALENDAR_TIME_Z
 export const BROWSER_OPEN_MS = 6 * 60_000   // a tab asks for the notices every five minutes
 export const SUMMARY_FROM_HOUR = 8
 
-// `load()` gives what the bell shows ({ today, notices, upcoming }); `prefs()` her choices;
+// `load()` gives what the bell shows ({ today, notices, upcoming }); `prefs()` her choices (or a promise of them);
 // `browserSeenAt()` when a tab last asked for the notices; `show(title, body, url)` shows one.
 export function createDesktopNotifier({ load, prefs = () => ({}), browserSeenAt = () => 0, show, origin = 'http://127.0.0.1:47850', now = () => new Date(), everyMs = 30_000, schedule = setInterval, unschedule = clearInterval, log = console } = {}) {
   let told = { day: '', ids: new Set() }
@@ -56,7 +56,7 @@ export function createDesktopNotifier({ load, prefs = () => ({}), browserSeenAt 
     return true
   }
   async function look() {
-    const chosen = { whenClosed: true, minutesBefore: 10, seen: {}, ...prefs() }
+    const chosen = { whenClosed: true, minutesBefore: 10, seen: {}, ...await prefs() }
     if (chosen.whenClosed === false) return 0
     const moment = now()
     if (moment.getTime() - browserSeenAt() < BROWSER_OPEN_MS) return 0
@@ -84,7 +84,7 @@ export function createDesktopNotifier({ load, prefs = () => ({}), browserSeenAt 
     tick,
     // One notice now (an applied mail batch with urgent things), unless she has turned them off.
     async tell(title, body, href = '/today') {
-      if ({ whenClosed: true, ...prefs() }.whenClosed === false) return false
+      if ({ whenClosed: true, ...await prefs() }.whenClosed === false) return false
       await show(title, body, `${origin}${href}`)
       return true
     },

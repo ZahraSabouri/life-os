@@ -32,7 +32,7 @@ Companion documents:
 The five stores remain separate during the transition. Stage 2 adds read-only calendar providers over them; their native replacements still follow the foundation work.
 
 **Known issues and loose ends**
-- The core SQLite database file is still in WAL mode (the setting is stored inside the file). Copy it only through SQLite, never by copying `life-os.db` alone, or recent saves can be missed. It retires in Stage 1a when the core moves to PostgreSQL.
+- The core SQLite database file is still in WAL mode (the setting is stored inside the file). Copy it only through SQLite, never by copying `life-os.db` alone, or recent saves can be missed. It retires in Stage 1a when the core moves to PostgreSQL. *(4 November: the core moved to PostgreSQL in stage 7 CP3; the file is kept, untouched, and nothing reads it.)*
 - The Court's room doors show made-up sample lines ("FIN301 - three revision blocks left this week", "Admiral / Data Analyst - applied Tuesday") when a room is empty. The Relationships door opens Cardiff Life, which is the wrong home for it.
 - No real save has been made through Life OS's Budget yet (the move deliberately didn't make one). Budget's last save was 26 September (revision 91) in both the old and the new copy, so nothing has split.
 - Summer Rescue's module pages, exam dates and materials are written into its code for the four summer modules; a new module can only be added as a label on cards.
@@ -76,7 +76,7 @@ Each stage is cut into sessions small enough to finish and verify. Every stage g
 - Change history: every write through the data layer records before and after.
 - Revision checks: a save based on an older copy is refused (409).
 - Core links (anything to anything) and organisations, because Career and Study need them.
-- Move the core's existing SQLite data (entries, people, spaces) into PostgreSQL. Read it through SQLite so the WAL contents come along; record counts before and after; keep the SQLite file archived, untouched.
+- Move the core's existing SQLite data (entries, people, spaces) into PostgreSQL. Read it through SQLite so the WAL contents come along; record counts before and after; keep the SQLite file archived, untouched. *(Done in stage 7 CP3, 4 November: `scripts/move-core-to-postgres.mjs`.)*
 - Backups: `pg_dump` before every migration and import, plus daily rolling copies; the files folder backed up too; one real restore into `lifeos_test`.
 - Choose the data folder location (files, inbox, backups, exports).
 

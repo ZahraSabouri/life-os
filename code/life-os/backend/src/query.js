@@ -71,21 +71,22 @@ export function buildEntriesQuery(filter = {}, options = {}) {
     params.push(...tags)
   }
 
+  // day_of (migrations/core) is the UTC day of a stored date, as SQLite's date() gave it.
   if (typeof options.from === 'string' && options.from.trim()) {
-    conditions.push('date(e.start_at) >= date(?)')
+    conditions.push('day_of(e.start_at) >= day_of(?)')
     params.push(options.from.trim())
   }
 
   if (typeof options.end === 'string' && options.end.trim()) {
-    conditions.push('date(e.start_at) <= date(?)')
+    conditions.push('day_of(e.start_at) <= day_of(?)')
     params.push(options.end.trim())
   }
 
   const limit = Number.isFinite(options.limit) ? Math.max(1, Math.min(Math.trunc(options.limit), 500)) : 100
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''
   const orderClause = options.from || options.end
-    ? 'ORDER BY date(e.start_at) ASC, e.created_at DESC'
-    : 'ORDER BY e.created_at DESC'
+    ? 'ORDER BY day_of(e.start_at) ASC, e.created_at DESC, e.seq ASC'
+    : 'ORDER BY e.created_at DESC, e.seq ASC'
 
   return {
     sql: `SELECT e.* FROM entries e ${whereClause} ${orderClause} LIMIT ?`,

@@ -1,43 +1,43 @@
 # Life OS: status
 
-**Updated 4 November 2026 by Claude Code.** Branch: `stage/7-separation` (from `main`, which now holds JobMap CP1 and stages 5 and 6, merged locally, not pushed); local app http://127.0.0.1:47850. Standalone JobMap remains frozen.
+**Updated 4 November 2026 by Claude Code.** Branch: `stage/7-separation` (from `main`, which holds JobMap CP1 and stages 5 and 6, merged locally, not pushed); local app http://127.0.0.1:47850. Standalone JobMap remains frozen.
 
 ## Now
 
-**Stage 7, code apart from data, is under way** ([brief](briefs/stage-7-separation.md)): still single-user; the core moves to PostgreSQL; a clean version of the app (MIT, all parts, none of Xar's data, fresh history) is published to a new GitHub repository she names before the push. CP1 done: `scripts/privacy-scan.mjs` and the [inventory](briefs/stage-7-inventory.md) (203 files private, 12 to configure, 158 to make generic). Next: CP2, one configuration.
+**Stage 7, code apart from data, is under way** ([brief](briefs/stage-7-separation.md)): still single-user; a clean version of the app (MIT, all parts, none of Xar's data, fresh history) goes to a new GitHub repository she names before the push.
+- CP1: `scripts/privacy-scan.mjs` and the [inventory](briefs/stage-7-inventory.md).
+- CP2: one configuration (data and backup folders, port, address, keys from settings; `.env.example`, `postgres.example.json`).
+- **CP3 (done): the core runs on PostgreSQL.** Entries, people, rooms, settings and pictures' rows are in schema `core` of `lifeos` (migration `core/0001_core.sql`, owner column on every table). The move (`scripts/move-core-to-postgres.mjs`) backed up both sides, copied in one transaction and compared all 226 rows value by value. Before switching, the new code's answers were compared with the running app's for every entry, list, filter, People, settings and the calendar: identical, row order included. The SQLite file is untouched (same bytes after the switch) and nothing reads it.
+- Next: CP4, content out of code (Study's courses as data, "Cardiff Life" as Events for any city, the Guide and samples anyone's).
 
-**Accepted 4 November ("yes to all"):** JobMap CP1, stage 5 Harvest and stage 6 the Desk; the September backfill may go live once each batch passes on `lifeos_test`.
+**Accepted 4 November ("yes to all"):** JobMap CP1, stage 5 Harvest and stage 6 the Desk ([session](sessions/2026-11-04-claude-code-6-desk-build.md)); the September backfill may go live once each batch passes on `lifeos_test`.
 
-**Stage 6, the Desk, is built, CP1 to CP6** ([brief](briefs/stage-6-desk.md), [session](sessions/2026-11-04-claude-code-6-desk-build.md), [prototype](https://claude.ai/artifact/7RjsaJY8Trpf3GMeQj9tUy)). Mail becomes things, each in its domain (Work, Learning, Social, Money, Home, Health, Travel, Admin) and its own colour on every style. New kinds: application, order, bill, payment, subscription, tenancy, booking, appointment, official letter, document, account notice, person, and opportunities by form. Things move through states, and what happened is kept. Inbox opens on the **Desk** (Now, domains, cards, a drawer, Triage); **Messages** say what each is about (filed, or a marked guess). Applications offer the matching JobMap change. The app names no assistant and hands out no prompts (`[5-fix]`). The Desk fills when the first version 2 batch arrives; today it shows what was kept quiet this week.
+**Codex, 4 November:** interview update in JobMap and the calendar ([session](sessions/2026-11-04-codex-jobmap-interview-links.md)); the imported study windows drive the schedule everywhere ([session](sessions/2026-11-04-codex-study-json-sync.md)): confirm Friday's 14:00 versus 14:10 exam start; the [data model reference](../outputs/20261104-data-model-reference/Life_OS_Complete_Data_Model_Reference.pdf) (stage 7 has since added schema `core`).
 
-**Stage 5 Harvest** (built, waiting for acceptance) is the store and the one way in this builds on ([brief](briefs/stage-5-harvest.md)).
+## How to see what's new
 
-**Requested interview update (Codex, 4 November):** one confirmed Career calendar event, the existing JobMap record updated, and four related Outlook emails connected. Backed up and verified in the running app; source details and links stay private ([session](sessions/2026-11-04-codex-jobmap-interview-links.md)). The meeting joining link has yet to arrive.
-
-**Study JSON sync (Codex, 4 November):** the imported cards' 17 explicit study windows now drive the shared schedule across Today, Calendar, Court, planner, notices, Review and Analysis. Two stale Thursday blocks were removed because their cards defer to Saturday. Progress and native Study records unchanged; backup taken, 48 tests and both builds passed ([session](sessions/2026-11-04-codex-study-json-sync.md)). Confirm Friday's imported 14:00 exam start versus saved 14:10, and preparation overlapping the 11:10 lab.
-
-**Data structure discussion (Codex):** the [complete technical reference](../outputs/20261104-data-model-reference/Life_OS_Complete_Data_Model_Reference.pdf) explains actual types, structures and design options ([note](sessions/2026-11-04-codex-complete-data-model-reference.md)). Stage 6 has since added `mail.item_events`, item states and sender domains (migration `mail/0003_things.sql`).
+Nothing looks different, which is the point: open Today, Calendar, People and Journal as usual. Everything you add or change is now saved in PostgreSQL.
 
 ## Exact next step
 
-1. Xar opens Inbox (the Desk is empty until a version 2 batch arrives; Messages already show guessed domains, about 90% of messages from September onward) and reads the Guide's Inbox chapter.
-2. Tell Cowork: "Stage 6 import is live. Switch Integrate to mail/HARVEST.md (version 2, with the stage 6 kinds and states) and prepare the September backfill as weekly batches; try each on lifeos_test and show me before importing."
-3. Then stage 7, Accounts: plan it with Xar first.
+1. Claude Code: stage 7 CP4. Prompt: "Continue stage 7: CP4, content out of code."
+2. Xar, when convenient: tell Cowork "Stage 6 import is live. Switch Integrate to mail/HARVEST.md (version 2, with the stage 6 kinds and states) and prepare the September backfill as weekly batches; try each on lifeos_test and show me before importing." (The 14:00 batch today already brought the first item.)
 
 ## Waiting on Xar
 
-- Acceptance of stages 5 and 6 and of JobMap CP1; the yes for the real backfill; merging `stage/jobmap-workflow`, `stage/5-harvest`, `stage/6-desk` into `main`, in that order.
+- Accepting the core's move: the old file `code/life-os/backend/data/life-os.db` stays until then; deleting it is your step.
+- The name of the new GitHub repository (asked before CP6).
 - JobMap's CV and cover-letter helper stays until the app's own drafting (her choice, 4 November).
 
 ## Known problems and limits
 
+- `hosting/app.test.mjs`: its two Study checks fail since the hub began requiring If-Match (28 October); its core checks now use `lifeos_test`. Its Study part still points at `lifeos`, so don't run it until it is fixed (it ran once on 4 November: the one write it tried was refused, nothing changed).
+- The privacy scan still finds "Cardiff" in the events code and a name in one script message: CP4's work.
 - The saved Outlook archive has stand-in ids (no "Open in Outlook" for September and October) and text cut at 5,000 characters for most. Gmail's extract is held in a Cowork browser tab, not saved.
-- Guessed domains are word guesses: a sender taught in Messages fixes them for good. The Guide's Inbox pictures need retaking.
-- The Bash tool's sandbox cannot reach PostgreSQL (use PowerShell); a stray `.git` folder in `code/life-os` makes git refuse there (run git from the root). Codex and Claude Code worked in this folder at the same time on 4 November: check `git status` before committing.
-- Never start the frozen standalone JobMap or run `hosting/app.test.mjs` (it reseeds core).
+- The Bash tool's sandbox cannot reach PostgreSQL (use PowerShell); a stray `.git` folder in `code/life-os` makes git refuse there (run git from the root). Codex and Claude Code work in this folder at the same time: check `git status` before committing.
 
 ## Data
 
-Live mail store unchanged by stages 5 and 6: 1,171 messages, 18 batches, 25 actions, 1,587 history rows, 0 items, 0 sender rules. Migrations `mail/0002_items.sql` and `mail/0003_things.sql` applied to `lifeos_test` and `lifeos` after dumps (`Life_OS_backups/study-2026-11-03/`, `study-2026-11-04/`). Test data went to `lifeos_test` only.
+Core: `lifeos.core` 209 entries, 2 people, 13 rooms, 2 settings, no pictures; backups in `Life_OS_backups/core-2026-11-04/` (SQLite copy and dump) and `study-2026-11-04/before-migration-*.dump`. `lifeos_test.core` holds a trial copy. Mail: 19 batches, 1,173 messages, 1 item (the 14:00 batch on 4 November). Migrations applied to both databases after dumps: `mail/0002`, `mail/0003`, `core/0001`.
 
 Last five sessions: [Stage 6 build](sessions/2026-11-04-claude-code-6-desk-build.md), [JobMap interview](sessions/2026-11-04-codex-jobmap-interview-links.md), [Study sync](sessions/2026-11-04-codex-study-json-sync.md), [Stage 5 build](sessions/2026-11-04-claude-code-5-harvest-build.md), [Stage 5 planning](sessions/2026-11-03-claude-code-5-planning.md).

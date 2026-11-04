@@ -28,7 +28,7 @@ export async function backupStudySources(projectRoot) {
     })
   }
   await snapshotSqlite(path.join(source, 'local-data/app.sqlite'), path.join(directory, 'app.sqlite'))
-  await snapshotSqlite(path.join(projectRoot, 'code/life-os/backend/data/life-os.db'), path.join(directory, 'core.sqlite'))
+  // The core is in PostgreSQL since stage 7: the database dump taken before every import holds it.
   const after = sha256(await fs.readFile(stateFile))
   if (before !== after) throw new Error('Study changed during backup. Retry before importing.')
   await fs.writeFile(path.join(directory, 'verification.json'), JSON.stringify({ stateSha256: before, checkedAt: new Date().toISOString(), sqliteIntegrity: 'ok' }, null, 2))
