@@ -4,6 +4,10 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 4 November 2026 — Stages 5 and 6 accepted; backfill approved; Accounts next (Xar)
+
+- Xar, to "look and accept; tell Cowork; yes for the backfill; plan stage 7": **"yes to all"**. Stage 5 Harvest, stage 6 the Desk and JobMap CP1 are accepted and merged into `main` (fast-forward, local; not pushed). The September to November backfill may go into the live database once the harvest has made it and each batch has passed on `lifeos_test`. Stage 7 Accounts is planned next (`briefs/stage-7-accounts-draft.md`), then Stage 8 Network; the October roadmap's native rebuilds move after them (ROADMAP, 4 November).
+
 ## 4 November 2026 — Life OS is a product, not one person's handcraft; mail becomes typed things (Xar)
 
 - Xar, after seeing stage 5: "it's still full of text and looks like a loaded inbox just like my gmail account… each email should correctly be connected to what it is about… i dont want to miss any bit i can make use of… look at the problems like an infrastructure designer." And: "seeing claude's name and generic prompts that are not at all for this app. this should be a smart automation machine me and claude are developing together… the app is gonna have accounts, user management and networking like follow/connect stuff for different people that are gonna use it in the future. shouldn't be highly specialised for me only."
