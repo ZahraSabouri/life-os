@@ -4,6 +4,8 @@
 
 ## Now
 
+**Requested interview update (Codex, 4 November):** one confirmed Career calendar event, the existing JobMap record updated, and four related Outlook emails connected. Backed up and verified in the running app; source details and links stay private ([session](sessions/2026-11-04-codex-jobmap-interview-links.md)). The meeting joining link has yet to arrive.
+
 **Study JSON sync (Codex, 4 November):** the imported cards' 17 explicit study windows now drive the shared schedule across Today, Calendar, Court, planner, notices, Review and Analysis. Two stale Thursday blocks were removed because their cards defer to Saturday. Progress and native Study records unchanged; backup taken, 48 tests and both builds passed ([session](sessions/2026-11-04-codex-study-json-sync.md)). Confirm Friday's imported 14:00 exam start versus saved 14:10, and preparation overlapping the 11:10 lab. Current checkout is `stage/6-desk`; unrelated work below is preserved.
 
 **Stage 5 Harvest is built, CP1 to CP8** ([brief](briefs/stage-5-harvest.md), [session](sessions/2026-11-04-claude-code-5-harvest-build.md)). One way in for everything harvested (mail batch version 2, `mail/HARVEST.md`); things to do are actions, what came in are items, and each shows in its place:
