@@ -1,20 +1,19 @@
 // The pieces the Inbox is drawn with: what kind a line is and how pressing (a word, not only a
-// colour), one thing she owes with its buttons, a message's text as plain text, and Write it with Claude.
+// colour), one thing owed with its buttons, and a message's text as plain text. The app names no
+// assistant and hands out no prompts to copy (Xar, 4 November 2026): drafting returns as the app's own feature.
 import { useEffect, useRef, useState } from 'react'
 import { apiFetch } from '../../lib/api.js'
 import { useSetting } from '../../lib/settings.js'
 import { addDay, london, mailChanged, saveAction, useMail } from '../../lib/useMail.js'
-import { KIND_NAMES, PRIORITIES, priorityOf, replyPrompt, textPieces, titleOf } from '@shared/mail.js'
+import { KIND_NAMES, PRIORITIES, priorityOf, textPieces, titleOf } from '@shared/mail.js'
 import { GMAIL_ACCOUNT_KEY } from '@shared/harvest.js'
 
 const PRIORITY_NAMES = { urgent: 'Urgent', high: 'High', normal: 'Normal', low: 'Low' }
-export const SIGN_NAME_KEY = 'mail-sign-name'
 
-// What the Inbox remembers for her, at the end of the Harvest log: the name Claude signs replies
-// with, which Gmail account "Open in Gmail" opens (u/1 by default: the second account signed in
-// in her browser), and the senders she folds or hides, each with the way back.
+// What the Inbox remembers, at the end of the Harvest log: which Gmail account "Open in Gmail"
+// opens (u/1 by default: the second account signed in in the browser), and the senders folded or
+// hidden, each with the way back.
 export function MailSettings() {
-  const [name, setName] = useSetting(SIGN_NAME_KEY, '')
   const [account, setAccount] = useSetting(GMAIL_ACCOUNT_KEY, 1)
   const senders = useMail('/api/mail/senders')
   const [said, setSaid] = useState('')
@@ -25,7 +24,6 @@ export function MailSettings() {
   const rules = senders.data?.senders ?? []
   return <details className="day-panel mail-settings">
     <summary>Settings</summary>
-    <label className="mail-sign"><span>Your name for signing replies Claude writes</span><input value={name ?? ''} onChange={(event) => setName(event.target.value)} maxLength={80} placeholder="Leave empty to sign them yourself" /></label>
     <label className="mail-sign"><span>Your Gmail account number in this browser (the number after /u/ in Gmail’s address)</span>
       <input type="number" min="0" max="9" value={account ?? 1} onChange={(event) => { const value = Number(event.target.value); if (Number.isInteger(value) && value >= 0 && value < 10) setAccount(value) }} /></label>
     <div className="mail-senders"><span>Senders you fold or hide</span>
@@ -102,7 +100,6 @@ export function ActionLine({ row, today, undo, id, compact = false, onError = ()
           </select>
         </label>
         <button type="button" onClick={() => setNote(note === null ? row.her_note ?? '' : null)}>{row.her_note ? 'Change the note' : 'A note'}</button>
-        {['reply', 'email'].includes(row.kind) ? <WriteWithClaude action={row} /> : null}
       </>}
     </p>
     {note !== null ? <form className="mail-note-form" onSubmit={async (event) => { event.preventDefault(); await change({ her_note: note.trim() || null }); setNote(null) }}>
@@ -117,22 +114,4 @@ export function MessageText({ text }) {
   return <div className="mail-text" dir="auto">{textPieces(text).map((piece, index) => (piece.href
     ? <a key={index} href={piece.href} target="_blank" rel="noopener noreferrer">{piece.href}</a>
     : <span key={index}>{piece.text}</span>))}</div>
-}
-
-// A prompt from the message and her note is copied, and a new claude.ai chat opens.
-export function WriteWithClaude({ action = null, message = null }) {
-  const [name] = useSetting(SIGN_NAME_KEY, '')
-  const [said, setSaid] = useState('')
-  async function start() {
-    let text = message
-    if (!text && action?.message_ids?.[0]) text = await apiFetch(`/api/mail/messages/${encodeURIComponent(action.message_ids[0])}`).catch(() => null)
-    const prompt = replyPrompt({ action, message: text, name: name || '' })
-    const opened = window.open('https://claude.ai/new', '_blank', 'noopener,noreferrer')
-    try { await navigator.clipboard.writeText(prompt); setSaid(`Copied. Paste it into claude.ai${opened ? '' : ' (open claude.ai yourself)'}. Nothing is sent until you send it.`) }
-    catch { setSaid('Could not copy. Allow the clipboard for Life OS, then try again.') }
-  }
-  return <>
-    <button type="button" className="mail-claude" onClick={start}>Write it with Claude</button>
-    {said ? <span className="mail-claude-said" role="status">{said}</span> : null}
-  </>
 }

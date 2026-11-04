@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { parseOwe, peopleNamed, groupActions, birthdayWishes, textPieces, replyPrompt, priorityOf } from './mail.js'
+import { parseOwe, peopleNamed, groupActions, birthdayWishes, textPieces, priorityOf } from './mail.js'
 
 test('parseOwe: the first word sets the kind, the rest names who and what about', () => {
   assert.deepEqual(parseOwe('text Sam about Saturday'), { kind: 'text', who: 'Sam', about: 'Saturday', title: 'Text Sam about Saturday' })
@@ -59,13 +59,4 @@ test('textPieces: https links only; everything else, HTML included, stays text',
     { text: 'See ' }, { href: 'https://example.ac.uk/brief' }, { text: '. Or http://old.example and <script>alert(1)</script>' },
   ])
   assert.deepEqual(textPieces(''), [])
-})
-
-test('replyPrompt: keeps to the message and leaves the sending to her', () => {
-  const prompt = replyPrompt({ action: { kind: 'reply', title: 'Reply to Sam about Saturday', person_name: 'Sam Taylor', her_note: 'say 3pm instead' }, message: { from_name: 'Sam Taylor', subject: 'Saturday?', body: 'Are we still on?' }, name: 'X' })
-  assert.match(prompt, /Are we still on\?/)
-  assert.match(prompt, /say 3pm instead/)
-  assert.match(prompt, /do not invent/)
-  assert.match(prompt, /Sign it X\./)
-  assert.match(replyPrompt({ action: { kind: 'email', title: 'Email the office' } }), /Leave the sign-off for me/)
 })

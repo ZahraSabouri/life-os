@@ -43,7 +43,7 @@ function Runs({ runs = [], latestBatchId, onUndone }) {
   return <section className="log-runs" aria-label="The runs that brought this day">
     <h3>Brought by</h3>
     <ul>{runs.map((run) => <li key={run.id} className={run.status === 'undone' ? 'is-undone' : ''}>
-      <span>{at(run.gathered_at)}{run.agent ? ` · ${run.agent}` : ''}{run.status === 'undone' ? ' · undone' : ''}</span>
+      <span>Harvest of {at(run.gathered_at)}{run.status === 'undone' ? ' · undone' : ''}</span>
       <span className="log-run-sources">{(run.sources ?? []).map((source) => `${source.label} ${(STATUS_WORDS[source.status] ?? source.status).toLowerCase()}`).join(', ')}</span>
       {counted(run.counts) ? <span className="log-run-counts">{counted(run.counts)}</span> : null}
       {run.id === latestBatchId && run.status === 'applied' ? (sure === run.id

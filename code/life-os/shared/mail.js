@@ -100,17 +100,3 @@ export const MAIL_FILTERS = [
   ['all', 'All'], ['needs-you', 'Needs you'], ['deadline', 'Deadlines'], ['announcement', 'Announcements'], ['conversation', 'Conversations'], ['other', 'Everything else'],
 ]
 export const OTHER_CATEGORIES = ['fyi', 'newsletter', 'automated']
-
-// A prompt for Write it with Claude: keep to what the message says, leave the sending to her.
-export function replyPrompt({ action, message, name }) {
-  const lines = [
-    `Help me write ${action?.kind === 'email' && !message ? 'an email' : 'a reply'}${action?.person_name ? ` to ${action.person_name}` : message?.from_name ? ` to ${message.from_name}` : ''}.`,
-    action ? `What I need to do: ${titleOf(action)}${action.why ? ` (${action.why})` : ''}.` : '',
-    action?.her_note ? `My note: ${action.her_note}` : '',
-    message ? `\nThe message${message.from_name ? ` from ${message.from_name}` : ''}${message.subject ? `, “${message.subject}”` : ''}:\n"""\n${message.body || message.summary || ''}\n"""` : '',
-    '\nRules: keep to what the message says and what I tell you; do not invent facts, dates or promises. Short, warm and clear, in British English. If something is missing, ask me first.',
-    name ? `Sign it ${name}.` : 'Leave the sign-off for me.',
-    'Give me the text only. I will send it myself.',
-  ]
-  return lines.filter(Boolean).join('\n')
-}

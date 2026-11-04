@@ -11,7 +11,7 @@ import { useSetting } from '../../lib/settings.js'
 import { addOwed, london, londonTime, mailChanged, useMail } from '../../lib/useMail.js'
 import { MAIL_FILTERS, PRIORITIES, priorityOf } from '@shared/mail.js'
 import { AREAS, AREA_NAMES, GMAIL_ACCOUNT_KEY, junkLink, originalLink } from '@shared/harvest.js'
-import { MessageText, PriorityMark, WriteWithClaude } from './parts.jsx'
+import { MessageText, PriorityMark } from './parts.jsx'
 import { CameInItem } from './CameInStrip.jsx'
 
 const OPEN_IN = { outlook: 'Open in Outlook', gmail: 'Open in Gmail', 'learning-central': 'Open in Learning Central', teams: 'Open in Teams' }
@@ -96,7 +96,6 @@ export function MessageReader({ message, onBack, onChanged }) {
     <p className="day-stop-actions mail-reader-actions">
       {original ? <a href={original} target="_blank" rel="noopener noreferrer">{OPEN_IN[row.source_kind] ?? 'Open the original'}</a> : null}
       <button type="button" onClick={owe}>I need to reply</button>
-      <WriteWithClaude message={row} />
       {row.hidden_at ? <button type="button" onClick={() => change({ hidden_at: null }, 'Shown again.')}>Show again</button> : <button type="button" onClick={() => change({ hidden_at: new Date().toISOString() }, 'Hidden. “Show hidden” brings it back.')}>Hide</button>}
     </p>
     <SenderRule row={row} onChanged={onChanged} />

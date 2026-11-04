@@ -34,7 +34,6 @@
 .mail-priority-pick select { font: 0.8rem/1.2 var(--m-font); padding: 0.2rem 0.3rem; }
 .mail-note-form { display: flex; gap: 0.4rem; }
 .mail-note-form input { flex: 1; min-width: 0; }
-.mail-claude-said { flex-basis: 100%; color: var(--m-muted); font-size: 0.8rem; }
 .mail-undo button { margin-left: 0.4rem; }
 .mail-done > summary { display: flex; align-items: baseline; gap: 0.6rem; cursor: pointer; list-style: none; }
 .mail-done > summary h2 { margin: 0; }

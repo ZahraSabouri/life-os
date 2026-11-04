@@ -25,7 +25,9 @@ test('a message body is drawn as text: HTML and scripts never become elements', 
 
 test('the reader shows who, when, the summary, the text, and the way to the original', () => {
   const markup = renderToStaticMarkup(<MemoryRouter><MessageReader message={message} onBack={() => {}} /></MemoryRouter>)
-  for (const words of ['Saturday?', 'Sam Taylor', 'Sam asks about Saturday.', 'This weekend.', 'Open in Gmail', 'I need to reply', 'Write it with Claude', 'Hide', 'Plan.pdf', 'Back to the list', 'سلام', 'Everything from sam.taylor@example.com:', 'Fold']) assert.ok(markup.includes(words), words)
+  for (const words of ['Saturday?', 'Sam Taylor', 'Sam asks about Saturday.', 'This weekend.', 'Open in Gmail', 'I need to reply', 'Hide', 'Plan.pdf', 'Back to the list', 'سلام', 'Everything from sam.taylor@example.com:', 'Fold']) assert.ok(markup.includes(words), words)
+  // The app names no assistant and hands out no prompts to copy.
+  assert.ok(!/Claude|claude\.ai|prompt/i.test(markup))
   // Gmail opens in her own account (setting mail-gmail-account, 1 until she changes it), from the message's id.
   assert.ok(markup.includes('href="https://mail.google.com/mail/u/1/#all/18c2f0a1b2c3d4e5"'))
   assert.ok(!/<script/i.test(markup))
@@ -60,7 +62,8 @@ test('foldDay: newsletters, notifications and folded senders become one line per
 test('a thing she owes shows its kind and priority in words, and its buttons', () => {
   const row = { id: 'a1', revision: 2, kind: 'reply', title: 'Reply to Jo', her_title: 'Reply to Jo with my section', person_name: 'Jo Evans', why: 'Due Thursday', priority: 'urgent', due: '2026-10-29', status: 'open', link: 'https://outlook.office.com/mail/inbox', message_ids: ['m1'] }
   const markup = renderToStaticMarkup(<ul><ActionLine row={row} today="2026-10-28" /></ul>)
-  for (const words of ['Reply', 'Urgent', 'Reply to Jo with my section', 'Jo Evans', 'Due Thursday', 'Done', 'Tomorrow', 'Next week', 'Not needed', 'Open the email', 'Write it with Claude']) assert.ok(markup.includes(words), words)
+  for (const words of ['Reply', 'Urgent', 'Reply to Jo with my section', 'Jo Evans', 'Due Thursday', 'Done', 'Tomorrow', 'Next week', 'Not needed', 'Open the email']) assert.ok(markup.includes(words), words)
+  assert.ok(!/Claude|claude\.ai/.test(markup))
   const compact = renderToStaticMarkup(<ul><ActionLine row={{ ...row, status: 'done', done_by: 'source', resolved_note: 'You replied on 27 October.' }} today="2026-10-28" compact /></ul>)
   assert.match(compact, /Open again/)
   assert.match(compact, /You replied on 27 October\./)
@@ -99,9 +102,10 @@ test('one day of the Harvest log: a factual line, what came in by area, to do, m
   }
   const entry = { day: '2026-10-31', messages: 3, actions: 1, kinds: { vacancy: 1, offer: 1 } }
   const markup = renderToStaticMarkup(<MemoryRouter><LogDay detail={detail} entry={entry} area="" setArea={() => {}} focus="i3" /></MemoryRouter>)
-  for (const words of ['Saturday 31 October', '3 messages, 1 to do, 1 vacancy, 1 offer', 'Jobs', 'Perks', 'Graduate Data Analyst', 'Not in JobMap yet', 'To do', 'Pay the library fine', 'Lab moved', '2 more: newsletters, notifications and the rest', 'Brought by', 'Integrate', 'Gmail read', 'items 9 new, 0 changed', 'Undo']) assert.ok(markup.includes(words), words)
+  for (const words of ['Saturday 31 October', '3 messages, 1 to do, 1 vacancy, 1 offer', 'Jobs', 'Perks', 'Graduate Data Analyst', 'Not in JobMap yet', 'To do', 'Pay the library fine', 'Lab moved', '2 more: newsletters, notifications and the rest', 'Brought by', 'Harvest of Mon 2 Nov, 07:00', 'Gmail read', 'items 9 new, 0 changed', 'Undo']) assert.ok(markup.includes(words), words)
   assert.ok(markup.includes('is-focused'))
   assert.ok(!markup.includes('Weekly digest'))
+  assert.ok(!markup.includes('Integrate'), 'the run shows no automation or assistant name')
   assert.ok(!/you should|I recommend/i.test(markup))
   const onlyJobs = renderToStaticMarkup(<MemoryRouter><LogDay detail={detail} entry={entry} area="jobs" setArea={() => {}} /></MemoryRouter>)
   assert.ok(onlyJobs.includes('Graduate Data Analyst') && !onlyJobs.includes('20% off books') && !onlyJobs.includes('Pay the library fine'))
