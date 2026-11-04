@@ -4,6 +4,11 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 4 November 2026 — Stage 7 is code apart from data, not accounts; a clean version on GitHub (Xar)
+
+- Asked where accounts should live and how people sign in, Xar: "no it's still single user for nowwww", "no accounts yet", and "make the functionality separate from the data even tho we are not yet doing multi usering. i want a clean professional push to github of a version of the app that doesnt contain my data". The core still moves to PostgreSQL in stage 7 ("Yes, in stage 7").
+- **Supersedes** "Stage 7 Accounts" in the entry below: stage 7 is **code apart from data** (`briefs/stage-7-separation-draft.md`). Accounts, sign-in and the network wait for her word. New tables keep their owner column so that later step stays small.
+
 ## 4 November 2026 — Stages 5 and 6 accepted; backfill approved; Accounts next (Xar)
 
 - Xar, to "look and accept; tell Cowork; yes for the backfill; plan stage 7": **"yes to all"**. Stage 5 Harvest, stage 6 the Desk and JobMap CP1 are accepted and merged into `main` (fast-forward, local; not pushed). The September to November backfill may go into the live database once the harvest has made it and each batch has passed on `lifeos_test`. Stage 7 Accounts is planned next (`briefs/stage-7-accounts-draft.md`), then Stage 8 Network; the October roadmap's native rebuilds move after them (ROADMAP, 4 November).
