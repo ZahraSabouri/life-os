@@ -40,7 +40,7 @@ test('the reader: what was taken from it, its real links, and no broken Outlook 
     links: [{ href: 'https://jobs.example.com/view/1001', text: 'Graduate Data Analyst' }, { href: 'https://example.com/unsubscribe?u=1', text: 'Unsubscribe' }],
     taken: { actions: [{ id: 'a1', title: 'Pay the library fine', due: '2026-11-15' }], items: [{ id: 'i3', revision: 1, kind: 'vacancy', area: 'jobs', status: 'new', day: '2026-10-31', title: 'Graduate Data Analyst', summary: 'Cardiff.', deadline: '2026-11-07', place: { app: 'jobmap', href: '/jobmap#job=J1' } }] } }
   const markup = renderToStaticMarkup(<MemoryRouter><MessageReader message={outlook} /></MemoryRouter>)
-  for (const words of ['Taken from this', 'Pay the library fine', 'Waiting on you', 'Graduate Data Analyst', 'In JobMap', 'Links', 'jobs.example.com', 'Folded: sam.taylor@example.com', 'Show as usual']) assert.ok(markup.includes(words), words)
+  for (const words of ['Taken from this', 'Pay the library fine', 'Waiting on you', 'Graduate Data Analyst', 'In JobMap', 'Links', 'jobs.example.com', 'Everything from sam.taylor@example.com:', 'folded', 'File under', 'Show as usual']) assert.ok(markup.includes(words), words)
   assert.ok(!markup.includes('Open in Outlook'))
   assert.ok(!markup.includes('Unsubscribe'))
 })
@@ -153,4 +153,13 @@ test('the one date that matters, for the kinds that move', () => {
   assert.equal(whenOf({ kind: 'subscription', state: 'renewing', deadline: '2026-11-12', day: '2026-11-02' }), 'Renews Thu 12 Nov')
   assert.equal(whenOf({ kind: 'booking', start_at: '2026-11-21T08:05:00Z', day: '2026-11-02' }), 'Sat 21 Nov, 08:05')
   assert.equal(whenOf({ kind: 'application', state: 'test', deadline: '2026-11-07', day: '2026-11-02' }), 'By Sat 7 Nov')
+})
+
+test('what a message is about: filed domains solid, a guess marked', async () => {
+  const { AboutChips } = await import('../src/components/inbox/InboxMail.jsx')
+  const filed = renderToStaticMarkup(<AboutChips about={{ domains: ['work', 'money'], guessed: false }} />)
+  assert.ok(filed.includes('Work') && filed.includes('Money') && !filed.includes('is-guess') && filed.includes('--c:var(--d-work)'))
+  const guess = renderToStaticMarkup(<AboutChips about={{ domains: ['home'], guessed: true }} />)
+  assert.ok(guess.includes('is-guess') && guess.includes('Home?'))
+  assert.equal(renderToStaticMarkup(<AboutChips about={{ domains: [], guessed: true }} />), '')
 })

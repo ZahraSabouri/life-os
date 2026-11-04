@@ -48,8 +48,8 @@ Accounts and sign-in (stage 7), network (stage 8), the app's own drafting (repla
 - **Verify:** render tests; headless Chrome with example data at 1360 and 400 pixels, light and dark. **Commit:** `[6-cp4]`.
 
 ### CP5: everywhere else
-- [ ] Messages: what each is about (filed or guessed), a domain filter.
-- [ ] Calendar, Today and the parts' strips take the new kinds; the Guide's Inbox chapter.
+- [x] Messages: what each is about (filed or guessed), a domain filter.
+- [x] Calendar, Today and the parts' strips take the new kinds; the Guide's Inbox chapter.
 - **Verify:** suites, build, browser. **Commit:** `[6-cp5]`.
 
 ### CP6: handover

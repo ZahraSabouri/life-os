@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { MailError } from './repository.js'
 import { addDays, dateKey } from '../../../../shared/calendar.js'
 import { birthdayWishes, groupActions, parseOwe, peopleNamed, priorityOf } from '../../../../shared/mail.js'
-import { DOMAINS, domainOf, jobmapSuggestion, partOf, placeOf, PARTS } from '../../../../shared/harvest.js'
+import { DOMAINS, domainOf, guessDomain, jobmapSuggestion, partOf, placeOf, PARTS } from '../../../../shared/harvest.js'
 
 // /api/mail. inbox is hosting/mail/inbox.mjs (status, scan); importer undoes batches; reads serves
 // the pages; findPeople reads the core's People (only read: Life OS never creates a person from mail);
@@ -80,11 +80,22 @@ export function createMailRouter({ repository, importer, inbox, reads, findPeopl
   router.patch('/actions/:id', handler(async (req, res) => res.json(await repository.patchHers('actions', req.params.id, revisionOf(req.body), without(req.body, 'revision')))))
   router.post('/birthdays', handler(async (req, res) => res.status(201).json(await repository.actOnBirthday(req.body ?? {}))))
 
+  // Each message says what it is about (stage 6): the domains of the things filed from it, or else a
+  // guess from its sender's taught domain and its words, marked as a guess. ?domain= keeps one domain's.
+  const aboutOf = (row) => {
+    const filed = [...new Set((row.things ?? []).map((thing) => domainOf(thing, { senderDomain: row.sender_domain })))]
+    if (filed.length) return { domains: filed, guessed: false }
+    const guess = guessDomain(row, { senderDomain: row.sender_domain })
+    return { domains: guess.domain ? [guess.domain] : [], guessed: guess.guessed }
+  }
   router.get('/messages', handler(async (req, res) => {
     const query = req.query ?? {}
     const word = (key) => String(query[key] ?? '')
-    res.json(await reads.messages({ source: word('source'), filter: word('filter') || 'all', unread: query.unread === '1', hidden: query.hidden === '1', noise: query.noise === '1', q: word('q'),
-      area: word('area'), from: word('from'), to: word('to'), priority: word('priority'), has: word('has'), notSeen: query.notseen === '1' }))
+    const domain = DOMAINS.includes(word('domain')) ? word('domain') : ''
+    const rows = (await reads.messages({ source: word('source'), filter: word('filter') || 'all', unread: query.unread === '1', hidden: query.hidden === '1', noise: query.noise === '1', q: word('q'),
+      area: word('area'), from: word('from'), to: word('to'), priority: word('priority'), has: word('has'), notSeen: query.notseen === '1', limit: domain ? 1000 : 300 }))
+      .map((row) => ({ ...row, about: aboutOf(row) }))
+    res.json(domain ? rows.filter((row) => row.about.domains.includes(domain)).slice(0, 300) : rows)
   }))
   // Hide, show again, or mark as opened, for several at once: each with the revision she saw; one
   // that changed since is left as it is and named.
@@ -109,7 +120,7 @@ export function createMailRouter({ repository, importer, inbox, reads, findPeopl
     if (!found) throw new MailError(404, 'Not found')
     const seen = found.seen_at ? found : await repository.markSeen(found.id)
     const taken = await reads.taken(found.id)
-    res.json({ ...found, seen_at: seen.seen_at, revision: seen.revision, taken: { items: await places(taken.items), actions: taken.actions } })
+    res.json({ ...found, seen_at: seen.seen_at, revision: seen.revision, about: aboutOf({ ...found, sender_domain: found.rule?.domain }), taken: { items: await places(taken.items), actions: taken.actions } })
   }))
   // Her sender rules: fold or hide everything from one address.
   router.get('/senders', handler(async (_req, res) => res.json({ senders: await reads.senders() })))

@@ -245,3 +245,10 @@
 .mail-came-in ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
 .mail-came-in li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.1rem 0.5rem; font-size: 0.86rem; }
 .mail-came-in li a { color: var(--m-ink); font-weight: 600; }
+
+/* ---- What a message is about (stage 6): filed domains solid, a guess dashed ---- */
+.mail-about-chips { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 0.25rem; }
+.mail-about { display: inline-block; padding: 0.02rem 0.5rem; border: 1px solid transparent; border-radius: 999px; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--m-ink); font-size: 0.7rem; font-weight: 600; }
+.mail-about.is-guess { border: 1px dashed var(--c); background: transparent; color: var(--m-muted); }
+.mail-sender-rule label { display: inline-flex; align-items: center; gap: 0.35rem; }
+.mail-sender-rule select { padding: 0.12rem 0.35rem; border: 1px solid var(--m-line-strong); border-radius: var(--m-radius-control, 6px); background: transparent; color: var(--m-ink); font: inherit; font-size: 0.8rem; }

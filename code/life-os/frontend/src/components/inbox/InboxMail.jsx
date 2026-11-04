@@ -10,34 +10,49 @@ import { apiFetch } from '../../lib/api.js'
 import { useSetting } from '../../lib/settings.js'
 import { addOwed, london, londonTime, mailChanged, useMail } from '../../lib/useMail.js'
 import { MAIL_FILTERS, PRIORITIES, priorityOf } from '@shared/mail.js'
-import { AREAS, AREA_NAMES, GMAIL_ACCOUNT_KEY, junkLink, originalLink } from '@shared/harvest.js'
+import { DOMAINS, DOMAIN_NAMES, GMAIL_ACCOUNT_KEY, junkLink, originalLink } from '@shared/harvest.js'
 import { MessageText, PriorityMark } from './parts.jsx'
 import { CameInItem } from './CameInStrip.jsx'
 
 const OPEN_IN = { outlook: 'Open in Outlook', gmail: 'Open in Gmail', 'learning-central': 'Open in Learning Central', teams: 'Open in Teams' }
 const PRIORITY_NAMES = { urgent: 'Urgent', high: 'High', normal: 'Normal', low: 'Low' }
-const RULE_NAMES = { fold: 'Folded', hide: 'Hidden' }
 const FOLDED_CATEGORIES = new Set(['newsletter', 'automated', 'noise'])
 const people = (list) => (Array.isArray(list) ? list : []).map((person) => person?.name || person?.address).filter(Boolean).join(', ')
 const isDay = (value) => /^\d{4}-\d{2}-\d{2}$/.test(String(value ?? ''))
 
 // Her rule for this message's sender: fold or hide, and the way back.
+// Her rule for this message's sender: fold, hide, and the domain everything from them is filed
+// under (stage 6); and the way back. A domain keeps a fold or hide; folding keeps a domain.
 function SenderRule({ row, onChanged }) {
   const [said, setSaid] = useState('')
   if (!row.from_address) return null
-  async function rule(kind) {
-    try { await apiFetch('/api/mail/senders', { method: 'POST', body: JSON.stringify({ address: row.from_address, name: row.from_name || null, rule: kind }) }); setSaid(kind === 'hide' ? 'Hidden: their mail leaves the list. Settings, at the end of the Harvest log, brings it back.' : 'Folded: their mail is one line a day.'); mailChanged(); onChanged?.() }
+  const current = row.rule
+  async function save(fields, words) {
+    const rule = fields.rule ?? current?.rule ?? 'file'
+    const domain = 'domain' in fields ? fields.domain : current?.domain ?? null
+    try { await apiFetch('/api/mail/senders', { method: 'POST', body: JSON.stringify({ address: row.from_address, name: row.from_name || null, rule, domain }) }); setSaid(words); mailChanged(); onChanged?.() }
     catch (failure) { setSaid(`Not saved: ${failure.message}`) }
   }
   async function stop() {
-    try { await apiFetch(`/api/mail/senders/${encodeURIComponent(row.rule.id)}/remove`, { method: 'POST', body: JSON.stringify({ revision: row.rule.revision }) }); setSaid('Their mail shows as usual again.'); mailChanged(); onChanged?.() }
+    try { await apiFetch(`/api/mail/senders/${encodeURIComponent(current.id)}/remove`, { method: 'POST', body: JSON.stringify({ revision: current.revision }) }); setSaid('Their mail shows as usual again.'); mailChanged(); onChanged?.() }
     catch (failure) { setSaid(`Not saved: ${failure.message}`) }
   }
   return <p className="mail-sender-rule">
-    {row.rule ? <><span>{RULE_NAMES[row.rule.rule]}: {row.from_address}</span><button type="button" onClick={stop}>Show as usual</button></>
-      : <><span>Everything from {row.from_address}:</span><button type="button" onClick={() => rule('fold')}>Fold</button><button type="button" onClick={() => rule('hide')}>Hide</button></>}
+    <span>Everything from {row.from_address}:</span>
+    {current?.rule === 'fold' ? <b>folded</b> : <button type="button" onClick={() => save({ rule: 'fold' }, 'Folded: their mail is one line a day.')}>Fold</button>}
+    {current?.rule === 'hide' ? <b>hidden</b> : <button type="button" onClick={() => save({ rule: 'hide' }, 'Hidden: their mail leaves the list. Settings, at the end of the Harvest log, brings it back.')}>Hide</button>}
+    <label>File under <select value={current?.domain ?? ''} onChange={(event) => event.target.value && save({ domain: event.target.value, rule: current?.rule ?? 'file' }, `From now on, their mail is about ${DOMAIN_NAMES[event.target.value]}.`)}>
+      <option value="">{current?.domain ? DOMAIN_NAMES[current.domain] : 'Choose a domain'}</option>{DOMAINS.map((domain) => <option key={domain} value={domain}>{DOMAIN_NAMES[domain]}</option>)}
+    </select></label>
+    {current ? <button type="button" onClick={stop}>Show as usual</button> : null}
     {said ? <span role="status">{said}</span> : null}
   </p>
+}
+
+// What a message is about: the domains of what was filed from it, or a guess, marked as one.
+export function AboutChips({ about }) {
+  if (!about?.domains?.length) return null
+  return <span className="mail-about-chips">{about.domains.map((domain) => <span key={domain} className={`mail-about${about.guessed ? ' is-guess' : ''}`} style={{ '--c': `var(--d-${domain})` }} title={about.guessed ? 'A guess from its sender and words' : 'Filed by the harvest'}>{DOMAIN_NAMES[domain]}{about.guessed ? '?' : ''}</span>)}</span>
 }
 
 // The reader: who, when, the summary with its priority, what was taken from it, the text as text,
@@ -71,6 +86,7 @@ export function MessageReader({ message, onBack, onChanged }) {
       {people(row.cc_list) ? <div><dt>Cc</dt><dd dir="auto">{people(row.cc_list)}</dd></div> : null}
       <div><dt>When</dt><dd>{london(row.received_at, { weekday: 'long', day: 'numeric', month: 'long' })}, {londonTime(row.received_at)}</dd></div>
       <div><dt>Where</dt><dd>{[row.source_label, row.course, row.folder].filter(Boolean).join(' · ')}</dd></div>
+      {row.about?.domains?.length ? <div><dt>About</dt><dd><AboutChips about={row.about} /></dd></div> : null}
     </dl>
     <section className={`mail-summary is-${priorityOf(row)}`}>
       <p dir="auto">{row.summary}</p>
@@ -117,7 +133,7 @@ export function foldDay(rows) {
   return out.map((entry) => (entry.group && entry.group.rows.length === 1 ? { row: entry.group.rows[0] } : entry))
 }
 
-const FILTER_KEYS = ['source', 'filter', 'area', 'priority', 'has', 'from', 'to', 'unread', 'notseen', 'hidden', 'noise', 'q']
+const FILTER_KEYS = ['source', 'filter', 'domain', 'area', 'priority', 'has', 'from', 'to', 'unread', 'notseen', 'hidden', 'noise', 'q']
 
 function MessageRow({ row, openId, open, ticked, tick }) {
   return <li className="mail-row-line">
@@ -127,7 +143,7 @@ function MessageRow({ row, openId, open, ticked, tick }) {
       <span className="mail-row-from" dir="auto">{row.from_name || row.from_address || row.source_label}</span>
       <span className="mail-row-subject" dir="auto">{row.subject || '(no subject)'}</span>
       <span className="mail-row-summary" dir="auto">{row.summary}</span>
-      <span className="mail-row-when">{londonTime(row.received_at)} · {row.source_label}{row.unread_at_source ? ' · unread' : ''}{row.taken ? ` · ${row.taken} taken` : ''}{row.owed ? ' · to do' : ''}</span>
+      <AboutChips about={row.about} /><span className="mail-row-when">{londonTime(row.received_at)} · {row.source_label}{row.unread_at_source ? ' · unread' : ''}{row.taken ? ` · ${row.taken} taken` : ''}{row.owed ? ' · to do' : ''}</span>
     </button>
   </li>
 }
@@ -181,7 +197,7 @@ export default function InboxMail({ params, setParams }) {
         {MAIL_FILTERS.map(([key, label]) => <button key={key} type="button" aria-pressed={filter === key} onClick={() => set('filter', key === 'all' ? '' : key)}>{label}</button>)}
       </nav>
       <div className="log-filters mail-more-filters">
-        {select('area', 'Area', [['', 'Any area'], ...AREAS.map((key) => [key, AREA_NAMES[key]])])}
+        {select('domain', 'Domain', [['', 'Any domain'], ...DOMAINS.map((key) => [key, DOMAIN_NAMES[key]])])}
         {select('priority', 'Priority', [['', 'Any priority'], ...PRIORITIES.map((key) => [key, PRIORITY_NAMES[key]])])}
         {select('has', 'What it led to', [['', 'Led to anything or nothing'], ['items', 'Led to something that came in'], ['actions', 'Led to something to do'], ['deadline', 'Has a deadline']])}
         <label className="mail-date"><span>From</span><input type="date" value={get('from')} onChange={(event) => set('from', isDay(event.target.value) ? event.target.value : '')} /></label>

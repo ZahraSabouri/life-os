@@ -53,6 +53,8 @@ export function createMailReads({ pool }) {
     }
     return rows(`SELECT jsonb_build_object(${LIST_COLUMNS.split(',').map((column) => `'${column.trim()}', m.${column.trim()}`).join(', ')}, 'source_label', s.label, 'source_kind', s.kind,
         'rule', (SELECT r.rule FROM mail.senders r WHERE r.deleted_at IS NULL AND r.address = lower(m.from_address)),
+        'sender_domain', (SELECT r.domain FROM mail.senders r WHERE r.deleted_at IS NULL AND r.address = lower(m.from_address)),
+        'things', (SELECT coalesce(jsonb_agg(jsonb_build_object('kind', i.kind, 'area', i.area, 'her_domain', i.her_domain)), '[]'::jsonb) FROM mail.items i WHERE i.deleted_at IS NULL AND i.message_ids ? m.id::text),
         'taken', (SELECT count(*)::int FROM mail.items i WHERE i.deleted_at IS NULL AND i.message_ids ? m.id::text),
         'owed', (SELECT count(*)::int FROM mail.actions a WHERE a.deleted_at IS NULL AND a.message_ids ? m.id::text)) AS row
       FROM mail.messages m LEFT JOIN mail.sources s ON s.id = m.source_id
@@ -60,7 +62,8 @@ export function createMailReads({ pool }) {
   }
 
   const message = async (id) => (await rows(`SELECT to_jsonb(m) || jsonb_build_object('source_label', s.label, 'source_kind', s.kind,
-      'rule', (SELECT jsonb_build_object('id', r.id, 'rule', r.rule, 'revision', r.revision) FROM mail.senders r WHERE r.deleted_at IS NULL AND r.address = lower(m.from_address))) AS row
+      'rule', (SELECT jsonb_build_object('id', r.id, 'rule', r.rule, 'domain', r.domain, 'revision', r.revision) FROM mail.senders r WHERE r.deleted_at IS NULL AND r.address = lower(m.from_address)),
+      'things', (SELECT coalesce(jsonb_agg(jsonb_build_object('kind', i.kind, 'area', i.area, 'her_domain', i.her_domain)), '[]'::jsonb) FROM mail.items i WHERE i.deleted_at IS NULL AND i.message_ids ? m.id::text)) AS row
     FROM mail.messages m LEFT JOIN mail.sources s ON s.id = m.source_id WHERE m.id = $1 AND m.deleted_at IS NULL`, [id]))[0] ?? null
 
   // What was taken from one message: the items that came in through it and the things to do.

@@ -294,6 +294,19 @@ test('desk routes on lifeos_test: domains, Now, one thing in full, a taught send
     assert.equal((await call('/items/00000000-0000-0000-0000-000000000000')).status, 404)
   })
 
+  await t.test('messages say what they are about, and filter by domain', async () => {
+    const rows = (await call(`/messages?source=gmail-${mark}`)).body
+    const bySubject = Object.fromEntries(rows.map((row) => [row.subject, row.about]))
+    assert.deepEqual(bySubject['Your order EB-20431 has been dispatched'], { domains: ['home'], guessed: false })
+    assert.deepEqual(bySubject['An invitation to connect'], { domains: ['social'], guessed: false })
+    const home = (await call(`/messages?source=gmail-${mark}&domain=home`)).body
+    assert.deepEqual(home.map((row) => row.subject), ['Your order EB-20431 has been dispatched'])
+    const money = (await call(`/messages?source=gmail-${mark}&domain=money`)).body.map((row) => row.subject).sort()
+    assert.deepEqual(money, ['Your bill is ready', 'Your plan renews soon'])
+    const opened = (await call(`/messages/${home[0].id}`)).body
+    assert.deepEqual(opened.about, { domains: ['home'], guessed: false })
+  })
+
   await t.test('a taught sender files its things under her domain; her own choice on a thing wins over it', async () => {
     const taught = await call('/senders', 'POST', { address: `orders+${mark}@books.example.com`, rule: 'file', domain: 'money' })
     assert.equal(taught.status, 201)
