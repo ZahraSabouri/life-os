@@ -8,7 +8,7 @@
 - CP1: `scripts/privacy-scan.mjs` and the [inventory](briefs/stage-7-inventory.md).
 - CP2: one configuration (data and backup folders, port, address, keys from settings; `.env.example`, `postgres.example.json`).
 - **CP3 (done): the core runs on PostgreSQL.** Entries, people, rooms, settings and pictures' rows are in schema `core` of `lifeos` (migration `core/0001_core.sql`, owner column on every table). The move (`scripts/move-core-to-postgres.mjs`) backed up both sides, copied in one transaction and compared all 226 rows value by value. Before switching, the new code's answers were compared with the running app's for every entry, list, filter, People, settings and the calendar: identical, row order included. The SQLite file is untouched (same bytes after the switch) and nothing reads it.
-- Next: CP4, content out of code (Study's courses as data, "Cardiff Life" as Events for any city, the Guide and samples anyone's).
+- **CP4 under way.** Done (`[7-cp4] Study`): the summer course files, their tests and scripts, the crest, interview notes and the unused `rooms/study-hub` copy moved to `Life_OS_data/study/archive/summer-2026-source/` (99 files, checksums in the folder); the Study app reads what was summer-specific from the semester's records (`summer-rescue/src/data/semesterProfile.js`). Your autumn semester looks the same, minus two summer leftovers (an empty split panel on Progress, a "Data Mining" tile on the Planner). Next: "Cardiff Life" as Events for any city, then the Guide, labels, tests and examples.
 
 **Accepted 4 November ("yes to all"):** JobMap CP1, stage 5 Harvest and stage 6 the Desk ([session](sessions/2026-11-04-claude-code-6-desk-build.md)); the September backfill may go live once each batch passes on `lifeos_test`.
 
@@ -20,7 +20,7 @@ Nothing looks different, which is the point: open Today, Calendar, People and Jo
 
 ## Exact next step
 
-1. Claude Code: stage 7 CP4. Prompt: "Continue stage 7: CP4, content out of code."
+1. Claude Code: stage 7 CP4, continuing with Events. Prompt: "Continue stage 7: CP4, content out of code (Events, then the Guide, labels and tests)."
 2. Xar, when convenient: tell Cowork "Stage 6 import is live. Switch Integrate to mail/HARVEST.md (version 2, with the stage 6 kinds and states) and prepare the September backfill as weekly batches; try each on lifeos_test and show me before importing." (The 14:00 batch today already brought the first item.)
 
 ## Waiting on Xar
