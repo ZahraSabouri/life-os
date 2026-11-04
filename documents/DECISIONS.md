@@ -4,6 +4,13 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 4 November 2026 — Life OS is a product, not one person's handcraft; mail becomes typed things (Xar)
+
+- Xar, after seeing stage 5: "it's still full of text and looks like a loaded inbox just like my gmail account… each email should correctly be connected to what it is about… i dont want to miss any bit i can make use of… look at the problems like an infrastructure designer." And: "seeing claude's name and generic prompts that are not at all for this app. this should be a smart automation machine me and claude are developing together… the app is gonna have accounts, user management and networking like follow/connect stuff for different people that are gonna use it in the future. shouldn't be highly specialised for me only."
+- **Done the same day:** the Inbox names no assistant and hands out no prompts (`[5-fix]`). JobMap's CV and cover-letter helper waits for her decision.
+- **Proposed, waiting for her approval** (`briefs/stage-6-desk-draft.md`, clickable prototype linked there): the Desk (messages become typed things and signals, by domain, with triage), new types drawn from her own mail (orders and deliveries, bills and subscriptions, tenancy, people, opportunities beyond jobs, trips, application progress, official letters, account notices), then accounts (owners on every record, sign-in, sources per account, course content out of the code, Events for any city), then a network (follow, connect, share).
+- This changes "It's mine. Single user" in the Vision: private and self-owned stays; single-user does not. The Vision is rewritten with her when she approves.
+
 ## 3 November 2026 — Stage 5 Harvest approved: one way in, each part the writer of its own data (Xar with Claude Code)
 
 - Xar's answers: (1) events go to the Calendar only when she marks them going; (2) offers live in Budget as an Offers list; (3) the Gmail account index is a setting, default 1. On the review's changes: "you know how much i care about sensibility and integrity of data structure of the app and how much actions make sense. and reusablity of actions for this as an automated smart machine/app (life os/ job mapp). choose the best route based on that". On offers: "budget app if you think it's related. but if you think we need different integration even new parts etc, have a thought and let me know".
