@@ -238,3 +238,11 @@
 .mail-settings { display: grid; gap: 0.7rem; }
 .mail-settings input[type='number'] { width: 5rem; }
 .mail-senders { display: grid; gap: 0.3rem; color: var(--m-muted); font-size: 0.82rem; }
+
+/* ---- What came in, on Today (stage 5), in place of the digest headline ---- */
+.mail-came-in { margin: 0.8rem 0 0.2rem; }
+.mail-came-in h3 { display: flex; align-items: baseline; gap: 0.6rem; margin: 0 0 0.3rem; color: var(--m-accent-strong); font: 700 0.64rem/1.2 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase; }
+.mail-came-in h3 span { color: var(--m-muted); font: var(--m-text-weight) 0.78rem var(--m-font); letter-spacing: 0; text-transform: none; }
+.mail-came-in ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
+.mail-came-in li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.1rem 0.5rem; font-size: 0.86rem; }
+.mail-came-in li a { color: var(--m-ink); font-weight: 600; }

@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { MailError } from './repository.js'
 import { dateKey } from '../../../../shared/calendar.js'
 import { birthdayWishes, groupActions, parseOwe, peopleNamed, priorityOf } from '../../../../shared/mail.js'
-import { partOf, PARTS } from '../../../../shared/harvest.js'
+import { partOf, placeOf, PARTS } from '../../../../shared/harvest.js'
 
 // /api/mail. inbox is hosting/mail/inbox.mjs (status, scan); importer undoes batches; reads serves
 // the pages; findPeople reads the core's People (only read: Life OS never creates a person from mail);
@@ -41,17 +41,21 @@ export function createMailRouter({ repository, importer, inbox, reads, findPeopl
   router.get('/digests', handler(async (_req, res) => res.json({ digests: await reads.digests(), lastGathered: await reads.lastGathered() })))
 
   router.get('/actions', handler(async (_req, res) => { const { today, actions } = await allActions(); res.json({ today, actions }) }))
-  // Today, the envelope: the five most pressing, the latest headline, when it was last gathered.
+  // Today, the envelope: the five most pressing, what came in, when it was last harvested.
   router.get('/summary', handler(async (_req, res) => {
     const { today, actions } = await allActions()
     const groups = groupActions(actions, today)
     const open = [...groups.today, ...groups.week, ...groups.whenever]
-    const [digest] = await reads.digests(1)
     const lastGathered = await reads.lastGathered()
+    // What came in (stage 5), in place of the digest's headline: what came in today, and what
+    // closes soon (shared/harvest.js placeOf: vacancies and opportunities within a week, offers in
+    // their last two days), soonest first, with where each is now.
+    const open_ = await reads.items({ open: true, today })
+    const coming = open_.filter((item) => item.day === today || placeOf(item, today).today)
     res.json({
       today, top: open.slice(0, 5), open: open.length, pressing: open.filter((row) => ['urgent', 'high'].includes(priorityOf(row))).length,
-      headline: digest?.status === 'applied' ? digest.digest?.headline ?? '' : '', lastGathered,
-      staleDays: lastGathered ? Math.floor((now().getTime() - Date.parse(lastGathered)) / 86_400_000) : null,
+      cameIn: { today: open_.filter((item) => item.day === today).length, lines: await places(coming.slice(0, 6)), more: Math.max(0, coming.length - 6) },
+      lastGathered, staleDays: lastGathered ? Math.floor((now().getTime() - Date.parse(lastGathered)) / 86_400_000) : null,
     })
   }))
   // A line she owes: { text: "text Sam about Saturday" } or { kind, title, person_id, … }.

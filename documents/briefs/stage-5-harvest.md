@@ -118,8 +118,8 @@ Read back against her original request (everything in its place, the app working
 - **Commit:** `[5-cp6] Mail as a reading room: filters, folding, what was taken, working links`
 
 ### CP7: "Came in" on Today
-- [ ] `/api/mail/summary`: `cameIn` (items that came in today, vacancies and opportunities closing within 7 days, offers in their last 2 days) in place of the digest headline.
-- [ ] `InboxPanel.jsx`: the "Came in" lines in place of the headline.
+- [x] `/api/mail/summary`: `cameIn` (items that came in today, vacancies and opportunities closing within 7 days, offers in their last 2 days) in place of the digest headline.
+- [x] `InboxPanel.jsx`: the "Came in" lines in place of the headline.
 - **Done when:** Today shows factual "Came in" lines and no chat headline.
 - **Verify:** the mail page tests, `frontend/test/inbox-render.test.jsx`, the build, the browser.
 - **Commit:** `[5-cp7] Today: what came in, in place of the digest headline`

@@ -108,3 +108,16 @@ test('one day of the Harvest log: a factual line, what came in by area, to do, m
   const sources = renderToStaticMarkup(<SourcesPanel sources={[{ id: 's', label: 'Gmail', status: 'partial', window_to: '2026-11-03T07:00:00Z', messages: 797, coverage: 'Primary and Updates.' }]} lastGathered="2026-11-03T07:05:00Z" />)
   for (const words of ['Sources', 'Gmail', 'Partly read', 'to Tue 3 Nov, 07:00', '797 messages', 'Primary and Updates.', 'Last harvest Tue 3 Nov, 07:05']) assert.ok(sources.includes(words), words)
 })
+
+test('Today: what came in, as lines that lead to where each thing is; nothing when nothing came in', async () => {
+  const { CameInLines } = await import('../src/components/inbox/InboxPanel.jsx')
+  const cameIn = { today: 2, more: 3, lines: [
+    { id: 'i6', kind: 'offer', day: '2026-10-31', title: '20% off books', deadline: '2026-11-04' },
+    { id: 'i3', kind: 'vacancy', day: '2026-10-31', title: 'Graduate Data Analyst', deadline: '2026-11-07', place: { app: 'jobmap', href: '/jobmap#job=J1' } },
+  ] }
+  const markup = renderToStaticMarkup(<MemoryRouter><CameInLines cameIn={cameIn} /></MemoryRouter>)
+  for (const words of ['Came in', '2 today', 'Offer', '20% off books', 'Ends Wed 4 Nov', 'Vacancy', 'Closes Sat 7 Nov', '3 more']) assert.ok(markup.includes(words), words)
+  assert.ok(markup.includes('href="/jobmap#job=J1"'))
+  assert.ok(markup.includes('href="/inbox/log?day=2026-10-31&amp;item=i6"'))
+  assert.equal(renderToStaticMarkup(<MemoryRouter><CameInLines cameIn={{ today: 0, lines: [], more: 0 }} /></MemoryRouter>), '')
+})

@@ -173,6 +173,17 @@ test('harvest routes on lifeos_test: a part, places, the log, bulk Keep and Dism
     assert.equal((await call(`/items/${rows[1].id}`, 'PATCH', { revision: 1, status: 'kept' })).status, 409)
   })
 
+  await t.test('Today: what came in today and what closes soon, soonest first, at most six, never the digest headline', async () => {
+    const summary = (await call('/summary')).body
+    assert.equal('headline' in summary, false)
+    const { lines, more, today } = summary.cameIn
+    assert.ok(lines.length > 0 && lines.length <= 6 && Number.isInteger(more) && Number.isInteger(today))
+    const soon = (item) => (['vacancy', 'opportunity'].includes(item.kind) ? item.deadline >= '2026-11-03' && item.deadline <= '2026-11-09' : item.kind === 'offer' ? item.deadline >= '2026-11-03' && item.deadline <= '2026-11-04' : false)
+    assert.ok(lines.every((item) => item.day === '2026-11-03' || soon(item)), JSON.stringify(lines.map((item) => [item.kind, item.day, item.deadline])))
+    assert.ok(lines.every((item, index) => index === 0 || String(lines[index - 1].deadline ?? item.day) <= String(item.deadline ?? item.day)))
+    assert.ok(lines.filter((item) => item.kind === 'vacancy').every((item) => item.place))
+  })
+
   await t.test('the reading room: filters by area, what it led to, dates, priority, not opened; what was taken', async () => {
     const mine = (rows) => rows.filter((row) => row.source_id.endsWith(`-${mark}`)).map((row) => row.subject).sort()
     const list = async (search) => mine((await call(`/messages?${search}&source=`)).body)
