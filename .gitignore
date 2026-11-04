@@ -107,3 +107,6 @@ code/life-os/frontend/dist-next/
 
 # Harvest raw archive: private mail, course and web captures
 /harvest/
+
+# Private: the owner's markers for the privacy scan, and other private notes
+/.private/

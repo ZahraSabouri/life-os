@@ -22,8 +22,8 @@ Life OS's functionality is generic code; everything that is Xar's (her records, 
 ## Checkpoints
 
 ### CP1: the privacy scan and the inventory
-- [ ] `scripts/privacy-scan.mjs`: tracked files (or any folder) against generic patterns and the private markers in `.private/markers.txt` (untracked); file and line only, never the text; exit code 1 on any finding.
-- [ ] The inventory of what holds personal content, by part, and what each becomes (code made generic, data moved out, private document, left out of the public version): `documents/briefs/stage-7-inventory.md`.
+- [x] `scripts/privacy-scan.mjs`: tracked files (or any folder) against generic patterns and the private markers in `.private/markers.txt` (untracked); file and line only, never the text; exit code 1 on any finding.
+- [x] The inventory of what holds personal content, by part, and what each becomes (code made generic, data moved out, private document, left out of the public version): `documents/briefs/stage-7-inventory.md`, written by `scripts/privacy-inventory.mjs` (203 private, 12 to configure, 158 to make generic on 4 November).
 - **Commit:** `[7-cp1]`.
 
 ### CP2: one configuration

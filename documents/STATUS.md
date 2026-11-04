@@ -1,8 +1,12 @@
 # Life OS: status
 
-**Updated 4 November 2026 by Claude Code.** Branch: `stage/6-desk` (from `stage/5-harvest`, which is from `stage/jobmap-workflow`); local app http://127.0.0.1:47850, restarted on the new code. Standalone JobMap remains frozen.
+**Updated 4 November 2026 by Claude Code.** Branch: `stage/7-separation` (from `main`, which now holds JobMap CP1 and stages 5 and 6, merged locally, not pushed); local app http://127.0.0.1:47850. Standalone JobMap remains frozen.
 
 ## Now
+
+**Stage 7, code apart from data, is under way** ([brief](briefs/stage-7-separation.md)): still single-user; the core moves to PostgreSQL; a clean version of the app (MIT, all parts, none of Xar's data, fresh history) is published to a new GitHub repository she names before the push. CP1 done: `scripts/privacy-scan.mjs` and the [inventory](briefs/stage-7-inventory.md) (203 files private, 12 to configure, 158 to make generic). Next: CP2, one configuration.
+
+**Accepted 4 November ("yes to all"):** JobMap CP1, stage 5 Harvest and stage 6 the Desk; the September backfill may go live once each batch passes on `lifeos_test`.
 
 **Stage 6, the Desk, is built, CP1 to CP6** ([brief](briefs/stage-6-desk.md), [session](sessions/2026-11-04-claude-code-6-desk-build.md), [prototype](https://claude.ai/artifact/7RjsaJY8Trpf3GMeQj9tUy)). Mail becomes things, each in its domain (Work, Learning, Social, Money, Home, Health, Travel, Admin) and its own colour on every style. New kinds: application, order, bill, payment, subscription, tenancy, booking, appointment, official letter, document, account notice, person, and opportunities by form. Things move through states, and what happened is kept. Inbox opens on the **Desk** (Now, domains, cards, a drawer, Triage); **Messages** say what each is about (filed, or a marked guess). Applications offer the matching JobMap change. The app names no assistant and hands out no prompts (`[5-fix]`). The Desk fills when the first version 2 batch arrives; today it shows what was kept quiet this week.
 
