@@ -293,3 +293,66 @@ test('mail import v2 on lifeos_test: items with their places, links, her status,
     assert.equal((await pool.query('SELECT count(*)::int AS n FROM mail.items WHERE first_batch_id = $1 AND deleted_at IS NULL', [added.batchId])).rows[0].n, 0)
   })
 })
+
+// CP8: a backfill from 1 September to 3 November, one batch a week, oldest first; then mail first
+// stored under stand-in ids sent again under the provider's own ids.
+test('backfill on lifeos_test: weekly batches give one log page per day; re-sent mail updates, never duplicates', { skip: !enabled }, async (t) => {
+  const { postgresConfig, createPostgresPool } = await import('../../postgres.js')
+  const pool = createPostgresPool(postgresConfig(projectRoot), { database: 'lifeos_test', role: 'app' })
+  t.after(() => pool.end())
+  assert.equal((await pool.query('SELECT current_database() AS name')).rows[0].name, 'lifeos_test', 'Refusing to use a non-test database')
+  const repository = createMailRepository({ pool })
+  const importer = createMailImporter({ repository })
+  const { createMailReads } = await import('./reads.js')
+  const reads = createMailReads({ pool })
+  const mark = `${tag.slice(0, 4)}bf`
+  const source = { id: `gmail-${mark}`, label: 'Gmail', kind: 'gmail', route: 'connector', status: 'read', coverage: 'Made-up backfill.' }
+  const days = []
+  for (let at = Date.parse('2026-09-01T12:00:00Z'); at <= Date.parse('2026-11-03T12:00:00Z'); at += 86_400_000) days.push(new Date(at).toISOString().slice(0, 10))
+  const message = (day, n, id = `s:${mark}${n}`) => ({ ref: `m${n}`, source: source.id, sourceId: id, kind: 'email', receivedAt: `${day}T09:15:00Z`, from: { name: 'Course office', address: `office-${mark}@example.ac.uk` },
+    subject: `Notice ${day}`, summary: `Notice sent on ${day}.`, category: 'announcement', priority: 'normal', text: `Notice for ${day}.` })
+  const weeks = []
+  for (let start = 0; start < days.length; start += 7) weeks.push(days.slice(start, start + 7))
+  const batchOf = (week, w, messages) => ({ format: 'life-os.mail-batch', version: 2, runId: `2026-11-04-0800-${tag.slice(0, 4)}${String(w).padStart(2, '0')}`, gatheredAt: '2026-11-04T08:00:00Z',
+    agent: 'Made-up backfill for tests (not real mail)', sources: [{ ...source, window: { from: `${week[0]}T00:00:00Z`, to: `${week.at(-1)}T23:59:00Z` } }], messages, actions: [],
+    items: messages.map((entry, index) => ({ ref: `i${index + 1}`, key: `${source.id}:${entry.subject}:notice`, area: 'academic', kind: 'announcement', title: entry.subject, summary: entry.summary, day: entry.receivedAt.slice(0, 10), messageRefs: [entry.ref] })) })
+  const batches = weeks.map((week, w) => batchOf(week, w, week.map((day, index) => message(day, w * 7 + index + 1))))
+
+  await t.test('ten weekly batches, oldest first: 64 messages and 64 items, one log day each', async () => {
+    let messages = 0
+    let items = 0
+    for (const batch of batches) {
+      const result = await importer.apply(batch)
+      messages += result.counts.messages.new
+      items += result.counts.items.new
+    }
+    assert.equal(batches.length, 10)
+    assert.equal(days.length, 64)
+    assert.equal(messages, 64)
+    assert.equal(items, 64)
+    const logged = new Set((await reads.days({ limit: 2000 })).map((entry) => entry.day))
+    assert.ok(days.every((day) => logged.has(day)))
+    const september = await reads.day('2026-09-14')
+    assert.deepEqual(september.items.filter((row) => row.source_id === source.id).map((row) => row.title), ['Notice 2026-09-14'])
+    assert.ok(september.runs.some((run) => run.run_id === batches[1].runId))
+    assert.equal((await importer.apply(batches[0])).repeated, true)
+  })
+
+  await t.test('the same mail sent again under the provider’s own ids updates the stored copies', async () => {
+    const week = weeks[0]
+    const resent = batchOf(week, 90, week.map((day, index) => ({ ...message(day, index + 1, `18f${mark}${index}`.replace(/[^0-9a-f]/g, '0').padEnd(16, '0')), text: `Notice for ${day}, in full.` })))
+    resent.runId = `2026-11-04-0900-${tag.slice(0, 4)}90`
+    const result = await importer.apply(resent)
+    assert.deepEqual(result.counts.messages, { new: 0, updated: 7, unchanged: 0 })
+    assert.deepEqual(result.counts.items, { new: 0, updated: 0, unchanged: 7 })
+    const stored = (await pool.query('SELECT source_message_id, body FROM mail.messages WHERE source_id = $1 AND deleted_at IS NULL ORDER BY received_at', [source.id])).rows
+    assert.equal(stored.length, 64)
+    assert.ok(stored.slice(0, 7).every((row) => /^18f[0-9a-f]+$/.test(row.source_message_id) && row.body.endsWith('in full.')))
+    assert.ok(stored.slice(7).every((row) => row.source_message_id.startsWith('s:')))
+    // Two messages that only look alike (same minute, same sender, different subject) stay two.
+    const other = batchOf(week, 91, [{ ...message(week[0], 1, `other-${mark}`), subject: 'A different notice' }])
+    other.runId = `2026-11-04-0910-${tag.slice(0, 4)}91`
+    other.items = []
+    assert.equal((await importer.apply(other)).counts.messages.new, 1)
+  })
+})

@@ -1,6 +1,6 @@
 # Stage 5: Harvest, so mail becomes the app's own data
 
-**Status:** approved by Xar on 3 November 2026 (after review against the code; see "What changed from the draft"). Building.
+**Status:** approved by Xar on 3 November 2026 (after review against the code; see "What changed from the draft"). Built 3–4 November, CP1 to CP8; waiting for Xar's acceptance and the real backfill.
 **Branch:** `stage/5-harvest`, created from `stage/jobmap-workflow` at `fe8e792` (main plus JobMap CP1 only), not from `main`: the live app runs from this folder, and branching from `main` would have put pre-CP1 JobMap files back under the running app while Xar is still reviewing CP1. If CP1 changes before it is merged, rebase this branch onto the result.
 
 ## Goal
@@ -125,9 +125,10 @@ Read back against her original request (everything in its place, the app working
 - **Commit:** `[5-cp7] Today: what came in, in place of the digest headline`
 
 ### CP8: ready for the backfill
-- [ ] `scripts/mail-import.mjs` takes v2 (tried on `lifeos_test` first, as now).
-- [ ] A made-up backfill spanning several weeks, on `lifeos_test`: one log page per day; re-sending a message already stored (same source and id) updates it rather than duplicating it; a repeat changes nothing.
-- [ ] `mail/HARVEST.md`: the backfill procedure for Cowork (from `mail/archive/` and `harvest/raw/`, one batch per day or per week, oldest first).
+- [x] `scripts/mail-import.mjs` takes v2 (tried on `lifeos_test` first, as now).
+- [x] A made-up backfill spanning several weeks, on `lifeos_test`: one log page per day; re-sending a message already stored (same source and id) updates it rather than duplicating it; a repeat changes nothing.
+- [x] `mail/HARVEST.md`: the backfill procedure for Cowork (from `mail/archive/` and `harvest/raw/`, one batch per week, oldest first, the stored source ids).
+- [x] Added: the importer knows a message already stored under another id (same source, same minute, same sender, same subject) and updates it, so the backfill never doubles the 1,171 stored messages; `scripts/mail-import.mjs` refuses a made-up batch for the live database; the checker accepts a byte-order mark.
 - [ ] **Waiting on Xar and Cowork:** the real 1 September to 3 November backfill, made by Cowork's Integrate run and imported only after Xar says yes.
 - **Verify:** the full mail suite on `lifeos_test`, the build; Xar in the browser.
 - **Commit:** `[5-cp8] Ready for the September backfill`

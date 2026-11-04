@@ -1,4 +1,5 @@
-// Imports one gathered mail batch by hand, for the first real batch (briefs/mail-and-admin.md, Data safety).
+// Imports one mail batch (version 1, or 2 with items: mail/HARVEST.md) by hand: the first real batch
+// (briefs/mail-and-admin.md, Data safety), and a backfill (briefs/stage-5-harvest.md, CP8).
 //   node scripts/mail-import.mjs lifeos_test <file>   try it: the file stays where it is
 //   node scripts/mail-import.mjs lifeos <file>        only once that run is on lifeos_test; backs up, then moves the file to processed/
 //   node scripts/mail-import.mjs lifeos --live on     after that, let Life OS import new batches by itself
@@ -23,6 +24,11 @@ if (file === '--live') {
 }
 
 const batch = JSON.parse(fs.readFileSync(file, 'utf8').replace(/^﻿/, ''))
+// Made-up batches (the examples, test backfills) say so in their agent, and never reach her data.
+if (database === 'lifeos' && /not real mail|example data|made-up|for tests/i.test(String(batch.agent ?? ''))) {
+  console.error('Not imported: this batch says it is made up (its agent), so it only goes to lifeos_test.')
+  process.exit(1)
+}
 if (database === 'lifeos') {
   const test = createPostgresPool(postgresConfig(projectRoot), { database: 'lifeos_test' })
   const tried = (await test.query("SELECT 1 FROM mail.batches WHERE run_id = $1 AND status = 'applied'", [batch.runId])).rowCount

@@ -140,7 +140,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const bytes = fs.statSync(file).size
   if (bytes > MAX_BYTES) { console.error(`Too big: ${bytes} bytes; at most ${MAX_BYTES}. Leave out the text of low-priority mail.`); process.exit(1) }
   let batch
-  try { batch = JSON.parse(fs.readFileSync(file, 'utf8')) } catch (error) { console.error(`Not readable JSON: ${error.message}`); process.exit(1) }
+  // A byte-order mark (Windows PowerShell's UTF-8) is not part of the batch; the importer drops it too.
+  try { batch = JSON.parse(fs.readFileSync(file, 'utf8').replace(/^﻿/, '')) } catch (error) { console.error(`Not readable JSON: ${error.message}`); process.exit(1) }
   const { ok, problems, warnings } = checkBatch(batch)
   for (const warning of warnings) console.log(`Note: ${warning}`)
   if (!ok) { console.error(`${problems.length} problem${problems.length === 1 ? '' : 's'}:`); for (const problem of problems) console.error(`- ${problem}`); process.exit(1) }

@@ -81,7 +81,7 @@ export function createMailImporter({ repository, backup = async () => null, find
       }
       const idByRef = new Map()
       for (const message of batch.messages) {
-        const found = (await client.query('SELECT to_jsonb(t) AS row FROM mail.messages t WHERE source_id = $1 AND source_message_id = $2 AND deleted_at IS NULL', [message.source, message.sourceId])).rows[0]?.row ?? null
+        const found = await sameMessage(client, message)
         const values = messageValues(message, v2)
         const after = !found ? await write(client, 'messages', null, { ...values, first_batch_id: batchId, last_batch_id: batchId }, { batchId, before: null })
           : differs('messages', found, values) ? await write(client, 'messages', found.id, { ...values, last_batch_id: batchId }, { batchId, before: found }) : null
@@ -164,6 +164,20 @@ export function createMailImporter({ repository, backup = async () => null, find
   }
 
   return { apply, undo }
+}
+
+// The stored copy of a message: by its source and id; or else, for a message first stored under
+// another id (a backfill that now has the provider's own id), the one message from the same
+// source in the same minute with the same sender and subject. Then the newer id is kept.
+async function sameMessage(client, message) {
+  const byId = (await client.query('SELECT to_jsonb(t) AS row FROM mail.messages t WHERE source_id = $1 AND source_message_id = $2 AND deleted_at IS NULL', [message.source, message.sourceId])).rows[0]?.row
+  if (byId) return byId
+  const sender = lower(message.from?.address)
+  if (!sender && !message.subject) return null
+  const alike = (await client.query(`SELECT to_jsonb(t) AS row FROM mail.messages t WHERE source_id = $1 AND deleted_at IS NULL
+    AND date_trunc('minute', received_at) = date_trunc('minute', $2::timestamptz) AND lower(coalesce(from_address, '')) = $3 AND subject = $4 LIMIT 2`,
+  [message.source, message.receivedAt, sender, message.subject ?? ''])).rows
+  return alike.length === 1 ? alike[0].row : null
 }
 
 // The receipt's words: "messages 3 new, 0 updated, 1 unchanged; actions …; items …".

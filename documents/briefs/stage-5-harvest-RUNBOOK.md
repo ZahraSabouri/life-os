@@ -2,6 +2,8 @@
 
 This runbook is for Xar. It goes with `stage-5-harvest.md` in this folder.
 
+**4 November:** sessions 1 and 2 are done (planning, then CP1 to CP8 in one sitting). Next is section 4: coming back to Cowork.
+
 ## 0. Before the first session (5 minutes)
 1. Open VS Code on `C:\Users\ctrlz\Documents\Personal\Projects\Life_OS`, then open the Claude Code panel.
 2. Make sure Life OS is running (**Start Life OS.cmd**) so Claude Code can check its work in the browser.
