@@ -154,6 +154,28 @@ export function createMailRepository({ pool }) {
     }, { change: 'hers', before: null }))
   }
 
+  // Her rule for a sender (stage 5): fold their mail to one line a day, or hide it. One rule per
+  // address; setting it again changes it. Removing it is checked against the revision she saw.
+  async function setSender({ address, name = null, rule } = {}) {
+    const value = String(address ?? '').trim().toLowerCase()
+    if (!/^[^\s@<>]+@[^\s@<>]+$/.test(value) || value.length > 320) throw new MailError(400, 'Give the sender’s address')
+    if (!['fold', 'hide'].includes(rule)) throw new MailError(400, 'Say fold or hide')
+    return transaction(async (client) => {
+      const found = (await client.query('SELECT to_jsonb(r) AS row FROM mail.senders r WHERE address = $1 AND deleted_at IS NULL FOR UPDATE', [value])).rows[0]?.row ?? null
+      const values = { address: value, name: name ? String(name).slice(0, 200) : found?.name ?? null, rule }
+      return (await write(client, 'senders', null, values, { change: 'hers', before: found })) ?? found
+    })
+  }
+  async function removeSender(id, revision) {
+    if (!Number.isInteger(revision)) throw new MailError(400, 'Send the revision you last saw')
+    return transaction(async (client) => {
+      const before = (await client.query('SELECT to_jsonb(r) AS row FROM mail.senders r WHERE id = $1 AND deleted_at IS NULL FOR UPDATE', [id])).rows[0]?.row
+      if (!before) throw new MailError(404, 'Not found')
+      if (before.revision !== revision) throw new MailError(409, 'This changed since you opened it. Reload to see the latest.', { revision: before.revision })
+      return write(client, 'senders', id, { deleted_at: new Date().toISOString() }, { change: 'hers', before })
+    })
+  }
+
   // Opening a message in Life OS: set once, no revision needed.
   async function markSeen(id) {
     return transaction(async (client) => {
@@ -170,5 +192,5 @@ export function createMailRepository({ pool }) {
       (SELECT count(*)::int FROM mail.actions WHERE deleted_at IS NULL AND status = 'open') AS open_actions,
       (SELECT count(*)::int FROM mail.actions WHERE deleted_at IS NULL AND status = 'done') AS done_actions`)).rows[0]
 
-  return { pool, transaction, patchHers, createHers, actOnBirthday, markSeen, lastBatch, batches, counts }
+  return { pool, transaction, patchHers, createHers, actOnBirthday, markSeen, setSender, removeSender, lastBatch, batches, counts }
 }

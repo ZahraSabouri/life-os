@@ -11,7 +11,7 @@ const message = {
   id: 'm1', revision: 1, subject: 'Saturday?', from_name: 'Sam Taylor', from_address: 'sam.taylor@example.com', to_list: [{ name: 'You', address: 'you@example.com' }],
   received_at: '2026-10-27T19:05:00Z', source_label: 'Gmail', source_kind: 'gmail', summary: 'Sam asks about Saturday.', priority: 'high', priority_reason: 'This weekend.',
   body: 'Hi <b>there</b>\n<script>alert("x")</script>\n<img src=x onerror=alert(1)>\nSee https://example.com/plan and javascript:alert(1)\nسلام، شنبه می‌آیی؟',
-  link: 'https://mail.google.com/mail/u/0/#inbox/abc', attachments: [{ name: 'Plan.pdf' }],
+  source_message_id: '18c2f0a1b2c3d4e5', link: 'https://mail.google.com/mail/u/0/#inbox/abc', attachments: [{ name: 'Plan.pdf' }],
 }
 
 test('a message body is drawn as text: HTML and scripts never become elements', () => {
@@ -24,11 +24,37 @@ test('a message body is drawn as text: HTML and scripts never become elements', 
 })
 
 test('the reader shows who, when, the summary, the text, and the way to the original', () => {
-  const markup = renderToStaticMarkup(<MessageReader message={message} onBack={() => {}} />)
-  for (const words of ['Saturday?', 'Sam Taylor', 'Sam asks about Saturday.', 'This weekend.', 'Open in Gmail', 'I need to reply', 'Write it with Claude', 'Hide', 'Plan.pdf', 'Back to the list', 'سلام']) assert.ok(markup.includes(words), words)
+  const markup = renderToStaticMarkup(<MemoryRouter><MessageReader message={message} onBack={() => {}} /></MemoryRouter>)
+  for (const words of ['Saturday?', 'Sam Taylor', 'Sam asks about Saturday.', 'This weekend.', 'Open in Gmail', 'I need to reply', 'Write it with Claude', 'Hide', 'Plan.pdf', 'Back to the list', 'سلام', 'Everything from sam.taylor@example.com:', 'Fold']) assert.ok(markup.includes(words), words)
+  // Gmail opens in her own account (setting mail-gmail-account, 1 until she changes it), from the message's id.
+  assert.ok(markup.includes('href="https://mail.google.com/mail/u/1/#all/18c2f0a1b2c3d4e5"'))
   assert.ok(!/<script/i.test(markup))
-  const empty = renderToStaticMarkup(<MessageReader message={{ ...message, body: null }} />)
-  assert.match(empty, /Only a summary was gathered/)
+  const empty = renderToStaticMarkup(<MemoryRouter><MessageReader message={{ ...message, body: null }} /></MemoryRouter>)
+  assert.match(empty, /Only a summary was harvested/)
+})
+
+test('the reader: what was taken from it, its real links, and no broken Outlook link', () => {
+  const outlook = { ...message, source_kind: 'outlook', source_label: 'University Outlook', source_message_id: 'x:3f9a1c0d2b7e4a51', link: 'https://outlook.office.com/mail/', rule: { id: 'r1', rule: 'fold', revision: 1 },
+    links: [{ href: 'https://jobs.example.com/view/1001', text: 'Graduate Data Analyst' }, { href: 'https://example.com/unsubscribe?u=1', text: 'Unsubscribe' }],
+    taken: { actions: [{ id: 'a1', title: 'Pay the library fine', due: '2026-11-15' }], items: [{ id: 'i3', revision: 1, kind: 'vacancy', area: 'jobs', status: 'new', day: '2026-10-31', title: 'Graduate Data Analyst', summary: 'Cardiff.', deadline: '2026-11-07', place: { app: 'jobmap', href: '/jobmap#job=J1' } }] } }
+  const markup = renderToStaticMarkup(<MemoryRouter><MessageReader message={outlook} /></MemoryRouter>)
+  for (const words of ['Taken from this', 'Pay the library fine', 'Waiting on you', 'Graduate Data Analyst', 'In JobMap', 'Links', 'jobs.example.com', 'Folded: sam.taylor@example.com', 'Show as usual']) assert.ok(markup.includes(words), words)
+  assert.ok(!markup.includes('Open in Outlook'))
+  assert.ok(!markup.includes('Unsubscribe'))
+})
+
+test('foldDay: newsletters, notifications and folded senders become one line per sender; a lone one stays itself', async () => {
+  const { foldDay } = await import('../src/components/inbox/InboxMail.jsx')
+  const rows = [
+    { id: '1', category: 'needs-you', from_address: 'jo@example.ac.uk' },
+    { id: '2', category: 'newsletter', from_address: 'news@shop.example.com' },
+    { id: '3', category: 'automated', from_address: 'alerts@jobs.example.com' },
+    { id: '4', category: 'newsletter', from_address: 'NEWS@shop.example.com' },
+    { id: '5', category: 'conversation', from_address: 'sam@example.com', rule: 'fold' },
+    { id: '6', category: 'conversation', from_address: 'sam@example.com', rule: 'fold' },
+  ]
+  const folded = foldDay(rows)
+  assert.deepEqual(folded.map((entry) => entry.row ? entry.row.id : entry.group.rows.map((row) => row.id).join('+')), ['1', '2+4', '3', '5+6'])
 })
 
 test('a thing she owes shows its kind and priority in words, and its buttons', () => {

@@ -215,3 +215,26 @@
   .log-day .mail-back { display: inline-block; }
   .log-days { max-height: none; }
 }
+
+/* ---- Mail as a reading room (stage 5): more filters, tick boxes, folded senders, what was taken ---- */
+.mail-more-filters { margin-top: 0.1rem; }
+.mail-date { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--m-muted); font-size: 0.82rem; }
+.mail-date input { padding: 0.25rem 0.4rem; border: 1px solid var(--m-line-strong); border-radius: var(--m-radius-control, 0.4rem); background: var(--m-card-fill, transparent); color: var(--m-ink); font: var(--m-text-weight) 0.82rem var(--m-font); }
+.mail-clear { padding: 0; border: 0; background: none; color: var(--m-accent-strong); font: 600 0.82rem var(--m-font); cursor: pointer; }
+.mail-bulk { margin-top: 0; }
+.mail-row-line { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 0.3rem; }
+.mail-row-line > input[type='checkbox'] { margin-top: 0.75rem; }
+.mail-fold > ul { list-style: none; margin: 0.1rem 0 0.3rem 1.4rem; padding: 0 0 0 0.6rem; border-left: 1px solid var(--m-line); display: grid; gap: 0.1rem; }
+.mail-fold-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 0.6rem; width: 100%; padding: 0.45rem 0.55rem; border: 1px dashed var(--m-line); border-radius: var(--m-radius-sm, 8px); background: none; color: var(--m-muted); text-align: left; cursor: pointer; font: inherit; font-size: 0.82rem; }
+.mail-fold-line .mail-row-from { color: var(--m-ink); }
+.mail-fold-line[aria-expanded='true'], .mail-fold-line:hover { border-style: solid; background: var(--m-sunken); }
+.mail-taken, .mail-links { margin: 0.9rem 0; }
+.mail-taken > h3, .mail-links > h3 { margin: 0 0 0.3rem; padding-bottom: 0.2rem; border-bottom: 1px solid var(--m-line-strong); color: var(--m-accent-strong); font: 700 0.66rem/1.2 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase; }
+.mail-links ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; font-size: 0.86rem; }
+.mail-links a { color: var(--m-accent-strong); }
+.mail-links small { color: var(--m-muted); }
+.mail-sender-rule { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.8rem; margin: 0.6rem 0 0; color: var(--m-muted); font-size: 0.8rem; }
+.mail-sender-rule button, .mail-senders button { padding: 0; border: 0; background: none; color: var(--m-accent-strong); font: 600 0.8rem var(--m-font); cursor: pointer; }
+.mail-settings { display: grid; gap: 0.7rem; }
+.mail-settings input[type='number'] { width: 5rem; }
+.mail-senders { display: grid; gap: 0.3rem; color: var(--m-muted); font-size: 0.82rem; }

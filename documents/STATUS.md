@@ -10,7 +10,7 @@
 
 ## Exact next step
 
-CP1 to CP5 are done (`[5-cp1]` format and routing rule; `[5-cp2]` items stored; `[5-cp3]` Calendar "Came in" layer and Plan to go; `[5-cp4]` places in JobMap and Cardiff Life and a "Came in" count on each part; `[5-cp5]` Inbox → Harvest log in place of Digests: the sources, one page per day, and Everything with filters and Keep or Dismiss for several at once). Next: CP6, Mail as a reading room with its filters, folding and sender rules. Xar added on 3 November: a "Came in" strip on each part's page, the sources panel on the log, sender rules in Mail, app suggestions to `mail/suggestions.md` (in the brief).
+CP1 to CP6 are done (`[5-cp1]` format and routing rule; `[5-cp2]` items stored; `[5-cp3]` Calendar "Came in" layer and Plan to go; `[5-cp4]` places in JobMap and Cardiff Life and a "Came in" count on each part; `[5-cp5]` the Harvest log with Everything; `[5-cp6]` Mail as a reading room: area, priority, what it led to, dates, not opened; newsletters and folded senders one line a day; fold or hide a sender; several hidden or marked opened at once; what was taken; working Gmail links from the account setting, Outlook links only when real). Next: CP7, "Came in" on Today. Xar added on 3 November: a "Came in" strip on each part's page, the sources panel on the log, sender rules in Mail, app suggestions to `mail/suggestions.md` (in the brief).
 
 **Next prompt:** "Read AGENTS.md and documents/STATUS.md, then do the next unchecked checkpoint of documents/briefs/stage-5-harvest.md on branch stage/5-harvest."
 

@@ -172,4 +172,55 @@ test('harvest routes on lifeos_test: a part, places, the log, bulk Keep and Dism
     assert.equal((await call('/items/bulk', 'POST', { status: 'kept', items: [{ id: rows[1].id }] })).status, 400)
     assert.equal((await call(`/items/${rows[1].id}`, 'PATCH', { revision: 1, status: 'kept' })).status, 409)
   })
+
+  await t.test('the reading room: filters by area, what it led to, dates, priority, not opened; what was taken', async () => {
+    const mine = (rows) => rows.filter((row) => row.source_id.endsWith(`-${mark}`)).map((row) => row.subject).sort()
+    const list = async (search) => mine((await call(`/messages?${search}&source=`)).body)
+    assert.deepEqual(await list('area=jobs'), ['3 new jobs for data analyst in Cardiff'])
+    assert.deepEqual(await list('area=research'), ['3 new jobs for data analyst in Cardiff'])
+    assert.deepEqual(await list('has=actions'), ['Library fine: GBP 4.50'])
+    assert.equal((await list('has=items')).length, 6)
+    assert.deepEqual(await list('from=2026-11-01&to=2026-11-01'), ['Data science hackathon: applications open', 'Library fine: GBP 4.50'])
+    assert.deepEqual(await list('priority=high'), ['DS101: week 7 lab moved'])
+    const alerts = (await call('/messages?area=jobs')).body.find((row) => row.source_id === `gmail-${mark}`)
+    assert.equal(alerts.taken, 3)
+    assert.equal(alerts.owed, 0)
+    const opened = (await call(`/messages/${alerts.id}`)).body
+    assert.deepEqual(opened.taken.items.map((item) => item.kind), ['vacancy', 'vacancy', 'vacancy'])
+    assert.ok(opened.taken.items.every((item) => item.place))
+    assert.equal(opened.links.length, 3)
+    assert.ok(!(await list('notseen=1')).includes('3 new jobs for data analyst in Cardiff'), 'opened now')
+  })
+
+  await t.test('sender rules: fold marks the rows, hide leaves them out until hidden ones are shown, and both can be undone', async () => {
+    const address = `alerts-${mark}@jobs.example.com`
+    await pool.query('UPDATE mail.messages SET from_address = $1 WHERE source_id = $2 AND source_message_id = $3', [address, `gmail-${mark}`, '18c2f0a1b2c3d4e5'])
+    const folded = await call('/senders', 'POST', { address: address.toUpperCase(), name: 'Job alerts', rule: 'fold' })
+    assert.equal(folded.status, 201)
+    assert.equal(folded.body.address, address)
+    const row = async (search = '') => (await call(`/messages?source=gmail-${mark}${search}`)).body.find((entry) => entry.from_address === address)
+    assert.equal((await row()).rule, 'fold')
+    const hidden = await call('/senders', 'POST', { address, rule: 'hide' })
+    assert.equal(hidden.body.id, folded.body.id)
+    assert.equal(await row(), undefined)
+    assert.equal((await row('&hidden=1')).rule, 'hide')
+    assert.ok((await call('/senders')).body.senders.some((entry) => entry.address === address && entry.rule === 'hide'))
+    assert.equal((await call(`/senders/${hidden.body.id}/remove`, 'POST', { revision: folded.body.revision })).status, 409)
+    assert.equal((await call(`/senders/${hidden.body.id}/remove`, 'POST', { revision: hidden.body.revision })).status, 200)
+    assert.equal((await row()).rule, null)
+    assert.equal((await call('/senders', 'POST', { address: 'not an address', rule: 'hide' })).status, 400)
+  })
+
+  await t.test('several messages at once: hide, show again, mark as opened; a changed one is named', async () => {
+    const rows = (await call(`/messages?source=uni-outlook-${mark}`)).body
+    assert.equal(rows.length, 2)
+    const hide = await call('/messages/bulk', 'POST', { change: 'hide', messages: rows.map((entry) => ({ id: entry.id, revision: entry.revision })) })
+    assert.deepEqual(hide.body, { saved: 2, changed: [] })
+    assert.equal((await call(`/messages?source=uni-outlook-${mark}`)).body.length, 0)
+    const again = await call('/messages/bulk', 'POST', { change: 'show', messages: rows.map((entry) => ({ id: entry.id, revision: entry.revision })) })
+    assert.deepEqual(again.body, { saved: 0, changed: rows.map((entry) => entry.id) })
+    const fresh = (await call(`/messages?source=uni-outlook-${mark}&hidden=1`)).body
+    assert.deepEqual((await call('/messages/bulk', 'POST', { change: 'show', messages: fresh.map((entry) => ({ id: entry.id, revision: entry.revision })) })).body.saved, 2)
+    assert.equal((await call('/messages/bulk', 'POST', { change: 'delete', messages: fresh })).status, 400)
+  })
 })

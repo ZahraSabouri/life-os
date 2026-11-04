@@ -78,14 +78,39 @@ export function createMailRouter({ repository, importer, inbox, reads, findPeopl
 
   router.get('/messages', handler(async (req, res) => {
     const query = req.query ?? {}
-    res.json(await reads.messages({ source: String(query.source ?? ''), filter: String(query.filter ?? 'all'), unread: query.unread === '1', hidden: query.hidden === '1', noise: query.noise === '1', q: String(query.q ?? '') }))
+    const word = (key) => String(query[key] ?? '')
+    res.json(await reads.messages({ source: word('source'), filter: word('filter') || 'all', unread: query.unread === '1', hidden: query.hidden === '1', noise: query.noise === '1', q: word('q'),
+      area: word('area'), from: word('from'), to: word('to'), priority: word('priority'), has: word('has'), notSeen: query.notseen === '1' }))
   }))
+  // Hide, show again, or mark as opened, for several at once: each with the revision she saw; one
+  // that changed since is left as it is and named.
+  router.post('/messages/bulk', handler(async (req, res) => {
+    const { messages: chosen = [], change } = req.body ?? {}
+    const fields = { hide: { hidden_at: now().toISOString() }, show: { hidden_at: null }, seen: { seen_at: now().toISOString() } }[change]
+    if (!fields) throw new MailError(400, 'Say hide, show or seen')
+    if (!Array.isArray(chosen) || !chosen.length || chosen.length > 1000) throw new MailError(400, 'Choose between 1 and 1000 messages')
+    if (!chosen.every((entry) => entry?.id && Number.isInteger(Number(entry.revision)))) throw new MailError(400, 'Send each message with the revision you last saw')
+    let saved = 0
+    const changed = []
+    for (const entry of chosen) {
+      try { await repository.patchHers('messages', String(entry.id), Number(entry.revision), fields); saved += 1 }
+      catch (error) { if (error.status === 409 || error.status === 404) changed.push(String(entry.id)); else throw error }
+    }
+    res.json({ saved, changed })
+  }))
+  // One message, opened: with what was taken from it (its items, with where they are now, and its
+  // things to do).
   router.get('/messages/:id', handler(async (req, res) => {
     const found = await reads.message(req.params.id)
     if (!found) throw new MailError(404, 'Not found')
     const seen = found.seen_at ? found : await repository.markSeen(found.id)
-    res.json({ ...found, seen_at: seen.seen_at, revision: seen.revision })
+    const taken = await reads.taken(found.id)
+    res.json({ ...found, seen_at: seen.seen_at, revision: seen.revision, taken: { items: await places(taken.items), actions: taken.actions } })
   }))
+  // Her sender rules: fold or hide everything from one address.
+  router.get('/senders', handler(async (_req, res) => res.json({ senders: await reads.senders() })))
+  router.post('/senders', handler(async (req, res) => res.status(201).json(await repository.setSender(req.body ?? {}))))
+  router.post('/senders/:id/remove', handler(async (req, res) => res.json(await repository.removeSender(req.params.id, revisionOf(req.body)))))
   router.patch('/messages/:id', handler(async (req, res) => res.json(await repository.patchHers('messages', req.params.id, revisionOf(req.body), without(req.body, 'revision')))))
   // What came in, with where each vacancy and event is now. ?part= one part's (shared/harvest.js
   // partOf), ?day= one London day's, ?open=1 only what is not dismissed or over.

@@ -20,11 +20,25 @@ export function createMailReads({ pool }) {
 
   const action = async (id) => (await rows('SELECT to_jsonb(a) AS row FROM mail.actions a WHERE id = $1 AND deleted_at IS NULL', [id]))[0] ?? null
 
-  async function messages({ source = '', filter = 'all', unread = false, hidden = false, noise = false, q = '', limit = 300 } = {}) {
+  // The reading room's filters (stage 5) besides source, category and words: area (of what was
+  // taken from it), from and to (London days), priority (hers if she set one), has (items: led to
+  // something that came in; actions: to something to do; deadline), notSeen (not opened in Life
+  // OS). A sender she hides is left out unless hidden ones are shown; each row says its sender's
+  // rule, and how many items and things to do were taken from it.
+  async function messages({ source = '', filter = 'all', unread = false, hidden = false, noise = false, q = '', area = '', from = '', to = '', priority = '', has = '', notSeen = false, limit = 300 } = {}) {
     const where = ['m.deleted_at IS NULL']
     const values = []
     const add = (value) => { values.push(value); return `$${values.length}` }
-    if (!hidden) where.push('m.hidden_at IS NULL')
+    const day = /^\d{4}-\d{2}-\d{2}$/
+    if (!hidden) where.push("m.hidden_at IS NULL AND NOT EXISTS (SELECT 1 FROM mail.senders r WHERE r.deleted_at IS NULL AND r.rule = 'hide' AND r.address = lower(m.from_address))")
+    if (area) where.push(`EXISTS (SELECT 1 FROM mail.items i WHERE i.deleted_at IS NULL AND i.message_ids ? m.id::text AND i.area = ${add(area)})`)
+    if (day.test(from)) where.push(`(m.received_at AT TIME ZONE 'Europe/London')::date >= ${add(from)}::date`)
+    if (day.test(to)) where.push(`(m.received_at AT TIME ZONE 'Europe/London')::date <= ${add(to)}::date`)
+    if (['urgent', 'high', 'normal', 'low'].includes(priority)) where.push(`coalesce(m.her_priority, m.priority) = ${add(priority)}`)
+    if (has === 'items') where.push('EXISTS (SELECT 1 FROM mail.items i WHERE i.deleted_at IS NULL AND i.message_ids ? m.id::text)')
+    else if (has === 'actions') where.push('EXISTS (SELECT 1 FROM mail.actions a WHERE a.deleted_at IS NULL AND a.message_ids ? m.id::text)')
+    else if (has === 'deadline') where.push("(m.deadline IS NOT NULL OR EXISTS (SELECT 1 FROM mail.items i WHERE i.deleted_at IS NULL AND i.message_ids ? m.id::text AND i.deadline IS NOT NULL))")
+    if (notSeen) where.push('m.seen_at IS NULL')
     if (source) where.push(`m.source_id = ${add(source)}`)
     if (unread) where.push('m.unread_at_source IS TRUE')
     if (filter === 'deadline') where.push("(m.category = 'deadline' OR m.deadline IS NOT NULL)")
@@ -37,13 +51,29 @@ export function createMailReads({ pool }) {
       const document = "coalesce(m.subject, '') || ' ' || coalesce(m.from_name, '') || ' ' || coalesce(m.from_address, '') || ' ' || coalesce(m.summary, '') || ' ' || coalesce(m.body, '')"
       where.push(`(to_tsvector('simple', ${document}) @@ plainto_tsquery('simple', ${add(words)}) OR ${document} ILIKE ${add(like(words))})`)
     }
-    return rows(`SELECT jsonb_build_object(${LIST_COLUMNS.split(',').map((column) => `'${column.trim()}', m.${column.trim()}`).join(', ')}, 'source_label', s.label, 'source_kind', s.kind) AS row
+    return rows(`SELECT jsonb_build_object(${LIST_COLUMNS.split(',').map((column) => `'${column.trim()}', m.${column.trim()}`).join(', ')}, 'source_label', s.label, 'source_kind', s.kind,
+        'rule', (SELECT r.rule FROM mail.senders r WHERE r.deleted_at IS NULL AND r.address = lower(m.from_address)),
+        'taken', (SELECT count(*)::int FROM mail.items i WHERE i.deleted_at IS NULL AND i.message_ids ? m.id::text),
+        'owed', (SELECT count(*)::int FROM mail.actions a WHERE a.deleted_at IS NULL AND a.message_ids ? m.id::text)) AS row
       FROM mail.messages m LEFT JOIN mail.sources s ON s.id = m.source_id
       WHERE ${where.join(' AND ')} ORDER BY m.pinned DESC, m.received_at DESC LIMIT ${Math.max(1, Math.min(1000, Number(limit) || 300))}`, values)
   }
 
-  const message = async (id) => (await rows(`SELECT to_jsonb(m) || jsonb_build_object('source_label', s.label, 'source_kind', s.kind) AS row
+  const message = async (id) => (await rows(`SELECT to_jsonb(m) || jsonb_build_object('source_label', s.label, 'source_kind', s.kind,
+      'rule', (SELECT jsonb_build_object('id', r.id, 'rule', r.rule, 'revision', r.revision) FROM mail.senders r WHERE r.deleted_at IS NULL AND r.address = lower(m.from_address))) AS row
     FROM mail.messages m LEFT JOIN mail.sources s ON s.id = m.source_id WHERE m.id = $1 AND m.deleted_at IS NULL`, [id]))[0] ?? null
+
+  // What was taken from one message: the items that came in through it and the things to do.
+  async function taken(id) {
+    const [items_, actions_] = await Promise.all([
+      rows("SELECT to_jsonb(i) AS row FROM mail.items i WHERE i.deleted_at IS NULL AND i.message_ids ? $1 ORDER BY i.deadline NULLS LAST, i.title", [String(id)]),
+      rows("SELECT to_jsonb(a) AS row FROM mail.actions a WHERE a.deleted_at IS NULL AND a.message_ids ? $1 ORDER BY a.due NULLS LAST, a.title", [String(id)]),
+    ])
+    return { items: items_, actions: actions_ }
+  }
+
+  // Her rules for senders, newest first.
+  const senders = () => rows('SELECT to_jsonb(r) AS row FROM mail.senders r WHERE r.deleted_at IS NULL ORDER BY r.updated_at DESC')
 
   // A core person: what is open with them, and the last few messages from their addresses.
   async function person(personId, contact = '') {
@@ -154,5 +184,5 @@ export function createMailReads({ pool }) {
     return { actions: open, announcements, batchId: latest?.id ?? null }
   }
 
-  return { actions, action, messages, message, person, digests, lastGathered, dated, datedItems, items, days, day, sources, forNotices }
+  return { actions, action, messages, message, taken, senders, person, digests, lastGathered, dated, datedItems, items, days, day, sources, forNotices }
 }

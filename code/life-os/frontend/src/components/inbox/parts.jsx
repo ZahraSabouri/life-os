@@ -3,19 +3,36 @@
 import { useEffect, useRef, useState } from 'react'
 import { apiFetch } from '../../lib/api.js'
 import { useSetting } from '../../lib/settings.js'
-import { addDay, london, saveAction } from '../../lib/useMail.js'
+import { addDay, london, mailChanged, saveAction, useMail } from '../../lib/useMail.js'
 import { KIND_NAMES, PRIORITIES, priorityOf, replyPrompt, textPieces, titleOf } from '@shared/mail.js'
+import { GMAIL_ACCOUNT_KEY } from '@shared/harvest.js'
 
 const PRIORITY_NAMES = { urgent: 'Urgent', high: 'High', normal: 'Normal', low: 'Low' }
 export const SIGN_NAME_KEY = 'mail-sign-name'
 
 // What the Inbox remembers for her, at the end of the Harvest log: the name Claude signs replies
-// with (it was on the Digests page).
+// with, which Gmail account "Open in Gmail" opens (u/1 by default: the second account signed in
+// in her browser), and the senders she folds or hides, each with the way back.
 export function MailSettings() {
   const [name, setName] = useSetting(SIGN_NAME_KEY, '')
+  const [account, setAccount] = useSetting(GMAIL_ACCOUNT_KEY, 1)
+  const senders = useMail('/api/mail/senders')
+  const [said, setSaid] = useState('')
+  async function remove(rule) {
+    try { await apiFetch(`/api/mail/senders/${encodeURIComponent(rule.id)}/remove`, { method: 'POST', body: JSON.stringify({ revision: rule.revision }) }); mailChanged(); senders.reload(); setSaid(`${rule.address} shows as usual again.`) }
+    catch (failure) { setSaid(`Not saved: ${failure.message}`) }
+  }
+  const rules = senders.data?.senders ?? []
   return <details className="day-panel mail-settings">
     <summary>Settings</summary>
     <label className="mail-sign"><span>Your name for signing replies Claude writes</span><input value={name ?? ''} onChange={(event) => setName(event.target.value)} maxLength={80} placeholder="Leave empty to sign them yourself" /></label>
+    <label className="mail-sign"><span>Your Gmail account number in this browser (the number after /u/ in Gmail’s address)</span>
+      <input type="number" min="0" max="9" value={account ?? 1} onChange={(event) => { const value = Number(event.target.value); if (Number.isInteger(value) && value >= 0 && value < 10) setAccount(value) }} /></label>
+    <div className="mail-senders"><span>Senders you fold or hide</span>
+      {rules.length ? <ul className="log-lines">{rules.map((rule) => <li key={rule.id}><b>{rule.name || rule.address}</b><span>{rule.address} · {rule.rule === 'hide' ? 'hidden' : 'folded'}</span><button type="button" onClick={() => remove(rule)}>Show as usual</button></li>)}</ul>
+        : <p className="day-quiet">None. In Mail, a message’s sender can be folded to one line a day, or hidden.</p>}
+      {said ? <p role="status">{said}</p> : null}
+    </div>
   </details>
 }
 

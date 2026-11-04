@@ -109,10 +109,10 @@ Read back against her original request (everything in its place, the app working
 - **Commit:** `[5-cp5] The Harvest log: one page per day, in place of Digests`
 
 ### CP6: Mail as a reading room
-- [ ] `reads.messages`: area (through its items), date range, priority, "has a deadline", "led to something" and "not opened in Life OS" filters; newsletters and automated mail folded to one line per sender per day; several messages hidden or marked seen at once.
-- [ ] The reader: "Taken from this" (its items and actions, each with where it went), the cleaned text, its real links; "Open in Gmail" from the setting, "Open in Outlook" only with the message's own address, otherwise nothing.
-- [ ] Sender rules: "Fold this sender" and "Hide this sender" from the reader, and a list to undo them (`mail.senders`, revision checked).
-- [ ] The Gmail account setting on the Mail page (`mail-gmail-account`, default 1).
+- [x] `reads.messages`: area (through its items), date range, priority, "has a deadline", "led to something" and "not opened in Life OS" filters; newsletters and automated mail folded to one line per sender per day; several messages hidden or marked seen at once.
+- [x] The reader: "Taken from this" (its items and actions, each with where it went), the cleaned text, its real links; "Open in Gmail" from the setting, "Open in Outlook" only with the message's own address, otherwise nothing.
+- [x] Sender rules: "Fold this sender" and "Hide this sender" from the reader, and a list to undo them (`mail.senders`, revision checked).
+- [x] The Gmail account setting on the Mail page (`mail-gmail-account`, default 1).
 - **Done when:** a Gmail message opens with a `u/1` link, an Outlook message without its own address shows no link, twenty job alerts from one sender fold to one line, and a hidden sender's mail leaves the list until "Show hidden".
 - **Verify:** `frontend/test/inbox-render.test.jsx`, the mail page tests, the build, the browser.
 - **Commit:** `[5-cp6] Mail as a reading room: filters, folding, what was taken, working links`
