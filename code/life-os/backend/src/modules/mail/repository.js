@@ -3,6 +3,7 @@
 // changed only through patchHers(), with a revision check (409 on a stale save).
 import { randomUUID } from 'node:crypto'
 import { areaOf, birthdayKey } from '../../../../shared/mail.js'
+import { DOMAINS } from '../../../../shared/harvest.js'
 
 export class MailError extends Error {
   constructor(status, message, details) {
@@ -34,15 +35,17 @@ export const COLUMNS = {
     start_day: 'date', end_day: 'date', all_day: 'text', deadline: 'date', location: 'text', url: 'text', canonical_url: 'text',
     details: 'json', source_id: 'text', message_ids: 'json', action_ids: 'json', found_url: 'text', found_at: 'ts',
     first_batch_id: 'text', last_batch_id: 'text', status: 'text', seen_at: 'ts', deleted_at: 'ts',
+    // Stage 6: where a moving thing is, what an opportunity is, its reference and amount; her domain.
+    state: 'text', form: 'text', external_ref: 'text', amount_pence: 'text', currency: 'text', her_domain: 'text',
   },
-  // Her rules for a sender's mail: fold or hide. Every field is hers.
-  senders: { address: 'text', name: 'text', rule: 'text', deleted_at: 'ts' },
+  // Her rules for a sender's mail: fold, hide, or only file it under a domain. Every field is hers.
+  senders: { address: 'text', name: 'text', rule: 'text', domain: 'text', deleted_at: 'ts' },
 }
 
 export const HER_FIELDS = {
   messages: ['her_priority', 'seen_at', 'hidden_at', 'pinned'],
   actions: ['status', 'snoozed_until', 'done_at', 'done_by', 'her_priority', 'her_title', 'her_note', 'reopened'],
-  items: ['status', 'seen_at'],
+  items: ['status', 'seen_at', 'her_domain'],
 }
 
 const stable = (value) => Array.isArray(value) ? `[${value.map(stable).join(',')}]`
@@ -110,6 +113,8 @@ export function createMailRepository({ pool }) {
     const unknown = Object.keys(fields).filter((key) => !HER_FIELDS[table].includes(key))
     if (unknown.length) throw new MailError(400, `These can't be changed here: ${unknown.join(', ')}`)
     if (!Number.isInteger(revision)) throw new MailError(400, 'Send the revision you last saw')
+    if (table === 'items' && 'her_domain' in fields && fields.her_domain !== null && !DOMAINS.includes(fields.her_domain)) throw new MailError(400, `A domain is one of ${DOMAINS.join(', ')}`)
+    if (table === 'items' && 'status' in fields && !['new', 'kept', 'dismissed'].includes(fields.status)) throw new MailError(400, 'Say new, kept or dismissed')
     return transaction(async (client) => {
       const before = (await client.query(`SELECT to_jsonb(t) AS row FROM mail.${table} t WHERE id = $1 AND deleted_at IS NULL FOR UPDATE`, [id])).rows[0]?.row
       if (!before) throw new MailError(404, 'Not found')
@@ -156,13 +161,16 @@ export function createMailRepository({ pool }) {
 
   // Her rule for a sender (stage 5): fold their mail to one line a day, or hide it. One rule per
   // address; setting it again changes it. Removing it is checked against the revision she saw.
-  async function setSender({ address, name = null, rule } = {}) {
+  // A domain (stage 6) files everything from the sender there; rule "file" does only that.
+  async function setSender({ address, name = null, rule, domain } = {}) {
     const value = String(address ?? '').trim().toLowerCase()
     if (!/^[^\s@<>]+@[^\s@<>]+$/.test(value) || value.length > 320) throw new MailError(400, 'Give the sender’s address')
-    if (!['fold', 'hide'].includes(rule)) throw new MailError(400, 'Say fold or hide')
+    if (!['fold', 'hide', 'file'].includes(rule)) throw new MailError(400, 'Say fold, hide or file')
+    if (domain !== undefined && domain !== null && !DOMAINS.includes(domain)) throw new MailError(400, `A domain is one of ${DOMAINS.join(', ')}`)
+    if (rule === 'file' && !domain) throw new MailError(400, 'Say which domain to file it under')
     return transaction(async (client) => {
       const found = (await client.query('SELECT to_jsonb(r) AS row FROM mail.senders r WHERE address = $1 AND deleted_at IS NULL FOR UPDATE', [value])).rows[0]?.row ?? null
-      const values = { address: value, name: name ? String(name).slice(0, 200) : found?.name ?? null, rule }
+      const values = { address: value, name: name ? String(name).slice(0, 200) : found?.name ?? null, rule, domain: domain === undefined ? found?.domain ?? null : domain }
       return (await write(client, 'senders', null, values, { change: 'hers', before: found })) ?? found
     })
   }

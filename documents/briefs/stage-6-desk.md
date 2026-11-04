@@ -32,8 +32,8 @@ Accounts and sign-in (stage 7), network (stage 8), the app's own drafting (repla
 - **Verify:** `node --test mail/check-batch.test.mjs code/life-os/shared/harvest.test.js`. **Commit:** `[6-cp1]`.
 
 ### CP2: storing states and what happened
-- [ ] `migrations/mail/0003_things.sql` (dump first): items gain `state`, `form`, `external_ref`, `amount_pence`, `currency`, `owner_id` and her `her_domain`; kinds and areas widened; `mail.item_events` (owner, item, at, state, note, messages, batch); senders gain `domain`.
-- [ ] Importer: a new thing, or a changed state, appends an event; undo removes a run's events first.
+- [x] `migrations/mail/0003_things.sql` (dump first): items gain `state`, `form`, `external_ref`, `amount_pence`, `currency`, `owner_id` and her `her_domain`; kinds and areas widened; `mail.item_events` (owner, item, at, state, note, messages, batch); senders gain `domain`.
+- [x] Importer: a new thing, or a changed state, appends an event; undo removes a run's events first.
 - **Verify:** mail suites on `lifeos_test`; migrate `lifeos`. **Commit:** `[6-cp2]`.
 
 ### CP3: the Desk's server

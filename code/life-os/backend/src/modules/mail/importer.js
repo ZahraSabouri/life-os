@@ -55,7 +55,10 @@ const itemValues = (item, { messageIds, actionIds, sourceId }) => ({
   url: item.url ?? null, canonical_url: item.url ? canonicalUrl(item.url) || null : null,
   details: Object.fromEntries(DETAILS.filter((key) => item[key] !== undefined).map((key) => [key, item[key]])),
   source_id: sourceId, message_ids: messageIds, action_ids: actionIds, found_url: item.foundAt?.url ?? null, found_at: item.foundAt?.checkedAt ?? null,
+  // Stage 6. A batch that leaves the state out leaves the stored one as it is (it is added below).
+  form: item.form ?? null, external_ref: item.reference ?? null, amount_pence: item.amountPence ?? null, currency: item.currency ?? null,
 })
+const union = (...lists) => [...new Set(lists.flat().filter(Boolean).map(String))]
 
 export function createMailImporter({ repository, backup = async () => null, findPeople = () => [], log = () => {} }) {
   const { transaction } = repository
@@ -111,17 +114,27 @@ export function createMailImporter({ repository, backup = async () => null, find
         tally('actions', found, after)
         actionIdByRef.set(action.ref, (after ?? found).id)
       }
-      // What came in. Her status (kept, dismissed) and when she saw it are never written here.
+      // What came in. Her status (kept, dismissed), her domain and when she saw it are never written
+      // here. A thing sent again keeps every message that told of it, and its first source; a new
+      // thing, or a new state, is kept as what happened, at the time of the message that brought it.
       const sourceOf = new Map(batch.messages.map((message) => [message.ref, message.source]))
+      const receivedOf = new Map(batch.messages.map((message) => [message.ref, message.receivedAt]))
       for (const item of batch.items ?? []) {
         const found = (await client.query('SELECT to_jsonb(t) AS row FROM mail.items t WHERE dedupe_key = $1 AND deleted_at IS NULL', [item.key])).rows[0]?.row ?? null
+        const messageIds = (item.messageRefs ?? []).map((ref) => idByRef.get(ref))
         const values = itemValues(item, {
-          messageIds: (item.messageRefs ?? []).map((ref) => idByRef.get(ref)), actionIds: (item.actionRefs ?? []).map((ref) => actionIdByRef.get(ref)),
-          sourceId: sourceOf.get(item.messageRefs?.[0]) ?? null,
+          messageIds: union(found?.message_ids ?? [], messageIds), actionIds: union(found?.action_ids ?? [], (item.actionRefs ?? []).map((ref) => actionIdByRef.get(ref))),
+          sourceId: found?.source_id ?? sourceOf.get(item.messageRefs?.[0]) ?? null,
         })
+        values.state = item.state ?? found?.state ?? null
         const after = !found ? await write(client, 'items', null, { ...values, dedupe_key: item.key, first_batch_id: batchId, last_batch_id: batchId }, { batchId, before: null })
           : differs('items', found, values) ? await write(client, 'items', found.id, { ...values, last_batch_id: batchId }, { batchId, before: found }) : null
         tally('items', found, after)
+        if (!found || (item.state && item.state !== found.state)) {
+          const at = (item.messageRefs ?? []).map((ref) => receivedOf.get(ref)).filter(Boolean).sort()[0] ?? item.foundAt?.checkedAt ?? batch.gatheredAt
+          await client.query('INSERT INTO mail.item_events (item_id, at, state, note, message_ids, batch_id) VALUES ($1, $2, $3, $4, $5, $6)',
+            [(after ?? found).id, at, values.state, item.summary, JSON.stringify(union(messageIds)), batchId])
+        }
       }
       counts.urgent = (await client.query("SELECT count(*)::int AS n FROM mail.actions WHERE last_batch_id = $1 AND status = 'open' AND coalesce(her_priority, priority) = 'urgent' AND deleted_at IS NULL", [batchId])).rows[0].n
       await client.query('UPDATE mail.batches SET counts = $2 WHERE id = $1', [batchId, JSON.stringify(counts)])
@@ -157,6 +170,7 @@ export function createMailImporter({ repository, backup = async () => null, find
           : { deleted_at: new Date().toISOString() }
         await write(client, record.table, record.id, values, { batchId, change: 'undo' })
       }
+      await client.query('UPDATE mail.item_events SET undone_at = now() WHERE batch_id = $1 AND undone_at IS NULL', [batchId])
       await client.query("UPDATE mail.batches SET status = 'undone', undone_at = now() WHERE id = $1", [batchId])
       log(`mail: batch undone: ${last.size} records put back`)
       return { undone: true, records: last.size }

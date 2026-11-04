@@ -356,3 +356,106 @@ test('backfill on lifeos_test: weekly batches give one log page per day; re-sent
     assert.equal((await importer.apply(other)).counts.messages.new, 1)
   })
 })
+
+// Stage 6: things that move. An order is dispatched, then delivered; an application reaches a test,
+// then is unsuccessful. Each step is kept as what happened; undo takes a run's steps back.
+const kindsExample = JSON.parse(fs.readFileSync(path.join(projectRoot, 'mail/example-batch-v2-kinds.json'), 'utf8'))
+test('lifecycles on lifeos_test: states move, what happened is kept, evidence adds up, undo takes a step back', { skip: !enabled }, async (t) => {
+  const { postgresConfig, createPostgresPool } = await import('../../postgres.js')
+  const pool = createPostgresPool(postgresConfig(projectRoot), { database: 'lifeos_test', role: 'app' })
+  t.after(() => pool.end())
+  assert.equal((await pool.query('SELECT current_database() AS name')).rows[0].name, 'lifeos_test', 'Refusing to use a non-test database')
+  const repository = createMailRepository({ pool })
+  const importer = createMailImporter({ repository })
+  const mark = `${tag.slice(0, 4)}lc`
+  let run = 0
+  const tagged = (edit = () => {}) => {
+    const batch = structuredClone(kindsExample)
+    batch.runId = `2026-11-03-0700-${tag.slice(0, 4)}${String(run++).padStart(2, '0')}`
+    batch.sources.forEach((source) => { source.id = `${source.id}-${mark}` })
+    batch.messages.forEach((message) => { message.source = `${message.source}-${mark}` })
+    batch.actions.forEach((entry) => { entry.dedupeKey = `${entry.dedupeKey}:${mark}` })
+    batch.items.forEach((item) => { item.key = `${item.key}:${mark}` })
+    edit(batch)
+    return batch
+  }
+  const item = async (key) => (await pool.query('SELECT * FROM mail.items WHERE dedupe_key = $1 AND deleted_at IS NULL', [`${key}:${mark}`])).rows[0]
+  const events = async (id) => (await pool.query('SELECT state, note, message_ids, undone_at FROM mail.item_events WHERE item_id = $1 ORDER BY at, id', [id])).rows
+  const orderKey = 'gmail:order:books.example.com:EB-20431'
+  const applicationKey = 'gmail:application:northbridge.example.com:data-analyst-intern'
+
+  await t.test('the first run: eleven things, each with what happened first; amounts, references and forms kept', async () => {
+    const result = await importer.apply(tagged())
+    assert.deepEqual(result.counts.items, { new: 11, updated: 0, unchanged: 0 })
+    const order = await item(orderKey)
+    assert.equal(order.state, 'dispatched')
+    assert.equal(order.external_ref, 'EB-20431')
+    assert.equal(Number(order.amount_pence), 2399)
+    assert.equal(order.currency, 'GBP')
+    assert.equal(order.owner_id, 'owner')
+    assert.deepEqual((await events(order.id)).map((event) => event.state), ['dispatched'])
+    assert.equal((await item('gmail:opportunity:wid.example.org:scholarship-2026')).form, 'scholarship')
+    assert.equal((await item('gmail:person:network.example.com:example-talent-recruiter')).state, null)
+  })
+
+  let second
+  await t.test('a later run moves them on: delivered, unsuccessful; each message kept as evidence', async () => {
+    second = await importer.apply(tagged((batch) => {
+      batch.messages = [
+        { ref: 'm1', source: `gmail-${mark}`, sourceId: '18d10a0000000020', kind: 'email', receivedAt: '2026-11-04T12:40:00Z', from: { name: 'Example Books', address: 'orders@books.example.com' }, subject: 'Delivered: order EB-20431', summary: 'Order EB-20431 was delivered.', category: 'automated', priority: 'low' },
+        { ref: 'm2', source: `gmail-${mark}`, sourceId: '18d10a0000000021', kind: 'email', receivedAt: '2026-11-09T10:00:00Z', from: { name: 'Northbridge Careers', address: 'careers@northbridge.example.com' }, subject: 'Your application', summary: 'The Data Analyst Intern application is not progressing.', category: 'fyi', priority: 'normal' },
+      ]
+      batch.actions = []
+      batch.items = [
+        { ...kindsExample.items[0], key: `${orderKey}:${mark}`, state: 'delivered', summary: 'Delivered on Wednesday 4 November; returns until 1 December.', day: '2026-11-04', messageRefs: ['m1'] },
+        { ...kindsExample.items[1], key: `${applicationKey}:${mark}`, state: 'unsuccessful', summary: 'Not progressing after the online test.', day: '2026-11-09', messageRefs: ['m2'], actionRefs: [] },
+      ]
+    }))
+    assert.deepEqual(second.counts.items, { new: 0, updated: 2, unchanged: 0 })
+    const order = await item(orderKey)
+    assert.equal(order.state, 'delivered')
+    assert.equal(order.message_ids.length, 2, 'both messages are its evidence')
+    assert.deepEqual((await events(order.id)).map((event) => event.state), ['dispatched', 'delivered'])
+    const application = await item(applicationKey)
+    assert.equal(application.state, 'unsuccessful')
+    assert.equal(application.action_ids.length, 1, 'the test it led to is still linked')
+  })
+
+  await t.test('a run that leaves the state out keeps it, and adds no step', async () => {
+    const result = await importer.apply(tagged((batch) => {
+      batch.messages = batch.messages.slice(0, 1)
+      batch.actions = []
+      batch.items = [{ ...kindsExample.items[0], key: `${orderKey}:${mark}`, summary: 'Delivered; returns until 1 December.', day: '2026-11-02', messageRefs: ['m1'] }]
+      delete batch.items[0].state
+    }))
+    assert.equal(result.counts.items.updated, 1)
+    const order = await item(orderKey)
+    assert.equal(order.state, 'delivered')
+    assert.equal((await events(order.id)).length, 2)
+    await importer.undo(result.batchId)
+  })
+
+  await t.test('her domain is hers: checked, and an import never writes it', async () => {
+    const order = await item(orderKey)
+    const moved = await repository.patchHers('items', order.id, order.revision, { her_domain: 'money' })
+    assert.equal(moved.her_domain, 'money')
+    await assert.rejects(repository.patchHers('items', order.id, moved.revision, { her_domain: 'nowhere' }), { status: 400 })
+    await assert.rejects(repository.patchHers('items', order.id, moved.revision, { status: 'archived' }), { status: 400 })
+    await importer.apply(tagged((batch) => { batch.actions = []; batch.items = [{ ...kindsExample.items[0], key: `${orderKey}:${mark}`, state: 'delivered', summary: 'Delivered.' }] }))
+    assert.equal((await item(orderKey)).her_domain, 'money')
+  })
+
+  await t.test('undo of a run takes its step back: the state returns and its events are marked undone', async () => {
+    const latest = await importer.apply(tagged((batch) => {
+      batch.messages = [{ ref: 'm1', source: `gmail-${mark}`, sourceId: '18d10a0000000030', kind: 'email', receivedAt: '2026-11-12T09:00:00Z', from: { name: 'Northbridge Careers', address: 'careers@northbridge.example.com' }, subject: 'Application withdrawn', summary: 'The application was withdrawn.', category: 'fyi', priority: 'low' }]
+      batch.actions = []
+      batch.items = [{ ...kindsExample.items[1], key: `${applicationKey}:${mark}`, state: 'withdrawn', summary: 'Withdrawn.', day: '2026-11-12', messageRefs: ['m1'], actionRefs: [] }]
+    }))
+    const application = await item(applicationKey)
+    assert.equal(application.state, 'withdrawn')
+    await importer.undo(latest.batchId)
+    assert.equal((await item(applicationKey)).state, 'unsuccessful')
+    const steps = await events(application.id)
+    assert.deepEqual(steps.map((event) => [event.state, Boolean(event.undone_at)]), [['test', false], ['unsuccessful', false], ['withdrawn', true]])
+  })
+})
