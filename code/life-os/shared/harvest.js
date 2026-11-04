@@ -1,54 +1,129 @@
-// What a harvest brings besides mail and things to do: items (a vacancy, an event, an announcement,
-// a material, an offer, a dated note), and the one rule for where each shows. The batch checker,
-// the server, the pages and the agents' instructions (mail/HARVEST.md) all go by this file.
+// What a harvest brings besides mail and things to do: things (a vacancy, an application, an order,
+// a bill, an event, a booking…), each with a kind, an area, a domain and, for kinds that move, a
+// state; and the one rule for where each shows. The batch checker, the server, the pages and the
+// harvest's instructions (mail/HARVEST.md) all go by this file. Nothing here is about one person.
 import { addDays, dateKey, isDateKey } from './calendar.js'
 
-export const AREAS = ['admin', 'academic', 'jobs', 'research', 'events', 'money', 'perks', 'health', 'home']
-export const AREA_NAMES = { admin: 'Admin', academic: 'Study', jobs: 'Jobs', research: 'Research', events: 'Events', money: 'Money', perks: 'Perks', health: 'Health', home: 'Home' }
-export const KINDS = ['vacancy', 'opportunity', 'event', 'announcement', 'material', 'offer', 'info']
+export const AREAS = ['admin', 'academic', 'jobs', 'research', 'events', 'people', 'money', 'perks', 'health', 'home', 'travel']
+export const AREA_NAMES = { admin: 'Admin', academic: 'Study', jobs: 'Jobs', research: 'Research', events: 'Events', people: 'People', money: 'Money', perks: 'Perks', health: 'Health', home: 'Home', travel: 'Travel' }
+export const KINDS = ['vacancy', 'application', 'opportunity', 'event', 'announcement', 'material', 'offer', 'bill', 'payment', 'subscription', 'order', 'tenancy',
+  'booking', 'appointment', 'official', 'document', 'account', 'person', 'info']
 const KIND_WORDS = {
-  vacancy: ['vacancy', 'vacancies'], opportunity: ['opportunity', 'opportunities'], event: ['event', 'events'], announcement: ['announcement', 'announcements'],
-  material: ['material', 'materials'], offer: ['offer', 'offers'], info: ['note', 'notes'],
+  vacancy: ['vacancy', 'vacancies'], application: ['application', 'applications'], opportunity: ['opportunity', 'opportunities'], event: ['event', 'events'],
+  announcement: ['announcement', 'announcements'], material: ['material', 'materials'], offer: ['offer', 'offers'], bill: ['bill', 'bills'], payment: ['payment', 'payments'],
+  subscription: ['subscription', 'subscriptions'], order: ['order', 'orders'], tenancy: ['housing matter', 'housing matters'], booking: ['booking', 'bookings'],
+  appointment: ['appointment', 'appointments'], official: ['official letter', 'official letters'], document: ['document', 'documents'], account: ['account notice', 'account notices'],
+  person: ['person', 'people'], info: ['note', 'notes'],
 }
 export const KIND_NAMES = Object.fromEntries(KINDS.map((kind) => [kind, KIND_WORDS[kind][0].replace(/^./, (letter) => letter.toUpperCase())]))
 
 // The areas a kind can belong to; a kind not listed here can be in any area.
-const KIND_AREAS = { vacancy: ['jobs', 'research'], material: ['academic'], offer: ['perks', 'money', 'home', 'health'] }
+const KIND_AREAS = {
+  vacancy: ['jobs', 'research'], application: ['jobs', 'research', 'academic'], material: ['academic'], offer: ['perks', 'money', 'home', 'health'],
+  bill: ['money', 'home', 'health', 'admin'], payment: ['money'], subscription: ['money'], order: ['home', 'money'], tenancy: ['home'], booking: ['travel', 'events', 'health'],
+  appointment: ['health', 'admin', 'academic'], official: ['admin'], document: ['admin', 'academic', 'health', 'home'], account: ['admin'], person: ['people', 'jobs', 'academic'],
+}
 export const fitsArea = (kind, area) => KINDS.includes(kind) && AREAS.includes(area) && (!KIND_AREAS[kind] || KIND_AREAS[kind].includes(area))
 
-// The calendar area an item's area is drawn in.
-export const CALENDAR_AREA = { admin: 'admin', academic: 'study', jobs: 'career', research: 'career', events: 'events', money: 'money', perks: 'money', health: 'body', home: 'home' }
+// What an opportunity is, when it is not a job.
+export const FORMS = ['hackathon', 'competition', 'research', 'scholarship', 'volunteering', 'course', 'programme', 'other']
+export const FORM_NAMES = { hackathon: 'Hackathon', competition: 'Competition', research: 'Research post', scholarship: 'Scholarship', volunteering: 'Volunteering', course: 'Course', programme: 'Programme', other: 'Opportunity' }
+
+// The stages a thing moves through, for kinds that move. Each change a harvest brings is kept as an
+// event, so a thing can show what happened and when.
+export const STATES = {
+  vacancy: ['open', 'closed'],
+  application: ['applied', 'received', 'test', 'interview', 'offer', 'unsuccessful', 'withdrawn'],
+  event: ['on', 'changed', 'cancelled'],
+  order: ['ordered', 'dispatched', 'out-for-delivery', 'delivered', 'return-started', 'returned', 'refunded', 'cancelled'],
+  bill: ['due', 'paid', 'overdue'],
+  payment: ['paid', 'refunded', 'failed'],
+  subscription: ['active', 'renewing', 'cancelled', 'ended'],
+  booking: ['booked', 'changed', 'cancelled'],
+  appointment: ['booked', 'changed', 'cancelled', 'done'],
+  tenancy: ['notice', 'due', 'done'],
+  official: ['received', 'due', 'done'],
+}
+export const fitsState = (kind, state) => Boolean(STATES[kind]?.includes(state))
+export const stateName = (state) => String(state ?? '').replace(/-/g, ' ').replace(/^./, (letter) => letter.toUpperCase())
+
+// The eight domains of a life, each with its own colour (--d-<domain> in styles/palettes.css). A
+// thing's domain comes from its kind when the kind says it, else from its area; she can move a
+// thing (her_domain) or teach a sender's domain, and those win.
+export const DOMAINS = ['work', 'learning', 'social', 'money', 'home', 'health', 'travel', 'admin']
+export const DOMAIN_NAMES = { work: 'Work', learning: 'Learning', social: 'Social', money: 'Money', home: 'Home', health: 'Health', travel: 'Travel', admin: 'Admin' }
+const KIND_DOMAIN = {
+  vacancy: 'work', application: 'work', material: 'learning', offer: 'money', bill: 'money', payment: 'money', subscription: 'money', order: 'home', tenancy: 'home',
+  booking: 'travel', appointment: 'health', official: 'admin', document: 'admin', account: 'admin', person: 'social',
+}
+const AREA_DOMAIN = { academic: 'learning', jobs: 'work', research: 'work', events: 'social', people: 'social', money: 'money', perks: 'money', home: 'home', health: 'health', travel: 'travel', admin: 'admin' }
+export function domainOf(item, { senderDomain = '' } = {}) {
+  const chosen = item?.her_domain || senderDomain
+  if (DOMAINS.includes(chosen)) return chosen
+  return KIND_DOMAIN[item?.kind] ?? AREA_DOMAIN[item?.area] ?? 'admin'
+}
+
+// A message nothing was filed from yet: its domain guessed from words in its subject, sender and
+// summary, marked as a guess. A sender's taught domain comes first; more specific words before
+// general ones (an application update is Work even when it mentions an event).
+const GUESSES = [
+  ['work', /application (received|update|status|unsuccessful)|thank you for (applying|your application)|interview|assessment cent|online test|shortlisted|\bjobs?\b|vacanc|hiring|career|graduate (scheme|programme)|internship|recruit|\bphd\b|studentship|research (post|assistant|associate)/i],
+  ['home', /\border\b|dispatched|delivered|delivery|shipped|parcel|tracking|courier|return (label|request)|tenancy|landlord|letting|accommodation|inspection/i],
+  ['travel', /booking|reservation|flight|train\b|journey|e-?ticket|itinerary|hotel|railcard|check-?in/i],
+  ['health', /appointment|\bgp\b|\bnhs\b|prescription|dentist|vaccin|pharmacy|clinic|optician/i],
+  ['money', /invoice|receipt|payment|statement|\bbank\b|direct debit|\bbill\b|subscription|renew|free trial|refund|% off|\bsale\b|discount|voucher|promo|cashback/i],
+  ['admin', /\bvisa\b|\bbrp\b|ukvi|home office|hmrc|council tax|tv licen|dvla|electoral|national insurance|verify|verification|password|sign-?in|security (alert|code)|new device/i],
+  ['learning', /module|lecture|coursework|assignment|\bexam\b|timetable|seminar|tutor|dissertation|enrol|coursera|udemy|datacamp|certificate|course\b/i],
+  ['social', /\bevents?\b|webinar|workshop|meet-?up|festival|social\b|society|talk\b|conference|volunteer|invit|connect(ion)?\b/i],
+]
+export function guessDomain(message, { senderDomain = '' } = {}) {
+  if (DOMAINS.includes(senderDomain)) return { domain: senderDomain, guessed: false }
+  const text = `${message?.subject ?? ''} ${message?.from_name ?? ''} ${message?.from_address ?? ''} ${message?.summary ?? ''}`
+  const found = GUESSES.find(([, pattern]) => pattern.test(text))
+  return found ? { domain: found[0], guessed: true } : { domain: '', guessed: true }
+}
+
+// The calendar area a thing's area is drawn in.
+export const CALENDAR_AREA = { admin: 'admin', academic: 'study', jobs: 'career', research: 'career', events: 'events', people: 'relationships', money: 'money', perks: 'money', health: 'body', home: 'home', travel: 'admin' }
 
 // A day as it is, a time as its London day.
 const dayOf = (value) => (typeof value === 'string' && value ? dateKey(value) : '')
 // The day an item belongs on: when it starts, else when it closes. Batch items say start; stored ones start_at or start_day.
 export const itemDate = (item) => [item?.start ?? item?.start_at ?? item?.start_day, item?.deadline].map(dayOf).find(isDateKey) ?? ''
 
-// Where an item shows. Events reach the calendar only through Cardiff Life (Plan to go), vacancies
-// through JobMap, offers through the Offers list; Today gets what closes within a week (offers:
-// their last two days). Things she must do are actions, not items, and are not decided here.
+// Where a thing shows. Events reach the calendar only through Events (Plan to go), vacancies and
+// applications through JobMap, offers through the Offers list; a thing that led to something to do
+// is on the calendar as that action, not twice. Today gets what is close: each kind has its window,
+// in days, counted on the thing's start or its deadline, whichever is still ahead.
+const ON_CALENDAR = ['announcement', 'material', 'info', 'opportunity', 'application', 'order', 'bill', 'subscription', 'tenancy', 'booking', 'appointment', 'official', 'document']
+const TODAY_WINDOW = { vacancy: 7, opportunity: 7, official: 7, document: 7, bill: 3, tenancy: 3, offer: 2, order: 2, subscription: 2, booking: 2, appointment: 2, application: 2 }
 export function placeOf(item, today = '') {
   const kind = item?.kind
-  const deadline = isDateKey(dayOf(item?.deadline)) ? dayOf(item.deadline) : ''
-  const open = deadline && (!isDateKey(today) || deadline >= today)
-  const within = (days) => Boolean(open && isDateKey(today) && deadline <= addDays(today, days - 1))
+  const led = (item?.action_ids ?? item?.actionRefs ?? []).length > 0
+  // Once an order has arrived, only its return window still matters.
+  const arrived = kind === 'order' && ['delivered', 'return-started'].includes(item?.state)
+  const days = [arrived ? null : item?.start ?? item?.start_at ?? item?.start_day, item?.deadline].map(dayOf).filter(isDateKey)
+  const window = TODAY_WINDOW[kind]
+  const close = Boolean(window && isDateKey(today) && days.some((day) => day >= today && day <= addDays(today, window - 1)))
+  const over = ['cancelled', 'withdrawn', 'refunded', 'returned', 'ended', 'paid', 'done', 'closed'].includes(item?.state)
   return {
-    calendar: ['announcement', 'material', 'info', 'opportunity'].includes(kind) && Boolean(itemDate(item)),
-    linkTo: kind === 'vacancy' ? 'jobmap' : kind === 'event' ? 'cardiff-life' : null,
+    calendar: ON_CALENDAR.includes(kind) && Boolean(itemDate(item)) && !led && item?.state !== 'cancelled',
+    linkTo: ['vacancy', 'application'].includes(kind) ? 'jobmap' : kind === 'event' ? 'cardiff-life' : null,
     offers: kind === 'offer',
-    today: ['vacancy', 'opportunity'].includes(kind) ? within(7) : kind === 'offer' ? within(2) : false,
+    today: close && !over,
   }
 }
 
-// The part of Life OS an item belongs to, for the "Came in" line on that part's page: offers to
-// Budget, vacancies and job or research opportunities to JobMap, events to Cardiff Life, the rest
-// by area. Admin has no part of its own: it is on Waiting on you and in the Harvest log.
-export const PARTS = { study: 'Study', jobmap: 'JobMap', 'cardiff-life': 'Cardiff Life', budget: 'Budget', health: 'Health' }
+// The part of Life OS a thing belongs to, for the "Came in" line on that part's page: offers to
+// Budget, vacancies, applications and job or research opportunities to JobMap, events to Events,
+// the rest by area. Travel, admin and people have no part of their own yet: they are on the Desk.
+export const PARTS = { study: 'Study', jobmap: 'JobMap', 'cardiff-life': 'Events', budget: 'Budget', health: 'Health' }
 export function partOf(item) {
   const { kind, area } = item ?? {}
   if (kind === 'offer') return 'budget'
-  if (kind === 'vacancy' || (kind === 'opportunity' && ['jobs', 'research'].includes(area))) return 'jobmap'
+  if (['vacancy', 'application'].includes(kind) || (kind === 'opportunity' && ['jobs', 'research'].includes(area))) return 'jobmap'
   if (kind === 'event') return 'cardiff-life'
+  if (['person', 'account', 'official', 'booking'].includes(kind)) return null
   if (area === 'academic') return 'study'
   if (area === 'health') return 'health'
   if (['money', 'perks', 'home'].includes(area)) return 'budget'

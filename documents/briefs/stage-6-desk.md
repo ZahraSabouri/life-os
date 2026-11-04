@@ -25,10 +25,10 @@ Accounts and sign-in (stage 7), network (stage 8), the app's own drafting (repla
 ## Checkpoints
 
 ### CP1: kinds, domains, states and the rule (no database)
-- [ ] `mail/mail-batch.schema.json` (version 2, additive): the new kinds, areas `travel` and `people`, item `state`, `form`, `ref` (an order or booking number), `amountPence`, `currency`.
-- [ ] `mail/check-batch.mjs`: a state must belong to its kind; a form only on an opportunity; a new kind in a fitting area.
-- [ ] `code/life-os/shared/harvest.js`: `DOMAINS`, `domainOf`, `STATES`, `guessDomain(message)`, placeOf and partOf for the new kinds; tests.
-- [ ] `mail/example-batch-v2.json` gains an order with its lifecycle, an application, a bill, a subscription, a booking, an appointment, an official letter, a person; `mail/HARVEST.md` explains kinds, states and repeated sends.
+- [x] `mail/mail-batch.schema.json` (version 2, additive): the new kinds, areas `travel` and `people`, item `state`, `form`, `reference` (an order or booking number), `amountPence`, `currency`.
+- [x] `mail/check-batch.mjs`: a state must belong to its kind; a form only on an opportunity; a new kind in a fitting area.
+- [x] `code/life-os/shared/harvest.js`: `DOMAINS`, `domainOf`, `STATES`, `guessDomain(message)`, placeOf and partOf for the new kinds; tests.
+- [x] a second example, `mail/example-batch-v2-kinds.json` (the first stays as stage 5's tests pin it), has an order with its lifecycle, an application, a bill, a subscription, a booking, an appointment, an official letter, a person; `mail/HARVEST.md` explains kinds, states and repeated sends.
 - **Verify:** `node --test mail/check-batch.test.mjs code/life-os/shared/harvest.test.js`. **Commit:** `[6-cp1]`.
 
 ### CP2: storing states and what happened

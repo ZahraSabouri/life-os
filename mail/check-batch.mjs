@@ -8,7 +8,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { chatty, fitsArea, junkLink } from '../code/life-os/shared/harvest.js'
+import { chatty, fitsArea, fitsState, junkLink, STATES } from '../code/life-os/shared/harvest.js'
 import { dateKey } from '../code/life-os/shared/calendar.js'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -118,6 +118,9 @@ function checkItems(batch, refs, problems) {
     if (keys.has(item.key)) problems.push(`${where}: key "${item.key}" is used twice`)
     keys.add(item.key)
     if (!fitsArea(item.kind, item.area)) problems.push(`${where}: a ${item.kind} is not in area "${item.area}"`)
+    if (item.state !== undefined && !fitsState(item.kind, item.state)) problems.push(`${where}: "${item.state}" is not a state of a ${item.kind}${STATES[item.kind] ? ` (${STATES[item.kind].join(', ')})` : ' (it has none)'}`)
+    if (item.form !== undefined && item.kind !== 'opportunity') problems.push(`${where}: only an opportunity has a form`)
+    if (item.amountPence !== undefined && !item.currency) problems.push(`${where}: an amount needs its currency (GBP)`)
     if (chatty(item.summary)) problems.push(`${where}: the summary talks to her ("you should…"); write what came in`)
     for (const field of ['start', 'end']) if (item[field] !== undefined && !isWhen(item[field])) problems.push(`${where}.${field}: must be a day like 2026-11-05 or a time like 2026-11-05T18:00:00Z`)
     if (item.allDay && item.start && !isDate(item.start)) problems.push(`${where}: an all-day item starts on a day, not a time`)

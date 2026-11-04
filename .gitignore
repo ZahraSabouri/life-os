@@ -87,6 +87,7 @@ code/life-os/frontend/dist-next/
 !/mail/mail-batch.schema.json
 !/mail/example-batch.json
 !/mail/example-batch-v2.json
+!/mail/example-batch-v2-kinds.json
 !/mail/sources.example.json
 /mail/*.json.part
 /mail/archive/

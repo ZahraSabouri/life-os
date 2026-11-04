@@ -39,7 +39,9 @@ test('fitsArea: a vacancy is jobs or research, a material is academic, an event 
   assert.equal(fitsArea('vacancy', 'events'), false)
   assert.equal(fitsArea('material', 'jobs'), false)
   assert.equal(fitsArea('event', 'academic'), true)
-  assert.equal(fitsArea('bill', 'money'), false)
+  assert.equal(fitsArea('bill', 'money'), true)
+  assert.equal(fitsArea('booking', 'jobs'), false)
+  assert.equal(fitsArea('gadget', 'money'), false)
 })
 
 test('dayLine: a factual count, in a fixed order, never advice', () => {
@@ -95,4 +97,62 @@ test('partOf: offers to Budget, vacancies and job opportunities to JobMap, event
   assert.equal(partOf({ kind: 'info', area: 'health' }), 'health')
   assert.equal(partOf({ kind: 'info', area: 'money' }), 'budget')
   assert.equal(partOf({ kind: 'announcement', area: 'admin' }), null)
+})
+
+test('domainOf: the kind decides when it can, else the area; her choice and a taught sender win', async () => {
+  const { domainOf } = await import('./harvest.js')
+  assert.equal(domainOf({ kind: 'order', area: 'money' }), 'home')
+  assert.equal(domainOf({ kind: 'application', area: 'jobs' }), 'work')
+  assert.equal(domainOf({ kind: 'booking', area: 'travel' }), 'travel')
+  assert.equal(domainOf({ kind: 'opportunity', area: 'academic' }), 'learning')
+  assert.equal(domainOf({ kind: 'event', area: 'events' }), 'social')
+  assert.equal(domainOf({ kind: 'info', area: 'health' }), 'health')
+  assert.equal(domainOf({ kind: 'order', area: 'home', her_domain: 'money' }), 'money')
+  assert.equal(domainOf({ kind: 'info', area: 'admin' }, { senderDomain: 'learning' }), 'learning')
+  assert.equal(domainOf({ kind: 'info', area: 'admin', her_domain: 'nowhere' }), 'admin')
+})
+
+test('guessDomain: a guess from words, marked as one; a taught sender is not a guess', async () => {
+  const { guessDomain } = await import('./harvest.js')
+  assert.deepEqual(guessDomain({ subject: 'Your order has been dispatched' }), { domain: 'home', guessed: true })
+  assert.deepEqual(guessDomain({ subject: 'Interview invitation: Data Analyst' }), { domain: 'work', guessed: true })
+  assert.deepEqual(guessDomain({ subject: 'Thank you for your application to our events team' }), { domain: 'work', guessed: true })
+  assert.deepEqual(guessDomain({ subject: 'Booking confirmed: train to London' }), { domain: 'travel', guessed: true })
+  assert.deepEqual(guessDomain({ subject: 'Week 7 lecture slides' }), { domain: 'learning', guessed: true })
+  assert.deepEqual(guessDomain({ subject: 'Hello' }), { domain: '', guessed: true })
+  assert.deepEqual(guessDomain({ subject: 'Hello' }, { senderDomain: 'social' }), { domain: 'social', guessed: false })
+})
+
+test('states: each moving kind has its own; fitsState and stateName', async () => {
+  const { STATES, fitsState, stateName } = await import('./harvest.js')
+  assert.ok(STATES.order.includes('out-for-delivery') && STATES.application.includes('unsuccessful'))
+  assert.equal(fitsState('order', 'delivered'), true)
+  assert.equal(fitsState('order', 'interview'), false)
+  assert.equal(fitsState('person', 'active'), false)
+  assert.equal(stateName('out-for-delivery'), 'Out for delivery')
+})
+
+test('placeOf: the new kinds on the calendar and Today by their dates; never twice; never when over', () => {
+  const today = '2026-11-03'
+  assert.deepEqual(placeOf({ kind: 'order', state: 'dispatched', start: '2026-11-04', deadline: '2026-12-01' }, today), { calendar: true, linkTo: null, offers: false, today: true })
+  assert.equal(placeOf({ kind: 'order', state: 'delivered', start: '2026-11-04' }, today).today, false)
+  assert.equal(placeOf({ kind: 'bill', deadline: '2026-11-05' }, today).today, true)
+  assert.equal(placeOf({ kind: 'bill', deadline: '2026-11-06' }, today).today, false)
+  assert.equal(placeOf({ kind: 'booking', start: '2026-11-21T08:05:00Z' }, today).calendar, true)
+  assert.equal(placeOf({ kind: 'booking', state: 'cancelled', start: '2026-11-21T08:05:00Z' }, today).calendar, false)
+  assert.equal(placeOf({ kind: 'application', deadline: '2026-11-07', action_ids: ['a1'] }, today).calendar, false, 'its action is on the calendar already')
+  assert.equal(placeOf({ kind: 'application', state: 'test' }, today).linkTo, 'jobmap')
+  assert.equal(placeOf({ kind: 'account' }, today).calendar, false)
+  assert.equal(placeOf({ kind: 'person' }, today).today, false)
+})
+
+test('partOf: applications to JobMap; bills, orders and tenancy to Budget; people, bookings and official letters to the Desk only', () => {
+  assert.equal(partOf({ kind: 'application', area: 'jobs' }), 'jobmap')
+  assert.equal(partOf({ kind: 'bill', area: 'money' }), 'budget')
+  assert.equal(partOf({ kind: 'order', area: 'home' }), 'budget')
+  assert.equal(partOf({ kind: 'tenancy', area: 'home' }), 'budget')
+  assert.equal(partOf({ kind: 'appointment', area: 'health' }), 'health')
+  assert.equal(partOf({ kind: 'person', area: 'people' }), null)
+  assert.equal(partOf({ kind: 'booking', area: 'travel' }), null)
+  assert.equal(partOf({ kind: 'official', area: 'admin' }), null)
 })

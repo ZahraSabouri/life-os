@@ -73,7 +73,7 @@ const refused2 = {
   'an item ref used twice': [(b) => { b.items[1].ref = 'i1' }, /used twice/],
   'an item key used twice': [(b) => { b.items[1].key = b.items[0].key }, /used twice/],
   'a vacancy outside jobs and research': [(b) => { b.items[2].area = 'events' }, /not in area/],
-  'a kind the format does not know': [(b) => { b.items[0].kind = 'bill' }, /must be one of/],
+  'a kind the format does not know': [(b) => { b.items[0].kind = 'gadget' }, /must be one of/],
   'a summary that talks to her': [(b) => { b.items[0].summary = 'You should go to the new room.' }, /talks to her/],
   'a message summary that talks to her': [(b) => { b.messages[0].summary = 'I recommend reading this first.' }, /talks to her/],
   'a start that is not a day or a time': [(b) => { b.items[0].start = 'next Thursday' }, /day like/],
@@ -109,3 +109,29 @@ test('the London day: a message just after midnight in summer time belongs to th
   const result = changed2((b) => { b.messages[0].receivedAt = '2026-10-24T23:30:00Z'; b.items[0].day = '2026-10-25' })
   assert.equal(result.ok, true, result.problems.join('\n'))
 })
+
+// Stage 6: the kinds that move (orders, applications, bills…), their states and amounts.
+const kinds = JSON.parse(fs.readFileSync(new URL('./example-batch-v2-kinds.json', import.meta.url), 'utf8'))
+const changedKinds = (change) => { const batch = structuredClone(kinds); change(batch); return checkBatch(batch) }
+
+test('the kinds example passes: an order, an application, a bill, a subscription, a booking, an appointment, an official letter, a person, a scholarship, a tenancy, an account notice', () => {
+  const result = checkBatch(structuredClone(kinds))
+  assert.equal(result.ok, true, result.problems.join('; '))
+  assert.equal(result.warnings.length, 0, result.warnings.join('; '))
+})
+
+const refusedKinds = {
+  'a state its kind does not have': [(b) => { b.items[0].state = 'interview' }, /not a state of a order/],
+  'a state on a kind that has none': [(b) => { b.items[7].state = 'active' }, /it has none/],
+  'a form on something that is not an opportunity': [(b) => { b.items[0].form = 'course' }, /only an opportunity has a form/],
+  'an amount without its currency': [(b) => { delete b.items[2].currency }, /needs its currency/],
+  'a booking in the jobs area': [(b) => { b.items[4].area = 'jobs' }, /not in area/],
+  'a reference that is too long': [(b) => { b.items[0].reference = 'x'.repeat(201) }, /at most 200/],
+}
+for (const [name, [change, reason]] of Object.entries(refusedKinds)) {
+  test(`kinds: refuses ${name}`, () => {
+    const result = changedKinds(change)
+    assert.equal(result.ok, false)
+    assert.match(result.problems.join('\n'), reason)
+  })
+}
