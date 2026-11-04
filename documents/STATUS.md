@@ -4,6 +4,8 @@
 
 ## Now
 
+**Study JSON sync (Codex, 4 November):** the imported cards' 17 explicit study windows now drive the shared schedule across Today, Calendar, Court, planner, notices, Review and Analysis. Two stale Thursday blocks were removed because their cards defer to Saturday. Progress and native Study records unchanged; backup taken, 48 tests and both builds passed ([session](sessions/2026-11-04-codex-study-json-sync.md)). Confirm Friday's imported 14:00 exam start versus saved 14:10, and preparation overlapping the 11:10 lab. Current checkout is `stage/6-desk`; unrelated work below is preserved.
+
 **Stage 5 Harvest is built, CP1 to CP8** ([brief](briefs/stage-5-harvest.md), [session](sessions/2026-11-04-claude-code-5-harvest-build.md)). One way in for everything harvested (mail batch version 2, `mail/HARVEST.md`); things to do are actions, what came in are items, and each shows in its place:
 - **Inbox → Harvest log** in place of Digests: the sources, one page per day, and **Everything** (filters, Keep/Dismiss for several).
 - **Inbox → Mail** as a reading room: area, priority, what it led to, dates, not opened; newsletters and folded senders one line a day; fold or hide a sender; several at once; what was taken; working Gmail links (account 1, in the log's Settings).
