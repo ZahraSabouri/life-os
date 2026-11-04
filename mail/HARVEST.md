@@ -40,6 +40,8 @@ Life OS never writes JobMap, Cardiff Life or Budget. Vacancies and events reach 
 - An application that becomes unsuccessful or reaches a test, interview or offer is offered to her as a change in JobMap; she presses it. Never change JobMap yourself.
 - A security code or sign-in link still never goes in; an `account` item says only what happened ("A new sign-in from Windows in Cardiff").
 
+**Her rules win, and the app applies them.** She can move a thing to another domain, and file, fold or hide everything from a sender. Life OS applies those when it shows things; send each item with the kind and area its message really supports, and do not try to guess hers. A batch never writes her choices.
+
 **Things to do are actions, not items.** A bill is an action "Pay …" with `due`; an application she should make is an action "Apply for …" with `due`, and the opportunity itself is an item pointing at it. A deadline that is not hers to act on is an item.
 
 ## Where each item shows (the rule in `shared/harvest.js`)

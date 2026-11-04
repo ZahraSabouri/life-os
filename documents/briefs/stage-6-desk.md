@@ -1,6 +1,6 @@
 # Stage 6: The Desk, so mail becomes things in their places
 
-**Status:** approved by Xar on 4 November 2026 (order Desk → Accounts → Network; all four new families "and any necessary thing you think can be added"; JobMap's CV helper kept until the app's own drafting; domain colours on every style). Building.
+**Status:** built 4 November 2026, CP1 to CP6; waiting for Xar's acceptance. Approved by Xar on 4 November 2026 (order Desk → Accounts → Network; all four new families "and any necessary thing you think can be added"; JobMap's CV helper kept until the app's own drafting; domain colours on every style). Building.
 **Branch:** `stage/6-desk`, from `stage/5-harvest` (stage 5 is waiting for acceptance and builds the store this stage extends; merge 5 before 6).
 **Prototype:** https://claude.ai/artifact/7RjsaJY8Trpf3GMeQj9tUy (example data).
 
@@ -53,7 +53,7 @@ Accounts and sign-in (stage 7), network (stage 8), the app's own drafting (repla
 - **Verify:** suites, build, browser. **Commit:** `[6-cp5]`.
 
 ### CP6: handover
-- [ ] `mail/HARVEST.md` for the harvest (kinds, states, signals, sender domains); STATUS, session note, plans inventory.
+- [x] `mail/HARVEST.md` for the harvest (kinds, states, signals, sender domains); STATUS, session note, plans inventory.
 - **Commit:** `[6-cp6]`.
 
 ## Data safety
