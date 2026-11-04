@@ -3,6 +3,7 @@ import path from 'node:path'
 import { createHash, randomUUID } from 'node:crypto'
 import { StudyError, validateId } from '../../code/life-os/backend/src/modules/study/schema.js'
 import { studyFilesRoot } from './storage.mjs'
+import { backupRoot } from '../../code/life-os/backend/src/paths.js'
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024
 const MAX_SCAN_BYTES = 500 * 1024 * 1024
@@ -100,7 +101,7 @@ function mappingState(mapping, state = {}) {
 export function createStudyDiscovery({ projectRoot, repository, configFile = path.join(projectRoot, '.runtime/study-folders.json'), clock = () => Date.now() } = {}) {
   if (!projectRoot || !repository?.workspace || !repository?.importRecords) throw new TypeError('Study discovery requires a root and repository')
   const nativeRoot = studyFilesRoot(projectRoot), observations = new Map(), states = new Map(), nativeHashes = new Map()
-  const protectedRoots = [nativeRoot, path.resolve(projectRoot, '../Life_OS_backups'), path.resolve(projectRoot)]
+  const protectedRoots = [nativeRoot, backupRoot(projectRoot), path.resolve(projectRoot)]
   let mappings, loadingConfig, interval, scanning = false, lastScanAt = null, queue = Promise.resolve(), closed = false
 
   async function load() {

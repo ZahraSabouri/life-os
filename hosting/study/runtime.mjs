@@ -8,6 +8,7 @@ import { createStudyDiscovery } from './discovery.mjs'
 import { createStudyBackups } from './backups.mjs'
 import { createHubStore } from './hub/store.mjs'
 import path from 'node:path'
+import { backupRoot } from '../../code/life-os/backend/src/paths.js'
 
 // database: which of the two Life OS databases to use (the test one for trying things out).
 // background: whether to watch module folders and take the regular backups.
@@ -18,7 +19,7 @@ export function createStudyRuntime(projectRoot, { database, background = true } 
     const unavailable = async () => { throw new StudyError(503, 'Study storage is not configured. The original Study remains available.') }
     return { repository: Object.fromEntries(['workspace','exportWorkspace','create','patch','remove','restore','revert','recordHistory','deleted','previewImport','importRecords'].map(name => [name, unavailable])), imports: {}, close: async () => {}, configured: false }
   }
-  const backups = createStudyBackups({ backupRoot: path.resolve(projectRoot, '../Life_OS_backups'), dump: label => postgresBackup(config, projectRoot, label) })
+  const backups = createStudyBackups({ backupRoot: backupRoot(projectRoot), dump: label => postgresBackup(config, projectRoot, label) })
   const repository = createStudyRepository({ pool, beforeImport: async ({ batch }) => {
     // Folder discovery only adds new copies of files that stay in their module folder, so it needs
     // neither a full copy of the material store nor a fresh database dump on every scan.

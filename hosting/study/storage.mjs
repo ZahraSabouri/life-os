@@ -2,9 +2,10 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { createHash, randomUUID } from 'node:crypto'
 import { DatabaseSync, backup } from 'node:sqlite'
+import { backupRoot, dataRoot } from '../../code/life-os/backend/src/paths.js'
 
 export const sha256 = value => createHash('sha256').update(value).digest('hex')
-export function studyFilesRoot(projectRoot) { return path.resolve(projectRoot, '../Life_OS_data/study/materials') }
+export function studyFilesRoot(projectRoot) { return path.join(dataRoot(projectRoot), 'study/materials') }
 
 async function snapshotSqlite(source, target) {
   const db = new DatabaseSync(source, { readOnly: true })
@@ -19,7 +20,7 @@ export async function backupStudySources(projectRoot) {
   const source = path.join(projectRoot, 'summer-rescue-plan-app')
   const stateFile = path.join(source, 'local-data/summer-rescue-tracker-state.json')
   const before = sha256(await fs.readFile(stateFile))
-  const directory = path.resolve(projectRoot, `../Life_OS_backups/study-${new Date().toISOString().slice(0, 10)}/source-${Date.now()}`)
+  const directory = path.join(backupRoot(projectRoot), `study-${new Date().toISOString().slice(0, 10)}/source-${Date.now()}`)
   await fs.mkdir(directory, { recursive: true })
   for (const name of ['local-data', 'public', 'src/data']) {
     await fs.cp(path.join(source, name), path.join(directory, name), {
@@ -57,7 +58,7 @@ export async function backupStudyMaterials(projectRoot) {
   const source = studyFilesRoot(projectRoot)
   await fs.mkdir(source, { recursive: true })
   const before = await materialManifest(source)
-  const directory = path.resolve(projectRoot, `../Life_OS_backups/study-${new Date().toISOString().slice(0, 10)}/materials-${Date.now()}-${randomUUID().slice(0, 8)}`)
+  const directory = path.join(backupRoot(projectRoot), `study-${new Date().toISOString().slice(0, 10)}/materials-${Date.now()}-${randomUUID().slice(0, 8)}`)
   const filesDirectory = path.join(directory, 'files')
   await fs.mkdir(directory, { recursive: true })
   await fs.cp(source, filesDirectory, { recursive: true, errorOnExist: true, force: false })

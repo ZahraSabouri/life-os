@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import pg from 'pg'
 import { spawn } from 'node:child_process'
+import { backupRoot } from './paths.js'
 
 export function postgresConfig(projectRoot) {
   const filename = process.env.LIFE_OS_DATABASE_CONFIG || path.join(projectRoot, '.runtime', 'postgres.json')
@@ -20,7 +21,7 @@ export function createPostgresPool(config, { role = 'app', database = config.dat
 // area names the backup folder (study-<day>, mail-<day>).
 export async function postgresBackup(config, projectRoot, label = 'study', database = config.database, area = 'study') {
   if (!['lifeos', 'lifeos_test'].includes(database)) throw new Error('Unknown backup database')
-  const directory = path.resolve(projectRoot, `../Life_OS_backups/${area.replace(/[^a-z0-9_-]/gi, '-')}-${new Date().toISOString().slice(0, 10)}`)
+  const directory = path.join(backupRoot(projectRoot), `${area.replace(/[^a-z0-9_-]/gi, '-')}-${new Date().toISOString().slice(0, 10)}`)
   fs.mkdirSync(directory, { recursive: true })
   const destination = path.join(directory, `${label.replace(/[^a-z0-9_-]/gi, '-')}-${Date.now()}.dump`)
   const executable = path.join(config.bin, process.platform === 'win32' ? 'pg_dump.exe' : 'pg_dump')

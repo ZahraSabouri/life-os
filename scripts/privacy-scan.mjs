@@ -30,7 +30,8 @@ export const PATTERNS = {
   },
   'phone number': (line) => /\d{3}/.test(line) && /(?:\+44\s?7\d{3}|\b07\d{3})\s?\d{3}\s?\d{3}\b/.test(line),
   'key or token': (line) => /sk-|ghp_|github_pat_|AIza|xox/.test(line) && /\b(?:sk-[A-Za-z0-9_-]{20,}|ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|AIza[0-9A-Za-z_-]{30,}|xox[baprs]-[A-Za-z0-9-]{10,})\b/.test(line),
-  'home folder': (line) => /Users|home\//i.test(line) && /[A-Za-z]:[\\/]+Users[\\/]+(?!Public\b|Default\b|<)[A-Za-z0-9_.-]+|\/(?:Users|home)\/(?!<)[A-Za-z0-9_.-]+/i.test(line),
+  // A real home folder starts a path (not /api/home/…); "me", "you" and <placeholders> are made up.
+  'home folder': (line) => /Users|home\//i.test(line) && /[A-Za-z]:[\\/]+Users[\\/]+(?!Public\b|Default\b|me\b|you\b|<)[A-Za-z0-9_.-]+|(?<![A-Za-z0-9_.-])\/(?:Users|home)\/(?!me\b|you\b|<)[A-Za-z0-9_.-]+/i.test(line),
 }
 
 export function readMarkers(file) {

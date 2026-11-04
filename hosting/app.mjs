@@ -35,6 +35,7 @@ import { createPlaces } from './mail/places.mjs'
 import { saveStudyUpload, studyFilesRoot } from './study/storage.mjs'
 import { createHubRouter } from './study/hub/router.mjs'
 import { skinFiles, skinnedPage } from './skins/index.mjs'
+import { dataRoot, lifeOsOrigin } from '../code/life-os/backend/src/paths.js'
 
 export const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 export const SUMMER_PATH = '/apps/summer-rescue/'
@@ -110,7 +111,7 @@ export function createLifeOsApp(options = {}) {
   })
   app.use(`${CARDIFF_PATH}api/own-events`, createOwnEventsRouter({ express, events: ownEvents }))
   // "Retake the pictures" on the Guide page.
-  app.use('/api/guide', createGuideRouter({ express, projectRoot, origin: options.origin ?? 'http://127.0.0.1:47850' }))
+  app.use('/api/guide', createGuideRouter({ express, projectRoot, origin: options.origin ?? lifeOsOrigin() }))
   // The Guide's pictures: taken from the running app by scripts/guide-shots.mjs. They show her
   // own records, so the folder is not in git.
   app.use('/guide-shots', express.static(options.guideShots ?? path.join(projectRoot, 'guide-shots'), { fallthrough: false, maxAge: 0 }), (_error, _req, res, _next) => res.status(404).json({ error: 'No such picture' }))
@@ -128,7 +129,7 @@ export function createLifeOsApp(options = {}) {
   // listed files are served, read where they are (never copied), and kept from calling out.
   app.get('/study-apps/:id/', (req, res) => {
     let apps = []
-    try { apps = JSON.parse(fs.readFileSync(options.studyApps ?? path.resolve(projectRoot, '../Life_OS_data/study/study-apps.json'), 'utf8')) } catch {}
+    try { apps = JSON.parse(fs.readFileSync(options.studyApps ?? path.join(dataRoot(projectRoot), 'study/study-apps.json'), 'utf8')) } catch {}
     const file = Array.isArray(apps) ? apps.find((row) => row?.id === req.params.id)?.file : null
     if (typeof file !== 'string' || !path.isAbsolute(file) || !/index\.html?$/i.test(file) || !fs.existsSync(file)) return res.status(404).json({ error: 'No such study app' })
     res.set({ 'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'self' data: blob: 'unsafe-inline'; connect-src data: blob:; frame-ancestors 'self'" })
@@ -256,7 +257,7 @@ export function createLifeOsApp(options = {}) {
   // before Windows is used, so a restart does not tell her what her tab already shows.
   let browserSeenAt = Date.now()
   const notifier = options.desktopNotices ? createDesktopNotifier({
-    load: noticesService, show: options.showToast ?? windowsToast(), origin: options.origin ?? 'http://127.0.0.1:47850', browserSeenAt: () => browserSeenAt,
+    load: noticesService, show: options.showToast ?? windowsToast(), origin: options.origin ?? lifeOsOrigin(), browserSeenAt: () => browserSeenAt,
     prefs: () => { try { return JSON.parse(db.prepare("SELECT value FROM settings WHERE key = 'notices'").get()?.value ?? '{}') ?? {} } catch { return {} } },
   }) : null
   app.locals.desktopNotifier = notifier

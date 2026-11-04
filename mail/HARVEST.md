@@ -58,7 +58,7 @@ Life OS never writes JobMap, Cardiff Life or Budget. Vacancies and events reach 
 ## Reaching JobMap and Cardiff Life
 
 - **Vacancies:** after the batch, queue the same vacancies for JobMap through its own route: write a discovery batch as `jobmap/SCHEDULED_SEARCH.md` describes, then `node jobmap/queue-jobs.mjs <file> --dry-run`, check it, and queue it. Use the advert's own `url` (the same one as the item's), so Life OS can find the job. A vacancy the scouts already queued needs only its item.
-- **Events:** hand each event to the Cardiff events workflow (its saved handoffs in `C:\Users\ctrlz\Documents\Scheduled Workflows`), which verifies it and adds it to `cardiff-life/events.csv` by Cardiff Life's own rules. The item keeps the organiser's event page as its `url`.
+- **Events:** hand each event to the Cardiff events workflow (its saved handoffs, in the scheduled tasks' own folder), which verifies it and adds it to `cardiff-life/events.csv` by Cardiff Life's own rules. The item keeps the organiser's event page as its `url`.
 - Never write `jobmap/data`, `cardiff-life/*.csv`, Budget's `state.json`, or Life OS's database yourself.
 
 ## The September backfill (once, on Xar's yes)

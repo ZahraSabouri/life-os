@@ -1,0 +1,9 @@
+{
+  "host": "127.0.0.1",
+  "port": 5432,
+  "database": "lifeos",
+  "testDatabase": "lifeos_test",
+  "bin": "C:/Program Files/PostgreSQL/18/bin",
+  "owner": { "user": "lifeos_owner", "password": "a-long-random-password" },
+  "app": { "user": "lifeos_app", "password": "another-long-random-password" }
+}
