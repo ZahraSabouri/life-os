@@ -37,9 +37,9 @@ Accounts and sign-in (stage 7), network (stage 8), the app's own drafting (repla
 - **Verify:** mail suites on `lifeos_test`; migrate `lifeos`. **Commit:** `[6-cp2]`.
 
 ### CP3: the Desk's server
-- [ ] `GET /api/mail/desk`: Now, domains with counts, open things with domain, place and latest event, and what was kept quiet this week.
-- [ ] `GET /api/mail/items/:id` with its events and messages; `PATCH` takes `her_domain`; senders take a domain.
-- [ ] Applications found in JobMap (by link, else by employer and role); `POST /api/mail/items/:id/jobmap` makes the JobMap change through JobMap's own server.
+- [x] `GET /api/mail/desk`: Now, domains with counts, open things with domain, place and latest event, and what was kept quiet this week.
+- [x] `GET /api/mail/items/:id` with its events and messages; `PATCH` takes `her_domain`; senders take a domain.
+- [x] Applications found in JobMap (by link, else by employer and role); the JobMap change is offered (shared `jobmapSuggestion`) and made, when she presses it, through the route Today already uses (`POST /api/day/jobs`, JobMap's own server).
 - **Verify:** route tests on `lifeos_test`, places tests. **Commit:** `[6-cp3]`.
 
 ### CP4: the Desk

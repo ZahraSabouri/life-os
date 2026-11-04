@@ -72,6 +72,38 @@ export function createMailReads({ pool }) {
     return { items: items_, actions: actions_ }
   }
 
+  // One thing in full (the Desk's drawer): its fields, what happened to it, and the messages behind it.
+  async function thing(id) {
+    const found = (await rows(`SELECT to_jsonb(i) || jsonb_build_object('source_label', s.label, 'source_kind', s.kind,
+        'sender', (SELECT lower(m.from_address) FROM mail.messages m WHERE m.id::text = i.message_ids->>0)) AS row
+      FROM mail.items i LEFT JOIN mail.sources s ON s.id = i.source_id WHERE i.id::text = $1 AND i.deleted_at IS NULL`, [String(id)]))[0]
+    if (!found) return null
+    const [steps, messages_, actions_] = await Promise.all([
+      rows('SELECT jsonb_build_object(\'at\', e.at, \'state\', e.state, \'note\', e.note) AS row FROM mail.item_events e WHERE e.item_id = $1 AND e.undone_at IS NULL ORDER BY e.at, e.id', [found.id]),
+      rows(`SELECT jsonb_build_object('id', m.id, 'subject', m.subject, 'from_name', m.from_name, 'from_address', m.from_address, 'received_at', m.received_at, 'summary', m.summary,
+          'source_kind', s.kind, 'source_message_id', m.source_message_id, 'link', m.link) AS row
+        FROM mail.messages m LEFT JOIN mail.sources s ON s.id = m.source_id WHERE m.deleted_at IS NULL AND m.id::text IN (SELECT jsonb_array_elements_text($1::jsonb)) ORDER BY m.received_at`, [JSON.stringify(found.message_ids ?? [])]),
+      rows("SELECT to_jsonb(a) AS row FROM mail.actions a WHERE a.deleted_at IS NULL AND a.id::text IN (SELECT jsonb_array_elements_text($1::jsonb)) ORDER BY a.due NULLS LAST", [JSON.stringify(found.action_ids ?? [])]),
+    ])
+    return { ...found, steps, messages: messages_, actions: actions_ }
+  }
+
+  // What was kept quiet since a day: newsletters, notifications, noise and notes that became
+  // nothing, by kind and by sender (the busiest five), and her sender rules.
+  async function quiet(since) {
+    const day = /^\d{4}-\d{2}-\d{2}$/.test(String(since ?? '')) ? since : '1970-01-01'
+    const empty = "NOT EXISTS (SELECT 1 FROM mail.items i WHERE i.deleted_at IS NULL AND i.message_ids ? m.id::text)"
+    const [byCategory, bySender, rules] = await Promise.all([
+      pool.query(`SELECT m.category, count(*)::int AS n FROM mail.messages m WHERE m.deleted_at IS NULL AND m.category IN ('newsletter', 'automated', 'noise', 'fyi')
+        AND m.received_at >= $1::date AND ${empty} GROUP BY m.category`, [day]),
+      pool.query(`SELECT coalesce(nullif(m.from_name, ''), m.from_address, 'Unknown sender') AS sender, count(*)::int AS n FROM mail.messages m WHERE m.deleted_at IS NULL
+        AND m.category IN ('newsletter', 'automated', 'noise', 'fyi') AND m.received_at >= $1::date AND ${empty} GROUP BY 1 ORDER BY 2 DESC, 1 LIMIT 5`, [day]),
+      pool.query("SELECT rule, count(*)::int AS n FROM mail.senders WHERE deleted_at IS NULL GROUP BY rule"),
+    ])
+    const categories = Object.fromEntries(byCategory.rows.map((row) => [row.category, row.n]))
+    return { since: day, total: Object.values(categories).reduce((sum, n) => sum + n, 0), categories, senders: bySender.rows, rules: Object.fromEntries(rules.rows.map((row) => [row.rule, row.n])) }
+  }
+
   // Her rules for senders, newest first.
   const senders = () => rows('SELECT to_jsonb(r) AS row FROM mail.senders r WHERE r.deleted_at IS NULL ORDER BY r.updated_at DESC')
 
@@ -129,7 +161,12 @@ export function createMailReads({ pool }) {
     const words = String(q ?? '').trim().slice(0, 200)
     if (words) where.push(`concat_ws(' ', i.title, i.summary, i.location, i.details->>'organiser', i.details->>'employer', i.details->>'course') ILIKE ${add(like(words))}`)
     const order = sort === 'newest' ? 'i.day DESC, i.title' : "coalesce(i.deadline, i.start_day, (i.start_at AT TIME ZONE 'Europe/London')::date, i.day), i.title"
-    return rows(`SELECT to_jsonb(i) || jsonb_build_object('source_label', s.label, 'source_kind', s.kind) AS row
+    // With who sent its first message (for a taught sender's domain) and its latest step.
+    return rows(`SELECT to_jsonb(i) || jsonb_build_object('source_label', s.label, 'source_kind', s.kind,
+        'sender', (SELECT lower(m.from_address) FROM mail.messages m WHERE m.id::text = i.message_ids->>0),
+        'sender_name', (SELECT m.from_name FROM mail.messages m WHERE m.id::text = i.message_ids->>0),
+        'steps', (SELECT count(*)::int FROM mail.item_events e WHERE e.item_id = i.id AND e.undone_at IS NULL),
+        'last_step', (SELECT jsonb_build_object('state', e.state, 'at', e.at) FROM mail.item_events e WHERE e.item_id = i.id AND e.undone_at IS NULL ORDER BY e.at DESC, e.id DESC LIMIT 1)) AS row
       FROM mail.items i LEFT JOIN mail.sources s ON s.id = i.source_id WHERE ${where.join(' AND ')}
       ORDER BY ${order} LIMIT ${Math.max(1, Math.min(5000, Number(limit) || 1000))}`, values)
   }
@@ -184,5 +221,5 @@ export function createMailReads({ pool }) {
     return { actions: open, announcements, batchId: latest?.id ?? null }
   }
 
-  return { actions, action, messages, message, taken, senders, person, digests, lastGathered, dated, datedItems, items, days, day, sources, forNotices }
+  return { actions, action, messages, message, taken, senders, thing, quiet, person, digests, lastGathered, dated, datedItems, items, days, day, sources, forNotices }
 }

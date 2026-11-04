@@ -130,6 +130,15 @@ export function partOf(item) {
   return null
 }
 
+// What JobMap should say for an application's state (its statuses: hosting/career/mark.mjs), and
+// whether to offer her that change: only when JobMap knows the job and says something else.
+export const JOBMAP_STATUS = { applied: 'Applied', received: 'Applied', test: 'Applied', interview: 'Interview', offer: 'Offer', unsuccessful: 'Rejected', withdrawn: 'Archived' }
+export function jobmapSuggestion(item) {
+  const status = item?.kind === 'application' ? JOBMAP_STATUS[item.state] : null
+  if (!status || !item.place?.id || item.place.status === status) return null
+  return { job: item.place.id, status, from: item.place.status ?? '' }
+}
+
 // The log's factual line for a day: "12 messages, 2 to do, 3 vacancies, 1 event". Never advice.
 export function dayLine({ messages = 0, actions = 0, kinds = {} } = {}) {
   const plural = (count, [one, many]) => `${count} ${count === 1 ? one : many}`

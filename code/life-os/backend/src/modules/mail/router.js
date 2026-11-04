@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import { MailError } from './repository.js'
-import { dateKey } from '../../../../shared/calendar.js'
+import { addDays, dateKey } from '../../../../shared/calendar.js'
 import { birthdayWishes, groupActions, parseOwe, peopleNamed, priorityOf } from '../../../../shared/mail.js'
-import { partOf, placeOf, PARTS } from '../../../../shared/harvest.js'
+import { DOMAINS, domainOf, jobmapSuggestion, partOf, placeOf, PARTS } from '../../../../shared/harvest.js'
 
 // /api/mail. inbox is hosting/mail/inbox.mjs (status, scan); importer undoes batches; reads serves
 // the pages; findPeople reads the core's People (only read: Life OS never creates a person from mail);
@@ -131,6 +131,29 @@ export function createMailRouter({ repository, importer, inbox, reads, findPeopl
     const placed = await places(rows)
     const where = word('where')
     res.json({ today, items: where === 'there' ? placed.filter((row) => row.place?.href) : where === 'missing' ? placed.filter((row) => row.place?.missing) : placed })
+  }))
+  // The Desk (stage 6): every open thing with its domain (her choice, a taught sender, else its kind
+  // and area), where it is now and the JobMap change to offer; Now (what is close, by placeOf, and a
+  // JobMap change waiting, with the things to do due today); each domain's counts; and what was
+  // kept quiet this week.
+  const withDomain = (taught, today) => (item) => ({ ...item, domain: domainOf(item, { senderDomain: taught.get(item.sender) }), soon: placeOf(item, today).today, suggestion: jobmapSuggestion(item) })
+  const taughtDomains = async () => new Map((await reads.senders()).filter((rule) => rule.domain).map((rule) => [rule.address, rule.domain]))
+  router.get('/desk', handler(async (_req, res) => {
+    const today = dateKey(now())
+    const [open, taught, quiet, all] = await Promise.all([reads.items({ open: true, today }), taughtDomains(), reads.quiet(addDays(today, -6)), allActions()])
+    const things = (await places(open)).map(withDomain(taught, today))
+    const domains = Object.fromEntries(DOMAINS.map((key) => {
+      const mine = things.filter((thing) => thing.domain === key)
+      return [key, { open: mine.length, new: mine.filter((thing) => thing.status === 'new').length, soon: mine.filter((thing) => thing.soon).length }]
+    }))
+    res.json({ today, things, now: { things: things.filter((thing) => thing.soon || thing.suggestion).map((thing) => thing.id), actions: groupActions(all.actions, today).today.slice(0, 8) }, domains, quiet })
+  }))
+  // One thing in full: what happened to it, the messages behind it, what it led to, where it is now.
+  router.get('/items/:id', handler(async (req, res) => {
+    const found = await reads.thing(req.params.id)
+    if (!found) throw new MailError(404, 'Not found')
+    const [placed] = await places([found])
+    res.json(withDomain(await taughtDomains(), dateKey(now()))(placed))
   }))
   // Keep, Dismiss or back to new for several at once: each with the revision she saw; one that
   // changed since is left as it is and named, the rest are saved.

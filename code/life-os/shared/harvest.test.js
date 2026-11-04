@@ -156,3 +156,14 @@ test('partOf: applications to JobMap; bills, orders and tenancy to Budget; peopl
   assert.equal(partOf({ kind: 'booking', area: 'travel' }), null)
   assert.equal(partOf({ kind: 'official', area: 'admin' }), null)
 })
+
+test('jobmapSuggestion: offered only when JobMap knows the job and says something else', async () => {
+  const { jobmapSuggestion } = await import('./harvest.js')
+  const placed = (state, status) => ({ kind: 'application', state, place: { app: 'jobmap', id: 'NB-1', status } })
+  assert.deepEqual(jobmapSuggestion(placed('unsuccessful', 'Applied')), { job: 'NB-1', status: 'Rejected', from: 'Applied' })
+  assert.deepEqual(jobmapSuggestion(placed('interview', 'Applied')), { job: 'NB-1', status: 'Interview', from: 'Applied' })
+  assert.equal(jobmapSuggestion(placed('test', 'Applied')), null, 'a test is still Applied in JobMap')
+  assert.equal(jobmapSuggestion(placed('unsuccessful', 'Rejected')), null)
+  assert.equal(jobmapSuggestion({ kind: 'application', state: 'unsuccessful', place: { app: 'jobmap', missing: true } }), null)
+  assert.equal(jobmapSuggestion({ kind: 'order', state: 'delivered', place: { id: 'x', status: 'y' } }), null)
+})

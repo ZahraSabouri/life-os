@@ -235,3 +235,76 @@ test('harvest routes on lifeos_test: a part, places, the log, bulk Keep and Dism
     assert.equal((await call('/messages/bulk', 'POST', { change: 'delete', messages: fresh })).status, 400)
   })
 })
+
+// Stage 6: the Desk's routes. Things with their domains, Now, counts, what was kept quiet, one thing
+// in full, a taught sender's domain, and the JobMap change offered for an application.
+test('desk routes on lifeos_test: domains, Now, one thing in full, a taught sender, the JobMap change', { skip: !enabled }, async (t) => {
+  const { postgresConfig, createPostgresPool } = await import('../../postgres.js')
+  const pool = createPostgresPool(postgresConfig(projectRoot), { database: 'lifeos_test', role: 'app' })
+  t.after(() => pool.end())
+  assert.equal((await pool.query('SELECT current_database() AS name')).rows[0].name, 'lifeos_test', 'Refusing to use a non-test database')
+  const repository = createMailRepository({ pool })
+  const importer = createMailImporter({ repository })
+  const reads = createMailReads({ pool })
+  const mark = `${tag.slice(0, 4)}dk`
+  const kinds = JSON.parse(fs.readFileSync(path.join(projectRoot, 'mail/example-batch-v2-kinds.json'), 'utf8'))
+  kinds.runId = `2026-11-03-0701-${tag.slice(0, 4)}dk`
+  kinds.sources.forEach((entry) => { entry.id = `${entry.id}-${mark}` })
+  kinds.messages.forEach((message) => { message.source = `${message.source}-${mark}`; if (message.from?.address) message.from.address = message.from.address.replace('@', `+${mark}@`) })
+  kinds.actions.forEach((entry) => { entry.dedupeKey = `${entry.dedupeKey}:${mark}` })
+  kinds.items.forEach((item) => { item.key = `${item.key}:${mark}` })
+  await importer.apply(kinds, { fileName: 'desk.json' })
+  const places = async (rows) => rows.map((row) => (row.kind === 'application' ? { ...row, place: { app: 'jobmap', href: '/jobmap#job=NB-1', id: 'NB-1', status: 'To review' } } : row))
+  const app = express()
+  app.use(express.json())
+  app.use('/api/mail', createMailRouter({ repository, importer, inbox: { status: async () => ({}), scan: async () => ({}) }, reads, places, now: () => new Date('2026-11-03T09:00:00Z') }))
+  const server = app.listen(0, '127.0.0.1')
+  t.after(() => server.close())
+  await new Promise((resolve) => server.once('listening', resolve))
+  const call = async (route, method = 'GET', body) => {
+    const response = await fetch(`http://127.0.0.1:${server.address().port}/api/mail${route}`, { method, headers: { 'content-type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) })
+    return { status: response.status, body: await response.json() }
+  }
+  const mine = (things) => Object.fromEntries(things.filter((thing) => thing.dedupe_key.endsWith(`:${mark}`)).map((thing) => [thing.kind, thing]))
+
+  await t.test('every open thing has its domain, its latest step and, for an application, the JobMap change', async () => {
+    const desk = (await call('/desk')).body
+    const things = mine(desk.things)
+    assert.deepEqual(Object.fromEntries(Object.entries(things).map(([kind, thing]) => [kind, thing.domain])), {
+      order: 'home', application: 'work', bill: 'money', subscription: 'money', booking: 'travel', appointment: 'health', official: 'admin', person: 'social', tenancy: 'home', opportunity: 'learning', account: 'admin' })
+    assert.equal(things.order.last_step.state, 'dispatched')
+    assert.equal(things.order.steps, 1)
+    assert.equal(things.order.soon, true, 'delivery expected tomorrow')
+    assert.deepEqual(things.application.suggestion, { job: 'NB-1', status: 'Applied', from: 'To review' })
+    assert.ok(desk.now.things.includes(things.order.id) && desk.now.things.includes(things.application.id))
+    assert.ok(!desk.now.things.includes(things.booking.id), 'the train is on 21 November')
+    assert.ok(desk.domains.home.open >= 2 && desk.domains.travel.open >= 1)
+    assert.ok(Number.isInteger(desk.quiet.total) && Array.isArray(desk.quiet.senders))
+    assert.ok(Array.isArray(desk.now.actions))
+  })
+
+  await t.test('one thing in full: what happened, the messages behind it, what it led to', async () => {
+    const application = mine((await call('/desk')).body.things).application
+    const full = (await call(`/items/${application.id}`)).body
+    assert.deepEqual(full.steps.map((step) => step.state), ['test'])
+    assert.equal(full.messages.length, 1)
+    assert.equal(full.messages[0].subject, 'Next step: online numerical test')
+    assert.equal(full.actions[0].title, 'Take the Northbridge online test')
+    assert.equal(full.domain, 'work')
+    assert.equal((await call('/items/00000000-0000-0000-0000-000000000000')).status, 404)
+  })
+
+  await t.test('a taught sender files its things under her domain; her own choice on a thing wins over it', async () => {
+    const taught = await call('/senders', 'POST', { address: `orders+${mark}@books.example.com`, rule: 'file', domain: 'money' })
+    assert.equal(taught.status, 201)
+    assert.equal(taught.body.domain, 'money')
+    let order = mine((await call('/desk')).body.things).order
+    assert.equal(order.domain, 'money')
+    await call(`/items/${order.id}`, 'PATCH', { revision: order.revision, her_domain: 'home' })
+    order = mine((await call('/desk')).body.things).order
+    assert.equal(order.domain, 'home')
+    assert.equal((await call('/senders', 'POST', { address: `x+${mark}@example.com`, rule: 'file' })).status, 400)
+    assert.equal((await call(`/items/${order.id}`, 'PATCH', { revision: order.revision, her_domain: 'space' })).status, 400)
+    await call(`/senders/${taught.body.id}/remove`, 'POST', { revision: taught.body.revision })
+  })
+})
