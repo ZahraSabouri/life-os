@@ -72,15 +72,15 @@ export function LogDay({ detail, entry, area, setArea, focus, onChanged }) {
       <ul className="came-in-list">{shown.filter((item) => item.area === key).map((item) => <CameInItem key={item.id} item={item} focused={item.id === focus} onSaved={onChanged} />)}</ul>
     </section>)}
     {!area && detail.actions?.length ? <section className="log-area"><h3>To do</h3>
-      <ul className="log-lines">{detail.actions.map((action) => <li key={action.id}><Link to={`/inbox?action=${action.id}`} dir="auto">{action.her_title || action.title}</Link>{action.due ? <span>by {dayName(action.due, { weekday: 'short', day: 'numeric', month: 'short' })}</span> : null}{action.status !== 'open' ? <span>{action.status}</span> : null}</li>)}</ul>
+      <ul className="log-lines">{detail.actions.map((action) => <li key={action.id}><Link to={`/inbox/waiting?action=${action.id}`} dir="auto">{action.her_title || action.title}</Link>{action.due ? <span>by {dayName(action.due, { weekday: 'short', day: 'numeric', month: 'short' })}</span> : null}{action.status !== 'open' ? <span>{action.status}</span> : null}</li>)}</ul>
     </section> : null}
     {!area && messages.length ? <section className="log-area"><h3>Messages</h3>
       <ul className="log-lines">{important.map((message) => <li key={message.id}>
-        <Link to={`/inbox/mail?open=${message.id}`} dir="auto">{message.subject || '(no subject)'}</Link>
+        <Link to={`/inbox/messages?open=${message.id}`} dir="auto">{message.subject || '(no subject)'}</Link>
         <span dir="auto">{[message.from_name || message.from_address, message.course, message.source_label].filter(Boolean).join(' · ')}</span>
         <small dir="auto">{message.summary}</small>
       </li>)}</ul>
-      {rest > 0 ? <p className="log-folded"><Link to={`/inbox/mail?filter=other&from=${detail.day}&to=${detail.day}`}>{rest} more: newsletters, notifications and the rest</Link></p> : null}
+      {rest > 0 ? <p className="log-folded"><Link to={`/inbox/messages?filter=other&from=${detail.day}&to=${detail.day}`}>{rest} more: newsletters, notifications and the rest</Link></p> : null}
     </section> : null}
     <Runs runs={detail.runs} latestBatchId={detail.latestBatchId} onUndone={onChanged} />
   </article>

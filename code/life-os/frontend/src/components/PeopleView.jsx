@@ -105,8 +105,8 @@ export default function PeopleView() {
           <p className="people-facts">{[person.next ? `Birthday ${formatCalendarDay(person.next.date, { weekday: undefined })}, ${away(person.next.days)}${person.next.turns ? ` (turns ${person.next.turns})` : ''}` : 'No birthday set', person.contact].filter(Boolean).join(' · ')}</p>
           {person.notes ? <p className="people-notes">{person.notes}</p> : null}
           {mail.data?.[person.id] ? <div className="people-mail">
-            {mail.data[person.id].actions.map((row) => <p key={row.id}><Link to={`/inbox?action=${row.id}`}>{titleOf(row)}</Link>{row.due ? <small> · by {row.due}</small> : null}</p>)}
-            {mail.data[person.id].messages.map((row) => <p key={row.id}><small>{london(row.received_at)} · </small><Link to={`/inbox/mail?open=${row.id}`} dir="auto">{row.subject || row.summary}</Link></p>)}
+            {mail.data[person.id].actions.map((row) => <p key={row.id}><Link to={`/inbox/waiting?action=${row.id}`}>{titleOf(row)}</Link>{row.due ? <small> · by {row.due}</small> : null}</p>)}
+            {mail.data[person.id].messages.map((row) => <p key={row.id}><small>{london(row.received_at)} · </small><Link to={`/inbox/messages?open=${row.id}`} dir="auto">{row.subject || row.summary}</Link></p>)}
           </div> : null}
           <p className="day-stop-actions">
             <button type="button" onClick={() => { setEditing(person.id); setSure('') }}>Change</button>

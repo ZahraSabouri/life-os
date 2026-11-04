@@ -33,7 +33,7 @@ export default function InboxPanel() {
     {undo.bar}
     <CameInLines cameIn={cameIn} />
     <p className="mail-panel-foot">
-      {open > top.length ? <Link to="/inbox">{open - top.length} more on Waiting on you</Link> : null}
+      {open > top.length ? <Link to="/inbox/waiting">{open - top.length} more on Waiting on you</Link> : null}
       <span>{lastGathered ? `Last harvested ${london(lastGathered, { weekday: 'short', day: 'numeric', month: 'short' })}` : 'Not harvested yet'}</span>
     </p>
     {staleDays !== null && staleDays >= 3 ? <p className="day-quiet">Nothing has been harvested for {staleDays} days. <Link to="/inbox/log">The Harvest log</Link></p> : null}

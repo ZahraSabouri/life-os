@@ -132,6 +132,27 @@ html[data-life-os-ground='modern'][data-life-os-mode='dark'] {
   --m-shadow-lift: 0 14px 38px rgba(0, 0, 0, 0.5);
 }
 
+/* The eight domains of what comes in (the Desk, stage 6), one colour each, on every style: bright
+   on the dark ones (Madder, Indigo, Modern at night), deep on the light ones (Paper, Modern). */
+.app-shell[data-ground],
+html[data-life-os-ground] {
+  --d-work: #6fd0d4; --d-learning: #aab0ff; --d-social: #f49cbf; --d-money: #f2c26a;
+  --d-home: #8edba9; --d-health: #ffa892; --d-travel: #97c4f2; --d-admin: #c3c9d8;
+}
+.app-shell[data-ground='paper'],
+html[data-life-os-ground='paper'],
+.app-shell[data-ground='modern'],
+html[data-life-os-ground='modern'],
+html:not([data-life-os-ground]) {
+  --d-work: #1b6a73; --d-learning: #4650b0; --d-social: #a83a64; --d-money: #96600f;
+  --d-home: #2a7144; --d-health: #b33f2b; --d-travel: #2c66a2; --d-admin: #565d70;
+}
+.app-shell[data-ground='modern'][data-mode='dark'],
+html[data-life-os-ground='modern'][data-life-os-mode='dark'] {
+  --d-work: #6fd0d4; --d-learning: #aab0ff; --d-social: #f49cbf; --d-money: #f2c26a;
+  --d-home: #8edba9; --d-health: #ffa892; --d-travel: #97c4f2; --d-admin: #c3c9d8;
+}
+
 /* ============================ The design of each style ============================
    Colour is only part of a style. Each one also has its own type, its own way of drawing
    a box, a button, a label and the chosen item of a menu. These follow the Court page of

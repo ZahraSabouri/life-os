@@ -84,7 +84,7 @@ export function MessageReader({ message, onBack, onChanged }) {
     </section>
     {taken.items.length || taken.actions.length ? <section className="mail-taken" aria-label="Taken from this">
       <h3>Taken from this</h3>
-      {taken.actions.length ? <ul className="log-lines">{taken.actions.map((action) => <li key={action.id}><Link to={`/inbox?action=${action.id}`} dir="auto">{action.her_title || action.title}</Link><span>{action.due ? `by ${london(`${action.due}T12:00:00Z`, { weekday: 'short', day: 'numeric', month: 'short' })} · ` : ''}Waiting on you</span></li>)}</ul> : null}
+      {taken.actions.length ? <ul className="log-lines">{taken.actions.map((action) => <li key={action.id}><Link to={`/inbox/waiting?action=${action.id}`} dir="auto">{action.her_title || action.title}</Link><span>{action.due ? `by ${london(`${action.due}T12:00:00Z`, { weekday: 'short', day: 'numeric', month: 'short' })} · ` : ''}Waiting on you</span></li>)}</ul> : null}
       {taken.items.length ? <ul className="came-in-list">{taken.items.map((item) => <CameInItem key={item.id} item={item} onSaved={onChanged} />)}</ul> : null}
     </section> : null}
     {row.body ? <MessageText text={row.body} /> : <p className="day-quiet">{row.text_complete === false ? 'Only part of this message was harvested.' : 'Only a summary was harvested for this message.'}{original ? ' The original has the rest.' : ''}</p>}

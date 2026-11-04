@@ -37,7 +37,7 @@ test('mapMail: a deadline when the mail gave the day, a reminder for hers, done 
   assert.equal(byId['admin:mail:e'].area, 'relationships')
   assert.equal(byId['admin:mail:h'].meta.done, true)
   assert.ok(!byId['admin:mail:b'] && !byId['admin:mail:d'], 'no day, no calendar item')
-  assert.ok(items.every((item) => item.all_day && item.href === '/inbox' && item.meta.readonly))
+  assert.ok(items.every((item) => item.all_day && item.href === '/inbox/waiting' && item.meta.readonly))
 })
 
 test('mapHarvest: dated announcements, materials, notes and opportunities; never events, vacancies or offers', () => {

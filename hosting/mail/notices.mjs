@@ -20,9 +20,9 @@ export function mailNotices({ actions = [], announcements = 0, batchId = null } 
       : priorityOf(row) === 'urgent' || day === today ? 'today' : day === tomorrow ? 'ahead' : ''
     if (!level) continue
     const why = level === 'late' ? (day && day < today ? `Was due ${day}` : `Waiting ${waited} days`) : level === 'ahead' ? 'Due tomorrow' : day === today ? 'Due today' : 'Urgent'
-    notices.push({ id: `mail:${row.id}:${level}`, level, area: row.area === 'relationships' ? 'relationships' : 'admin', title: text(titleOf(row)), detail: [why, row.person_name, KIND_NAMES[row.kind]].filter(Boolean).join(' · '), at: '', href: '/inbox' })
+    notices.push({ id: `mail:${row.id}:${level}`, level, area: row.area === 'relationships' ? 'relationships' : 'admin', title: text(titleOf(row)), detail: [why, row.person_name, KIND_NAMES[row.kind]].filter(Boolean).join(' · '), at: '', href: '/inbox/waiting' })
   }
-  if (announcements > 0 && batchId) notices.push({ id: `mail:announcements:${batchId}`, level: 'today', area: 'admin', title: plural(announcements, 'new announcement'), detail: 'In your mail', at: '', href: '/inbox/mail?filter=announcement' })
+  if (announcements > 0 && batchId) notices.push({ id: `mail:announcements:${batchId}`, level: 'today', area: 'admin', title: plural(announcements, 'new announcement'), detail: 'In your mail', at: '', href: '/inbox/messages?filter=announcement' })
   return notices
 }
 
@@ -30,7 +30,7 @@ export function mailNotices({ actions = [], announcements = 0, batchId = null } 
 export function mapMail(rows = []) {
   return rows.map((row) => ({
     id: `admin:mail:${row.id}`, area: row.area === 'relationships' ? 'relationships' : 'admin', kind: row.origin === 'gathered' ? 'deadline' : 'reminder',
-    title: text(titleOf(row)), start: dayOf(row), end: null, all_day: true, href: '/inbox',
+    title: text(titleOf(row)), start: dayOf(row), end: null, all_day: true, href: '/inbox/waiting',
     meta: { source: 'mail', readonly: true, status: row.status, done: row.status === 'done', completed: row.status === 'done', type: row.kind },
   })).filter((item) => /^\d{4}-\d{2}-\d{2}$/.test(item.start))
 }

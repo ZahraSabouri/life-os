@@ -43,8 +43,8 @@ Accounts and sign-in (stage 7), network (stage 8), the app's own drafting (repla
 - **Verify:** route tests on `lifeos_test`, places tests. **Commit:** `[6-cp3]`.
 
 ### CP4: the Desk
-- [ ] Domain colours in `styles/palettes.css` for every style (deep on light, bright on dark).
-- [ ] `InboxDesk.jsx`: Now, rail, board and filters, cards, drawer, Triage with keys and the ring, kept quiet; Inbox tabs Desk · To do · Harvest log · Messages.
+- [x] Domain colours in `styles/palettes.css` for every style (deep on light, bright on dark).
+- [x] `InboxDesk.jsx`: Now, rail, board and filters, cards, drawer, Triage with keys and the ring, kept quiet; Inbox tabs Desk · Waiting on you · Harvest log · Messages (old addresses lead to the right page).
 - **Verify:** render tests; headless Chrome with example data at 1360 and 400 pixels, light and dark. **Commit:** `[6-cp4]`.
 
 ### CP5: everywhere else

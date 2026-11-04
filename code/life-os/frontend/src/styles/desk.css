@@ -1,0 +1,131 @@
+/* The Desk (stage 6). Every colour comes from the style's own tokens (--m-*) and the domain
+   colours (--d-*, palettes.css); a card's domain colour is --c. */
+.desk { display: grid; gap: 1.1rem; }
+.desk-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem 1rem; }
+.desk-tally { margin: 0; color: var(--m-muted); font-size: 0.88rem; font-variant-numeric: tabular-nums; }
+.desk-triage-open { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.05rem; border: 0; border-radius: 999px; background: var(--m-ink); color: var(--m-bg); font: 600 0.88rem var(--m-font); cursor: pointer; }
+.desk-triage-open span { font-variant-numeric: tabular-nums; opacity: 0.75; font-size: 0.8rem; }
+.desk-triage-open:disabled { opacity: 0.45; cursor: default; }
+.desk-label { margin: 0 0 0.45rem; color: var(--m-muted); font: 700 0.64rem/1.2 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase; }
+
+/* Now: what is close, side by side */
+.desk-now h3, .desk-board h3 { margin: 0; font: var(--m-title-weight, 600) 1.2rem/1.2 var(--m-title-font, var(--m-font)); }
+.desk-now { display: grid; gap: 0.6rem; }
+.desk-now-row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(15rem, 18rem); gap: 0.75rem; overflow-x: auto; padding: 0.1rem 0.1rem 0.4rem; scroll-snap-type: x mandatory; }
+.desk-now-row > * { scroll-snap-align: start; }
+
+/* A card */
+.desk-card { position: relative; display: grid; align-content: start; gap: 0.45rem; padding: 0.85rem 0.95rem 0.8rem; border: 1px solid var(--m-line); border-radius: var(--m-radius, 14px); background: var(--m-card-fill, var(--m-card)); color: var(--m-ink); overflow: hidden; transition: transform 160ms ease, box-shadow 160ms ease, opacity 220ms ease; }
+.desk-card::before { content: ''; position: absolute; inset: 0 0 auto; height: 3px; background: var(--c); }
+.desk-card:hover { transform: translateY(-2px); box-shadow: var(--m-shadow-lift); }
+.desk-card.is-kept { background: color-mix(in srgb, var(--c) 7%, var(--m-card-fill, var(--m-card))); }
+.desk-card.is-soon .desk-when { color: var(--m-red, var(--c)); font-weight: 600; }
+.desk-card.is-due::before { background: repeating-linear-gradient(90deg, var(--m-accent) 0 10px, transparent 10px 14px); }
+.desk-card-top { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+.desk-kind { color: var(--c); font: 700 0.62rem/1.2 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase; white-space: nowrap; }
+.desk-when { margin-left: auto; color: var(--m-muted); font-size: 0.76rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.desk-card h4 { margin: 0; font: 600 0.98rem/1.3 var(--m-font); }
+.desk-card h4 button, .desk-card h4 a { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; text-decoration: none; }
+.desk-card h4 button:hover, .desk-card h4 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.desk-facts { margin: 0; display: flex; flex-wrap: wrap; gap: 0.15rem 0.6rem; color: var(--m-muted); font-size: 0.8rem; }
+.desk-marks { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; font-size: 0.76rem; }
+.desk-state, .desk-kept, .desk-marks .came-in-place, .desk-marks a { display: inline-flex; padding: 0.1rem 0.55rem; border-radius: 999px; background: color-mix(in srgb, var(--c) 14%, transparent); color: var(--m-ink); font-weight: 600; text-decoration: none; }
+.desk-marks .came-in-place.is-waiting { background: var(--m-accent-soft); color: var(--m-ink); }
+.desk-marks a { background: color-mix(in srgb, var(--d-home) 18%, transparent); }
+.desk-suggest { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.6rem; padding: 0.45rem 0.6rem; border-radius: 10px; background: color-mix(in srgb, var(--c) 10%, transparent); font-size: 0.8rem; }
+.desk-suggest button { padding: 0.15rem 0.6rem; border: 1px solid var(--c); border-radius: 8px; background: var(--c); color: var(--m-bg); font: 600 0.78rem var(--m-font); cursor: pointer; }
+.desk-acts { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.desk-acts button { padding: 0.22rem 0.65rem; border: 1px solid var(--m-line-strong); border-radius: 8px; background: transparent; color: var(--m-ink); font: 600 0.78rem var(--m-font); cursor: pointer; }
+.desk-acts button.is-primary { border-color: var(--c); background: var(--c); color: var(--m-bg); }
+.desk-acts button:hover { border-color: var(--m-ink); }
+
+.desk-glyph { display: inline-grid; flex: none; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--c) 18%, transparent); color: var(--c); }
+.desk-glyph svg { width: 58%; height: 58%; }
+.desk-glyph.is-sm { width: 1.45rem; height: 1.45rem; }
+.desk-glyph.is-md { width: 1.75rem; height: 1.75rem; }
+
+/* Rail, board, quiet */
+.desk-body { display: grid; grid-template-columns: 13.5rem minmax(0, 1fr) 15rem; gap: 1.1rem; align-items: start; }
+.desk-rail { display: grid; gap: 0.15rem; }
+.desk-rail button { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.55rem; padding: 0.5rem 0.6rem; border: 0; border-radius: 10px; background: none; color: var(--m-ink); text-align: left; cursor: pointer; font: inherit; }
+.desk-rail button:hover, .desk-rail button[aria-pressed='true'] { background: var(--m-sunken); }
+.desk-rail button[aria-pressed='true'] b { color: var(--c); }
+.desk-rail b { display: block; font-weight: 600; font-size: 0.92rem; }
+.desk-rail small { display: block; color: var(--m-red, var(--c)); font-size: 0.72rem; }
+.desk-rail em { font-style: normal; color: var(--c); font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.85rem; }
+.desk-board { display: grid; gap: 0.8rem; min-width: 0; }
+.desk-board > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1rem; }
+.desk-board > header h3 { color: var(--c); font-size: 1.4rem; }
+.desk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr)); gap: 0.8rem; }
+.desk-quiet { display: grid; gap: 1rem; padding: 1rem; border-radius: var(--m-radius, 14px); background: var(--m-sunken); }
+.desk-big { margin: 0; font: 600 2rem/1 var(--m-title-font, var(--m-font)); font-variant-numeric: tabular-nums; }
+.desk-note { margin: 0.2rem 0 0; color: var(--m-muted); font-size: 0.8rem; }
+.desk-note a { color: var(--m-accent-strong); }
+.desk-bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; }
+.desk-bars li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.15rem 0.5rem; font-size: 0.8rem; }
+.desk-bars span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.desk-bars b { font-variant-numeric: tabular-nums; color: var(--m-muted); font-weight: 600; }
+.desk-bars i { grid-column: 1 / -1; display: block; height: 5px; border-radius: 3px; background: var(--m-line); position: relative; overflow: hidden; }
+.desk-bars i::after { content: ''; position: absolute; inset: 0 auto 0 0; width: var(--w); border-radius: 3px; background: var(--m-muted); }
+
+/* The drawer */
+.desk-drawer { position: fixed; inset: 0 0 0 auto; z-index: 60; width: min(27rem, 100vw); overflow-y: auto; padding: calc(env(safe-area-inset-top, 0px) + 1.1rem) max(1.2rem, env(safe-area-inset-right, 0px)) 1.4rem 1.2rem; background: var(--m-card-fill, var(--m-card)); color: var(--m-ink); border-left: 1px solid var(--m-line); box-shadow: var(--m-shadow-lift); animation: desk-in 220ms ease; }
+.desk-drawer:focus { outline: none; }
+@keyframes desk-in { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+.desk-close { justify-self: end; float: right; padding: 0.3rem 0.85rem; border: 0; border-radius: 999px; background: var(--m-sunken); color: var(--m-ink); font: 600 0.8rem var(--m-font); cursor: pointer; }
+.desk-drawer-body { display: grid; gap: 1rem; clear: both; padding-top: 0.6rem; }
+.desk-drawer-body h3 { margin: 0; font: var(--m-title-weight, 600) 1.5rem/1.2 var(--m-title-font, var(--m-font)); }
+.desk-summary { margin: 0; color: var(--m-muted); }
+.desk-dl { display: grid; gap: 0.35rem; margin: 0; font-size: 0.88rem; }
+.desk-dl div { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0.8rem; }
+.desk-dl dt { color: var(--m-muted); }
+.desk-dl dd { margin: 0; }
+.desk-dl a { color: var(--m-accent-strong); }
+.desk-steps { list-style: none; margin: 0; padding: 0 0 0 1rem; border-left: 2px solid var(--m-line); display: grid; gap: 0.6rem; }
+.desk-steps li { position: relative; display: grid; gap: 0.05rem; font-size: 0.86rem; }
+.desk-steps li::before { content: ''; position: absolute; left: -1.38rem; top: 0.35rem; width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--c); }
+.desk-steps small, .desk-list small { color: var(--m-muted); font-size: 0.76rem; }
+.desk-steps span { color: var(--m-muted); }
+.desk-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; font-size: 0.86rem; }
+.desk-list li { display: grid; gap: 0.05rem; }
+.desk-list a { color: var(--m-ink); font-weight: 600; }
+.desk-move { display: grid; gap: 0.5rem; }
+.desk-move select { justify-self: start; padding: 0.3rem 0.5rem; border: 1px solid var(--m-line-strong); border-radius: var(--m-radius-control, 8px); background: transparent; color: var(--m-ink); font: inherit; font-size: 0.86rem; }
+.desk-move button { justify-self: start; padding: 0; border: 0; background: none; color: var(--m-accent-strong); font: 600 0.82rem var(--m-font); cursor: pointer; text-align: left; }
+
+/* Triage */
+.desk-triage { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: max(16px, env(safe-area-inset-left, 0px)); background: color-mix(in srgb, var(--m-bg) 86%, transparent); backdrop-filter: blur(6px); }
+.desk-triage-box { display: grid; justify-items: center; gap: 1rem; width: min(30rem, 100%); }
+.desk-triage-card { width: 100%; transition: transform 220ms ease, opacity 220ms ease; }
+.desk-triage-card .desk-card { padding: 1.2rem 1.3rem; box-shadow: var(--m-shadow-lift); }
+.desk-triage-card .desk-card h4 { font-size: 1.15rem; }
+.desk-triage-card .desk-acts { display: none; }
+.desk-triage-card.is-keep { transform: translateX(120%) rotate(6deg); opacity: 0; }
+.desk-triage-card.is-dismiss { transform: translateX(-120%) rotate(-6deg); opacity: 0; }
+.desk-triage-card.is-later { transform: translateY(50%); opacity: 0; }
+.desk-triage-acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; }
+.desk-triage-acts button { padding: 0.55rem 1.1rem; border: 1px solid var(--m-line-strong); border-radius: 999px; background: var(--m-card-fill, var(--m-card)); color: var(--m-ink); font: 600 0.9rem var(--m-font); cursor: pointer; }
+.desk-triage-acts button.is-primary { border-color: var(--m-ink); background: var(--m-ink); color: var(--m-bg); }
+.desk-triage-acts kbd { margin-left: 0.3rem; font: 0.75rem var(--m-num, monospace); opacity: 0.7; }
+.desk-triage-done { text-align: center; }
+.desk-triage-done h3 { margin: 0 0 0.3rem; }
+.desk-triage-done p { margin: 0; color: var(--m-muted); }
+.desk-ring { width: 4.2rem; height: 4.2rem; }
+.desk-ring circle { fill: none; stroke-width: 6; }
+.desk-ring .track { stroke: var(--m-line); }
+.desk-ring .fill { stroke: var(--m-accent); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 300ms ease; }
+.desk-ring text { fill: var(--m-ink); font: 600 13px var(--m-font); text-anchor: middle; dominant-baseline: central; }
+
+@media (max-width: 1100px) {
+  .desk-body { grid-template-columns: 12rem minmax(0, 1fr); }
+  .desk-quiet { grid-column: 1 / -1; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+}
+@media (max-width: 760px) {
+  .desk-body { grid-template-columns: minmax(0, 1fr); }
+  .desk-rail { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; padding-bottom: 0.3rem; }
+  .desk-rail small { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .desk-card, .desk-triage-card, .desk-ring .fill { transition: none; }
+  .desk-drawer { animation: none; }
+}

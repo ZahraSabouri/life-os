@@ -287,7 +287,7 @@ export function DayPanels({ page, compact = false, layout = PANELS_BESIDE_PATH }
   const health = <Panel title="Health" href="/health" open="Open Health">
     <HealthPanel today={page.date} isToday={isToday} compact={compact} />
   </Panel>
-  const mail = isToday ? <Panel title="Waiting on you" href="/inbox" open="Open the Inbox" className="mail-today">
+  const mail = isToday ? <Panel title="Waiting on you" href="/inbox/waiting" open="Open Waiting on you" className="mail-today">
     <InboxPanel />
   </Panel> : null
   const panels = { study, home, jobs, notes, health, mail }

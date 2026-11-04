@@ -125,3 +125,32 @@ test('Today: what came in, as lines that lead to where each thing is; nothing wh
   assert.ok(markup.includes('href="/inbox/log?day=2026-10-31&amp;item=i6"'))
   assert.equal(renderToStaticMarkup(<MemoryRouter><CameInLines cameIn={{ today: 0, lines: [], more: 0 }} /></MemoryRouter>), '')
 })
+
+test('the Desk: a card says its kind, the date that matters, its facts, its state, where it is, and the JobMap change', async () => {
+  const { ThingCard, Triage, kindLabel, factsOf } = await import('../src/components/inbox/InboxDesk.jsx')
+  const order = { id: 't1', revision: 1, kind: 'order', area: 'home', domain: 'home', status: 'new', state: 'dispatched', day: '2026-11-02', title: 'Example Books order EB-20431', start_day: '2026-11-04', deadline: '2026-12-01', amount_pence: 2399, currency: 'GBP', external_ref: 'EB-20431', details: { organiser: 'Example Books' }, soon: true }
+  const markup = renderToStaticMarkup(<MemoryRouter><ThingCard thing={order} /></MemoryRouter>)
+  for (const words of ['Order', 'Arrives Wed 4 Nov', 'Example Books order EB-20431', 'Example Books', '£23.99', 'Ref EB-20431', 'Dispatched', 'Keep', 'Dismiss']) assert.ok(markup.includes(words), words)
+  assert.ok(markup.includes('--c:var(--d-home)'))
+  assert.ok(markup.includes('is-soon'))
+  const delivered = renderToStaticMarkup(<MemoryRouter><ThingCard thing={{ ...order, state: 'delivered', soon: false }} /></MemoryRouter>)
+  assert.ok(delivered.includes('Returns until Tue 1 Dec') && delivered.includes('Delivered'))
+  const application = { id: 't2', revision: 1, kind: 'application', area: 'jobs', domain: 'work', status: 'kept', state: 'unsuccessful', day: '2026-11-09', title: 'Insight Analyst, Example Retail', details: { employer: 'Example Retail' },
+    place: { app: 'jobmap', href: '/jobmap#job=EX-2', id: 'EX-2', status: 'Applied' }, suggestion: { job: 'EX-2', status: 'Rejected', from: 'Applied' } }
+  const app = renderToStaticMarkup(<MemoryRouter><ThingCard thing={application} /></MemoryRouter>)
+  for (const words of ['Application', 'Unsuccessful', 'In JobMap', 'JobMap says Applied.', 'Move to Rejected', 'Kept']) assert.ok(app.includes(words), words)
+  assert.ok(!app.includes('>Keep<'), 'a kept thing offers Dismiss only')
+  assert.equal(kindLabel({ kind: 'opportunity', form: 'scholarship' }), 'Scholarship')
+  assert.deepEqual(factsOf({ details: { employer: 'A', organiser: 'A' }, location: 'Cardiff', amount_pence: 1200, currency: 'GBP' }), ['A', 'Cardiff', '£12.00'])
+  const triage = renderToStaticMarkup(<MemoryRouter><Triage things={[order, { ...order, id: 't3', title: 'Second' }, application]} onClose={() => {}} /></MemoryRouter>)
+  for (const words of ['0/2', 'Example Books order EB-20431', 'Dismiss', 'Later', 'Keep', 'Back to the Desk']) assert.ok(triage.includes(words), words)
+  assert.ok(!triage.includes('Insight Analyst'), 'only new things are triaged')
+})
+
+test('the one date that matters, for the kinds that move', () => {
+  assert.equal(whenOf({ kind: 'order', state: 'out-for-delivery', day: '2026-11-03' }), 'Arrives today')
+  assert.equal(whenOf({ kind: 'bill', state: 'due', deadline: '2026-11-18', day: '2026-11-02' }), 'Due Wed 18 Nov')
+  assert.equal(whenOf({ kind: 'subscription', state: 'renewing', deadline: '2026-11-12', day: '2026-11-02' }), 'Renews Thu 12 Nov')
+  assert.equal(whenOf({ kind: 'booking', start_at: '2026-11-21T08:05:00Z', day: '2026-11-02' }), 'Sat 21 Nov, 08:05')
+  assert.equal(whenOf({ kind: 'application', state: 'test', deadline: '2026-11-07', day: '2026-11-02' }), 'By Sat 7 Nov')
+})

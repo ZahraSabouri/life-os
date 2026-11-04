@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { apiFetch } from '../../lib/api.js'
 import { london, londonTime, mailChanged, useMail } from '../../lib/useMail.js'
-import { KIND_NAMES } from '@shared/harvest.js'
+import { KIND_NAMES, stateName } from '@shared/harvest.js'
 import '../../styles/inbox.css'
 
 const APP_NAMES = { jobmap: 'JobMap', 'cardiff-life': 'Cardiff Life' }
@@ -15,7 +15,19 @@ const day = (value, options = { weekday: 'short', day: 'numeric', month: 'short'
 
 // "Closes Fri 7 Nov", "Thu 5 Nov, 14:00", "From Tue 10 Nov": the one date that matters for it.
 export function whenOf(item) {
+  const at = (value) => `${london(value, { weekday: 'short', day: 'numeric', month: 'short' })}, ${londonTime(value)}`
+  // Kinds that move say where they are in words: an order arrives, then can be returned until.
+  if (item.kind === 'order') {
+    if (['delivered', 'return-started'].includes(item.state) && item.deadline) return `Returns until ${day(item.deadline)}`
+    if (item.state === 'out-for-delivery') return 'Arrives today'
+    if (item.start_day || item.start_at) return `Arrives ${day(item.start_day ?? String(item.start_at).slice(0, 10))}`
+  }
+  if (['booking', 'appointment', 'tenancy'].includes(item.kind) && item.start_at) return at(item.start_at)
+  if (item.deadline && item.kind === 'bill') return `${item.state === 'paid' ? 'Paid' : 'Due'} ${day(item.deadline)}`
+  if (item.deadline && item.kind === 'subscription') return `${item.state === 'cancelled' ? 'Ends' : 'Renews'} ${day(item.deadline)}`
   if (item.deadline) return `${item.kind === 'offer' ? 'Ends' : item.kind === 'vacancy' || item.kind === 'opportunity' ? 'Closes' : 'By'} ${day(item.deadline)}`
+  // A thing that moves, with no date ahead: its latest step and when it happened.
+  if (item.state && item.last_step?.at) return `${stateName(item.state)} ${london(item.last_step.at, { day: 'numeric', month: 'short' })}`
   if (item.start_at) return `${london(item.start_at, { weekday: 'short', day: 'numeric', month: 'short' })}, ${londonTime(item.start_at)}`
   if (item.start_day) return day(item.start_day)
   return `Came in ${day(item.day, { day: 'numeric', month: 'short' })}`
