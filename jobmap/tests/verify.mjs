@@ -14,7 +14,7 @@ const sf=base.filter(j=>j.source==='Student Futures');assert.equal(sf.length,772
 assert.equal(base.find(j=>j.id==='IMP-001').status,'Interview');
 const directory=await mkdtemp(fileURLToPath(new URL('../data/test-workspace-',import.meta.url)));
 const store=await new Store(base,directory).init();
-let result=await store.patch('SF-333ZL',{status:'Applied',saved:true,notes:'A meaningful test note: £30,000 and Cardiff.',followUp:'2026-09-18'},0);
+let result=await store.patch('SF-333ZL',{status:'Applied',saved:true,notes:'A meaningful test note: £30,000 and Riverford.',followUp:'2026-09-18'},0);
 assert.equal(result.job.applied,localDay());assert.equal(result.revision,1);
 await assert.rejects(store.patch('SF-333ZL',{notes:'stale overwrite'},0),/another window/);
 let reopened=await new Store(base,directory).init();assert.equal(reopened.jobs().find(j=>j.id==='SF-333ZL').notes,result.job.notes);assert.equal(reopened.jobs().find(j=>j.id==='SF-333ZL').saved,true);
@@ -23,7 +23,7 @@ await reopened.patch('SF-333ZL',{status:'Archived'},1);assert.equal(selectJobs(r
 await reopened.restore(backup,2);assert.equal(reopened.jobs().find(j=>j.id==='SF-333ZL').status,'Applied');
 await assert.rejects(reopened.restore({...backup,sourceFingerprint:'wrong'},3),/does not match/);
 const bad=structuredClone(backup);bad.progress.overrides['SF-333ZL'].status='Invented status';await assert.rejects(reopened.restore(bad,3),/Invalid status/);assert.equal(reopened.state.revision,3);
-const beforeCount=reopened.jobs().length;const added=await reopened.add({role:'Test Analyst',company:'Local verification only',url:'https://example.org/role',location:'Cardiff',hours:'16 hours per week',description:'Use Python and SQL to build data pipelines.'},3);assert.equal(reopened.jobs().length,beforeCount+1);assert.equal(added.job.saved,true);
+const beforeCount=reopened.jobs().length;const added=await reopened.add({role:'Test Analyst',company:'Local verification only',url:'https://example.org/role',location:'Riverford',hours:'16 hours per week',description:'Use Python and SQL to build data pipelines.'},3);assert.equal(reopened.jobs().length,beforeCount+1);assert.equal(added.job.saved,true);
 await assert.rejects(reopened.add({role:'Duplicate',company:'X',url:'https://example.org/role'},4),/already saved/);
 assert.throws(()=>validatePatch({url:'javascript:alert(1)'}),/http/);assert.throws(()=>validatePatch({deadline:'2026-02-30'}),/valid date/);assert.equal(validDate('2028-02-29'),true);
 assert.throws(()=>validatePatch(JSON.parse('{"__proto__":{"bad":true}}')),/Unsupported/);
@@ -33,7 +33,7 @@ const pontiro=base.find(j=>j.id==='SF-333ZL');
 assert.equal(reviewDeadline(pontiro),'2026-10-01');
 assert.equal(reviewDeadline({...pontiro,deadline:'2026-10-03',userEditedDeadline:true}),'2026-10-03');
 assert.equal(added.job.hours,'16 hours per week');
-const simple={...base[1],role:'Python Developer',stack:'Python, SQL, Django',description:'Paid part-time role, 16 hours per week. Send your CV.',employment:'Part-time',location:'Cardiff',region:'South Wales',deadline:'2027-01-01',fields:{}};
+const simple={...base[1],role:'Python Developer',stack:'Python, SQL, Django',description:'Paid part-time role, 16 hours per week. Send your CV.',employment:'Part-time',location:'Riverford',region:'South Wales',deadline:'2027-01-01',fields:{}};
 const stronger=assess(simple);const weaker=assess({...simple,role:'C++ Developer',location:'London',region:'London',employment:'Full-time',description:'Full-time role, 40 hours per week. Python and SQL used occasionally.'});assert(stronger.score>weaker.score);assert(weaker.cautions.some(s=>s.includes('C++')));
 assert(assess({...simple,description:'Paid role including unpaid parental leave.'}).score>12);assert(assess({...simple,description:'This is an unpaid internship.'}).unpaid);
 assert(assess({...simple,employment:'Self-employed freelancer'}).score<=30);

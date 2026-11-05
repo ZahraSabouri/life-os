@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import {furthest,sentOn,progress,skillGaps,claudePrompt,ADVERT_LIMIT} from '../lib/insights.mjs';
-import {DEFAULT_PROFILE} from '../lib/matching.mjs';
+import {TEST_PROFILE as DEFAULT_PROFILE} from './profile.mjs';
 
 const today='2026-10-27';// a Tuesday
-const job=(id,extra={})=>({id,role:'Software Developer',company:'Acme',location:'Cardiff',status:'To review',saved:false,deadline:'',applied:'',followUp:'',nextStep:'',history:[],...extra});
+const job=(id,extra={})=>({id,role:'Software Developer',company:'Acme',location:'Riverford',status:'To review',saved:false,deadline:'',applied:'',followUp:'',nextStep:'',history:[],...extra});
 const moved=(at,from,to)=>({at,label:`${from} → ${to}`});
 
 // How far a job got: its stage now, every stage in its history, and a date applied.

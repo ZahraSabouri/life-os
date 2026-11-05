@@ -8,25 +8,25 @@ import {sameVacancy,employerKey,roleKey,repeatsOf,selectJobs,inView,reviewDeadli
 const base=JSON.parse(await readFile(new URL('../data/jobs.json',import.meta.url),'utf8'));
 
 // One vacancy on the employer's own site and on a board.
-const ctr={id:'a',role:'Professional Specialist in Technical Innovation and Development',company:'Cardiff University - Centre for Trials Research',location:'Cardiff (blended, on campus and remote)',deadline:'2026-10-18'};
-const board={id:'b',role:'Professional Specialist in Technical Innovation and Development',company:'Cardiff University',location:'Cardiff',deadline:'2026-10-18'};
-assert.equal(employerKey(ctr.company),'cardiff university');assert.equal(employerKey('Admiral Money (Admiral Group)'),'admiral money');assert.equal(employerKey('Stantec UK Ltd'),'stantec');
+const ctr={id:'a',role:'Professional Specialist in Technical Innovation and Development',company:'Riverford University - Centre for Trials Research',location:'Riverford (blended, on campus and remote)',deadline:'2026-10-18'};
+const board={id:'b',role:'Professional Specialist in Technical Innovation and Development',company:'Riverford University',location:'Riverford',deadline:'2026-10-18'};
+assert.equal(employerKey(ctr.company),'riverford university');assert.equal(employerKey('Admiral Money (Admiral Group)'),'admiral money');assert.equal(employerKey('Stantec UK Ltd'),'stantec');
 assert.notEqual(employerKey('Undisclosed employer (via Ernest Gordon Recruitment)'),employerKey('Undisclosed employer (via Another Recruiter)'));
 assert(sameVacancy(ctr,board));assert(!sameVacancy(board,board));
 assert.equal(roleKey('Software Developer (ref 2526600)'),roleKey('Software Developer'));assert.equal(roleKey('Data Analyst - Job Ref: CMT-45'),'data analyst');assert.equal(roleKey('Reference Data Analyst'),'reference data analyst');
-assert(!sameVacancy(ctr,{...board,company:'Cardiff Metropolitan University'}));
+assert(!sameVacancy(ctr,{...board,company:'Riverford Metropolitan University'}));
 assert(!sameVacancy(ctr,{...board,role:'Professional Specialist'}));
 assert(!sameVacancy(ctr,{...board,deadline:'2026-12-31'}));assert(sameVacancy(ctr,{...board,deadline:''}));
 // A region holds its towns; two towns are two places; an advert for anywhere in the UK can be either.
 assert(sameVacancy({...board,location:'South Wales'},{...board,id:'c',location:'Newport'}));
-assert(!sameVacancy({...board,location:'Cardiff'},{...board,id:'c',location:'Swansea'}));
+assert(!sameVacancy({...board,location:'Riverford'},{...board,id:'c',location:'Swansea'}));
 assert(!sameVacancy({...board,location:'NW England'},{...board,id:'c',location:'Scotland'}));
 assert(!sameVacancy({...board,location:'East Midlands'},{...board,id:'c',location:'West Midlands'}));
 assert(sameVacancy({...board,location:'All UK'},{...board,id:'c',location:'Scotland'}));
 
 const dir=await mkdtemp(fileURLToPath(new URL('../data/test-workspace-',import.meta.url)));
 const store=await new Store(base,dir).init();const rev=()=>store.state.revision;
-const first=(await store.add({role:ctr.role,company:ctr.company,location:ctr.location,deadline:ctr.deadline,url:'https://cardiffuniweb.eploy.net/vacancies/655'},rev())).job;
+const first=(await store.add({role:ctr.role,company:ctr.company,location:ctr.location,deadline:ctr.deadline,url:'https://riverforduniweb.example.net/vacancies/655'},rev())).job;
 await store.patch(first.id,{status:'Preparing',notes:'Mine'},rev());
 const shown=store.jobs().length;
 // Added again from the board: kept with the job she has, which stays shown once.

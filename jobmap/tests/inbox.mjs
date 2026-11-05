@@ -28,7 +28,7 @@ const job = {
  role: 'Junior Data Engineer',
  company: 'Scheduled Search Test Ltd',
  url: 'https://example.org/scheduled-search-test-1',
- location: 'Cardiff',
+ location: 'Riverford',
  hours: '16 hours per week',
  employment: 'Part-time',
  salary: '£26,000 pro rata',

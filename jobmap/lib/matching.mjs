@@ -1,4 +1,10 @@
-export const DEFAULT_PROFILE={skills:'Python, Django, FastAPI, Flask, SQL, PostgreSQL, SQL Server, Oracle, MongoDB, Redis, C#, .NET, Angular, TypeScript, JavaScript, Docker, Linux, REST APIs, Git, Data pipelines, Machine learning, NLP',focus:'balanced',maxHours:20};
+import {REGIONS} from './uk-regions.mjs';
+// A fresh workspace matches nothing in particular: the owner's skills, hours and places are set in "Matching".
+export const DEFAULT_PROFILE={skills:'',focus:'balanced',maxHours:40,places:{near:'',region:'',reach:'',wide:'all uk, united kingdom, uk'}};
+// A line of places: "Label: place, place" (or "place, place", when the first is the label).
+export function placeTier(value){const text=String(value||'').trim();if(!text)return null;const at=text.indexOf(':');const names=(at>=0?text.slice(at+1):text).split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);if(!names.length)return null;return {label:(at>=0?text.slice(0,at).trim():'')||names[0].replace(/\b\w/g,c=>c.toUpperCase()),names};}
+const namesPlace=(text,tier)=>!!tier&&tier.names.some(name=>new RegExp('(^|[^a-z])'+name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'($|[^a-z])').test(text));
+export const placesOfProfile=profile=>({...DEFAULT_PROFILE.places,...(profile?.places||{})});
 export function dayNow(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
 export function daysUntil(date,today=dayNow()){if(!date)return null;return Math.round((Date.parse(date.slice(0,10)+'T12:00:00Z')-Date.parse(today+'T12:00:00Z'))/86400000);}
 export function dateLabel(date){return date?new Date(date.slice(0,10)+'T12:00:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'Not stated';}
@@ -37,9 +43,11 @@ export function assess(job,profile=DEFAULT_PROFILE,today=dayNow()){
  const fulltime=/full[ -]time/i.test([job.employment,job.hours].join(' '))&&!parttime;
  const hours=hoursFit?(preferred===null?'One-off shift':'Hours may fit'):parttime?'Part-time mentioned':overHours||fulltime?'Hours need agreement':'Hours not confirmed';
  const remote=/\bremote\b|home[ -]based|work from home/i.test(location);
- const cardiff=/cardiff|caerdydd/.test(location),south=/newport|bridgend|south wales|caerphilly|pontypridd|barry|cwmbran|rhondda/.test(location),bristol=/bristol|bath/.test(location);
- const loc=cardiff?22:south?18:remote?17:bristol?9:/all uk|united kingdom|\buk\b|wales/.test(location)?5:1;
- const locLabel=cardiff?'Cardiff':south?'South Wales':remote?'Remote listed':bristol?'Bristol / Bath':'Location to check';
+ // Where the owner lives first, then nearby, then within reach (preferences.places); remote in between.
+ const places=placesOfProfile(profile),near=placeTier(places.near),region=placeTier(places.region),reach=placeTier(places.reach),wide=placeTier(places.wide);
+ const atHome=namesPlace(location,near),nearby=namesPlace(location,region),inReach=namesPlace(location,reach);
+ const loc=atHome?22:nearby?18:remote?17:inReach?9:namesPlace(location,wide)?5:1;
+ const locLabel=atHome?near.label:nearby?region.label:remote?'Remote listed':inReach?reach.label:'Location to check';
  const senior=/principal|staff engineer|head of|director|lead data scientist/i.test(title);
  let skillScore=Math.min(30,core.length*5+matched.filter(s=>['machine learning','nlp'].includes(s.toLowerCase())).length*2);
  const roleScore=software?(profile.focus==='data'?11:22):data?(profile.focus==='software'?10:18):3;
@@ -111,10 +119,9 @@ export function tagsOf(job){const seen=new Set(),out=[];for(const raw of String(
 const fold=s=>String(s||'').normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
 // A reference number in a title ("Software Developer (ref 2526600)") is not part of the job's name.
 export const roleKey=role=>fold(String(role||'').replace(/[([]?\b(?:job\s*)?(?:ref(?:erence)?|req|vacancy)\b\.?\s*(?:no\.?|number)?\s*:?\s*[\w/-]*\d[\w/-]*[)\]]?/gi,' '));
-// "Cardiff University - Centre for Trials Research" and "Cardiff University" are one employer.
+// "Riverford University - Centre for Trials Research" and "Riverford University" are one employer.
 export function employerKey(company){const head=fold(String(company||'').split(/\s[-–—|:]\s|[(,]|\bvia\b/i)[0]).replace(/\b(ltd|limited|plc|llp|inc|group|uk|the)\b/g,' ').replace(/\s+/g,' ').trim();return !head||/^(undisclosed|confidential|anonymous|unnamed|not stated)\b/.test(head)?fold(company):head;}
-// A region stands for the towns in it; a town does not stand for its region, so Cardiff and Newport stay two places.
-const REGIONS=[['southwales',['south wales','de cymru'],['cardiff','newport','swansea','bridgend','caerphilly','pontypridd','barry','cwmbran','llantrisant','rhondda','merthyr','neath','penarth','cathays','llandaff','treforest','nantgarw','caerdydd','casnewydd']],['swengland',['sw england','south west england','south west'],['bristol','bath','almondsbury','swindon','gloucester','cheltenham','exeter','plymouth','taunton']],['nwengland',['nw england','north west england'],[]],['neengland',['ne england','north east england'],[]],['seengland',['se england','south east england'],[]],['eastmidlands',['east midlands'],[]],['westmidlands',['west midlands'],[]],['yorkshire',['yorkshire and humberside','yorkshire'],[]],['eastengland',['east of england'],[]],['northernireland',['northern ireland'],[]],['northwales',['north wales'],[]],['midwales',['mid wales'],[]],['westwales',['west wales'],[]]];
+// A region stands for the towns in it (lib/uk-regions.mjs); a town does not stand for its region, so two towns stay two places.
 const ANYWHERE=new Set('uk united kingdom all wide remote hybrid home based national not stated blended on campus and or the of in at with office working flexible site visits visit area greater region location locations various multiple travel required require requires confirmation day days week weekly monthly one per person meetings meeting city centre center england wales britain great gb anywhere any within near across to plus some may be other outside road street floor building house tbc'.split(' '));
 export function placesOf(location){let text=' '+fold(location)+' ';const places=new Set();for(const [name,aliases,towns]of REGIONS)for(const alias of aliases)if(text.includes(' '+alias+' ')){text=text.replaceAll(' '+alias+' ',' ');places.add(name);towns.forEach(t=>places.add(t));}for(const word of text.split(' '))if(word&&!ANYWHERE.has(word)&&!/\d/.test(word))places.add(word);return places;}
 function samePlace(a,b){const x=placesOf(a),y=placesOf(b);return !x.size||!y.size||[...x].some(p=>y.has(p));}

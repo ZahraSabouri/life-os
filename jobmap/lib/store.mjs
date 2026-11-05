@@ -15,7 +15,10 @@ const dateKeys = new Set(['followUp','applied','decidedOn','deadline','advertise
 // What the employer came back with, kept apart from the stage the job sits at.
 export const OUTCOMES = ['','Awaiting reply','Interview invited','Rejected','Offer','Withdrawn','Missed deadline'];
 const empty = () => ({schemaVersion:1,revision:0,updatedAt:null,overrides:{},customJobs:[],preferences:{...DEFAULT_PROFILE}});
-function validateProfile(p){if(!object(p)||typeof p.skills!=='string'||p.skills.length>3000||!['balanced','software','data'].includes(p.focus)||!Number.isInteger(p.maxHours)||p.maxHours<1||p.maxHours>40)throw new Error('Check the matching preferences.');return {skills:p.skills,focus:p.focus,maxHours:p.maxHours};}
+// Places are four lines ("Label: place, place"): home, nearby, within reach, and the wider area.
+const PLACE_LINES=['near','region','reach','wide'];
+function validatePlaces(p){if(p===undefined)return {...DEFAULT_PROFILE.places};if(!object(p)||PLACE_LINES.some(k=>p[k]!==undefined&&(typeof p[k]!=='string'||p[k].length>1000)))throw new Error('Check the places in the matching preferences.');return Object.fromEntries(PLACE_LINES.map(k=>[k,typeof p[k]==='string'?p[k].trim():DEFAULT_PROFILE.places[k]]));}
+function validateProfile(p){if(!object(p)||typeof p.skills!=='string'||p.skills.length>3000||!['balanced','software','data'].includes(p.focus)||!Number.isInteger(p.maxHours)||p.maxHours<1||p.maxHours>40)throw new Error('Check the matching preferences.');return {skills:p.skills,focus:p.focus,maxHours:p.maxHours,places:validatePlaces(p.places)};}
 export const localDay=calendarDay;
 export const validDate=isDate;
 export function safeUrl(s){if(!s)return true;try{return ['https:','http:'].includes(new URL(s).protocol)}catch{return false}}
@@ -89,7 +92,7 @@ export class Store {
  }
  ingest(raw,revision,dryRun=false){return this.run(async()=>{this.check(revision);const {state,...result}=planImport(this.state,this.base,raw,validatePatch);if(!dryRun&&!result.repeated)await this.persist(state,'search');return {...result,dryRun,revision:this.state.revision};});}
  run(action){const next=this.queue.then(action);this.queue=next.catch(()=>{});return next;}
- preferences(raw,revision){return this.run(async()=>{this.check(revision);const preferences=validateProfile(raw);const next=structuredClone(this.state);next.preferences=preferences;await this.persist(next);return {preferences,revision:this.state.revision};});}
+ preferences(raw,revision){return this.run(async()=>{this.check(revision);const preferences=validateProfile(object(raw)&&raw.places===undefined?{...raw,places:this.state.preferences?.places}:raw);const next=structuredClone(this.state);next.preferences=preferences;await this.persist(next);return {preferences,revision:this.state.revision};});}
  careerProfile(){return structuredClone(this.state.careerProfile||EMPTY_CAREER_PROFILE);}
  saveCareerProfile(raw,revision,expectedVersion){return this.run(async()=>{this.check(revision);if(expectedVersion!==(this.state.careerProfile?.version||0)){const error=new Error('Your profile changed elsewhere. Reload the workspace and review your kept draft against the latest profile.');error.status=409;throw error;}const content=validateCareerProfile(raw);const next=structuredClone(this.state);next.careerProfile={...content,version:this.state.revision+1,updatedAt:new Date().toISOString()};await this.persist(next,'profile');return {careerProfile:this.careerProfile(),revision:this.state.revision};});}
  check(revision){if(revision!==this.state.revision){const e=new Error('This workspace changed in another window. Reload and try again.');e.status=409;throw e;}}

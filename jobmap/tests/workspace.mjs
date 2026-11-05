@@ -9,7 +9,7 @@ import {Store} from '../lib/store.mjs';
 import {planWorkspaceMerge} from '../lib/workspace-merge.mjs';
 import {workspaceConnection} from '../lib/workspace.mjs';
 
-const base=[{id:'BASE-1',role:'Software Developer',company:'Test only',url:'https://example.org/original',status:'To review',priority:'P2',notes:'Original note',description:'Python and SQL, paid part-time work.',hours:'16 hours per week',location:'Cardiff'}];
+const base=[{id:'BASE-1',role:'Software Developer',company:'Test only',url:'https://example.org/original',status:'To review',priority:'P2',notes:'Original note',description:'Python and SQL, paid part-time work.',hours:'16 hours per week',location:'Riverford'}];
 const initial=new Store(base,'unused').export();
 const a=structuredClone(initial),b=structuredClone(initial);
 a.progress.overrides['BASE-1']={notes:'Preserve this note',priority:'P1',history:[{at:'2026-10-01T00:00:00Z',label:'Reviewed'}]};

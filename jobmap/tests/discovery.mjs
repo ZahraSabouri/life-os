@@ -7,7 +7,7 @@ import {assess} from '../lib/matching.mjs';
 const base=JSON.parse(await readFile(new URL('../data/jobs.json',import.meta.url),'utf8'));
 const dir=await mkdtemp(fileURLToPath(new URL('../data/test-discovery-',import.meta.url)));
 const store=await new Store(base,dir).init();
-const vacancy={role:'Test backend engineer',company:'Import verification',url:'https://example.org/jobs/123',source:'Employer careers',description:'Paid part-time employee role using Python and SQL for 16 hours per week.',checked:'2026-09-15',location:'Cardiff',hours:'16 hours per week',salary:'£25 per hour',availability:'open'};
+const vacancy={role:'Test backend engineer',company:'Import verification',url:'https://example.org/jobs/123',source:'Employer careers',description:'Paid part-time employee role using Python and SQL for 16 hours per week.',checked:'2026-09-15',location:'Riverford',hours:'16 hours per week',salary:'£25 per hour',availability:'open'};
 assert.equal(canonicalUrl(vacancy.url+'/?utm_source=alert#apply'),canonicalUrl(vacancy.url));
 const batch={runId:'test-new',jobs:[vacancy]};
 let r=await store.ingest(batch,0,true);assert.equal(r.added.length,1);assert.equal(store.jobs().length,980);assert.equal(store.state.revision,0);

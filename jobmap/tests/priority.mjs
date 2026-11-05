@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
-import {assess,assessPriority,selectJobs,PRIORITY_SECTIONS,DEFAULT_PROFILE,dayNow} from '../lib/matching.mjs';
+import {assess,assessPriority,selectJobs,PRIORITY_SECTIONS,dayNow} from '../lib/matching.mjs';
+import {TEST_PROFILE as DEFAULT_PROFILE} from './profile.mjs';
 const today='2026-10-09';
-const base={role:'Python Developer',company:'Test employer',location:'Cardiff',employment:'Part-time',hours:'16 hours per week',description:'Paid employee role using Python, SQL and Django. Send your CV.',stack:'Python, SQL, Django',source:'Employer careers',fields:{},priority:'P2',status:'To review',saved:false,deadline:'',rank:1};
+const base={role:'Python Developer',company:'Test employer',location:'Riverford',employment:'Part-time',hours:'16 hours per week',description:'Paid employee role using Python, SQL and Django. Send your CV.',stack:'Python, SQL, Django',source:'Employer careers',fields:{},priority:'P2',status:'To review',saved:false,deadline:'',rank:1};
 const job=(id,patch={})=>({...base,id,...patch});
 const ids=(jobs,options={})=>selectJobs(jobs,{scope:'all',sort:'priority',...options},DEFAULT_PROFILE,today).map(r=>r.job.id);
 // Today's weaker but viable job must beat a high-priority strong match next month.
