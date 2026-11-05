@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { placeOf, partOf, dayLine, canonicalUrl, junkLink, gmailLink, outlookLink, originalLink, chatty, fitsArea, itemDate } from './harvest.js'
 
-test('placeOf: events through Cardiff Life, vacancies through JobMap, offers on the Offers list', () => {
+test('placeOf: events through the Events page, vacancies through JobMap, offers on the Offers list', () => {
   assert.deepEqual(placeOf({ kind: 'event', start: '2026-11-05T18:00:00Z' }, '2026-11-03'), { calendar: false, linkTo: 'events', offers: false, today: false })
   assert.deepEqual(placeOf({ kind: 'vacancy', deadline: '2026-11-20' }, '2026-11-03'), { calendar: false, linkTo: 'jobmap', offers: false, today: false })
   assert.equal(placeOf({ kind: 'offer', deadline: '2026-11-30' }, '2026-11-03').offers, true)
@@ -63,7 +63,7 @@ test('junkLink: wrappers, sign-ins, unsubscribes and tracking are not destinatio
   assert.match(junkLink('https://example.com/unsubscribe?id=1'), /unsubscribe/)
   assert.match(junkLink('https://click.mail.example.com/c/abc'), /tracking/)
   assert.match(junkLink('http://example.com'), /https/)
-  assert.equal(junkLink('https://www.cardiffstudents.com/events/11041/43269/'), '')
+  assert.equal(junkLink('https://www.union.example.org/events/11041/43269/'), '')
   assert.equal(junkLink('https://www.linkedin.com/jobs/view/123'), '')
 })
 
@@ -75,7 +75,7 @@ test('originalLink: Gmail from its id and her account; Outlook only with the mes
   const opened = 'https://outlook.office.com/mail/inbox/id/AAQkADAwATM0MDAAMS1hZWYwLWE2ODYALTAwAi0wMAoAEAAx%2FzRf'
   assert.equal(outlookLink(opened), opened)
   assert.equal(originalLink({ source_kind: 'outlook', link: 'https://outlook.office.com/mail/' }), null)
-  assert.equal(originalLink({ source_kind: 'learning-central', link: 'https://learningcentral.cf.ac.uk/ultra/courses/_1_1/outline' }), 'https://learningcentral.cf.ac.uk/ultra/courses/_1_1/outline')
+  assert.equal(originalLink({ source_kind: 'learning-central', link: 'https://learning.example.ac.uk/ultra/courses/_1_1/outline' }), 'https://learning.example.ac.uk/ultra/courses/_1_1/outline')
   assert.equal(originalLink({ source_kind: 'teams', link: 'javascript:alert(1)' }), null)
 })
 
@@ -83,11 +83,11 @@ test('chatty: a summary that talks to her is caught; a record is not', () => {
   assert.equal(chatty('You should apply before Friday.'), true)
   assert.equal(chatty('Worth a look if you like hiking.'), true)
   assert.equal(chatty('I recommend booking early.'), true)
-  assert.equal(chatty('Graduate data analyst role, Cardiff, closes 20 November.'), false)
+  assert.equal(chatty('Graduate data analyst role, Riverford, closes 20 November.'), false)
   assert.equal(chatty('Week 7 lab moved to Room 0.12.'), false)
 })
 
-test('partOf: offers to Budget, vacancies and job opportunities to JobMap, events to Cardiff Life, the rest by area', () => {
+test('partOf: offers to Budget, vacancies and job opportunities to JobMap, events to the Events page, the rest by area', () => {
   assert.equal(partOf({ kind: 'offer', area: 'health' }), 'budget')
   assert.equal(partOf({ kind: 'vacancy', area: 'research' }), 'jobmap')
   assert.equal(partOf({ kind: 'opportunity', area: 'jobs' }), 'jobmap')

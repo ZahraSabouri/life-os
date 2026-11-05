@@ -111,7 +111,7 @@ export const ROOMS = [
   }
 ]
 
-// Added 12 October 2026 (Xar: "assign them to a day under, I don't know, admin or anything").
+// Added 12 October 2026: things to put on a day under admin, or anywhere.
 ROOMS.push({
   slug: 'admin',
   name: 'Life admin',

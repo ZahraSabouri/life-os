@@ -53,7 +53,7 @@ test('hours of the day: study on the plan, time set aside for jobs, focus, each 
 test('each module: its cards, what is late, what the plan gives it, its next test', () => {
   const workspace = {
     semesters: [{ id: 's', status: 'active' }, { id: 'old', status: 'archived' }],
-    modules: [{ id: 'm1', semester_id: 's', title: 'Statistics', data: { code: 'MAT022' } }, { id: 'm2', semester_id: 's', title: 'Computing', data: { code: 'CMT309' } }, { id: 'gone', semester_id: 'old', title: 'Old' }],
+    modules: [{ id: 'm1', semester_id: 's', title: 'Statistics', data: { code: 'STAT101' } }, { id: 'm2', semester_id: 's', title: 'Computing', data: { code: 'COMP201' } }, { id: 'gone', semester_id: 'old', title: 'Old' }],
     cards: [
       { id: 'a', semester_id: 's', module_id: 'm1', status: 'done', end_date: '2026-10-06' }, { id: 'b', semester_id: 's', module_id: 'm1', status: 'planned', end_date: '2026-10-08' },
       { id: 'c', semester_id: 's', module_id: 'm1', status: 'planned', end_date: '2026-10-20' }, { id: 'd', semester_id: 's', module_id: 'm2', status: 'planned', data: { done: true } },
@@ -64,7 +64,7 @@ test('each module: its cards, what is late, what the plan gives it, its next tes
   const plans = [{ semesterId: 's', plan: { scheduleRules: [{ id: 'r', from: '2026-10-13', to: '2026-10-13', weekdays: [2], title: 'x', category: 'study', start: '09:00', end: '10:30', moduleGroup: 'Statistics' }] } }]
   const rows = modulesOf({ workspace, plans }, { from: '2026-10-05', to: '2026-10-18', today: '2026-10-13' })
   assert.deepEqual(rows.map((row) => [row.code, row.title, row.cards, row.done, row.late, row.dueInRange, row.undated, row.plannedMinutes, row.nextTest?.title ?? null]), [
-    ['MAT022', 'Statistics', 3, 1, 1, 2, 0, 90, 'Test 1'], ['CMT309', 'Computing', 1, 1, 0, 0, 0, 0, null], ['', 'Not under a module', 1, 0, 0, 0, 1, 0, null],
+    ['STAT101', 'Statistics', 3, 1, 1, 2, 0, 90, 'Test 1'], ['COMP201', 'Computing', 1, 1, 0, 0, 0, 0, null], ['', 'Not under a module', 1, 0, 0, 0, 1, 0, null],
   ])
 })
 
@@ -120,14 +120,14 @@ test('the rows as files: one row a day, the tidy shape, every job, every card', 
   assert.equal(toCsv(['a', 'b'], [{ a: 'plain', b: 'has, a comma' }, { a: 'says "hi"', b: null }]), 'a,b\r\nplain,"has, a comma"\r\n"says ""hi""",\r\n')
   const jobs = jobTable({ jobs: [{ id: 'J1', role: 'Analyst', company: 'Co', source: 'Reed', status: 'Applied', saved: true, priority: 'P1', deadline: '2026-10-20T00:00:00Z', applied: '2026-10-09', tags: 'NHS, remote', url: 'https://example.org' }] })
   assert.deepEqual([jobs.rows[0].shortlisted, jobs.rows[0].deadline, jobs.rows[0].my_categories, jobs.columns.includes('my_priority')], [1, '2026-10-20', 'NHS, remote', true])
-  const cards = cardTable({ semesters: [{ id: 's', title: 'Autumn' }], modules: [{ id: 'm', title: 'Statistics', data: { code: 'MAT022' } }], cards: [{ id: 'c', title: 'Read', semester_id: 's', module_id: 'm', status: 'Done', end_date: '2026-10-08', data: { priority: 'High' } }, { id: 'x', deleted_at: 'yes' }] })
-  assert.deepEqual(cards.rows, [{ id: 'c', title: 'Read', semester: 'Autumn', module_code: 'MAT022', module: 'Statistics', status: 'Done', done: 1, start_date: '', due_date: '2026-10-08', priority: 'High', lane: '', created_at: '', updated_at: '' }])
+  const cards = cardTable({ semesters: [{ id: 's', title: 'Autumn' }], modules: [{ id: 'm', title: 'Statistics', data: { code: 'STAT101' } }], cards: [{ id: 'c', title: 'Read', semester_id: 's', module_id: 'm', status: 'Done', end_date: '2026-10-08', data: { priority: 'High' } }, { id: 'x', deleted_at: 'yes' }] })
+  assert.deepEqual(cards.rows, [{ id: 'c', title: 'Read', semester: 'Autumn', module_code: 'STAT101', module: 'Statistics', status: 'Done', done: 1, start_date: '', due_date: '2026-10-08', priority: 'High', lane: '', created_at: '', updated_at: '' }])
 })
 
 test('the service gathers every part once, survives a part that cannot be read, and hands out files', async () => {
   let careerReads = 0
   const loaders = {
-    loadStudy: async () => ({ semesters: [{ id: 's', status: 'active' }], modules: [{ id: 'm', semester_id: 's', title: 'Statistics', data: { code: 'MAT022' } }], cards: [{ id: 'c', semester_id: 's', module_id: 'm', status: 'planned', end_date: '2026-10-13', title: 'Read' }], assessments: [] }),
+    loadStudy: async () => ({ semesters: [{ id: 's', status: 'active' }], modules: [{ id: 'm', semester_id: 's', title: 'Statistics', data: { code: 'STAT101' } }], cards: [{ id: 'c', semester_id: 's', module_id: 'm', status: 'planned', end_date: '2026-10-13', title: 'Read' }], assessments: [] }),
     loadPlans: async () => ({ scheduleRules: [] }), loadEvents: async () => [],
     loadCareer: async () => { careerReads += 1; return { jobs: [{ id: 'J1', role: 'Analyst', company: 'Co', source: 'Reed', status: 'To review', applied: '2026-10-13', addedOn: '2026-10-12' }] } },
     loadBudget: async () => { throw new Error('Budget is not running') },
@@ -138,7 +138,7 @@ test('the service gathers every part once, survives a part that cannot be read, 
   const service = createAnalysisService({ ...loaders, review })
   const data = await service.analysisOf({ from: '2026-10-05', to: '2026-10-18' })
   assert.deepEqual([data.days.length, data.elapsedDays, data.totals.jobs.sent, data.totals.plans.done, data.money, data.modules[0].code, data.jobs.steps[4].count, data.sources.find((source) => source.id === 'home').status],
-    [14, 9, 1, 1, null, 'MAT022', 1, 'unavailable'])
+    [14, 9, 1, 1, null, 'STAT101', 1, 'unavailable'])
   const file = await service.exportOf({ from: '2026-10-05', to: '2026-10-18', format: 'days' })
   assert.deepEqual([file.name, file.type, file.body.split('\r\n').length, file.body.startsWith('date,weekday,')], ['life-os-days-2026-10-05-to-2026-10-18.csv', 'text/csv; charset=utf-8', 16, true])
   assert.match((await service.exportOf({ from: '2026-10-05', to: '2026-10-18', format: 'jobs' })).body, /^id,role,company[^\n]+\nJ1,Analyst,Co,/)

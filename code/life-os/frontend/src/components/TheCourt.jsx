@@ -915,8 +915,7 @@ function IndigoCourt(props) {
 // The day, as every style's Court carries it: the line that adds to it, its path in short
 // form, and what Study, Jobs, Home and Notes hold today. Drawn with the style's own tokens.
 // The Court stands back: where Today shows one day, the Court shows what lies ahead and every
-// area of her life. Xar, 12 October: "Between the [Court] and Today tab should be … actual,
-// genuine differences." So the day's modules (the path, Study, Jobs, Home, Notes) are on Today
+// area of life; the two should differ for real. So the day's modules (the path, Study, Jobs, Home, Notes) are on Today
 // only; here are the line that adds something, and the landmarks of the next two weeks.
 function Ahead({ page }) {
   const groups = useMemo(() => aheadOf(page.items, page.today), [page.items, page.today])

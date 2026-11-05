@@ -144,8 +144,8 @@ test('recording a shop for stock links the shop record',()=>{
  let s=fresh();const share=s.resources.find(r=>!r.used);
  s=api.setPurchaseDetails(s,[share.id],{shop:'morrisons',date:'2026-09-05'});
  assert.equal(s.resources.find(r=>r.id===share.id).shopId,'shop-morrisons');
- s=api.saveShop(s,{...api.findShop(s,'morrisons'),name:'Morrisons Cardiff'});
- assert.equal(api.stockPurchase(s,api.stockRows(s).find(r=>r.id===share.id)).shop,'Morrisons Cardiff');
+ s=api.saveShop(s,{...api.findShop(s,'morrisons'),name:'Morrisons Riverford'});
+ assert.equal(api.stockPurchase(s,api.stockRows(s).find(r=>r.id===share.id)).shop,'Morrisons Riverford');
 });
 
 test('the real saved data upgrades cleanly',()=>{

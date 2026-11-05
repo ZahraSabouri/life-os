@@ -126,7 +126,7 @@ function checkItems(batch, refs, problems) {
     if (item.allDay && item.start && !isDate(item.start)) problems.push(`${where}: an all-day item starts on a day, not a time`)
     if (item.start && item.end && isWhen(item.start) && isWhen(item.end) && Date.parse(item.end) < Date.parse(item.start)) problems.push(`${where}: ends before it starts`)
     for (const [field, value] of [['url', item.url], ['foundAt.url', item.foundAt?.url]]) { const junk = value && junkLink(value); if (junk) problems.push(`${where}.${field}: ${junk}`) }
-    if (['vacancy', 'event'].includes(item.kind) && !item.url) problems.push(`${where}: a ${item.kind} needs the link to its own page, so it can be found in ${item.kind === 'vacancy' ? 'JobMap' : 'Cardiff Life'}`)
+    if (['vacancy', 'event'].includes(item.kind) && !item.url) problems.push(`${where}: a ${item.kind} needs the link to its own page, so it can be found in ${item.kind === 'vacancy' ? 'JobMap' : 'Events'}`)
     const cited = (item.messageRefs ?? []).map((ref) => messages.get(ref))
     for (const [at, ref] of (item.messageRefs ?? []).entries()) if (!cited[at]) problems.push(`${where}: points to message "${ref}", which is not in the batch`)
     for (const ref of item.actionRefs ?? []) if (!actionRefs.has(ref)) problems.push(`${where}: points to action "${ref}", which is not in the batch`)

@@ -26,15 +26,15 @@
     },
     {
       "ref": "m3", "source": "gmail", "sourceId": "18c2f0a1b2c3d4e5", "threadId": "18c2f0a1b2c3d4e5", "kind": "email", "receivedAt": "2026-10-31T08:05:00Z",
-      "from": { "name": "Job alerts", "address": "alerts@jobs.example.com" }, "subject": "3 new jobs for data analyst in Cardiff",
+      "from": { "name": "Job alerts", "address": "alerts@jobs.example.com" }, "subject": "3 new jobs for data analyst in Riverford",
       "link": "https://mail.google.com/mail/u/0/#inbox/18c2f0a1b2c3d4e5",
-      "text": "Graduate Data Analyst, Example Health Board, Cardiff. GBP 28,000. Closes 7 November.\nJunior Data Engineer, Example Ltd, remote (UK). Closes 20 November.\nResearch Assistant (Machine Learning), Example University. Closes 30 November.",
+      "text": "Graduate Data Analyst, Example Health Board, Riverford. GBP 28,000. Closes 7 November.\nJunior Data Engineer, Example Ltd, remote (UK). Closes 20 November.\nResearch Assistant (Machine Learning), Example University. Closes 30 November.",
       "links": [
         { "href": "https://jobs.example.com/view/graduate-data-analyst-1001", "text": "Graduate Data Analyst" },
         { "href": "https://jobs.example.com/view/junior-data-engineer-1002", "text": "Junior Data Engineer" },
         { "href": "https://jobs.example.ac.uk/vacancy/ra-ml-77", "text": "Research Assistant (Machine Learning)" }
       ],
-      "summary": "Three data roles: graduate analyst (Cardiff, closes 7 November), junior engineer (remote, closes 20 November), research assistant (closes 30 November).", "category": "automated", "priority": "normal"
+      "summary": "Three data roles: graduate analyst (Riverford, closes 7 November), junior engineer (remote, closes 20 November), research assistant (closes 30 November).", "category": "automated", "priority": "normal"
     },
     {
       "ref": "m4", "source": "gmail", "sourceId": "18c30b9d8e7f6a51", "threadId": "18c30b9d8e7f6a51", "kind": "email", "receivedAt": "2026-10-31T19:30:00Z",
@@ -66,7 +66,7 @@
   "items": [
     { "ref": "i1", "key": "learning-platform:lc:ds101-ann-0042:lab-room", "area": "academic", "kind": "announcement", "title": "DS101 week 7 lab moves to Room 0.12", "summary": "Thursday 5 November, 14:00 to 16:00, Room 0.12 instead of the usual room.", "day": "2026-10-30", "start": "2026-11-05T14:00:00Z", "end": "2026-11-05T16:00:00Z", "location": "Room 0.12", "course": "DS101 Data Science", "messageRefs": ["m1"] },
     { "ref": "i2", "key": "learning-platform:lc:ds101-content-0107:cw2-brief", "area": "academic", "kind": "material", "title": "DS101 Coursework 2 brief", "summary": "Coursework 2 brief published; submission due 4 December.", "day": "2026-10-30", "deadline": "2026-12-04", "course": "DS101 Data Science", "messageRefs": ["m2"] },
-    { "ref": "i3", "key": "gmail:18c2f0a1b2c3d4e5:graduate-data-analyst", "area": "jobs", "kind": "vacancy", "title": "Graduate Data Analyst, Example Health Board", "summary": "Cardiff, GBP 28,000, graduate entry.", "day": "2026-10-31", "deadline": "2026-11-07", "url": "https://jobs.example.com/view/graduate-data-analyst-1001?utm_source=alert", "employer": "Example Health Board", "salary": "GBP 28,000", "location": "Cardiff", "messageRefs": ["m3"] },
+    { "ref": "i3", "key": "gmail:18c2f0a1b2c3d4e5:graduate-data-analyst", "area": "jobs", "kind": "vacancy", "title": "Graduate Data Analyst, Example Health Board", "summary": "Riverford, GBP 28,000, graduate entry.", "day": "2026-10-31", "deadline": "2026-11-07", "url": "https://jobs.example.com/view/graduate-data-analyst-1001?utm_source=alert", "employer": "Example Health Board", "salary": "GBP 28,000", "location": "Riverford", "messageRefs": ["m3"] },
     { "ref": "i4", "key": "gmail:18c2f0a1b2c3d4e5:junior-data-engineer", "area": "jobs", "kind": "vacancy", "title": "Junior Data Engineer, Example Ltd", "summary": "Remote within the UK.", "day": "2026-10-31", "deadline": "2026-11-20", "url": "https://jobs.example.com/view/junior-data-engineer-1002", "employer": "Example Ltd", "location": "Remote (UK)", "messageRefs": ["m3"] },
     { "ref": "i5", "key": "gmail:18c2f0a1b2c3d4e5:ra-ml", "area": "research", "kind": "vacancy", "title": "Research Assistant (Machine Learning), Example University", "summary": "Fixed-term research post in a machine learning group.", "day": "2026-10-31", "deadline": "2026-11-30", "url": "https://jobs.example.ac.uk/vacancy/ra-ml-77", "employer": "Example University", "messageRefs": ["m3"] },
     { "ref": "i6", "key": "gmail:18c30b9d8e7f6a51:student-books", "area": "perks", "kind": "offer", "title": "20% off books with a student card", "summary": "In shop and online at Example Books.", "day": "2026-10-31", "deadline": "2026-11-04", "url": "https://books.example.com/student-offer", "organiser": "Example Books", "messageRefs": ["m4"] },

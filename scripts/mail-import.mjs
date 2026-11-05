@@ -34,7 +34,7 @@ if (database === 'lifeos') {
   const tried = (await test.query("SELECT 1 FROM mail.batches WHERE run_id = $1 AND status = 'applied'", [batch.runId])).rowCount
   await test.end()
   if (!tried) {
-    console.error('Not imported: try this batch on lifeos_test first, and let Xar look at it.')
+    console.error('Not imported: try this batch on lifeos_test first, and let the owner look at it.')
     process.exit(1)
   }
 }

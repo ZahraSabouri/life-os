@@ -74,13 +74,13 @@ test('Study merges user date edits, excludes completed and disabled-module plans
     baseCards: [
       { id: 'edited', title: 'Original plan', moduleGroup: 'Topic', startDate: '2026-09-01', dueDate: '2026-09-01' },
       { id: 'done', title: 'Finished old plan', dueDate: '2026-10-03' },
-      { id: 'disabled', title: 'Inactive module', moduleGroup: 'MAT700', dueDate: '2026-10-03' },
+      { id: 'disabled', title: 'Inactive module', moduleGroup: 'OPT101', dueDate: '2026-10-03' },
       { id: 'undated', title: 'No date' },
     ],
     state: {
       cards: { edited: { edits: { title: 'Updated plan', startDate: '2026-10-07', dueDate: '2026-10-08' } }, done: { done: true } },
       addedCards: [{ id: 'added', title: 'User plan', dueDate: '2026-10-09' }],
-      settings: { mat700Active: false, moduleExamDates: { custom: '2026-10-11', mat700: '2026-10-14', unset: '', bad: '2026-02-30' }, examWindowStart: '2026-10-01' },
+      settings: { inactiveModules: ['OPT101'], moduleExamDates: { custom: '2026-10-11', opt101: '2026-10-14', unset: '', bad: '2026-02-30' }, examWindowStart: '2026-10-01' },
     },
   }
   const before = structuredClone(value), items = mapStudy(value, october)
@@ -141,7 +141,7 @@ test('core all-day timestamps remain civil dates and Study due clock follows use
   const core = mapEntries([{ id: 'all-day', type: 'event', start_at: '2026-10-04T00:00:00Z', all_day: true }], october)
   assert.equal(core[0].start, '2026-10-04')
   assert.equal(core[0].all_day, true)
-  const value = { baseCards: [{ id: 'card', title: 'Plan', moduleGroup: 'MAT700', startDate: '2026-10-05', dueDate: '2026-10-05', dueDateTime: '2026-10-05 16:00' }], state: { cards: { card: { edits: { module: 'New module', dueDate: '2026-10-06' } } }, settings: { mat700Active: false } } }
+  const value = { baseCards: [{ id: 'card', title: 'Plan', moduleGroup: 'OPT101', startDate: '2026-10-05', dueDate: '2026-10-05', dueDateTime: '2026-10-05 16:00' }], state: { cards: { card: { edits: { module: 'New module', dueDate: '2026-10-06' } } }, settings: { inactiveModules: ['OPT101'] } } }
   const study = mapStudy(value, october)
   assert.equal(study.length, 2)
   assert.equal(study[0].meta.module, 'New module')

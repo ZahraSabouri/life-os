@@ -46,7 +46,7 @@ test('mapHarvest: dated announcements, materials, notes and opportunities; never
     { id: 'i2', area: 'academic', kind: 'material', title: 'Coursework 2 brief', summary: 'Due 4 December.', day: '2026-10-30', deadline: '2026-12-04' },
     { id: 'i3', area: 'academic', kind: 'opportunity', title: 'Hackathon', summary: 'Applications close 20 November.', day: '2026-11-01', deadline: '2026-11-20', url: 'https://example.com/h' },
     { id: 'i4', area: 'health', kind: 'info', title: 'Flu clinic', summary: 'Drop in.', day: '2026-11-01', start_day: '2026-11-10' },
-    { id: 'i5', area: 'jobs', kind: 'vacancy', title: 'Analyst', summary: 'Cardiff.', day: '2026-10-31', deadline: '2026-11-07' },
+    { id: 'i5', area: 'jobs', kind: 'vacancy', title: 'Analyst', summary: 'Riverford.', day: '2026-10-31', deadline: '2026-11-07' },
     { id: 'i6', area: 'events', kind: 'event', title: 'Board games', summary: 'Free.', day: '2026-11-01', start_at: '2026-11-04T18:30:00+00:00' },
     { id: 'i7', area: 'perks', kind: 'offer', title: '20% off', summary: 'Books.', day: '2026-10-31', deadline: '2026-11-04' },
     { id: 'i8', area: 'academic', kind: 'announcement', title: 'Undated', summary: 'No day.', day: '2026-10-31' },

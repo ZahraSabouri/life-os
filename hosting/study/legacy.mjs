@@ -59,7 +59,7 @@ export function convertLegacyStudy({ state, modules, cards, resources = [], prog
     for (const alias of [module.id, module.moduleGroup, module.code, module.label]) if (alias) moduleIds.set(alias, id)
     const note = state.moduleNotes?.[module.id] ?? state.moduleNotes?.[module.moduleGroup] ?? ''
     push('modules', module.id, { id, semester_id: semesterId, title: module.label || module.title || module.id, status: 'active',
-      data: { ...module, code: module.code || '', note, enabled: !(module.id === 'mat700' && settings.mat700Active === false), sourceId: module.id } })
+      data: { ...module, code: module.code || '', note, enabled: !list(settings.inactiveModules).some((name) => [module.id, module.moduleGroup].includes(name)), sourceId: module.id } })
   }
   const byResource = new Map(resources.map(resource => [resource.id, resource]))
   for (const resource of [...list(state.uploadedResources)]) byResource.set(resource.id, resource)

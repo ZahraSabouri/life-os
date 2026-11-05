@@ -25,7 +25,7 @@ const server=http.createServer(async(req,res)=>{
   res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');
   if(req.headers.host!==`${host}:${port}`||req.headers.origin&&req.headers.origin!==origin){res.writeHead(403).end('Use the local planner address.');return;}
   let pathname;try{pathname=decodeURIComponent(new URL(req.url,origin).pathname);}catch{res.writeHead(400).end();return;}
-  if(pathname==='/__planner/health'&&req.method==='GET'){send(res,200,{app:'zahra-budget-planner-local-v1',directory:__dirname,version:'2.0',storage:'disk'});return;}
+  if(pathname==='/__planner/health'&&req.method==='GET'){send(res,200,{app:'budget-planner-local-v1',directory:__dirname,version:'2.0',storage:'disk'});return;}
   if(pathname==='/__planner/stop'&&req.method==='POST'){
     if(req.headers['x-planner-action']!=='stop'){res.writeHead(403).end();return;}
     await queue;res.writeHead(200).end('Planner stopped.');server.close();server.closeIdleConnections();return;

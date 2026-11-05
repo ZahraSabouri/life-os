@@ -1,6 +1,6 @@
 # Mail
 
-How Life OS gets Xar's mail, announcements and "who do I owe a reply" without her typing any of it.
+How Life OS gets its owner's mail, announcements and "who do I owe a reply" without her typing any of it.
 
 - **GATHER.md**: the instructions an agent follows when she asks it to gather her inboxes. The Claude scheduled task "Gather my inboxes" points here; Codex or any other AI can be given the same file.
 - **mail-batch.schema.json**: the format of what a run leaves for Life OS (version 1).

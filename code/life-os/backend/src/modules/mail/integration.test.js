@@ -226,15 +226,15 @@ test('mail import v2 on lifeos_test: items with their places, links, her status,
     assert.equal(dismissed.status, 'dismissed')
     await assert.rejects(repository.patchHers('items', job.id, job.revision, { status: 'kept' }), { status: 409 })
     await assert.rejects(repository.patchHers('items', job.id, dismissed.revision, { title: 'not hers' }), { status: 400 })
-    const result = await importer.apply(variant2((batch) => { batch.items[2].summary = 'Cardiff, GBP 28,500, graduate entry.' }))
+    const result = await importer.apply(variant2((batch) => { batch.items[2].summary = 'Riverford, GBP 28,500, graduate entry.' }))
     assert.deepEqual(result.counts.items, { new: 0, updated: 1, unchanged: 8 })
     const after = await item('gmail:18c2f0a1b2c3d4e5:graduate-data-analyst')
-    assert.equal(after.summary, 'Cardiff, GBP 28,500, graduate entry.')
+    assert.equal(after.summary, 'Riverford, GBP 28,500, graduate entry.')
     assert.equal(after.status, 'dismissed')
     // Undoing that batch puts the summary back and keeps her dismissal, which came before it.
     assert.deepEqual(await importer.undo(result.batchId), { undone: true, records: 5 }) // four sources and the item
     const back = await item('gmail:18c2f0a1b2c3d4e5:graduate-data-analyst')
-    assert.equal(back.summary, 'Cardiff, GBP 28,000, graduate entry.')
+    assert.equal(back.summary, 'Riverford, GBP 28,000, graduate entry.')
     assert.equal(back.status, 'dismissed')
   })
 
@@ -262,7 +262,7 @@ test('mail import v2 on lifeos_test: items with their places, links, her status,
     const items = day.items.filter((row) => row.dedupe_key.endsWith(`:${tag}`))
     const messages = day.messages.filter((row) => row.source_id.endsWith(`-${tag}`))
     assert.deepEqual(items.map((row) => row.dedupe_key.split(':').at(-2)).sort(), ['graduate-data-analyst', 'junior-data-engineer', 'ra-ml', 'student-books'])
-    assert.deepEqual(messages.map((row) => row.subject).sort(), ['3 new jobs for data analyst in Cardiff', 'Students: 20% off until 4 November'])
+    assert.deepEqual(messages.map((row) => row.subject).sort(), ['3 new jobs for data analyst in Riverford', 'Students: 20% off until 4 November'])
     assert.ok(day.runs.some((run) => run.run_id === first.runId && run.version === 2))
     assert.equal(await reads.day('31 October'), null)
     const v2Sources = new Set(first.sources.map((source) => source.id))

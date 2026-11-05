@@ -10,7 +10,7 @@ One batch is one way in. Life OS keeps it in its own mail store, in one step it 
 - **actions**: what she must do by a day (reply, pay, apply, submit, decide), as in version 1. These are on Waiting on you, the Calendar and Today;
 - **items**: everything else that came in: a vacancy, an event, an announcement, a material, an offer, a dated note. Each item shows in its place, by the rule in `code/life-os/shared/harvest.js`.
 
-Life OS never writes JobMap, Cardiff Life or Budget. Vacancies and events reach those through their own tools (below); Life OS finds them there by their link.
+Life OS never writes JobMap, the Events research or Budget. Vacancies and events reach those through their own tools (below); Life OS finds them there by their link.
 
 ## A version 2 batch
 
@@ -26,7 +26,7 @@ Life OS never writes JobMap, Cardiff Life or Budget. Vacancies and events reach 
 - `ref` (`i1`, `i2`, …), `key`: the same on every run for the same thing: `<source id>:<the message's sourceId, or the page's own id>:<short slug>`. Sending an item again updates it.
 - `area`: `admin`, `academic`, `jobs`, `research`, `events`, `money`, `perks`, `health`, `home`.
 - `kind`: `vacancy` (jobs or research), `opportunity` (a scholarship, competition, hackathon, programme with an application), `event`, `announcement`, `material` (academic), `offer` (perks, money, home or health), `info` (a dated or useful fact that is none of these).
-- `title` (at most 200 characters) and `summary` (at most 300): neutral and factual, in the app's voice. "Graduate Data Analyst, Example Health Board" and "Cardiff, GBP 28,000, closes 7 November", never advice.
+- `title` (at most 200 characters) and `summary` (at most 300): neutral and factual, in the app's voice. "Graduate Data Analyst, Example Health Board" and "Riverford, GBP 28,000, closes 7 November", never advice.
 - `day`: the London day it came in: the day its first message arrived, or for a web find the day it was checked (`foundAt.checkedAt`). The Harvest log is one page per day, so this must be right.
 - When: `start` and `end` (a day `2026-11-05`, or a time `2026-11-05T14:00:00Z` in UTC), `allDay`, `deadline` (the day it closes, ends or is due).
 - Where and who: `location`, `url` (its own page; required for a vacancy and an event), `course`, `organiser`, `employer`, `salary`, `cost`, `tags[]`.
@@ -38,7 +38,7 @@ Life OS never writes JobMap, Cardiff Life or Budget. Vacancies and events reach 
 - `reference` (an order or booking number), `amountPence` with `currency` (GBP), as the message says them.
 - Dates: an order's `start` is the expected delivery and its `deadline` the end of the return window; a bill's or subscription's `deadline` is when it is taken; a booking or appointment `start` is when it happens; an application's `deadline` is the next thing it asks for (a test, a reply).
 - An application that becomes unsuccessful or reaches a test, interview or offer is offered to her as a change in JobMap; she presses it. Never change JobMap yourself.
-- A security code or sign-in link still never goes in; an `account` item says only what happened ("A new sign-in from Windows in Cardiff").
+- A security code or sign-in link still never goes in; an `account` item says only what happened ("A new sign-in from Windows in Riverford").
 
 **Her rules win, and the app applies them.** She can move a thing to another domain, and file, fold or hide everything from a sender. Life OS applies those when it shows things; send each item with the kind and area its message really supports, and do not try to guess hers. A batch never writes her choices.
 
@@ -49,29 +49,21 @@ Life OS never writes JobMap, Cardiff Life or Budget. Vacancies and events reach 
 | Item | Shows in |
 |---|---|
 | announcement, material, info, opportunity with a day (`start` or `deadline`) | the Calendar ("Came in", in the item's area) and the Harvest log |
-| event | the Harvest log, linked to the Cardiff Life event with the same link. On the Calendar only through Cardiff Life, once she marks it Plan to go |
+| event | the Harvest log, linked to the event on the Events page with the same link. On the Calendar only through Events, once she marks it Plan to go |
 | vacancy | the Harvest log, linked to the JobMap job with the same link; Today when it closes within 7 days |
 | opportunity | also Today when it closes within 7 days |
 | offer | the Offers list on the Budget page; Today in its last 2 days |
 | undated announcement or info | the Harvest log and Mail |
 
-## Reaching JobMap and Cardiff Life
+## Reaching JobMap and Events
 
 - **Vacancies:** after the batch, queue the same vacancies for JobMap through its own route: write a discovery batch as `jobmap/SCHEDULED_SEARCH.md` describes, then `node jobmap/queue-jobs.mjs <file> --dry-run`, check it, and queue it. Use the advert's own `url` (the same one as the item's), so Life OS can find the job. A vacancy the scouts already queued needs only its item.
-- **Events:** hand each event to the Cardiff events workflow (its saved handoffs, in the scheduled tasks' own folder), which verifies it and adds it to `cardiff-life/events.csv` by Cardiff Life's own rules. The item keeps the organiser's event page as its `url`.
-- Never write `jobmap/data`, `cardiff-life/*.csv`, Budget's `state.json`, or Life OS's database yourself.
+- **Events:** hand each event to this installation's events research workflow (`mail/HARVEST.local.md` names it), which verifies it and adds it to the research's `events.csv` (in the events data folder, `LIFE_OS_EVENTS_DIR`) by the Events page's own rules. The item keeps the organiser's event page as its `url`.
+- Never write `jobmap/data`, the events research files, Budget's `state.json`, or Life OS's database yourself.
 
-## The September backfill (once, on Xar's yes)
+## This installation
 
-Life OS already holds 1,171 messages from earlier gathers. The backfill rebuilds 1 September to 3 November as the app's own record, day by day, without reading the mailboxes again.
-
-1. **Read from what is saved:** `mail/archive/` and `harvest/raw/`. Do not open Gmail, Outlook or Learning Central for it.
-2. **Use the sources Life OS already has**, with their ids: `cardiff-outlook`, `gmail`, `learning-central`, `teams`, `student-intranet`, `timetable`. Give each a label in words ("Cardiff Outlook", "Gmail", "Learning Central"): a batch's label replaces the stored one. A web scout's finds use their own source (for example `web-jobs`, `web-events`, kind `other`).
-3. **The same message is recognised** by its source and id; failing that, by the same source, the same minute, the same sender address and the same subject. So a message stored earlier under a stand-in id is updated, not added again, and keeps the provider's id from then on. Keep `receivedAt` to the minute as the mailbox shows it.
-4. **Oldest first, one batch per week** (1 to 7 September first), each under 10 MB and 2,000 messages. Every item says its own `day`, so a week's batch still gives one log page per day.
-5. **Try every batch on `lifeos_test` first:** `node scripts/mail-import.mjs lifeos_test <file>`. Then, with Xar's yes, `node scripts/mail-import.mjs lifeos <file>` (it takes a backup first), or drop the files in `mail/inbox/` one at a time, oldest first, waiting for each receipt in `mail/import-log.md`.
-6. Outlook messages from the saved archive have no message address, so they show no "Open in Outlook" link. Their text is what the archive kept (often cut at 5,000 characters): send `textComplete: false` for those.
-7. Report counts before and after (Mail → the Harvest log's sources, or the receipt lines). A made-up batch (its agent says "not real mail" or "for tests") is refused by the live import.
+Read `mail/HARVEST.local.md` when it exists: the sources this Life OS already has (their ids and labels), where its events research takes handoffs, and one-off work such as a backfill, with its own rules. It belongs to the installation (it is not part of the app) and wins over this page where they differ.
 
 ## Suggestions for the app
 

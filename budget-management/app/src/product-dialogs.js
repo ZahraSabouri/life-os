@@ -392,7 +392,7 @@ function MoneyBackEditor({state:s,dialog:d,selectedMonth:m,commit,onClose}){
  const pence=/^\d+(\.\d{1,2})?$/.test(form.amount)?Math.round(Number(form.amount)*100):0,avail=ids.reduce((n,id)=>n+left(id),0),split=pence&&ids.length?moneyBackSplit(s,pence,ids):null;
  const toggle=id=>setIds(xs=>xs.includes(id)?xs.filter(x=>x!==id):[...xs,id]);
  return e(FormModal,{title:'Money back',kicker:'SOMEONE CHIPPED IN, OR A REFUND',onClose,label:'Save money back',onSubmit:()=>commit(st=>recordMoneyBack(st,{from:form.from,pence:pennies(form.amount),date:form.date,expenseIds:ids,note:form.note}),'Money back saved · spending updated')},
-  e('div',{className:'form-grid'},e(Input,{label:'From',value:form.from,onChange:v=>set('from',v),list:'moneyback-names',required:true,placeholder:'Shivalika, Lidl…'}),e(Input,{label:'Amount (£)',type:'number',min:'.01',step:'.01',value:form.amount,onChange:v=>set('amount',v),required:true})),
+  e('div',{className:'form-grid'},e(Input,{label:'From',value:form.from,onChange:v=>set('from',v),list:'moneyback-names',required:true,placeholder:'Sam, Lidl…'}),e(Input,{label:'Amount (£)',type:'number',min:'.01',step:'.01',value:form.amount,onChange:v=>set('amount',v),required:true})),
   e('datalist',{id:'moneyback-names'},names.map(x=>e('option',{key:x,value:x}))),
   e(Input,{label:'Day you got it',type:'date',value:form.date,onChange:v=>set('date',v),required:true,hint:'It comes off your spending in that month.'}),
   e('div',{className:'pick-head'},e('strong',null,'What was it for?'),e('small',null,ids.length?ids.length+' ticked · '+pounds(avail)+' left on them':'Tick one or more purchases')),

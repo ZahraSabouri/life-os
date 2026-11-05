@@ -116,6 +116,8 @@ export function mapStudy(value, range) {
   if (!value) return []
   const state = value.state ?? value
   const settings = state.settings ?? {}
+  // Modules switched off in the app's settings stay off the calendar, plans and exam alike.
+  const switchedOff = new Set(array(settings.inactiveModules).map(name => String(name).toLowerCase()))
   const byId = new Map(array(value.baseCards).map(card => [card.id, card]))
   for (const card of array(state.addedCards)) byId.set(card.id, card)
   // Also accepts already merged fixture cards; saved overlay records alone
@@ -128,7 +130,7 @@ export function mapStudy(value, range) {
     const card = { ...base, ...edits, status: progress.status ?? edits.status ?? base.status }
     const module = edits.moduleGroup ?? edits.module ?? base.moduleGroup ?? base.module
     if (!id(card.id) || !available(card) || progress.done || card.done || finished.has(stateOf(card.status))) continue
-    if (settings.mat700Active === false && module === 'MAT700') continue
+    if (switchedOff.has(String(module ?? '').toLowerCase())) continue
     const tags = array(card.tags)
     const title = text(card.title, 'Study plan')
     const baseItem = { area: 'study', href: '/study', meta: { source: 'summer-rescue', readonly: true, cardId: card.id, module, status: card.status, dueDate: temporal(card.dueDate), startDate: temporal(card.startDate) } }
@@ -145,7 +147,7 @@ export function mapStudy(value, range) {
     if (dueItem) output.push(dueItem)
   }
   for (const [module, date] of Object.entries(settings.moduleExamDates ?? {})) {
-    if (module === 'mat700' && settings.mat700Active === false) continue
+    if (switchedOff.has(module.toLowerCase())) continue
     const mapped = item({
       id: `study:exam:${module}`, area: 'study', kind: 'fixed', title: `${module} exam`, start: date,
       href: '/study', meta: { source: 'summer-rescue', readonly: true, module, confirmedDate: true },

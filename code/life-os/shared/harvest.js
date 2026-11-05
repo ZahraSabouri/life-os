@@ -184,7 +184,7 @@ export function junkLink(raw) {
 
 // The original in her own mailbox. Gmail from its message id and the account she is signed in as
 // (setting mail-gmail-account, default 1); Outlook only when the stored link is the opened message's
-// own address; Learning Central and Teams as stored. Otherwise nothing, never a broken link.
+// own address; a course site and Teams as stored. Otherwise nothing, never a broken link.
 export const GMAIL_ACCOUNT_KEY = 'mail-gmail-account'
 export function gmailLink(messageId, account = 1) {
   const index = Number.isInteger(Number(account)) && Number(account) >= 0 && Number(account) < 10 ? Number(account) : 1

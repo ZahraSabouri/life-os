@@ -2,7 +2,17 @@
 const e = React.createElement;
 const {useState,useEffect,useMemo} = React;
 
-const APP_KEY = "zahra_food_budget_planner_v1";
+const APP_KEY = "food_budget_planner_v1";
+// Browser copies kept under an earlier prefix ("<name>_food_budget_planner_v1…") are copied to the
+// current names once, before anything reads them; the old copies stay.
+(function carryForwardBrowserCopies(){
+  try{
+    if(typeof localStorage==='undefined')return;
+    const names=[];for(let i=0;i<localStorage.length;i++)names.push(localStorage.key(i));
+    if(names.some(k=>k===APP_KEY||(k||'').startsWith(APP_KEY+'_')))return;
+    for(const k of names){const m=/^[a-z0-9]+_food_budget_planner_v1(.*)$/.exec(k||'');if(m)localStorage.setItem(APP_KEY+m[1],localStorage.getItem(k));}
+  }catch(err){}
+})();
 const DEFAULT_MONTHLY_BUDGET = 225;
 const SEPTEMBER_OPENING_ID = 'exp_september_2026_opening';
 function septemberOpeningExpense(){return {id:SEPTEMBER_OPENING_ID,date:'2026-09-09',amount:125,type:'other',category:'Opening spending',note:'Spent before 10 September (assumed)'};}

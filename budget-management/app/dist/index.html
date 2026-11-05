@@ -1100,7 +1100,17 @@ section>.food-line:first-child,.surface.food-line{border-top:0}
 const e = React.createElement;
 const {useState,useEffect,useMemo} = React;
 
-const APP_KEY = "zahra_food_budget_planner_v1";
+const APP_KEY = "food_budget_planner_v1";
+// Browser copies kept under an earlier prefix ("<name>_food_budget_planner_v1…") are copied to the
+// current names once, before anything reads them; the old copies stay.
+(function carryForwardBrowserCopies(){
+  try{
+    if(typeof localStorage==='undefined')return;
+    const names=[];for(let i=0;i<localStorage.length;i++)names.push(localStorage.key(i));
+    if(names.some(k=>k===APP_KEY||(k||'').startsWith(APP_KEY+'_')))return;
+    for(const k of names){const m=/^[a-z0-9]+_food_budget_planner_v1(.*)$/.exec(k||'');if(m)localStorage.setItem(APP_KEY+m[1],localStorage.getItem(k));}
+  }catch(err){}
+})();
 const DEFAULT_MONTHLY_BUDGET = 225;
 const SEPTEMBER_OPENING_ID = 'exp_september_2026_opening';
 function septemberOpeningExpense(){return {id:SEPTEMBER_OPENING_ID,date:'2026-09-09',amount:125,type:'other',category:'Opening spending',note:'Spent before 10 September (assumed)'};}
@@ -3333,7 +3343,7 @@ function LegacyApp(){
   function unassign(id){commit(s=>withResourcePatch(s,id,{scheduledDate:'',used:false,usedDate:''}),'Allocation restored');}
   function moveMonth(id,month){commit(s=>{const r=s.resources.find(x=>x.id===id);return r?withResourcePatch(s,id,{allocatedMonth:month,scope:'monthly',scheduledDate:r.used||dateMonth(r.scheduledDate)===month?r.scheduledDate:''}):s},'Allocation moved');}
   function scheduleResource(id,date){commit(s=>{const r=s.resources.find(x=>x.id===id);return r&&!r.used&&!r.scheduledDate&&inPlanningMonth(r,dateMonth(date))?withResourcePatch(s,id,{scheduledDate:date}):s},'Added to meal plan');}
-  function exportData(data=state,filename='zahra-food-budget-backup.json'){
+  function exportData(data=state,filename='food-budget-backup.json'){
     const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
     const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
@@ -3343,7 +3353,7 @@ function LegacyApp(){
   const p={state,inventory,setInventory,tab,setTab,selectedMonth,setSelectedMonth:changeMonth,selectedWeek,setSelectedWeek,patchResource,markUsed,unassign,moveMonth,scheduleResource,commit,setDialog,exportData,importData,saveError,canSave,setCanSave,setSaveError,addExpense:x=>commit(s=>withAddedExpense(s,x),'Spending added'),deleteExpense:id=>commit(s=>withDeletedExpense(s,id),'Spending removed'),setMeal:(d,f,v)=>setState(s=>withMealField(s,d,f,v)),updateBudget:(m,f,v)=>setState(s=>withBudgetField(s,m,f,v)),requestSplit:r=>setDialog({type:'resource',id:r.id,mode:'split'}),openExpense};
   return e('div',{className:'workspace'},
     e('a',{href:'#main-content',className:'skip-link'},'Skip to content'),
-    e('aside',{className:'sidebar'},e('div',{className:'brand-lockup'},e('span',{className:'brand-symbol'},'Z'),e('div',null,e('strong',null,'Food & budget'),e('span',null,'Zahra’s planner'))),
+    e('aside',{className:'sidebar'},e('div',{className:'brand-lockup'},e('span',{className:'brand-symbol'},'E'),e('div',null,e('strong',null,'Food & budget'),e('span',null,'Your planner'))),
       e('div',{className:'nav-caption'},'YOUR EVERYDAY'),
       e('nav',{'aria-label':'Main navigation'},NAV.map(([key,icon,label])=>e('button',{key,className:'side-link '+(tab===key?'active':''),'aria-current':tab===key?'page':undefined,onClick:()=>{setTab(key);setNotice(null);}},e(Icon,{name:icon}),e('span',null,label)))),
       e('div',{className:'sidebar-bottom'},e('div',{className:'plan-duration'},e(Icon,{name:'leaf'}),e('div',null,e('strong',null,'Your allocation plan'),e('span',null,'September 2026 — June 2027'))),
@@ -3449,9 +3459,9 @@ function Settings(p){
   return e(React.Fragment,null,e(PageHeading,{eyebrow:'KEEP YOUR PLAN YOURS',title:'Backup & plan'},'Your entries stay in this browser. Keep a copy somewhere you trust.'),
     e('section',{className:'surface settings-backup'},e('span',{className:'action-icon'},e(Icon,{name:'download'})),e('div',null,e('h2',null,'A copy of everything'),e('p',{className:'muted'},'Includes your portions, usage, meals, spending and monthly limits.')),e(Btn,{kind:'primary',icon:'download',onClick:()=>exportData()},'Download backup')),
     e('div',{className:'settings-grid'},e('section',{className:'surface'},e('h2',null,'Bring an existing plan'),e('p',{className:'muted'},'Restore a backup from this app or your earlier version. You’ll review it before replacing your entries.'),e('label',{className:'button secondary upload-button'},'Choose a backup',e('input',{type:'file',accept:'.json,application/json','aria-label':'Choose a planner backup',onChange:importData}))),
-      e('section',{className:'surface'},e('h2',null,'Keep an offline app copy'),e('p',{className:'muted'},'The app is self-contained. Your entries are separate, so download a backup too.'),e('a',{className:'button secondary',href:'./index.html',download:'Zahra_Food_Budget_Planner.html'},'Download the app'))),
+      e('section',{className:'surface'},e('h2',null,'Keep an offline app copy'),e('p',{className:'muted'},'The app is self-contained. Your entries are separate, so download a backup too.'),e('a',{className:'button secondary',href:'./index.html',download:'Food_Budget_Planner.html'},'Download the app'))),
     e('section',{className:'surface rules-card'},e('div',{className:'section-heading'},e('div',null,e('h2',null,'Your allocation rules'),e('p',{className:'muted'},'The quantities and choices behind your plan.'))),e(PlanNotes)),
-    safety&&e('section',{className:'surface safety-copy'},e('div',null,e('h2',null,'Before the redesign'),e('p',{className:'muted'},'An automatic safety copy of the entries present when the new interface first opened.')),e(Btn,{icon:'download',onClick:()=>exportData(safety,'zahra-before-redesign.json')},'Download safety copy')),
+    safety&&e('section',{className:'surface safety-copy'},e('div',null,e('h2',null,'Before the redesign'),e('p',{className:'muted'},'An automatic safety copy of the entries present when the new interface first opened.')),e(Btn,{icon:'download',onClick:()=>exportData(safety,'budget-before-redesign.json')},'Download safety copy')),
     e('section',{className:'reset-section'},e('div',null,e('h2',null,'Start over'),e('p',{className:'muted'},'Return to the original allocations and remove logged entries.')),e(Btn,{kind:'danger',onClick:()=>setDialog({type:'reset'})},'Reset planner'))
   );
 }
@@ -4517,7 +4527,7 @@ function MoneyBackEditor({state:s,dialog:d,selectedMonth:m,commit,onClose}){
  const pence=/^\d+(\.\d{1,2})?$/.test(form.amount)?Math.round(Number(form.amount)*100):0,avail=ids.reduce((n,id)=>n+left(id),0),split=pence&&ids.length?moneyBackSplit(s,pence,ids):null;
  const toggle=id=>setIds(xs=>xs.includes(id)?xs.filter(x=>x!==id):[...xs,id]);
  return e(FormModal,{title:'Money back',kicker:'SOMEONE CHIPPED IN, OR A REFUND',onClose,label:'Save money back',onSubmit:()=>commit(st=>recordMoneyBack(st,{from:form.from,pence:pennies(form.amount),date:form.date,expenseIds:ids,note:form.note}),'Money back saved · spending updated')},
-  e('div',{className:'form-grid'},e(Input,{label:'From',value:form.from,onChange:v=>set('from',v),list:'moneyback-names',required:true,placeholder:'Shivalika, Lidl…'}),e(Input,{label:'Amount (£)',type:'number',min:'.01',step:'.01',value:form.amount,onChange:v=>set('amount',v),required:true})),
+  e('div',{className:'form-grid'},e(Input,{label:'From',value:form.from,onChange:v=>set('from',v),list:'moneyback-names',required:true,placeholder:'Sam, Lidl…'}),e(Input,{label:'Amount (£)',type:'number',min:'.01',step:'.01',value:form.amount,onChange:v=>set('amount',v),required:true})),
   e('datalist',{id:'moneyback-names'},names.map(x=>e('option',{key:x,value:x}))),
   e(Input,{label:'Day you got it',type:'date',value:form.date,onChange:v=>set('date',v),required:true,hint:'It comes off your spending in that month.'}),
   e('div',{className:'pick-head'},e('strong',null,'What was it for?'),e('small',null,ids.length?ids.length+' ticked · '+pounds(avail)+' left on them':'Tick one or more purchases')),

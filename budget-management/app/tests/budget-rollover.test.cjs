@@ -189,7 +189,7 @@ test('customised limits and deliberately absent months remain unchanged',()=>{
 });
 test('load preserves the exact old plan in a safety copy and upgrades once',()=>{
   storage.clear();
-  const key='zahra_food_budget_planner_v1',raw=JSON.stringify(legacyPlan(purchase('2026-09',12.34)));
+  const key='food_budget_planner_v1',raw=JSON.stringify(legacyPlan(purchase('2026-09',12.34)));
   storage.set(key,raw);
   const loaded=api.loadState();
   assert.equal(loaded.error,'');

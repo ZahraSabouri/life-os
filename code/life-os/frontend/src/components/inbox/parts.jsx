@@ -1,6 +1,6 @@
 // The pieces the Inbox is drawn with: what kind a line is and how pressing (a word, not only a
 // colour), one thing owed with its buttons, and a message's text as plain text. The app names no
-// assistant and hands out no prompts to copy (Xar, 4 November 2026): drafting returns as the app's own feature.
+// assistant and hands out no prompts to copy: drafting returns as the app's own feature.
 import { useEffect, useRef, useState } from 'react'
 import { apiFetch } from '../../lib/api.js'
 import { useSetting } from '../../lib/settings.js'

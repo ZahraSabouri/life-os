@@ -8,15 +8,12 @@ import { readMarkers, scanFiles } from './privacy-scan.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 // Private: project memory, agent instructions, research, one-off migrations, personal planning and
-// course materials. They stay in this working copy and are never in the public version.
-const PRIVATE = [
-  /^documents\//, /^AGENTS\.md$/, /^CLAUDE\.md$/, /(^|\/)AGENTS\.md$/, /^migration\//, /^outputs\//,
-  /^jobmap\/(JOB_SOURCES|SCHEDULED_SEARCH|VALIDATION)\.md$/,
-  /^cardiff-life\/(Codex Project Instructions.*|events\.(csv|md)|communities\.md|history\.md|opportunities\.json|research-sync-state\.json|timetable-source\.json|university-status\.json|index\.html)$/,
-  /^mail\/(GATHER\.md|AGENT-PROMPTS\.md|CODEX-GATHER-PROMPT\.txt|gather-log\.md|import-log\.md)$/,
-  /^budget-management\/(planning\/|recheck-|reconcile-september|review-purchases|correct-known-stock|Pictures to provide|September review|Plan and receipt recheck|START HERE|app\/tools\/import-morrisons|app\/tools\/morrisons-)/,
-  /^scripts\/move-summer-/, /^code\/life-os\/frontend\/public\/study-assets(\/|-manifest\.json$)/,
-]
+// course materials. They stay in this working copy and are never in the public version. The list is
+// private too (.private/private-paths.txt, one regular expression per line).
+export function readPrivatePaths(file) {
+  return fs.readFileSync(file, 'utf8').split(/\r?\n/).map((line) => line.trim()).filter((line) => line && !line.startsWith('#')).map((line) => new RegExp(line))
+}
+const PRIVATE = readPrivatePaths(path.join(root, '.private/private-paths.txt'))
 const CONFIGURE = new Set(['home folder', 'email address', 'phone number', 'key or token'])
 const bucket = (file, kinds) => (PRIVATE.some((rule) => rule.test(file)) ? 'private'
   : kinds.some((kind) => CONFIGURE.has(kind)) ? 'configure' : 'generic')
@@ -45,7 +42,7 @@ CP2 moves these into configuration with a committed example.
 ${list(groups.configure)}
 
 ## Make generic: names, places and courses in code (${groups.generic.length} files)
-CP4: courses and cards become data with an example set; "Cardiff Life" becomes Events with a city setting; tests and examples use made-up places; the Guide and labels are anyone's.
+CP4: courses and cards become data with an example set; the events page works for any city; tests and examples use made-up places; the Guide and labels are anyone's.
 
 ${list(groups.generic)}
 `

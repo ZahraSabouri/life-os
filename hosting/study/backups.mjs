@@ -4,7 +4,7 @@ import path from 'node:path'
 const DAY_MS = 24 * 60 * 60 * 1000
 
 // Daily rolling copies of the Study database (Architecture section 10).
-// Nothing is pruned here: removing old backups stays Xar's step.
+// Nothing is pruned here: removing old backups stays the owner's step.
 export function createStudyBackups({ backupRoot, dump, clock = () => Date.now(), checkEveryMs = 3 * 60 * 60 * 1000 } = {}) {
   if (!backupRoot || typeof dump !== 'function') throw new TypeError('Study backups require a folder and a dump function')
   let timer = null, running = null, lastError = null

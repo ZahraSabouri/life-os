@@ -8,7 +8,7 @@ const NOW = new Date('2026-10-13T15:20:00.000Z')
 const data = () => ({
   today: '2026-10-13',
   upcoming: [
-    { id: 'timed:block', title: 'MAT022 · Probability', startsAt: '2026-10-13T15:28:00.000Z', at: '16:28', href: '/study#/today?card=x' },   // in 8 minutes
+    { id: 'timed:block', title: 'STAT101 · Probability', startsAt: '2026-10-13T15:28:00.000Z', at: '16:28', href: '/study#/today?card=x' },   // in 8 minutes
     { id: 'timed:later', title: 'Job applications', startsAt: '2026-10-13T17:00:00.000Z', at: '18:00', href: '/today' },                    // in 100 minutes
     { id: 'timed:gone', title: 'Lecture', startsAt: '2026-10-13T15:10:00.000Z', at: '16:10', href: '/today' },                               // began ten minutes ago
   ],
@@ -25,7 +25,7 @@ test('with no tab open it tells her once: what starts soon, and what today asks 
   const notifier = createDesktopNotifier({ ...manual, load: async () => data(), prefs: () => ({ seen: { 'job:closes:J1:2026-10-13': '2026-10-13' } }), browserSeenAt: () => 0, now: () => NOW, show: async (...words) => { shown.push(words) } })
   assert.equal(await notifier.tick(), 2)
   assert.deepEqual(shown, [
-    ['MAT022 · Probability', 'Starts at 16:28, in 8 minutes', 'http://127.0.0.1:47850/study#/today?card=x'],
+    ['STAT101 · Probability', 'Starts at 16:28, in 8 minutes', 'http://127.0.0.1:47850/study#/today?card=x'],
     // The one she has already seen in the bell is left out of the count.
     ['Life OS: 2 things for today', '2 study cards due today\n1 plan left unticked from earlier days', 'http://127.0.0.1:47850/today'],
   ])

@@ -7,7 +7,7 @@ const NOW = '2026-10-12T17:40:00.000Z'
 const plan = { baseCards: [{ id: 'base', title: 'Prepared card', status: 'Backlog', checklist: ['Read', 'Write'] }] }
 const state = () => ({
   version: 3, updatedAt: '2026-10-12T09:00:00.000Z',
-  addedCards: [{ id: 'bayes', title: 'Bayes table', moduleGroup: 'MAT022', status: 'Planned', checklist: [{ id: 's1', text: 'Draw the table' }, { id: 's2', text: 'Check the denominator' }] }],
+  addedCards: [{ id: 'bayes', title: 'Bayes table', moduleGroup: 'STAT101', status: 'Planned', checklist: [{ id: 's1', text: 'Draw the table' }, { id: 's2', text: 'Check the denominator' }] }],
   cards: { bayes: { checklist: { s1: true }, activity: [{ id: 'log-old', at: '2026-10-11T10:00:00.000Z', action: 'Updated checklist', details: '' }], userTags: ['core'] } },
   notifications: { n1: { cardId: 'bayes', read: false }, n2: { cardId: 'base', read: false } },
   settings: { theme: 'light' },
@@ -26,7 +26,7 @@ test('a step is ticked the way the hub ticks it: only that card\'s overlay chang
   assert.equal(result.state.updatedAt, NOW)
   assert.deepEqual([result.state.settings, result.state.addedCards, result.state.notifications], [before.settings, before.addedCards, before.notifications])
   assert.deepEqual(card(result.state, 'bayes').checklist.map((item) => item.done), [true, true])
-  assert.deepEqual({ ...result.event, id: 'x' }, { id: 'x', occurredAt: NOW, entityType: 'card', entityId: 'bayes', eventType: 'checklist_item.toggled', payload: { cardTitle: 'Bayes table', moduleGroup: 'MAT022', itemId: 's2', text: 'Check the denominator', done: true } })
+  assert.deepEqual({ ...result.event, id: 'x' }, { id: 'x', occurredAt: NOW, entityType: 'card', entityId: 'bayes', eventType: 'checklist_item.toggled', payload: { cardTitle: 'Bayes table', moduleGroup: 'STAT101', itemId: 's2', text: 'Check the denominator', done: true } })
 })
 
 test('a step can be unticked, a prepared card\'s step is found by its made-up id, and no change is no save', () => {
@@ -101,7 +101,7 @@ test('a focus session is added to its card as the hub\'s own timer adds one: qua
   assert.deepEqual([overlay.actualHours, overlay.focusSessions.length, overlay.focusSessions[0].minutes, overlay.focusSessions[0].hours, overlay.focusSessions[0].from], [0.75, 1, 50, 0.75, 'life-os'])
   assert.deepEqual(overlay.checklist, { s1: true })                       // her ticks are untouched
   assert.equal(overlay.activity[0].action, 'Focus session')
-  assert.deepEqual(result.event.payload, { cardTitle: 'Bayes table', moduleGroup: 'MAT022', minutes: 50, hours: 0.75, previousHours: 0, hoursAfter: 0.75, from: 'life-os' })
+  assert.deepEqual(result.event.payload, { cardTitle: 'Bayes table', moduleGroup: 'STAT101', minutes: 50, hours: 0.75, previousHours: 0, hoursAfter: 0.75, from: 'life-os' })
   // A second, short session: at least a quarter of an hour is counted, as in the hub.
   const again = focusState(result.state, plan, { card: 'bayes', minutes: 5 }, NOW)
   assert.deepEqual([again.state.cards.bayes.actualHours, again.state.cards.bayes.focusSessions.length], [1, 2])

@@ -8,7 +8,7 @@ import path from 'node:path'
 import { spawn } from 'node:child_process'
 
 export const BUDGET_PATH = '/apps/budget/'
-export const BUDGET_IDENTITY = 'zahra-budget-planner-local-v1'
+export const BUDGET_IDENTITY = 'budget-planner-local-v1'
 export const BUDGET_INTERNAL_PORT = Number(process.env.LIFE_OS_BUDGET_PORT || 47851)
 
 function request(port, options = {}) {

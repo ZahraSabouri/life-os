@@ -187,8 +187,8 @@ test('harvest routes on lifeos_test: a part, places, the log, bulk Keep and Dism
   await t.test('the reading room: filters by area, what it led to, dates, priority, not opened; what was taken', async () => {
     const mine = (rows) => rows.filter((row) => row.source_id.endsWith(`-${mark}`)).map((row) => row.subject).sort()
     const list = async (search) => mine((await call(`/messages?${search}&source=`)).body)
-    assert.deepEqual(await list('area=jobs'), ['3 new jobs for data analyst in Cardiff'])
-    assert.deepEqual(await list('area=research'), ['3 new jobs for data analyst in Cardiff'])
+    assert.deepEqual(await list('area=jobs'), ['3 new jobs for data analyst in Riverford'])
+    assert.deepEqual(await list('area=research'), ['3 new jobs for data analyst in Riverford'])
     assert.deepEqual(await list('has=actions'), ['Library fine: GBP 4.50'])
     assert.equal((await list('has=items')).length, 6)
     assert.deepEqual(await list('from=2026-11-01&to=2026-11-01'), ['Data science hackathon: applications open', 'Library fine: GBP 4.50'])
@@ -200,7 +200,7 @@ test('harvest routes on lifeos_test: a part, places, the log, bulk Keep and Dism
     assert.deepEqual(opened.taken.items.map((item) => item.kind), ['vacancy', 'vacancy', 'vacancy'])
     assert.ok(opened.taken.items.every((item) => item.place))
     assert.equal(opened.links.length, 3)
-    assert.ok(!(await list('notseen=1')).includes('3 new jobs for data analyst in Cardiff'), 'opened now')
+    assert.ok(!(await list('notseen=1')).includes('3 new jobs for data analyst in Riverford'), 'opened now')
   })
 
   await t.test('sender rules: fold marks the rows, hide leaves them out until hidden ones are shown, and both can be undone', async () => {

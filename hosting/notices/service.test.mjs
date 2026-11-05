@@ -9,7 +9,7 @@ const TODAY = '2026-10-12'
 const at = (clock, date = TODAY) => new Date(`${date}T${clock}:00+01:00`).toISOString()
 
 const items = [
-  { id: 'class', area: 'study', title: 'MAT022 · Lecture', start: at('15:10'), end: at('17:00'), all_day: false, href: '/study#/schedule', meta: {} },            // over by now
+  { id: 'class', area: 'study', title: 'STAT101 · Lecture', start: at('15:10'), end: at('17:00'), all_day: false, href: '/study#/schedule', meta: {} },            // over by now
   { id: 'block', area: 'study', title: 'Library: diagnose the gaps', start: at('16:30'), end: at('17:30'), all_day: false, href: '/study#/today?card=x', meta: {} },  // on now
   { id: 'dinner', area: 'core', title: 'Dinner with Ben', start: at('17:40'), end: null, all_day: false, href: '/ledger#entry-1', meta: { source: 'core', type: 'event' } },   // in 40 min
   { id: 'late-plan', area: 'career', title: 'Job applications', start: at('20:00'), end: at('21:00'), all_day: false, meta: {} },                               // later today: not in the bell
@@ -24,7 +24,7 @@ const day = {
   study: {
     today: [{ id: 'c1', title: 'Bayes table', done: false, href: '/study#/today?card=bayes' }, { id: 'c2', title: 'Plots', done: true, href: '/study' }],
     overdue: { count: 2, cards: [{ title: 'Old one', href: '/study#/today?card=old' }, { title: 'Older', href: '/study' }] },
-    next: { id: 'a1', title: 'MAT022 · In-class test 1', days: 3 }, progress: { done: 4, total: 27 },
+    next: { id: 'a1', title: 'STAT101 · In-class test 1', days: 3 }, progress: { done: 4, total: 27 },
   },
   jobs: {
     closing: [{ id: 'j1', role: 'Data Manager', company: 'Swansea University', label: 'Full-time or over your hours · closes today', href: '/jobmap#job=j1' }],
@@ -49,7 +49,7 @@ test('notices come from every part, in order: on now, soon, asked of today, slip
     ['late', 'job:follow:j5:2026-10-12', 'Follow up: Tutor'],
     ['late', 'money:over:2026-10', 'Over this month\'s budget by £21.50'],
     ['late', 'plans:late:2026-10-12', '1 plan left unticked from earlier days'],
-    ['ahead', 'study:test:a1:2026-10-12', 'MAT022 · In-class test 1 is in 3 days'],
+    ['ahead', 'study:test:a1:2026-10-12', 'STAT101 · In-class test 1 is in 3 days'],
     ['ahead', 'job:tomorrow:2026-10-12', '1 job on your list closes tomorrow'],
     ['ahead', 'dated:sub:2026-10-13', 'Phone plan renews is tomorrow'],
   ])

@@ -109,8 +109,8 @@ test('each day of the view gets its things once, with timed ends at midnight on 
 })
 
 test('search, where a thing opens, and a link to a day', () => {
-  const lecture = item({ title: 'MAT022 · Lecture', area: 'study', location: 'Abacws 2.26' })
-  assert.equal(matchesSearch(lecture, 'lecture abacws'), true)
+  const lecture = item({ title: 'STAT101 · Lecture', area: 'study', location: 'North 2.26' })
+  assert.equal(matchesSearch(lecture, 'lecture north'), true)
   assert.equal(matchesSearch(lecture, 'study'), true)
   assert.equal(matchesSearch(lecture, 'budget'), false)
   assert.equal(placeOf('/study#/today?card=1'), 'Study hub')

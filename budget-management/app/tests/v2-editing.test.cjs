@@ -4,17 +4,17 @@ const api=vm.runInContext('({migrateV4,defaultState,validateV4,budgetFigures,che
 const fresh=()=>api.migrateV4(api.defaultState());
 const spent=(s,m='2026-09')=>api.budgetFigures(s,m).totalSpent;
 function withOld(){const s=fresh();s.expenses=[...s.expenses,
-  {id:'cider',date:'2026-09-16',amount:5,type:'grocery',category:'Eating out',note:'Cider with Shivalika'},
-  {id:'wine',date:'2026-09-10',amount:5.76,type:'other',category:'Other',note:'Wine & Pizza with Shivalika'},
+  {id:'cider',date:'2026-09-16',amount:5,type:'grocery',category:'Eating out',note:'Cider with Sam'},
+  {id:'wine',date:'2026-09-10',amount:5.76,type:'other',category:'Other',note:'Wine & Pizza with Sam'},
   {id:'sim',date:'2026-09-12',amount:10,type:'other',category:'Other',note:'SIM Card'}];return api.validateV4(s);}
 const line=(name,p,cat='fruit-vegetables',other={})=>({name,grossPence:p,quantity:1,unit:'item',categoryId:cat,tracking:'none',...other});
 
 test('editing a simple purchase changes name, amount, date, place and details',()=>{
   const s=withOld(),before=spent(s);
-  const n=api.validateV4(api.editExpense(s,'cider',{note:'Cider at Tiny Rebel',pence:650,date:'2026-09-17',place:'Tiny Rebel, Cardiff',details:'With Shivalika after class'}));
+  const n=api.validateV4(api.editExpense(s,'cider',{note:'Cider at The Old Brewery',pence:650,date:'2026-09-17',place:'The Old Brewery, Riverford',details:'With a friend after class'}));
   const x=n.expenses.find(e=>e.id==='cider');
-  assert.equal(x.note,'Cider at Tiny Rebel');assert.equal(x.amount,6.5);assert.equal(x.date,'2026-09-17');
-  assert.equal(x.place,'Tiny Rebel, Cardiff');assert.equal(x.details,'With Shivalika after class');
+  assert.equal(x.note,'Cider at The Old Brewery');assert.equal(x.amount,6.5);assert.equal(x.date,'2026-09-17');
+  assert.equal(x.place,'The Old Brewery, Riverford');assert.equal(x.details,'With a friend after class');
   assert.equal(Math.round((spent(n)-before)*100),150);
 });
 test('an old-version purchase keeps its category and grocery split unless a new one is chosen',()=>{
@@ -38,21 +38,21 @@ test('bad edits are refused',()=>{
 });
 test('one money back covering two purchases splits by what is left and lowers spending once',()=>{
   const s=withOld(),before=spent(s);
-  const n=api.validateV4(api.recordMoneyBack(s,{from:'Shivalika',pence:800,date:'2026-09-18',expenseIds:['cider','wine']}));
+  const n=api.validateV4(api.recordMoneyBack(s,{from:'Sam',pence:800,date:'2026-09-18',expenseIds:['cider','wine']}));
   const back=n.adjustments.filter(a=>a.kind==='moneyback');
   assert.equal(back.length,2);assert.equal(new Set(back.map(a=>a.groupId)).size,1);
   assert.equal(back.reduce((t,a)=>t+a.pence,0),-800);
   assert.equal(back.map(a=>-a.pence).sort((a,b)=>a-b).join(','),'372,428');
   assert.equal(Math.round((before-spent(n))*100),800);
-  const rows=api.ledger(n).filter(r=>r.refund);assert.equal(rows[0].note,'Money back from Shivalika');
+  const rows=api.ledger(n).filter(r=>r.refund);assert.equal(rows[0].note,'Money back from Sam');
 });
 test('money back cannot exceed what was spent, and removing it removes the whole payment',()=>{
   const s=withOld();
-  assert.throws(()=>api.recordMoneyBack(s,{from:'Shivalika',pence:1077,date:'2026-09-18',expenseIds:['cider','wine']}),/more than is left/);
+  assert.throws(()=>api.recordMoneyBack(s,{from:'Sam',pence:1077,date:'2026-09-18',expenseIds:['cider','wine']}),/more than is left/);
   assert.throws(()=>api.recordMoneyBack(s,{from:'',pence:100,date:'2026-09-18',expenseIds:['cider']}),/who/);
   assert.throws(()=>api.recordMoneyBack(s,{from:'Ben',pence:100,date:'2026-09-18',expenseIds:[]}),/Tick/);
-  const n=api.recordMoneyBack(s,{from:'Shivalika',pence:1076,date:'2026-09-18',expenseIds:['cider','wine']});
-  assert.throws(()=>api.recordMoneyBack(n,{from:'Shivalika',pence:1,date:'2026-09-18',expenseIds:['cider']}),/more than is left/);
+  const n=api.recordMoneyBack(s,{from:'Sam',pence:1076,date:'2026-09-18',expenseIds:['cider','wine']});
+  assert.throws(()=>api.recordMoneyBack(n,{from:'Sam',pence:1,date:'2026-09-18',expenseIds:['cider']}),/more than is left/);
   const back=api.removeMoneyBack(n,n.adjustments[0].id);assert.equal(back.adjustments.length,0);assert.equal(spent(back),spent(s));
 });
 test('a purchase with money back cannot be edited below what came back',()=>{

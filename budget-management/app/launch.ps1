@@ -1,7 +1,7 @@
 param([switch]$NoOpen, [switch]$Stop, [int]$Port = 47831)
 $ErrorActionPreference = 'Stop'
 $budgetUrl = "http://127.0.0.1:$Port"
-$budgetIdentity = 'zahra-budget-planner-local-v1'
+$budgetIdentity = 'budget-planner-local-v1'
 
 function Get-BudgetHealth {
     try { Invoke-RestMethod -Uri "$budgetUrl/__planner/health" -TimeoutSec 2 }

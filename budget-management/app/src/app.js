@@ -56,7 +56,7 @@ function LegacyApp(){
   function unassign(id){commit(s=>withResourcePatch(s,id,{scheduledDate:'',used:false,usedDate:''}),'Allocation restored');}
   function moveMonth(id,month){commit(s=>{const r=s.resources.find(x=>x.id===id);return r?withResourcePatch(s,id,{allocatedMonth:month,scope:'monthly',scheduledDate:r.used||dateMonth(r.scheduledDate)===month?r.scheduledDate:''}):s},'Allocation moved');}
   function scheduleResource(id,date){commit(s=>{const r=s.resources.find(x=>x.id===id);return r&&!r.used&&!r.scheduledDate&&inPlanningMonth(r,dateMonth(date))?withResourcePatch(s,id,{scheduledDate:date}):s},'Added to meal plan');}
-  function exportData(data=state,filename='zahra-food-budget-backup.json'){
+  function exportData(data=state,filename='food-budget-backup.json'){
     const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
     const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
@@ -66,7 +66,7 @@ function LegacyApp(){
   const p={state,inventory,setInventory,tab,setTab,selectedMonth,setSelectedMonth:changeMonth,selectedWeek,setSelectedWeek,patchResource,markUsed,unassign,moveMonth,scheduleResource,commit,setDialog,exportData,importData,saveError,canSave,setCanSave,setSaveError,addExpense:x=>commit(s=>withAddedExpense(s,x),'Spending added'),deleteExpense:id=>commit(s=>withDeletedExpense(s,id),'Spending removed'),setMeal:(d,f,v)=>setState(s=>withMealField(s,d,f,v)),updateBudget:(m,f,v)=>setState(s=>withBudgetField(s,m,f,v)),requestSplit:r=>setDialog({type:'resource',id:r.id,mode:'split'}),openExpense};
   return e('div',{className:'workspace'},
     e('a',{href:'#main-content',className:'skip-link'},'Skip to content'),
-    e('aside',{className:'sidebar'},e('div',{className:'brand-lockup'},e('span',{className:'brand-symbol'},'Z'),e('div',null,e('strong',null,'Food & budget'),e('span',null,'Zahra’s planner'))),
+    e('aside',{className:'sidebar'},e('div',{className:'brand-lockup'},e('span',{className:'brand-symbol'},'E'),e('div',null,e('strong',null,'Food & budget'),e('span',null,'Your planner'))),
       e('div',{className:'nav-caption'},'YOUR EVERYDAY'),
       e('nav',{'aria-label':'Main navigation'},NAV.map(([key,icon,label])=>e('button',{key,className:'side-link '+(tab===key?'active':''),'aria-current':tab===key?'page':undefined,onClick:()=>{setTab(key);setNotice(null);}},e(Icon,{name:icon}),e('span',null,label)))),
       e('div',{className:'sidebar-bottom'},e('div',{className:'plan-duration'},e(Icon,{name:'leaf'}),e('div',null,e('strong',null,'Your allocation plan'),e('span',null,'September 2026 — June 2027'))),

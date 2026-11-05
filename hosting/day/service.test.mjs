@@ -17,7 +17,7 @@ const workspace = {
     { id: 'autumn', title: 'Autumn', status: 'active', start_date: '2026-09-28', end_date: '2027-01-29' },
     { id: 'summer', title: 'Summer', status: 'completed', start_date: '2026-07-04', end_date: '2026-08-28' },
   ],
-  modules: [{ id: 'stats', title: 'Statistics', data: { code: 'MAT022' } }],
+  modules: [{ id: 'stats', title: 'Statistics', data: { code: 'STAT101' } }],
   cards: [
     { id: 'c1', title: 'Plots', status: 'planned', semester_id: 'autumn', module_id: 'stats', start_date: DATE, end_date: DATE,
       data: { hubCardId: 'plots', estimatedHours: 1.5, doneCondition: 'Three plots read', checklist: [{ id: 'a', text: 'Histogram', done: true }, { id: 'b', text: 'Box plot', done: false }] } },
@@ -111,13 +111,13 @@ test('notes are the ones written that day in London, newest first', () => {
 
 test('a note kept on the calendar belongs to the day it is for, and says what it is about', () => {
   const notes = notesDay([
-    { id: 'ahead', type: 'note', title: 'Bring a calculator', start_at: DATE, details: { body: 'Bring a calculator', about: 'study:block:s1:b1', about_title: 'MAT022 · Test 2' }, created_at: '2026-10-01T09:00:00.000Z' },
+    { id: 'ahead', type: 'note', title: 'Bring a calculator', start_at: DATE, details: { body: 'Bring a calculator', about: 'study:block:s1:b1', about_title: 'STAT101 · Test 2' }, created_at: '2026-10-01T09:00:00.000Z' },
     { id: 'elsewhere', type: 'note', title: 'For another day', start_at: '2026-10-20', details: { body: 'Later' }, created_at: '2026-10-13T09:00:00.000Z' },
   ], DATE)
   assert.deepEqual(notes.map(note => note.id), ['ahead'], 'written on the 1st for this day; written today for another day is not this day’s')
   assert.equal(notes[0].forDay, true)
   assert.equal(notes[0].about, 'study:block:s1:b1')
-  assert.equal(notes[0].aboutTitle, 'MAT022 · Test 2')
+  assert.equal(notes[0].aboutTitle, 'STAT101 · Test 2')
 })
 
 test('a source that cannot be read is named and the rest still answers', async () => {

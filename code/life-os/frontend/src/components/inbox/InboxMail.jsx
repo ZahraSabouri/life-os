@@ -14,7 +14,7 @@ import { DOMAINS, DOMAIN_NAMES, GMAIL_ACCOUNT_KEY, junkLink, originalLink } from
 import { MessageText, PriorityMark } from './parts.jsx'
 import { CameInItem } from './CameInStrip.jsx'
 
-const OPEN_IN = { outlook: 'Open in Outlook', gmail: 'Open in Gmail', 'learning-central': 'Open in Learning Central', teams: 'Open in Teams' }
+const OPEN_IN = { outlook: 'Open in Outlook', gmail: 'Open in Gmail', 'learning-central': 'Open in the course site', teams: 'Open in Teams' }
 const PRIORITY_NAMES = { urgent: 'Urgent', high: 'High', normal: 'Normal', low: 'Low' }
 const FOLDED_CATEGORIES = new Set(['newsletter', 'automated', 'noise'])
 const people = (list) => (Array.isArray(list) ? list : []).map((person) => person?.name || person?.address).filter(Boolean).join(', ')
