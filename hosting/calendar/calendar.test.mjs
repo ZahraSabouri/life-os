@@ -150,7 +150,7 @@ test('core all-day timestamps remain civil dates and Study due clock follows use
   assert.equal(mapStudy(value, october)[1].start, '2026-10-06T15:00:00.000Z')
 })
 
-test('Cardiff candidates preserve IDs, validate London clocks, and never guess undated recurrence', () => {
+test('event candidates preserve IDs, validate London clocks, and never guess undated recurrence', () => {
   const events = [
     { event_id: 'timed', name: 'Meet', date: '2026-10-05', start_time: '18:00', end_time: '19:00', status: 'upcoming' },
     { event_id: 'overnight', name: 'Late event', date: '2026-10-04', start_time: '23:00', end_time: '01:00', status: 'upcoming' },
@@ -164,7 +164,7 @@ test('Cardiff candidates preserve IDs, validate London clocks, and never guess u
   assert.equal(items[0].start, '2026-10-05T17:00:00.000Z')
   assert.equal(items[1].end, '2026-10-05T00:00:00.000Z')
   assert.equal(items[2].all_day, true)
-  assert.equal(items[0].href, '/cardiff-life#event=timed', 'each event opens itself in Cardiff Life')
+  assert.equal(items[0].href, '/events#event=timed', 'each event opens itself on the Events page')
   assert.equal(londonInstant('2026-03-29', '01:30'), null)
   assert.equal(londonInstant('2026-10-25', '01:30'), null)
   assert.equal(londonInstant('2026-10-26', '01:30'), '2026-10-26T01:30:00.000Z')
@@ -197,7 +197,7 @@ test('service timeout returns remaining sources and refuses malformed or oversiz
   assert.equal(result.sources.find(row => row.area === 'core').status, 'ready')
 })
 
-test('unusable source shapes are unavailable and global Cardiff IDs include rescheduled and cancelled records', async () => {
+test('unusable source shapes are unavailable and global event IDs include rescheduled and cancelled records', async () => {
   const service = createCalendarService({ ...emptyLoaders(), loadCareer: async () => ({ error: 'Not jobs' }), loadStudy: async () => ({ error: 'Not study state' }), loadEvents: async () => [
     { event_id: 'this-month', name: 'Current', date: '2026-10-05', status: 'upcoming' },
     { event_id: 'rescheduled', name: 'Moved', date: '2026-11-05', status: 'upcoming' },
@@ -243,7 +243,7 @@ test('production loaders preserve source files and read the injected Study state
   t.after(() => rm(root, { recursive: true, force: true }))
   const csvPath = path.join(root, 'events.csv'), csv = 'event_id,name,date,status\none,Fixture,2026-10-05,upcoming\n'
   await writeFile(csvPath, csv)
-  const loaders = createCalendarLoaders({ projectRoot: root, cardiffRoot: root, getBudgetPort: () => null, getJobMapPort: () => null, loadEntries: async () => [], loadPeople: async () => [] })
+  const loaders = createCalendarLoaders({ projectRoot: root, eventsRoot: root, getBudgetPort: () => null, getJobMapPort: () => null, loadEntries: async () => [], loadPeople: async () => [] })
   assert.equal((await loaders.loadEvents())[0].event_id, 'one')
   assert.equal(await readFile(csvPath, 'utf8'), csv)
   await assert.rejects(loaders.loadStudy(october), /unavailable/)
@@ -254,7 +254,7 @@ test('production loaders preserve source files and read the injected Study state
 test('an entry filed under a room takes that room: its calendar area when the room has one, its name either way', () => {
   const rows = [
     { id: 'ben', type: 'event', title: 'See Ben', start_at: '2026-10-17T13:00:00Z', details: { area: 'relationships' } },
-    { id: 'picnic', type: 'task', title: 'Picnic outside Cardiff', start_at: '2026-10-18', details: '{"area":"travel"}' },
+    { id: 'picnic', type: 'task', title: 'Picnic outside town', start_at: '2026-10-18', details: '{"area":"travel"}' },
     { id: 'forms', type: 'task', title: 'Council tax form', start_at: '2026-10-19', status: 'done', details: { area: 'admin', note: 'Sent by post' } },
     { id: 'jobs', type: 'time-block', title: 'Job applications', start_at: '2026-10-19T16:45:00Z', end_at: '2026-10-19T19:45:00Z', details: { area: 'career' } },
     { id: 'plain', type: 'task', title: 'No area', start_at: '2026-10-20' },

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { placeOf, partOf, dayLine, canonicalUrl, junkLink, gmailLink, outlookLink, originalLink, chatty, fitsArea, itemDate } from './harvest.js'
 
 test('placeOf: events through Cardiff Life, vacancies through JobMap, offers on the Offers list', () => {
-  assert.deepEqual(placeOf({ kind: 'event', start: '2026-11-05T18:00:00Z' }, '2026-11-03'), { calendar: false, linkTo: 'cardiff-life', offers: false, today: false })
+  assert.deepEqual(placeOf({ kind: 'event', start: '2026-11-05T18:00:00Z' }, '2026-11-03'), { calendar: false, linkTo: 'events', offers: false, today: false })
   assert.deepEqual(placeOf({ kind: 'vacancy', deadline: '2026-11-20' }, '2026-11-03'), { calendar: false, linkTo: 'jobmap', offers: false, today: false })
   assert.equal(placeOf({ kind: 'offer', deadline: '2026-11-30' }, '2026-11-03').offers, true)
 })
@@ -92,7 +92,7 @@ test('partOf: offers to Budget, vacancies and job opportunities to JobMap, event
   assert.equal(partOf({ kind: 'vacancy', area: 'research' }), 'jobmap')
   assert.equal(partOf({ kind: 'opportunity', area: 'jobs' }), 'jobmap')
   assert.equal(partOf({ kind: 'opportunity', area: 'academic' }), 'study')
-  assert.equal(partOf({ kind: 'event', area: 'academic' }), 'cardiff-life')
+  assert.equal(partOf({ kind: 'event', area: 'academic' }), 'events')
   assert.equal(partOf({ kind: 'material', area: 'academic' }), 'study')
   assert.equal(partOf({ kind: 'info', area: 'health' }), 'health')
   assert.equal(partOf({ kind: 'info', area: 'money' }), 'budget')

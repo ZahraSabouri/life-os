@@ -116,7 +116,7 @@ const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).fo
 const dayAfter = (count) => new Date(Date.parse(`${today}T12:00:00Z`) + count * 86_400_000).toISOString().slice(0, 10)
 // The apps inside, each in its own frame.
 const hub = (wait = '.sidebar-head') => frameOf(/apps\/summer-rescue/, wait)
-const cardiff = (wait = '#week-grid') => frameOf(/apps\/cardiff-life/, wait)
+const eventsFrame = (wait = '#week-grid') => frameOf(/apps\/events/, wait)
 const budget = async () => { const frame = await frameOf(/apps\/budget/, 'body'); await settle(2000); return frame }
 const jobmap = () => frameOf(/apps\/jobmap/, '.job-row')
 const hubMenu = async (frame, words) => { await frame.locator('.sidebar-nav a, .sidebar-nav button').filter({ hasText: words }).first().click({ timeout: 8000 }); await settle(2200) }
@@ -332,33 +332,33 @@ const RECIPES = {
     await settle(600)
     await view('study-setup.jpg')
   },
-  // ---- Cardiff Life
-  'cardiff.jpg': async () => { await go('/cardiff-life'); const frame = await cardiff(); await view('cardiff.jpg', { on: frame, marks: ['[data-view="week"]', '#week-label', '#add-own', '#show-options'] }) },
-  'cardiff-add.jpg': async () => {
-    await go('/cardiff-life')
-    const frame = await cardiff('#add-own')
+  // ---- Events
+  'events.jpg': async () => { await go('/events'); const frame = await eventsFrame(); await view('events.jpg', { on: frame, marks: ['[data-view="week"]', '#week-label', '#add-own', '#show-options'] }) },
+  'events-add.jpg': async () => {
+    await go('/events')
+    const frame = await eventsFrame('#add-own')
     await frame.locator('#add-own').click()
     await frame.locator('#own-form [name=name]').fill('Picnic in Bute Park')
     await settle(400)
-    await part('cardiff-add.jpg', frame.locator('#own-dialog'))
+    await part('events-add.jpg', frame.locator('#own-dialog'))
   },
-  'cardiff-detail.jpg': async () => {
+  'events-detail.jpg': async () => {
     // An example of an event of hers, shown to this browser only: nothing is saved.
     const example = { event_id: 'own-example', name: 'Picnic in Bute Park (an example)', date: today, start_time: '13:00', end_time: '15:00', location: 'Bute Park, by the bridge', activity: 'social', organiser: 'Added by you', cost: 'Free', description: 'Bring a blanket.', source_url: '', status: 'upcoming', own: true, category: '', booking_required: '', experience: '', recurring: '', last_checked: '' }
     const serve = (route) => (route.request().method() === 'GET' ? route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, events: [example] }) }) : route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }))
-    await context.route('**/apps/cardiff-life/api/own-events', serve)
+    await context.route('**/apps/events/api/own-events', serve)
     try {
-      await go('/cardiff-life')
-      const frame = await cardiff()
+      await go('/events')
+      const frame = await eventsFrame()
       await frame.locator('[data-detail="own-example"]').first().click()
       await settle(500)
-      await part('cardiff-detail.jpg', frame.locator('#event-detail'))
-    } finally { await context.unroute('**/apps/cardiff-life/api/own-events', serve) }
+      await part('events-detail.jpg', frame.locator('#event-detail'))
+    } finally { await context.unroute('**/apps/events/api/own-events', serve) }
   },
-  'cardiff-choices.jpg': async () => { await go('/cardiff-life'); const frame = await cardiff(); await frame.locator('[data-view="explore"]').click(); await settle(800); await view('cardiff-choices.jpg') },
-  'cardiff-university.jpg': async () => { await go('/cardiff-life'); const frame = await cardiff(); const panel = frame.locator('.university-first'); await panel.waitFor(); await settle(800); await part('cardiff-university.jpg', panel, { on: frame, marks: ['#university-coverage', '#university-list'] }) },
-  'cardiff-updates.jpg': async () => { await go('/cardiff-life'); const frame = await cardiff(); await frame.locator('[data-view="updates"]').click(); await frame.locator('#updates-view').waitFor(); await settle(800); await part('cardiff-updates.jpg', frame.locator('#updates-view'), { on: frame, marks: ['text:Your saved choices', 'text:Worth checking before you go', 'text:Weekly research'] }) },
-  'cardiff-communities.jpg': async () => { await go('/cardiff-life'); const frame = await cardiff(); await frame.locator('[data-view="communities"]').click(); await settle(800); await view('cardiff-communities.jpg') },
+  'events-choices.jpg': async () => { await go('/events'); const frame = await eventsFrame(); await frame.locator('[data-view="explore"]').click(); await settle(800); await view('events-choices.jpg') },
+  'events-university.jpg': async () => { await go('/events'); const frame = await eventsFrame(); const panel = frame.locator('.university-first'); await panel.waitFor(); await settle(800); await part('events-university.jpg', panel, { on: frame, marks: ['#university-coverage', '#university-list'] }) },
+  'events-updates.jpg': async () => { await go('/events'); const frame = await eventsFrame(); await frame.locator('[data-view="updates"]').click(); await frame.locator('#updates-view').waitFor(); await settle(800); await part('events-updates.jpg', frame.locator('#updates-view'), { on: frame, marks: ['text:Your saved choices', 'text:Worth checking before you go', 'text:Weekly research'] }) },
+  'events-communities.jpg': async () => { await go('/events'); const frame = await eventsFrame(); await frame.locator('[data-view="communities"]').click(); await settle(800); await view('events-communities.jpg') },
   // ---- Budget
   'budget.jpg': async () => { await go('/budget'); const frame = await budget(); await view('budget.jpg', { on: frame, marks: ['text:My everyday', 'select', 'text:Add payment'] }) },
   'budget-shopping.jpg': async () => { await go('/budget'); const frame = await budget(); await budgetMenu(frame, 'Shopping'); await view('budget-shopping.jpg', { on: frame, marks: ['text:My lists', 'text:By list', 'input[placeholder^="Add an item"]', 'text:Record what I bought'] }) },

@@ -1,6 +1,6 @@
 'use strict';
 
-const CardiffPlanner = (() => {
+const EventsPlanner = (() => {
   const categories={sport:'Sport & fitness',dance:'Dance',creative:'Books, film & crafts',music:'Music',social:'Social & languages',professional:'Tech, talks & careers',volunteering:'Volunteering'};
   const activeStates=new Set(['upcoming','needs_verification','recurring']);
   // Civil-date arithmetic keeps weeks stable across daylight-saving changes.
@@ -19,7 +19,10 @@ const CardiffPlanner = (() => {
     const offset=(Date.parse(b.date+'T12:00:00Z')-Date.parse(a.date+'T12:00:00Z'))/60000;
     return as<offset+be&&offset+bs<ae;
   }
-  function filter(events,f,choices,today,ranked=[]) {
+  // A source (a students' union, a university) is the sites its listings come from (the page's settings).
+  const hostOf=url=>{try{return new URL(url).hostname.toLowerCase();}catch{return '';}};
+  const fromSource=(e,s)=>{const host=hostOf(e.source_url);return s.domains.some(d=>host===d||host.endsWith('.'+d));};
+  function filter(events,f,choices,today,ranked=[],sources=[]) {
     const ranking=new Map(ranked.map((id,i)=>[id,i])), query=(f.search||'').trim().toLowerCase();
     return events.filter(e=>{
       if(f.scope==='saved'){if(!choices[e.event_id])return false;}else if(!active(e,today))return false;
@@ -27,9 +30,8 @@ const CardiffPlanner = (() => {
       if(f.category&&f.category!=='all'&&e.activity!==f.category)return false;
       if(query&&![e.name,e.organiser,e.location,e.description,e.category,e.activity].join(' ').toLowerCase().includes(query))return false;
       if(f.free&&!free(e))return false;
-      if(f.source==='su'&&!e.source_url.includes('cardiffstudents.com/'))return false;
-      if(f.source==='university'&&!e.source_url.includes('cardiff.ac.uk/'))return false;
-      if(f.source==='city'&&/cardiffstudents\.com|cardiff\.ac\.uk/.test(e.source_url))return false;
+      if(f.source==='city'&&sources.some(s=>fromSource(e,s)))return false;
+      if(f.source&&!['all','city'].includes(f.source)){const s=sources.find(x=>x.id===f.source);if(!s||!fromSource(e,s))return false;}
       if(f.date&&e.date!==f.date)return false;
       if(f.when==='week'&&(!e.date||e.date<f.week||e.date>addDays(f.week,6)))return false;
       if(f.when==='21'&&(!e.date||e.date<today||e.date>addDays(today,20)))return false;
@@ -38,7 +40,7 @@ const CardiffPlanner = (() => {
     }).sort((a,b)=>f.scope==='shortlist'?(ranking.get(a.event_id)??999)-(ranking.get(b.event_id)??999):(a.date||'9999').localeCompare(b.date||'9999')||a.start_time.localeCompare(b.start_time));
   }
   function validateBackup(input) {
-    if(!input||input.version!==1||!input.choices||typeof input.choices!=='object'||Array.isArray(input.choices))throw Error('This is not a Cardiff Life choices backup.');
+    if(!input||input.version!==1||!input.choices||typeof input.choices!=='object'||Array.isArray(input.choices))throw Error('This is not an Events choices backup.');
     const choices=Object.create(null);
     for(const [id,item] of Object.entries(input.choices)){
       if(!/^[a-z0-9][a-z0-9_-]{0,150}$/i.test(id)||!item||!['maybe','going'].includes(item.status))throw Error('The backup contains an invalid choice.');
@@ -53,20 +55,27 @@ const CardiffPlanner = (() => {
   }
   return {categories,addDays,monday,active,free,overlaps,filter,validateBackup};
 })();
-if(typeof module!=='undefined')module.exports=CardiffPlanner;
+if(typeof module!=='undefined')module.exports=EventsPlanner;
 
 if(typeof document!=='undefined')(()=>{
-  const P=CardiffPlanner,$=id=>document.getElementById(id),data=JSON.parse($('cardiff-data').textContent);
+  const P=EventsPlanner,$=id=>document.getElementById(id),data=JSON.parse($('events-data').textContent);
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money=value=>esc(String(value||'Price not stated').replace(/GBP\s?/g,'£'));
   const link=value=>/^https?:\/\//i.test(value||'')?esc(value):'#';
   const format=(date,opts={day:'numeric',month:'short'})=>date?new Intl.DateTimeFormat('en-GB',{...opts,timeZone:'Europe/London'}).format(new Date(date+'T12:00:00Z')):'Date to confirm';
   const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-  const key='cardiff-life-choices-v1';
+  const key='events-choices-v1';
+  // Choices kept under the page's earlier name ("<name>-choices-v1") are copied here once; the old copy stays.
+  function storedChoices(){
+    const saved=localStorage.getItem(key);if(saved)return saved;
+    for(let i=0;i<localStorage.length;i++){const name=localStorage.key(i);if(name===key||!/^[a-z0-9-]+-choices-v1$/.test(name))continue;
+      const old=localStorage.getItem(name);try{P.validateBackup(JSON.parse(old));localStorage.setItem(key,old);return old;}catch{}}
+    return null;
+  }
   let choices=Object.create(null),storageOK=true,selectedId=null,originFocus=null,week=P.monday(today);
   let filters={scope:'all',category:'all',search:'',when:'all',source:'all',free:false,date:'',week};
   const byId=new Map(data.events.map(e=>[e.event_id,e])),rank=new Set(data.ranked);
-  try{const saved=localStorage.getItem(key);if(saved)choices=P.validateBackup(JSON.parse(saved));}
+  try{const saved=storedChoices();if(saved)choices=P.validateBackup(JSON.parse(saved));}
   catch(error){storageOK=false;$('storage-note').textContent='Browser saving is unavailable or saved data could not be read. Export your choices before closing this page. Existing stored data has not been overwritten.';}
   const label=status=>status==='going'?'Plan to go':status==='maybe'?'Maybe':'Not chosen';
   const allEvents=()=>[...data.events,...Object.entries(choices).filter(([id])=>!byId.has(id)).map(([id,c])=>({...c.snapshot,event_id:id,status:'missing'}))];
@@ -122,7 +131,7 @@ if(typeof document!=='undefined')(()=>{
     if(typeof window!=='undefined')window.renderUniversity?.();
   }
   function renderExplore(){
-    filters.week=week;const result=P.filter(allEvents(),filters,choices,today,data.ranked);
+    filters.week=week;const result=P.filter(allEvents(),filters,choices,today,data.ranked,(data.settings||{}).sources||[]);
     $('result-count').textContent=result.length+' event'+(result.length===1?'':'s')+(filters.date?' · '+format(filters.date,{weekday:'long',day:'numeric',month:'short'}):'');
     $('date-filter').hidden=!filters.date;
     $('event-grid').innerHTML=result.length?result.map(card).join(''):'<div class="empty"><h3>No events match these filters.</h3><p>Try another week or reset the filters to see all researched choices.</p><button data-reset>Reset filters</button></div>';
@@ -133,7 +142,7 @@ if(typeof document!=='undefined')(()=>{
   }
   function render(){renderWeek();renderExplore();}
   // ---- Events she adds herself: kept in Life OS (api/own-events), drawn like any other event.
-  const ownApi=(path,method,body)=>(typeof fetch==='function'?fetch('api/own-events'+path,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined}):Promise.reject(Error('Open Cardiff Life inside Life OS to add your own events.'))).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'That could not be saved.');return d;});
+  const ownApi=(path,method,body)=>(typeof fetch==='function'?fetch('api/own-events'+path,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined}):Promise.reject(Error('Open Events inside Life OS to add your own events.'))).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'That could not be saved.');return d;});
   function putOwn(e){const at=data.events.findIndex(x=>x.event_id===e.event_id);if(at>=0)data.events[at]=e;else data.events.push(e);byId.set(e.event_id,e);}
   function ownForm(e){
     const form=$('own-form');form.reset();$('own-error').hidden=true;
@@ -154,7 +163,7 @@ if(typeof document!=='undefined')(()=>{
   document.addEventListener('click',async event=>{
     const change=event.target.closest('[data-own-change]'),remove=event.target.closest('[data-own-remove]');
     if(change)ownForm(byId.get(change.dataset.ownChange));
-    if(remove){const id=remove.dataset.ownRemove,e=byId.get(id);if(!e||!confirm('Remove “'+e.name+'”? It is taken off Cardiff Life and your calendar.'))return;
+    if(remove){const id=remove.dataset.ownRemove,e=byId.get(id);if(!e||!confirm('Remove “'+e.name+'”? It is taken off Events and your calendar.'))return;
       try{await ownApi('/'+encodeURIComponent(id),'DELETE');data.events=data.events.filter(x=>x.event_id!==id);byId.delete(id);delete choices[id];save();$('event-detail').close();render();announce('Removed: '+e.name+'.');}catch(error){announce(error.message);}}
   });
   ownApi('','GET').then(d=>{let fresh=false;for(const e of d.events||[]){putOwn(e);if(!choices[e.event_id]){choices[e.event_id]={status:'going',note:'',snapshot:{...e}};fresh=true;}}if(fresh)save();if((d.events||[]).length)render();}).catch(()=>{/* opened as a file, without Life OS: only the researched events show */});
@@ -191,7 +200,7 @@ if(typeof document!=='undefined')(()=>{
   $('search').oninput=()=>{filters.search=$('search').value;renderExplore();};$('when').onchange=()=>{filters.when=$('when').value;filters.date='';renderExplore();};$('source').onchange=()=>{filters.source=$('source').value;renderExplore();};$('free-only').onchange=()=>{filters.free=$('free-only').checked;renderExplore();};$('date-filter').onclick=()=>{filters.date='';renderExplore();};$('community-search').oninput=renderCommunities;
   $('close-detail').onclick=()=>$('event-detail').close();$('event-detail').addEventListener('close',()=>{selectedId=null;if(originFocus?.isConnected)originFocus.focus();else $('this-week').focus();});
   $('detail-body').addEventListener('click',e=>{if(e.target.id==='save-note'&&choices[selectedId]){choices[selectedId].note=$('personal-note').value;save();announce('Personal note saved.');e.target.textContent='Note saved';}});
-  $('export-choices').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),choices},null,2)],{type:'application/json'}),address=URL.createObjectURL(blob),a=document.createElement('a');a.href=address;a.download='cardiff-life-choices-'+today+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(address),1000);announce('Choices backup prepared. Keep it to restore your plan in another browser.');};
+  $('export-choices').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),choices},null,2)],{type:'application/json'}),address=URL.createObjectURL(blob),a=document.createElement('a');a.href=address;a.download='events-choices-'+today+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(address),1000);announce('Choices backup prepared. Keep it to restore your plan in another browser.');};
   $('import-choices').onchange=async()=>{const file=$('import-choices').files[0];if(!file)return;try{if(file.size>2000000)throw Error('Backup is too large.');const incoming=P.validateBackup(JSON.parse(await file.text()));let n=0;for(const [id,c] of Object.entries(incoming))if(!choices[id]){choices[id]=c;n++;}save();render();announce(n+' choices imported. Existing choices and notes were kept.');}catch(error){announce('Import failed: '+error.message);}$('import-choices').value='';};
   window.addEventListener('storage',e=>{if(e.key===key&&e.newValue)try{choices=P.validateBackup(JSON.parse(e.newValue));render();}catch{announce('A change from another tab could not be read.');}});
   $('categories').innerHTML='<button data-category="all" aria-pressed="true">All activities</button>'+Object.entries(P.categories).map(([id,title])=>`<button data-category="${id}" aria-pressed="false"><span class="category-dot" style="background:var(--${id})"></span>${title}</button>`).join('');

@@ -1,4 +1,4 @@
-// Events she adds to Cardiff Life herself. The researched events come from events.csv, which
+// Events the owner adds to the Events page herself. The researched events come from events.csv, which
 // her agents write; these are hers, kept in the Life OS database (one setting holding the
 // list) and shaped like a row of that file, so the page and the calendar treat both alike.
 
@@ -6,7 +6,7 @@ export class OwnEventError extends Error {
   constructor(status, message) { super(message); this.status = status }
 }
 
-// The categories of the Cardiff Life page (planner.js).
+// The categories of the Events page (events/planner.js).
 export const ACTIVITIES = ['sport', 'dance', 'creative', 'music', 'social', 'professional', 'volunteering']
 const CLOCK = /^([01]\d|2[0-3]):[0-5]\d$/
 const text = (value, limit) => String(value ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, limit)
@@ -76,11 +76,11 @@ function sameDevice(req) {
   try { return LOCAL.has(new URL(origin).hostname) } catch { return false }
 }
 
-// Mounted under the Cardiff Life page's own address, so the page reaches it with a relative path.
+// Mounted under the Events page's own address, so the page reaches it with a relative path.
 export function createOwnEventsRouter({ express, events }) {
   const router = express.Router()
   router.use((req, res, next) => {
-    if (!sameDevice(req)) return res.status(403).json({ ok: false, error: 'Cardiff Life only answers this computer.' })
+    if (!sameDevice(req)) return res.status(403).json({ ok: false, error: 'Events only answers this computer.' })
     res.set('Cache-Control', 'no-store')
     next()
   })
@@ -88,7 +88,7 @@ export function createOwnEventsRouter({ express, events }) {
   const handle = (work) => async (req, res) => {
     try { res.json({ ok: true, ...await work(req) }) } catch (error) {
       const status = error instanceof OwnEventError ? error.status : 500
-      if (status === 500) console.error('Cardiff Life:', error.message)
+      if (status === 500) console.error('Events:', error.message)
       res.status(status).json({ ok: false, error: status === 500 ? 'That could not be saved. Try again.' : error.message })
     }
   }

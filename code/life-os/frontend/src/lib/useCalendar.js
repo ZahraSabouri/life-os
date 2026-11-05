@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiFetch } from './api.js'
-import { CARDIFF_CHOICES_KEY, dateKey, readCardiffChoices, withEventLinks, withSavedCardiffItems } from './calendar.js'
+import { EVENT_CHOICES_KEY, dateKey, readEventChoices, withEventLinks, withSavedEventItems } from './calendar.js'
 
 export function useLondonToday() {
   const [today, setToday] = useState(() => dateKey(new Date()))
@@ -19,7 +19,7 @@ export function useCalendar(from, to) {
   const [knownEventIds, setKnownEventIds] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [browserChoices, setBrowserChoices] = useState(() => readCardiffChoices(() => window.localStorage))
+  const [browserChoices, setBrowserChoices] = useState(() => readEventChoices(() => window.localStorage))
   const [refresh, setRefresh] = useState(0)
   const refetch = useCallback(() => setRefresh(value => value + 1), [])
 
@@ -57,9 +57,9 @@ export function useCalendar(from, to) {
   }, [sources, loading, from, to, tries, refetch])
 
   useEffect(() => {
-    const readChoices = () => setBrowserChoices(readCardiffChoices(() => window.localStorage))
+    const readChoices = () => setBrowserChoices(readEventChoices(() => window.localStorage))
     const onStorage = event => {
-      if (!event.key || event.key === CARDIFF_CHOICES_KEY) readChoices()
+      if (!event.key || event.key === EVENT_CHOICES_KEY) readChoices()
     }
     const onFocus = () => { readChoices(); refetch() }
     const onVisibility = () => { if (document.visibilityState === 'visible') onFocus() }
@@ -73,5 +73,5 @@ export function useCalendar(from, to) {
     }
   }, [refetch])
 
-  return { items: withSavedCardiffItems(items, browserChoices.choices, from, to, knownEventIds), sources, loading, error, refetch, choices: browserChoices.choices, choicesError: browserChoices.error }
+  return { items: withSavedEventItems(items, browserChoices.choices, from, to, knownEventIds), sources, loading, error, refetch, choices: browserChoices.choices, choicesError: browserChoices.error }
 }

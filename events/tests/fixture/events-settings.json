@@ -1,0 +1,11 @@
+{
+  "city": "Riverford",
+  "sources": [
+    { "id": "su", "label": "Students’ Union", "domains": ["union.example.org"] },
+    { "id": "university", "label": "University", "domains": ["riverford.example.ac.uk"] }
+  ],
+  "links": [
+    { "label": "the union's full calendar", "url": "https://union.example.org/whatson/" }
+  ],
+  "automations": []
+}

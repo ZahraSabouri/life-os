@@ -1,5 +1,5 @@
 // Today, as it concerns one part of Life OS. A slim strip under the top bar inside the Study
-// hub, JobMap, Budget and Cardiff Life: the same day that the Court and Today show, cut down
+// hub, JobMap, Budget and Events: the same day that the Court and Today show, cut down
 // to that part, with the way back to the whole day.
 import { Link } from 'react-router-dom'
 import { filterCalendarItems, itemOverlaps } from '../lib/calendar.js'
@@ -56,7 +56,7 @@ function homeLine(day) {
 function EventsLine({ today }) {
   const calendar = useCalendar(today, today)
   if (calendar.loading) return <span>Reading your choices…</span>
-  const chosen = filterCalendarItems(calendar.items, { cardiffScope: 'saved', choices: calendar.choices }).filter((item) => item.area === 'events' && itemOverlaps(item, today, today))
+  const chosen = filterCalendarItems(calendar.items, { eventScope: 'saved', choices: calendar.choices }).filter((item) => item.area === 'events' && itemOverlaps(item, today, today))
   const offered = calendar.items.filter((item) => item.area === 'events').length
   return <>
     <span>{chosen.length ? chosen.map((item) => `${item.all_day ? '' : `${clockOf(item.start)} `}${item.title}${item.choice === 'maybe' ? ' (maybe)' : ''}`).join('; ') : 'Nothing chosen for today'}</span>
@@ -66,7 +66,7 @@ function EventsLine({ today }) {
 
 const LINES = { study: studyLine, career: jobsLine, home: homeLine }
 // The harvest's part for each framed part's strip (shared/harvest.js partOf).
-const CAME_IN = { study: 'study', career: 'jobmap', home: 'budget', events: 'cardiff-life' }
+const CAME_IN = { study: 'study', career: 'jobmap', home: 'budget', events: 'events' }
 
 export default function AreaToday({ area }) {
   const today = useLondonToday()

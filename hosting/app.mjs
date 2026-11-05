@@ -21,7 +21,7 @@ import { createAnalysisRouter, createAnalysisService, MAX_ANALYSIS_DAYS } from '
 import { createNoticesRouter, createNoticesService } from './notices/service.mjs'
 import { createDesktopNotifier, windowsToast } from './notices/desktop.mjs'
 import { withRoutines } from '../code/life-os/shared/routines.js'
-import { createOwnEvents, createOwnEventsRouter } from './cardiff/own-events.mjs'
+import { createOwnEvents, createOwnEventsRouter } from './events/own-events.mjs'
 import { createJobMark, createJobMarkHandler } from './career/mark.mjs'
 import { createGuideRouter } from './guide.mjs'
 import { createShopping, createShoppingRouter, loadBudgetRules } from './home/shopping.mjs'
@@ -35,17 +35,17 @@ import { createPlaces } from './mail/places.mjs'
 import { saveStudyUpload, studyFilesRoot } from './study/storage.mjs'
 import { createHubRouter } from './study/hub/router.mjs'
 import { skinFiles, skinnedPage } from './skins/index.mjs'
-import { dataRoot, lifeOsOrigin } from '../code/life-os/backend/src/paths.js'
+import { dataRoot, eventsRoot, lifeOsOrigin, movedAddresses } from '../code/life-os/backend/src/paths.js'
 
 export const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 export const SUMMER_PATH = '/apps/summer-rescue/'
-export const CARDIFF_PATH = '/apps/cardiff-life/'
+export const EVENTS_PATH = '/apps/events/'
 
 export function createLifeOsApp(options = {}) {
   const app = express()
   const summerRoot = options.summerRoot ?? path.join(projectRoot, 'summer-rescue')
   const summerDist = options.summerDist ?? path.join(summerRoot, 'dist')
-  const cardiffRoot = options.cardiffRoot ?? path.join(projectRoot, 'cardiff-life')
+  const eventsFolder = options.eventsRoot ?? eventsRoot(projectRoot)
   const budgetRoot = options.budgetRoot ?? path.join(projectRoot, 'budget-management')
   const getBudgetPort = options.getBudgetPort ?? (() => null)
   const jobmapRoot = options.jobmapRoot ?? path.join(projectRoot, 'jobmap')
@@ -57,11 +57,25 @@ export function createLifeOsApp(options = {}) {
   const mail = options.mailRuntime !== undefined ? options.mailRuntime : createMailRuntime(projectRoot, { findPeople: () => db.prepare('SELECT id, name, contact, birthday FROM people').all() })
   app.locals.mailRuntime = mail
 
+  // Addresses that moved (LIFE_OS_MOVED_ADDRESSES) send the browser on, keeping the method, the
+  // rest of the path, the query and the #part.
+  const moved = options.movedAddresses ?? movedAddresses()
+  if (moved.length) app.use((req, res, next) => {
+    for (const [from, to] of moved) {
+      const under = from.endsWith('/')
+      const exact = req.path === from || req.path === from.replace(/\/$/, '')
+      if (!exact && !(under && req.path.startsWith(from))) continue
+      const rest = under && req.path.length > from.length ? req.path.slice(from.length) : ''
+      return res.redirect(308, `${to}${rest}${req.originalUrl.slice(req.path.length)}`)
+    }
+    next()
+  })
+
   app.get('/__life-os/health', (_req, res) => res.json({
     app: 'life-os', root: projectRoot, pid: process.pid,
     subapps: [
       { id: 'study-hub', route: '/study', document: SUMMER_PATH, root: summerRoot },
-      { id: 'cardiff-life', route: '/cardiff-life', document: CARDIFF_PATH, root: cardiffRoot },
+      { id: 'events', route: '/events', document: EVENTS_PATH, root: eventsFolder },
       { id: 'budget', route: '/budget', document: BUDGET_PATH, root: budgetRoot, running: Boolean(getBudgetPort()) },
       { id: 'jobmap', route: '/jobmap', document: JOBMAP_PATH, root: jobmapRoot, running: Boolean(getJobMapPort()) },
     ],
@@ -104,21 +118,21 @@ export function createLifeOsApp(options = {}) {
   })
   app.get([SUMMER_PATH, `${SUMMER_PATH}index.html`], skinnedPage(path.join(summerDist, 'index.html'), 'study-hub'))
   app.use(SUMMER_PATH.slice(0, -1), express.static(summerDist, { fallthrough: false }))
-  // Events she adds to Cardiff Life herself: one setting in the core holds the list.
+  // Events the owner adds herself: one setting in the core holds the list.
   const ownEvents = options.ownEvents ?? createOwnEvents({
-    read: () => readSetting('cardiff-own-events', []),
-    write: (list) => writeSetting('cardiff-own-events', list),
+    read: () => readSetting('own-events', []),
+    write: (list) => writeSetting('own-events', list),
   })
-  app.use(`${CARDIFF_PATH}api/own-events`, createOwnEventsRouter({ express, events: ownEvents }))
+  app.use(`${EVENTS_PATH}api/own-events`, createOwnEventsRouter({ express, events: ownEvents }))
   // "Retake the pictures" on the Guide page.
   app.use('/api/guide', createGuideRouter({ express, projectRoot, origin: options.origin ?? lifeOsOrigin() }))
   // The Guide's pictures: taken from the running app by scripts/guide-shots.mjs. They show her
   // own records, so the folder is not in git.
   app.use('/guide-shots', express.static(options.guideShots ?? path.join(projectRoot, 'guide-shots'), { fallthrough: false, maxAge: 0 }), (_error, _req, res, _next) => res.status(404).json({ error: 'No such picture' }))
-  // Cardiff Life is a self-contained static page generated by build_html.py.
+  // Events is a self-contained static page built from the research by events/build_html.py.
   // Its linked report files are shown as plain text, as when opened locally.
-  app.get([CARDIFF_PATH, `${CARDIFF_PATH}index.html`], skinnedPage(path.join(cardiffRoot, 'index.html'), 'cardiff-life'))
-  app.use(CARDIFF_PATH.slice(0, -1), express.static(cardiffRoot, {
+  app.get([EVENTS_PATH, `${EVENTS_PATH}index.html`], skinnedPage(path.join(eventsFolder, 'index.html'), 'events'))
+  app.use(EVENTS_PATH.slice(0, -1), express.static(eventsFolder, {
     fallthrough: false,
     setHeaders(res, filePath) {
       if (/\.(md|csv)$/i.test(filePath)) res.setHeader('Content-Type', 'text/plain; charset=utf-8')
@@ -195,7 +209,7 @@ export function createLifeOsApp(options = {}) {
     return study.repository.workspace()
   })
   const calendarLoaders = createCalendarLoaders({
-    projectRoot, summerRoot, cardiffRoot, getBudgetPort, getJobMapPort,
+    projectRoot, summerRoot, eventsRoot: eventsFolder, getBudgetPort, getJobMapPort,
     // The range filter happens in the provider so it can include spanning
     // events, type-specific deadlines and annual dates without the old cap.
     // With the days of her repeating plans in the stretch that is asked for.

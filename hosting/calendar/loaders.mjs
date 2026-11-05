@@ -1,6 +1,7 @@
 import http from 'node:http'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
+import { eventsRoot as eventsFolder } from '../../code/life-os/backend/src/paths.js'
 
 export function parseEventsCsv(csv) {
   const rows = [], row = []
@@ -54,7 +55,7 @@ export function getLocalJson(port, pathname, { timeoutMs = 2000, maxBytes = 16 *
   })
 }
 
-export function createCalendarLoaders({ projectRoot, cardiffRoot = path.join(projectRoot, 'cardiff-life'), getBudgetPort, getJobMapPort, loadEntries, loadPeople, loadStudy, timeoutMs = 2000 }) {
+export function createCalendarLoaders({ projectRoot, eventsRoot = eventsFolder(projectRoot), getBudgetPort, getJobMapPort, loadEntries, loadPeople, loadStudy, timeoutMs = 2000 }) {
   return {
     loadEntries, loadPeople,
     loadStudy: async range => {
@@ -65,6 +66,6 @@ export function createCalendarLoaders({ projectRoot, cardiffRoot = path.join(pro
     },
     loadCareer: () => getLocalJson(getJobMapPort?.(), '/api/jobs', { timeoutMs }),
     loadBudget: () => getLocalJson(getBudgetPort?.(), '/api/state', { timeoutMs }),
-    loadEvents: async () => parseEventsCsv(await readFile(path.join(cardiffRoot, 'events.csv'), 'utf8')),
+    loadEvents: async () => parseEventsCsv(await readFile(path.join(eventsRoot, 'events.csv'), 'utf8')),
   }
 }

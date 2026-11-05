@@ -56,7 +56,7 @@ export function createCalendarService(options = {}) {
       ['career', 'career', 'JobMap', options.loadCareer, mapCareer],
       ['money', 'money', 'Budget subscriptions', () => budget, mapBudget],
       ['home', 'home', 'Shopping and meals', () => budget, mapHome],
-      ['events', 'events', 'Cardiff events', options.loadEvents, mapEvents],
+      ['events', 'events', 'Events', options.loadEvents, mapEvents],
       ...(options.loadMail ? [['mail', 'admin', 'Mail and admin', options.loadMail, mapMail]] : []),
       ...(options.loadHarvest ? [['harvest', 'admin', 'Came in', options.loadHarvest, mapHarvest]] : []),
     ]

@@ -94,7 +94,7 @@ const FILTERS = {
   kind: [['', 'Any kind'], ...KINDS.map((key) => [key, KIND_NAMES[key]])],
   status: [['live', 'Not dismissed'], ['new', 'New'], ['kept', 'Kept'], ['dismissed', 'Dismissed'], ['all', 'Any status']],
   closing: [['', 'Closing any time'], ['week', 'Closing this week'], ['month', 'Closing within a month'], ['past', 'Already closed']],
-  where: [['', 'Anywhere'], ['missing', 'Not in JobMap or Cardiff Life yet'], ['there', 'In JobMap or Cardiff Life']],
+  where: [['', 'Anywhere'], ['missing', 'Not in JobMap or Events yet'], ['there', 'In JobMap or Events']],
   sort: [['closing', 'Soonest first'], ['newest', 'Newest first']],
 }
 export function LogEverything({ params, set }) {

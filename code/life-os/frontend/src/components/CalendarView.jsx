@@ -194,7 +194,7 @@ export default function CalendarView() {
   const at = useMemo(() => readCalendarAddress(address.params, today, AREA_KEYS), [address.params, today])
   const range = useMemo(() => viewRange(at), [at])
   const calendar = useCalendar(range.from, range.to)
-  const shown = useMemo(() => sortCalendarItems(filterCalendarItems(calendar.items, { areas: at.areas, cardiffScope: at.cardiff, choices: calendar.choices }).filter((item) => matchesSearch(item, at.q))), [calendar.items, calendar.choices, at.areas, at.cardiff, at.q])
+  const shown = useMemo(() => sortCalendarItems(filterCalendarItems(calendar.items, { areas: at.areas, eventScope: at.events, choices: calendar.choices }).filter((item) => matchesSearch(item, at.q))), [calendar.items, calendar.choices, at.areas, at.events, at.q])
   const items = useMemo(() => shown.filter((item) => !isNote(item)), [shown])
   const notes = useMemo(() => shown.filter(isNote), [shown])
   // Each day's things, worked out once for the view; a day outside it has none.
@@ -322,11 +322,11 @@ export default function CalendarView() {
       {CALENDAR_AREAS.map((area) => <label key={area.key} style={{ '--item-accent': area.tone }}>
         <input type="checkbox" checked={!at.hidden.includes(area.key)} onChange={() => toggleArea(area.key)} /><span className="calendar-area-dot" aria-hidden="true" /><strong>{area.label}</strong>
       </label>)}
-      <label className="calendar-scope-label" htmlFor="calendar-cardiff-scope">Cardiff events</label>
-      <select id="calendar-cardiff-scope" value={at.cardiff} onChange={(event) => address.swap({ cardiff: event.target.value === 'going' ? null : event.target.value })}>
+      <label className="calendar-scope-label" htmlFor="calendar-events-scope">Events</label>
+      <select id="calendar-events-scope" value={at.events} onChange={(event) => address.swap({ events: event.target.value === 'going' ? null : event.target.value })}>
         <option value="saved">Saved plans & maybe</option><option value="going">Plan to go</option><option value="all">All researched options</option>
       </select>
-      <p className="calendar-filter-note">Showing researched options does not add them to your plans. Choose Maybe or Plan to go in Cardiff Life. <Link to="/cardiff-life">Open Cardiff Life</Link></p>
+      <p className="calendar-filter-note">Showing researched options does not add them to your plans. Choose Maybe or Plan to go in Events. <Link to="/events">Open Events</Link></p>
       <div className="calendar-kind-legend" aria-label="Item kinds">{CALENDAR_KINDS.map((kind) => <span key={kind.key} data-kind={kind.key}>{kind.label}</span>)}</div>
       <p className="calendar-filter-note calendar-keys">Keys: ← → move, T today, M W L Y the views. Click a day to open it.</p>
     </aside>
@@ -367,7 +367,7 @@ export default function CalendarView() {
 
     {moved ? <div className="calendar-toast" role="status"><span>{moved.words}</span>{moved.undo ? <button type="button" onClick={undoMoved}>Undo</button> : null}<button type="button" className="calendar-toast-close" onClick={() => setMoved(null)} aria-label="Close">×</button></div> : null}
 
-    {at.day ? <CalendarDay key="day" date={at.day} itemKey={at.item} tab={at.tab} areas={at.areas} cardiffScope={at.cardiff}
+    {at.day ? <CalendarDay key="day" date={at.day} itemKey={at.item} tab={at.tab} areas={at.areas} eventScope={at.events}
       prefill={prefill?.day === at.day ? prefill : null} onPrefilled={() => setPrefill(null)}
       onDay={(day) => address.swap({ day, month: day.slice(0, 7), item: null })}
       onItem={(item) => (item ? address.open('item', { item }) : address.close(['item']))}

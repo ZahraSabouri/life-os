@@ -1,5 +1,5 @@
 // What came in for one part of Life OS (stage 5): a count in the part's strip under the top bar,
-// opening a short list with Keep and Dismiss. In JobMap and Cardiff Life it lists only what is
+// opening a short list with Keep and Dismiss. In JobMap and Events it lists only what is
 // not there yet: what is already in the app shows in the app itself. Nothing shows when nothing
 // came in. Which part an item belongs to is shared/harvest.js partOf.
 import { useEffect, useRef, useState } from 'react'
@@ -9,8 +9,8 @@ import { london, londonTime, mailChanged, useMail } from '../../lib/useMail.js'
 import { KIND_NAMES, stateName } from '@shared/harvest.js'
 import '../../styles/inbox.css'
 
-const APP_NAMES = { jobmap: 'JobMap', 'cardiff-life': 'Cardiff Life' }
-const ELSEWHERE = new Set(['jobmap', 'cardiff-life'])
+const APP_NAMES = { jobmap: 'JobMap', events: 'Events' }
+const ELSEWHERE = new Set(['jobmap', 'events'])
 const day = (value, options = { weekday: 'short', day: 'numeric', month: 'short' }) => london(`${value}T12:00:00Z`, options)
 
 // "Closes Fri 7 Nov", "Thu 5 Nov, 14:00", "From Tue 10 Nov": the one date that matters for it.
@@ -33,7 +33,7 @@ export function whenOf(item) {
   return `Came in ${day(item.day, { day: 'numeric', month: 'short' })}`
 }
 
-// Where it is now: in JobMap or Cardiff Life (a link), not there yet, or could not be checked.
+// Where it is now: in JobMap or Events (a link), not there yet, or could not be checked.
 export function PlaceOf({ item }) {
   const place = item.place
   if (!place) return null

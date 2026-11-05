@@ -1,11 +1,11 @@
-// Where a harvested vacancy or event is now: found in JobMap's jobs or Cardiff Life's events by
+// Where a harvested vacancy or event is now: found in JobMap's jobs or the Events page's events by
 // its own page's address (shared/harvest.js canonicalUrl), read only, through the loaders the
 // calendar uses. Life OS never puts them there itself: the agents queue vacancies through
-// jobmap/queue-jobs.mjs and hand events to Cardiff Life's workflow (mail/HARVEST.md). So a place
+// jobmap/queue-jobs.mjs and hand events to the Events research (mail/HARVEST.md). So a place
 // is what is really there: { app, href } when found, { app, missing } when not yet, and
 // { app, unknown } when the part could not be read.
 import { canonicalUrl } from '../../code/life-os/shared/harvest.js'
-import { cardiffEventHref } from '../calendar/mappers.mjs'
+import { eventHref } from '../calendar/mappers.mjs'
 
 const index = (rows, address, place) => new Map((rows ?? []).flatMap((row) => {
   const key = canonicalUrl(address(row))
@@ -37,7 +37,7 @@ export function createPlaces({ loadCareer, loadEvents }) {
     const parts = {
       vacancy: ['jobmap', jobs, (item) => item.canonical_url && jobAt.get(item.canonical_url)],
       application: ['jobmap', jobs, (item) => (item.canonical_url && jobAt.get(item.canonical_url)) || (byEmployer(jobs, item) && jobPlace(byEmployer(jobs, item)))],
-      event: ['cardiff-life', events, ((at) => (item) => item.canonical_url && at.get(item.canonical_url))(index(events, (event) => event.source_url ?? event.url, (event) => ({ app: 'cardiff-life', href: cardiffEventHref(event.event_id), status: event.status ?? null })))],
+      event: ['events', events, ((at) => (item) => item.canonical_url && at.get(item.canonical_url))(index(events, (event) => event.source_url ?? event.url, (event) => ({ app: 'events', href: eventHref(event.event_id), status: event.status ?? null })))],
     }
     return items.map((item) => {
       const part = parts[item.kind]

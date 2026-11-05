@@ -130,7 +130,7 @@ export function createMailRouter({ repository, importer, inbox, reads, findPeopl
   // What came in, with where each vacancy and event is now. ?part= one part's (shared/harvest.js
   // partOf), ?day= one London day's, ?open=1 only what is not dismissed or over.
   // The Everything view adds area, kind, status, closing, q, sort and where (there: found in
-  // JobMap or Cardiff Life; missing: not there yet).
+  // JobMap or Events; missing: not there yet).
   router.get('/items', handler(async (req, res) => {
     const query = req.query ?? {}
     const today = dateKey(now())

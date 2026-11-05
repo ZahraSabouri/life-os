@@ -19,9 +19,9 @@ function savedKind() { try { const saved = window.localStorage.getItem(ADD_KIND_
 // day's study blocks and panels, the path they make, and the one line that adds a plan, a
 // note or something to buy. The Court, Today and the strip inside each part all use this.
 // The calendar's pop-up asks for the day alone (`only`), with the calendar's own filters
-// (`areas`, `cardiffScope`), a note for any day it shows (`notesAnyDay`), and `onChanged` to
+// (`areas`, `eventScope`), a note for any day it shows (`notesAnyDay`), and `onChanged` to
 // have the month behind it read again after a change.
-export function useDayPage(requested, { area: fixedArea = '', onSaved, only = false, areas, cardiffScope = 'going', notesAnyDay = false, onChanged } = {}) {
+export function useDayPage(requested, { area: fixedArea = '', onSaved, only = false, areas, eventScope = 'going', notesAnyDay = false, onChanged } = {}) {
   const today = useLondonToday()
   const clock = useLondonClock()
   const date = isDateKey(requested ?? '') ? requested : today
@@ -50,7 +50,7 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
   // The last change that can be taken back from where it was made: { words, undo }.
   const [change, setChange] = useState(null)
 
-  const items = useMemo(() => filterCalendarItems(calendar.items, { areas, cardiffScope, choices: calendar.choices }), [calendar.items, areas, cardiffScope, calendar.choices])
+  const items = useMemo(() => filterCalendarItems(calendar.items, { areas, eventScope, choices: calendar.choices }), [calendar.items, areas, eventScope, calendar.choices])
   const groups = useMemo(() => todayGroups(items, today), [items, today])
   const open = useMemo(() => items.filter((item) => !isComplete(item)), [items])
   const data = day.data?.date === date ? day.data : null

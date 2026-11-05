@@ -107,7 +107,7 @@ function Thing({ page, thingKey, onBack, onItem }) {
     </dl>
     {item?.meta?.savedSnapshot ? <p className="day-warn">A saved copy: the listing has changed or gone. Check it before travelling.</p> : null}
     {item?.meta?.needsVerification ? <p className="day-warn">Check the published time and details before travelling.</p> : null}
-    {item?.area === 'events' ? <p className="day-quiet">Choose Maybe or Plan to go for it in Cardiff Life; the calendar shows your choice.</p> : null}
+    {item?.area === 'events' ? <p className="day-quiet">Choose Maybe or Plan to go for it in Events; the calendar shows your choice.</p> : null}
     {card && card.steps?.length ? <div className="day-card"><Steps card={card} limit={20} onStudy={page.tickStudy} busy={busy} /></div> : null}
 
     <div className="calendar-thing-actions">
@@ -154,8 +154,8 @@ function TabBody({ tab, page }) {
 }
 
 // `prefill`: opened by "+" or an hour of the week, so the add line has the cursor (and the time).
-export default function CalendarDay({ date, itemKey, tab, areas, cardiffScope, prefill, onPrefilled, onDay, onItem, onTab, onClose, onChanged }) {
-  const page = useDayPage(date, { only: true, areas, cardiffScope, notesAnyDay: true, onChanged })
+export default function CalendarDay({ date, itemKey, tab, areas, eventScope, prefill, onPrefilled, onDay, onItem, onTab, onClose, onChanged }) {
+  const page = useDayPage(date, { only: true, areas, eventScope, notesAnyDay: true, onChanged })
   const dialog = useRef(null)
   const notes = page.data?.notes ?? []
   const dayNotes = notes.filter((note) => !note.about)

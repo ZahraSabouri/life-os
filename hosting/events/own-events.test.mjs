@@ -25,7 +25,7 @@ test('what cannot be an event is refused with a plain reason', () => {
   refused(null, /name/)
 })
 
-test('events are kept, changed and removed, and the calendar reads them like any Cardiff event', async () => {
+test('events are kept, changed and removed, and the calendar reads them like any researched event', async () => {
   let kept = null
   // Kept in the database, so reading and writing take a moment.
   const later = (value) => new Promise((resolve) => setTimeout(() => resolve(value), 2))
@@ -45,7 +45,7 @@ test('events are kept, changed and removed, and the calendar reads them like any
   await assert.rejects(events.change('own-nothing', { name: 'x' }), (error) => error.status === 404)
   // A refused change does not stop the next one.
   await events.add({ name: 'After a refusal' })
-  // On the calendar, at London time, as a Cardiff event that leads to the Cardiff Life page.
+  // On the calendar, at London time, as an event that leads to the Events page.
   const [item] = mapEvents(await events.list(), { from: '2026-10-12', to: '2026-10-25' })
   assert.deepEqual([item.area, item.title, item.start, item.all_day], ['events', 'Picnic with Ben', '2026-10-18T11:00:00.000Z', false])
 })

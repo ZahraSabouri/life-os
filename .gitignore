@@ -69,6 +69,9 @@ code/life-os/frontend/dist-next/
 /cardiff-life/timetable-source.json
 /cardiff-life/research-sync-state.json
 /cardiff-life/life-os-sync.json
+/cardiff-life/events-settings.json
+/events/__pycache__/
+/events/tests/__pycache__/
 /cardiff-life/__pycache__/
 /cardiff-life/tests/__pycache__/
 

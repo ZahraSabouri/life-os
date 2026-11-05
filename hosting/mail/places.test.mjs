@@ -15,11 +15,11 @@ test('a vacancy whose advert is in JobMap links to that job; one that is not say
   assert.equal(other.place, undefined)
 })
 
-test('an event whose page is in Cardiff Life links to that event', async () => {
+test('an event whose page is on the Events page links to that event', async () => {
   const place = createPlaces({ loadCareer: async () => [], loadEvents: async () => [{ event_id: 'su-501', source_url: 'https://su.example.ac.uk/events/501/', status: 'upcoming' }] })
   const [found, missing] = await place([event('i9', 'https://su.example.ac.uk/events/501'), event('i10', 'https://su.example.ac.uk/events/777')])
-  assert.deepEqual(found.place, { app: 'cardiff-life', href: '/cardiff-life#event=su-501', status: 'upcoming' })
-  assert.deepEqual(missing.place, { app: 'cardiff-life', missing: true })
+  assert.deepEqual(found.place, { app: 'events', href: '/events#event=su-501', status: 'upcoming' })
+  assert.deepEqual(missing.place, { app: 'events', missing: true })
 })
 
 test('a part that cannot be read is unknown, never "missing"; nothing is read when nothing needs it', async () => {

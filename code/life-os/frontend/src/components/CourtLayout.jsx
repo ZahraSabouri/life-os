@@ -24,7 +24,7 @@ export default function CourtLayout() {
   const isManuscriptCourt = location.pathname === '/court' && ground !== 'modern'
   const isBoardRoute = !isManuscriptCourt
   // A framed app fills the rest of the window under the top bar, with today's strip for that part.
-  const subAppArea = { '/study': 'study', '/jobmap': 'career', '/budget': 'home', '/cardiff-life': 'events' }[location.pathname]
+  const subAppArea = { '/study': 'study', '/jobmap': 'career', '/budget': 'home', '/events': 'events' }[location.pathname]
   const isSubApp = Boolean(subAppArea)
 
   const dateLabel = useMemo(() => new Intl.DateTimeFormat(undefined, {
@@ -96,11 +96,11 @@ export default function CourtLayout() {
               Study hub
             </button>
             <button
-              className={location.pathname === '/cardiff-life' ? 'active' : undefined}
+              className={location.pathname === '/events' ? 'active' : undefined}
               type="button"
-              onClick={() => goTo('/cardiff-life')}
+              onClick={() => goTo('/events')}
             >
-              Cardiff Life
+              Events
             </button>
             <button
               className={location.pathname === '/budget' ? 'active' : undefined}

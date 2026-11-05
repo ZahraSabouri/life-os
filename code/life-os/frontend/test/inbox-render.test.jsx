@@ -38,7 +38,7 @@ test('the reader shows who, when, the summary, the text, and the way to the orig
 test('the reader: what was taken from it, its real links, and no broken Outlook link', () => {
   const outlook = { ...message, source_kind: 'outlook', source_label: 'University Outlook', source_message_id: 'x:3f9a1c0d2b7e4a51', link: 'https://outlook.office.com/mail/', rule: { id: 'r1', rule: 'fold', revision: 1 },
     links: [{ href: 'https://jobs.example.com/view/1001', text: 'Graduate Data Analyst' }, { href: 'https://example.com/unsubscribe?u=1', text: 'Unsubscribe' }],
-    taken: { actions: [{ id: 'a1', title: 'Pay the library fine', due: '2026-11-15' }], items: [{ id: 'i3', revision: 1, kind: 'vacancy', area: 'jobs', status: 'new', day: '2026-10-31', title: 'Graduate Data Analyst', summary: 'Cardiff.', deadline: '2026-11-07', place: { app: 'jobmap', href: '/jobmap#job=J1' } }] } }
+    taken: { actions: [{ id: 'a1', title: 'Pay the library fine', due: '2026-11-15' }], items: [{ id: 'i3', revision: 1, kind: 'vacancy', area: 'jobs', status: 'new', day: '2026-10-31', title: 'Graduate Data Analyst', summary: 'Riverford.', deadline: '2026-11-07', place: { app: 'jobmap', href: '/jobmap#job=J1' } }] } }
   const markup = renderToStaticMarkup(<MemoryRouter><MessageReader message={outlook} /></MemoryRouter>)
   for (const words of ['Taken from this', 'Pay the library fine', 'Waiting on you', 'Graduate Data Analyst', 'In JobMap', 'Links', 'jobs.example.com', 'Everything from sam.taylor@example.com:', 'folded', 'File under', 'Show as usual']) assert.ok(markup.includes(words), words)
   assert.ok(!markup.includes('Open in Outlook'))
@@ -71,9 +71,9 @@ test('a thing she owes shows its kind and priority in words, and its buttons', (
 })
 
 test('what came in: its kind, its own page, the one date that matters, where it is, Keep and Dismiss', () => {
-  const vacancy = { id: 'i3', revision: 1, kind: 'vacancy', area: 'jobs', status: 'new', day: '2026-10-31', title: 'Graduate Data Analyst', summary: 'Cardiff, GBP 28,000.', deadline: '2026-11-07', url: 'https://jobs.example.com/view/1001', place: { app: 'jobmap', missing: true } }
+  const vacancy = { id: 'i3', revision: 1, kind: 'vacancy', area: 'jobs', status: 'new', day: '2026-10-31', title: 'Graduate Data Analyst', summary: 'Riverford, GBP 28,000.', deadline: '2026-11-07', url: 'https://jobs.example.com/view/1001', place: { app: 'jobmap', missing: true } }
   const markup = renderToStaticMarkup(<MemoryRouter><ul><CameInItem item={vacancy} /></ul></MemoryRouter>)
-  for (const words of ['Vacancy', 'Graduate Data Analyst', 'Cardiff, GBP 28,000.', 'Closes Sat 7 Nov', 'Not in JobMap yet', 'Where it came from', 'Keep', 'Dismiss']) assert.ok(markup.includes(words), words)
+  for (const words of ['Vacancy', 'Graduate Data Analyst', 'Riverford, GBP 28,000.', 'Closes Sat 7 Nov', 'Not in JobMap yet', 'Where it came from', 'Keep', 'Dismiss']) assert.ok(markup.includes(words), words)
   assert.ok(markup.includes('href="https://jobs.example.com/view/1001" target="_blank" rel="noopener noreferrer"'))
   assert.ok(markup.includes('href="/inbox/log?day=2026-10-31&amp;item=i3"'))
   const placed = renderToStaticMarkup(<MemoryRouter><ul><CameInItem item={{ ...vacancy, status: 'kept', place: { app: 'jobmap', href: '/jobmap#job=JOB-7' } }} /></ul></MemoryRouter>)
@@ -89,7 +89,7 @@ test('one day of the Harvest log: a factual line, what came in by area, to do, m
   const detail = {
     day: '2026-10-31', latestBatchId: 'b1',
     items: [
-      { id: 'i3', revision: 1, kind: 'vacancy', area: 'jobs', status: 'new', day: '2026-10-31', title: 'Graduate Data Analyst', summary: 'Cardiff.', deadline: '2026-11-07', place: { app: 'jobmap', missing: true } },
+      { id: 'i3', revision: 1, kind: 'vacancy', area: 'jobs', status: 'new', day: '2026-10-31', title: 'Graduate Data Analyst', summary: 'Riverford.', deadline: '2026-11-07', place: { app: 'jobmap', missing: true } },
       { id: 'i6', revision: 1, kind: 'offer', area: 'perks', status: 'kept', day: '2026-10-31', title: '20% off books', summary: 'Student card.', deadline: '2026-11-04' },
     ],
     actions: [{ id: 'a1', title: 'Pay the library fine', due: '2026-11-15', status: 'open' }],
@@ -141,7 +141,7 @@ test('the Desk: a card says its kind, the date that matters, its facts, its stat
   for (const words of ['Application', 'Unsuccessful', 'In JobMap', 'JobMap says Applied.', 'Move to Rejected', 'Kept']) assert.ok(app.includes(words), words)
   assert.ok(!app.includes('>Keep<'), 'a kept thing offers Dismiss only')
   assert.equal(kindLabel({ kind: 'opportunity', form: 'scholarship' }), 'Scholarship')
-  assert.deepEqual(factsOf({ details: { employer: 'A', organiser: 'A' }, location: 'Cardiff', amount_pence: 1200, currency: 'GBP' }), ['A', 'Cardiff', '£12.00'])
+  assert.deepEqual(factsOf({ details: { employer: 'A', organiser: 'A' }, location: 'Riverford', amount_pence: 1200, currency: 'GBP' }), ['A', 'Riverford', '£12.00'])
   const triage = renderToStaticMarkup(<MemoryRouter><Triage things={[order, { ...order, id: 't3', title: 'Second' }, application]} onClose={() => {}} /></MemoryRouter>)
   for (const words of ['0/2', 'Example Books order EB-20431', 'Dismiss', 'Later', 'Keep', 'Back to the Desk']) assert.ok(triage.includes(words), words)
   assert.ok(!triage.includes('Insight Analyst'), 'only new things are triaged')

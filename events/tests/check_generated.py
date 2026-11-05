@@ -1,11 +1,18 @@
-"""Check generated structure and record counts without claiming browser rendering."""
+"""Check a built Events page's structure and record counts without claiming browser rendering.
+
+Usage: python events/tests/check_generated.py [events data folder] (the same folder rule as build_html.py).
+"""
 from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
 import csv
 import json
+import sys
 
-root = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from build_html import data_folder  # noqa: E402
+
+root = data_folder()
 
 class Structure(HTMLParser):
     def __init__(self):

@@ -1,6 +1,6 @@
 /* The four styles: one shared palette each. This is the only place their colours are written.
    The Life OS pages read them on .app-shell; the apps shown in a frame (Study hub, JobMap,
-   Budget, Cardiff Life) read the same file, served as /skins/palettes.css, on their <html>. */
+   Budget, Events) read the same file, served as /skins/palettes.css, on their <html>. */
 
 /* Madder (also the fallback for a style name that is not known) */
 .app-shell[data-ground],

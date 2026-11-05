@@ -339,7 +339,7 @@ function CourtNav({ navigate, quiet = false }) {
       <button type="button" onClick={() => navigate('/journal')}>Journal</button>
       <button type="button" onClick={() => navigate('/people')}>People</button>
       <button type="button" onClick={() => navigate('/study')}>Study hub</button>
-      <button type="button" onClick={() => navigate('/cardiff-life')}>Cardiff Life</button>
+      <button type="button" onClick={() => navigate('/events')}>Events</button>
       <button type="button" onClick={() => navigate('/budget')}>Budget</button>
       <button type="button" onClick={() => navigate('/jobmap')}>JobMap</button>
       <NoticeBell className="redesign-focus-button" />
@@ -470,7 +470,7 @@ function CourtCalendarNote({ calendar }) {
   if (calendar.loading) return <p className="court-calendar-note" role="status">Loading your day…</p>
   if (calendar.error) return <p className="court-calendar-note">Dates could not be loaded. <Link to="/today">Open Today to retry</Link>.</p>
   if (failed.length) return <p className="court-calendar-note">Some areas could not be loaded. <Link to="/today">See details</Link>.</p>
-  if (calendar.choicesError) return <p className="court-calendar-note">Cardiff choices could not be read. <Link to="/today">See details</Link>.</p>
+  if (calendar.choicesError) return <p className="court-calendar-note">Event choices could not be read. <Link to="/today">See details</Link>.</p>
   return null
 }
 

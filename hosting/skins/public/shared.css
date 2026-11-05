@@ -54,7 +54,7 @@ html[data-life-os-ground] textarea { border-radius: min(var(--m-radius-control),
 html[data-life-os-frame] [data-life-os-hide] { display: none !important; }
 
 /* ---- Inside Life OS, a part is a section of Life OS, not an app of its own -------------------
-   The Study hub, Cardiff Life, Budget and JobMap each came with a brand, a menu and titles in a
+   The Study hub, Events, Budget and JobMap each came with a brand, a menu and titles in a
    style of their own. Shown inside Life OS they share one: no brand (the top bar says where you
    are), one menu, one page title, one small line above it. Opened by itself, an app keeps its own. */
 html[data-life-os-frame] :is(.brand, .v2-brand, .workspace-label) { display: none !important; }
@@ -72,6 +72,6 @@ html[data-life-os-frame] .nav-label { font: 600 0.7rem/1.3 var(--m-font) !import
 html[data-life-os-frame] :is(h1, .topbar-title, .page-heading) { font-family: var(--m-display, var(--m-font)) !important; font-weight: var(--m-heading-weight, 600) !important; font-size: clamp(1.8rem, 2.5vw, 2.3rem) !important; line-height: 1.12 !important; letter-spacing: var(--m-heading-tracking, -0.01em) !important; text-transform: none !important; color: var(--m-ink) !important; }
 html[data-life-os-frame] :is(.eyebrow, .topbar-sub) { font-family: var(--m-font) !important; font-size: 0.72rem !important; font-weight: 600 !important; letter-spacing: 0.08em !important; text-transform: uppercase !important; color: var(--m-muted) !important; text-decoration: none !important; }
 
-/* Cardiff Life's pages (My week, All choices, …) are a row of views, like the views of a Life OS page. */
+/* The Events page's views (My week, All choices, …) are a row of views, like the views of a Life OS page. */
 html[data-life-os-frame] button[data-view] { border: 1px solid var(--m-line) !important; border-radius: var(--m-radius-control, 8px) !important; background: var(--m-card-fill, transparent) !important; color: var(--m-ink) !important; font: 600 0.84rem/1.2 var(--m-font) !important; letter-spacing: 0 !important; text-transform: none !important; padding: 0.45rem 0.95rem !important; box-shadow: none !important; }
 html[data-life-os-frame] button[data-view][aria-current='page'] { border-color: var(--m-accent) !important; background: var(--m-accent-soft) !important; }

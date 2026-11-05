@@ -59,7 +59,7 @@ export default function TodayView() {
       </section>
     </div> : null}
     <div className="today-page-controls"><Link className="ghost-pill compact-pill" to={isToday ? '/calendar' : calendarDayHref(date)}>Open calendar</Link><Link className="ghost-pill compact-pill" to="/planner">Plan the week</Link><Link className="ghost-pill compact-pill" to="/review">Look back on the week</Link><Link className="ghost-pill compact-pill" to="/ledger">Recent entries</Link><button className="ghost-pill compact-pill" type="button" onClick={page.refetch} disabled={calendar.loading}>Refresh</button></div>
-    <p className="today-section-note">Cardiff events show your saved plans and maybes from this browser. <Link to="/cardiff-life">Manage choices</Link>.</p>
+    <p className="today-section-note">Events show your saved plans and maybes from this browser. <Link to="/events">Manage choices</Link>.</p>
     <footer className="ledger-poem" aria-label="Poem of the day"><div lang="fa" dir="rtl">{dailyPoem.lines.map((line, index) => <p key={index}>{line}</p>)}</div><small lang="fa" dir="rtl">{dailyPoem.poet}</small></footer>
   </section>
 }

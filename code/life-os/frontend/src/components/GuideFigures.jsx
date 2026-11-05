@@ -9,7 +9,7 @@ function PartsMap() {
     ['Study hub', 'cards, study blocks, classes, tests', ['Today: the day’s path and Study', 'Calendar', 'Review and Analysis', 'The bell'], 'study'],
     ['JobMap', 'jobs to apply for, closing dates, follow-ups', ['Today: Jobs', 'Calendar', 'Review and Analysis', 'The bell'], 'jobmap'],
     ['Budget', 'shopping lists, meals, food at home, money', ['Today: Home', 'Calendar (renewals)', 'Review and Analysis', 'The bell'], 'budget'],
-    ['Cardiff Life', 'events you chose or added', ['Calendar', 'Today: “Also today”', 'Court: Ahead'], 'cardiff'],
+    ['Events', 'events you chose or added', ['Calendar', 'Today: “Also today”', 'Court: Ahead'], 'events'],
     ['Health', 'sessions, appointments, diet, UK recipes', ['Today: Health', 'Calendar (under Health)', 'The bell', 'Budget: your recipes'], 'health'],
     ['Inbox', 'your gathered mail; who you owe a reply, a text or a call', ['Today: Waiting on you', 'Calendar (under Life admin)', 'The bell', 'Journal and People'], 'inbox'],
     ['Life OS itself', 'your plans, notes, journal, people, focus time', ['Court, Today, Plan the week', 'Journal and People', 'Review and Analysis'], 'court'],
@@ -75,7 +75,7 @@ function WhereTable() {
     ['A class, a test, a deadline, a material link', 'Study hub → Semester setup', 'Calendar, Today, the bell'],
     ['A job', 'JobMap → Add job', 'Today (Jobs), Calendar (its closing date)'],
     ['Notes, categories, files and links on a job', 'JobMap → the job’s details', 'The job; your categories filter the list'],
-    ['An event', 'Cardiff Life → + Add my own event', 'Calendar, Cardiff Life’s week'],
+    ['An event', 'Events → + Add my own event', 'Calendar, the Events week'],
     ['A payment, a receipt, a meal, food at home', 'Budget', 'Today (Home), Review, Analysis'],
     ['Exercise you did or plan, a programme', 'Health → Exercise', 'Today (Health), Calendar, the bell'],
     ['An appointment, a test result, a measurement', 'Health → Appointments & tests', 'Calendar and the bell (appointments); Health'],
@@ -93,7 +93,7 @@ function NoticesPicture() {
   return <div className="guide-figure guide-notices">
     <div className="guide-desktop" role="img" aria-label="An illustration of two notices from Life OS at the corner of the Windows screen">
       <span className="guide-desktop-label" aria-hidden="true">Your screen, bottom right corner (an illustration)</span>
-      <Notice title="MAT022 · Lecture" lines={['Starts at 13:10, in 10 minutes']} />
+      <Notice title="STAT101 · Lecture" lines={['Starts at 13:10, in 10 minutes']} />
       <Notice title="Life OS: 3 things for today" lines={['2 study cards due today', 'Closes today: Data Analyst', '1 plan left unticked from earlier days']} />
     </div>
     <ul className="guide-when">

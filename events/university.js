@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const data=JSON.parse(document.getElementById('cardiff-data').textContent), uni=data.university||{};
+  const data=JSON.parse(document.getElementById('events-data').textContent), uni=data.university||{};
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const validUrl=s=>/^https:\/\//.test(s||'')?esc(s):'#';
   const dateText=s=>s?new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',...(s.includes('T')?{timeStyle:'short'}:{}),timeZone:'Europe/London'}).format(new Date(s.includes('T')?s:s+'T12:00:00Z')):'Not verified';
@@ -23,7 +23,7 @@
   document.getElementById('university-closed').innerHTML=closed.map(opportunity).join('');
   document.getElementById('timetable-note').textContent=uni.timetable_note||'Timetable not available.';
   window.renderUniversity=()=>{
-    const P=CardiffPlanner;
+    const P=EventsPlanner;
     document.querySelectorAll('#week-grid .day[data-date]').forEach(day=>{
       day.querySelectorAll('.teaching-block').forEach(n=>n.remove());
       const sessions=teaching.filter(t=>t.date===day.dataset.date).sort((a,b)=>a.start_time.localeCompare(b.start_time));

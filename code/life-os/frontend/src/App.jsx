@@ -79,8 +79,8 @@ function StudyRoute() {
   return <SubAppFrame route="/study" documentPath="/apps/summer-rescue/" title="Study hub" />
 }
 
-function CardiffLifeRoute() {
-  return <SubAppFrame route="/cardiff-life" documentPath="/apps/cardiff-life/" title="Cardiff Life" />
+function EventsRoute() {
+  return <SubAppFrame route="/events" documentPath="/apps/events/" title="Events" />
 }
 
 function BudgetRoute() {
@@ -132,7 +132,7 @@ function AppRoutes() {
           <Route path="/people" element={<PeopleView />} />
           <Route path="/room/:slug" element={<RoomView />} />
           <Route path="/study" element={<StudyRoute />} />
-          <Route path="/cardiff-life" element={<CardiffLifeRoute />} />
+          <Route path="/events" element={<EventsRoute />} />
           <Route path="/budget" element={<BudgetRoute />} />
           <Route path="/health" element={<HealthView />} />
           <Route path="/inbox" element={<InboxView />} />

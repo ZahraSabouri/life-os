@@ -1,7 +1,7 @@
-// Cardiff Life's place in its address, added by Life OS as the page is served (Cardiff Life's own
+// The Events page's place in its address, added by Life OS as the page is served (the page's own
 // files are not changed). #event=<id> opens that event's details; #view=explore, communities or
 // updates shows that part. Opening an event's details here is a step Back closes, and closing it
-// is the same as Back; a part chosen is a step too. A link from Life OS ("Open in Cardiff Life"
+// is the same as Back; a part chosen is a step too. A link from Life OS ("Open in Events"
 // on the calendar) opens the event it names.
 //
 // The page is only ever moved by its own controls: an event opens by a click on a button that

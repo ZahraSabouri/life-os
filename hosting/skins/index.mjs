@@ -1,4 +1,4 @@
-// One look for the apps Life OS shows in a frame (Study hub, JobMap, Budget, Cardiff Life).
+// One look for the apps Life OS shows in a frame (Study hub, JobMap, Budget, Events).
 //
 // Each app keeps its own files. As its page is served, Life OS adds these to it:
 //   boot.js        tells the page which style is chosen, and when it changes
@@ -6,9 +6,9 @@
 //   fonts.css      the shared fonts
 //   shared.css     what every app takes from the style whatever its own CSS says
 //   apps/<id>.css  that app's layer: its colours, type and shapes tied to the shared ones
-//   apps/<id>.js   for an app that has one: what Life OS adds to its behaviour (Cardiff Life's
+//   apps/<id>.js   for an app that has one: what Life OS adds to its behaviour (the Events page's
 //                  address, so Back and a link can open one event)
-// An app that writes its colours straight into its CSS (Budget, Cardiff Life) also has those
+// An app that writes its colours straight into its CSS (Budget, Events) also has those
 // colours rewritten as blends of the shared palette (recolor.mjs).
 import fs from 'node:fs'
 import path from 'node:path'
@@ -26,7 +26,7 @@ export const SKINNED_APPS = {
   'study-hub': {},
   jobmap: {},
   budget: { anchors: { card: '#fffdf7', bg: '#f4f5ec', ink: '#263d33', accent: '#315b48', red: '#a44935', amber: '#9a6a1f', blue: '#3d5f8f' }, spread: 0.5 },
-  'cardiff-life': { anchors: { card: '#fffefa', bg: '#f5f4ee', ink: '#263b35', accent: '#285d48', red: '#a44935', amber: '#8c5b12', blue: '#326b8c' }, spread: 0.24 },
+  events: { anchors: { card: '#fffefa', bg: '#f5f4ee', ink: '#263b35', accent: '#285d48', red: '#a44935', amber: '#8c5b12', blue: '#326b8c' }, spread: 0.24 },
 }
 
 const appScript = (app) => fs.existsSync(path.join(publicDir, 'apps', `${app}.js`))

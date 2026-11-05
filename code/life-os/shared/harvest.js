@@ -108,7 +108,7 @@ export function placeOf(item, today = '') {
   const over = ['cancelled', 'withdrawn', 'refunded', 'returned', 'ended', 'paid', 'done', 'closed'].includes(item?.state)
   return {
     calendar: ON_CALENDAR.includes(kind) && Boolean(itemDate(item)) && !led && item?.state !== 'cancelled',
-    linkTo: ['vacancy', 'application'].includes(kind) ? 'jobmap' : kind === 'event' ? 'cardiff-life' : null,
+    linkTo: ['vacancy', 'application'].includes(kind) ? 'jobmap' : kind === 'event' ? 'events' : null,
     offers: kind === 'offer',
     today: close && !over,
   }
@@ -117,12 +117,12 @@ export function placeOf(item, today = '') {
 // The part of Life OS a thing belongs to, for the "Came in" line on that part's page: offers to
 // Budget, vacancies, applications and job or research opportunities to JobMap, events to Events,
 // the rest by area. Travel, admin and people have no part of their own yet: they are on the Desk.
-export const PARTS = { study: 'Study', jobmap: 'JobMap', 'cardiff-life': 'Events', budget: 'Budget', health: 'Health' }
+export const PARTS = { study: 'Study', jobmap: 'JobMap', events: 'Events', budget: 'Budget', health: 'Health' }
 export function partOf(item) {
   const { kind, area } = item ?? {}
   if (kind === 'offer') return 'budget'
   if (['vacancy', 'application'].includes(kind) || (kind === 'opportunity' && ['jobs', 'research'].includes(area))) return 'jobmap'
-  if (kind === 'event') return 'cardiff-life'
+  if (kind === 'event') return 'events'
   if (['person', 'account', 'official', 'booking'].includes(kind)) return null
   if (area === 'academic') return 'study'
   if (area === 'health') return 'health'
@@ -199,6 +199,6 @@ export function originalLink(message, { gmailAccount = 1 } = {}) {
 }
 
 // A summary that talks to her instead of recording what came in. (Titles are left alone: an event
-// can be called "We Are Cardiff".)
+// can be called "We Are Riverford".)
 const CHATTY = /^(you|you'll|you're|you've|your|i|i'm|i've|we|let's|don't forget|remember|make sure)\b|\b(you should|you need to|you might|you may want|you could|i recommend|i suggest|i think|worth a look|don't miss)\b/i
 export const chatty = (text) => CHATTY.test(String(text ?? '').trim())

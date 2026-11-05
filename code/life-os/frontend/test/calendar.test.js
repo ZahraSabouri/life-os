@@ -1,49 +1,49 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { attentionReason, calendarDisplay, filterCalendarItems, itemTime, readCardiffChoices, todayGroups, withEventLinks, withSavedCardiffItems } from '../src/lib/calendar.js'
+import { attentionReason, calendarDisplay, filterCalendarItems, itemTime, readEventChoices, todayGroups, withEventLinks, withSavedEventItems } from '../src/lib/calendar.js'
 
 const item = (overrides = {}) => ({ id: 'example', area: 'core', kind: 'plan', title: 'Example', start: '2026-10-05', end: null, all_day: true, href: '/ledger', meta: {}, ...overrides })
 const choices = {
-  going: { status: 'going', snapshot: { name: 'Saved event', date: '2026-10-05', start_time: '18:00', end_time: '19:00', location: 'Cardiff' } },
+  going: { status: 'going', snapshot: { name: 'Saved event', date: '2026-10-05', start_time: '18:00', end_time: '19:00', location: 'Riverford' } },
   maybe: { status: 'maybe', snapshot: { name: 'Maybe event', date: '2026-10-06' } }
 }
 
-test('a Cardiff event from an older server answer still opens itself in Cardiff Life', () => {
-  const [event, other] = withEventLinks([item({ area: 'events', href: '/cardiff-life', meta: { eventId: 'su 1/2' } }), item()])
-  assert.equal(event.href, '/cardiff-life#event=su%201%2F2')
+test('an event from an older server answer still opens itself on the Events page', () => {
+  const [event, other] = withEventLinks([item({ area: 'events', href: '/events', meta: { eventId: 'su 1/2' } }), item()])
+  assert.equal(event.href, '/events#event=su%201%2F2')
   assert.equal(other.href, '/ledger')
 })
 
-test('Cardiff scope follows the same browser choices without treating research as personal plans', () => {
+test('the events scope follows the same browser choices without treating research as personal plans', () => {
   const items = [item(), ...['going', 'maybe', 'option'].map(id => item({ id, area: 'events', meta: { eventId: id } }))]
   assert.deepEqual(filterCalendarItems(items, { choices }).map(row => row.id), ['example', 'going'])
-  assert.deepEqual(filterCalendarItems(items, { choices, cardiffScope: 'saved' }).map(row => row.id), ['example', 'going', 'maybe'])
-  assert.deepEqual(filterCalendarItems(items, { choices, cardiffScope: 'going' }).map(row => row.id), ['example', 'going'])
-  assert.equal(filterCalendarItems(items, { choices, cardiffScope: 'all' }).length, 4)
+  assert.deepEqual(filterCalendarItems(items, { choices, eventScope: 'saved' }).map(row => row.id), ['example', 'going', 'maybe'])
+  assert.deepEqual(filterCalendarItems(items, { choices, eventScope: 'going' }).map(row => row.id), ['example', 'going'])
+  assert.equal(filterCalendarItems(items, { choices, eventScope: 'all' }).length, 4)
   assert.deepEqual(filterCalendarItems(items, { areas: ['core'], choices }).map(row => row.id), ['example'])
   assert.equal(filterCalendarItems(items, { choices }).find(row => row.id === 'going').choice, 'going')
 })
 
 test('saved snapshots fill truly removed research dates but never resurrect rescheduled/cancelled catalogue IDs', () => {
-  const saved = withSavedCardiffItems([], choices, '2026-10-01', '2026-10-31', [])
+  const saved = withSavedEventItems([], choices, '2026-10-01', '2026-10-31', [])
   assert.equal(saved.length, 2)
   assert.equal(saved[0].start, '2026-10-05T17:00:00.000Z')
   assert.equal(saved[0].meta.savedSnapshot, true)
-  assert.equal(saved[0].href, '/cardiff-life#event=going')
-  assert.equal(withSavedCardiffItems([], choices, '2026-10-01', '2026-10-31', ['going', 'maybe']).length, 0)
-  assert.equal(withSavedCardiffItems([], choices, '2026-11-01', '2026-11-30', []).length, 0)
+  assert.equal(saved[0].href, '/events#event=going')
+  assert.equal(withSavedEventItems([], choices, '2026-10-01', '2026-10-31', ['going', 'maybe']).length, 0)
+  assert.equal(withSavedEventItems([], choices, '2026-11-01', '2026-11-30', []).length, 0)
   const published = item({ id: 'published', area: 'events', meta: { eventId: 'going' } })
-  assert.equal(withSavedCardiffItems([published], choices, '2026-10-01', '2026-10-31', []).length, 2)
+  assert.equal(withSavedEventItems([published], choices, '2026-10-01', '2026-10-31', []).length, 2)
 })
 
 test('saved overnight events reach the next London day; invalid transition clocks remain a date-only plan', () => {
   const overnight = { night: { status: 'going', snapshot: { name: 'Late event', date: '2026-10-04', start_time: '23:00', end_time: '01:00' } } }
-  const nextDay = withSavedCardiffItems([], overnight, '2026-10-05', '2026-10-05', [])
+  const nextDay = withSavedEventItems([], overnight, '2026-10-05', '2026-10-05', [])
   assert.equal(nextDay.length, 1)
   assert.equal(nextDay[0].start, '2026-10-04T22:00:00.000Z')
   assert.equal(nextDay[0].end, '2026-10-05T00:00:00.000Z')
   const gap = { spring: { status: 'maybe', snapshot: { name: 'Clock gap', date: '2026-03-29', start_time: '01:30', end_time: '02:30' } } }
-  const plan = withSavedCardiffItems([], gap, '2026-03-29', '2026-03-29', [])[0]
+  const plan = withSavedEventItems([], gap, '2026-03-29', '2026-03-29', [])[0]
   assert.equal(plan.start, '2026-03-29')
   assert.equal(plan.end, null)
   assert.equal(plan.all_day, true)
@@ -52,12 +52,12 @@ test('saved overnight events reach the next London day; invalid transition clock
 test('choice reads preserve storage and tolerate unavailable or malformed browser state', () => {
   let writes = 0
   const storage = { getItem: () => JSON.stringify({ version: 1, choices }), setItem: () => writes++ }
-  assert.equal(readCardiffChoices(storage).choices.going.status, 'going')
+  assert.equal(readEventChoices(storage).choices.going.status, 'going')
   assert.equal(writes, 0)
-  assert.match(readCardiffChoices(() => { throw new Error('denied') }).error, /could not be read/)
-  assert.match(readCardiffChoices({ getItem: () => '{' }).error, /could not be read/)
-  assert.match(readCardiffChoices({ getItem: () => JSON.stringify({ version: 1, choices: { bad: { status: 'unknown' } } }) }).error, /could not be read/)
-  const broken = readCardiffChoices({ getItem: () => JSON.stringify({ version: 1, choices: { safe: { status: 'going', snapshot: { name: { invalid: true }, location: [] } } } }) })
+  assert.match(readEventChoices(() => { throw new Error('denied') }).error, /could not be read/)
+  assert.match(readEventChoices({ getItem: () => '{' }).error, /could not be read/)
+  assert.match(readEventChoices({ getItem: () => JSON.stringify({ version: 1, choices: { bad: { status: 'unknown' } } }) }).error, /could not be read/)
+  const broken = readEventChoices({ getItem: () => JSON.stringify({ version: 1, choices: { safe: { status: 'going', snapshot: { name: { invalid: true }, location: [] } } } }) })
   assert.equal(broken.choices.safe.snapshot.name, '')
   assert.equal(broken.choices.safe.snapshot.location, '')
 })
@@ -99,7 +99,7 @@ test('calendar loading and failed reads never claim an empty schedule or zero it
   assert.equal(calendarDisplay(failed, { empty }).countLabel, 'Unavailable')
   assert.equal(calendarDisplay(failed, { empty }).emptyMessage, 'Dates could not be loaded. Try again.')
   // A saved browser copy remains usable without making source totals complete.
-  const saved = withSavedCardiffItems([], choices, '2026-10-05', '2026-10-05')
+  const saved = withSavedEventItems([], choices, '2026-10-05', '2026-10-05')
   assert.equal(saved.length, 1)
   assert.equal(saved[0].meta.savedSnapshot, true)
   assert.equal(calendarDisplay(failed, { count: saved.length }).countLabel, 'Unavailable')
@@ -133,4 +133,17 @@ test('ready calendar results keep normal empty text and item counts', () => {
   assert.equal(calendarDisplay(ready, { count: 1 }).countLabel, '1 item')
   assert.equal(calendarDisplay(ready, { count: 3, noun: 'dated item' }).countLabel, '3 dated items')
   assert.equal(calendarDisplay({ ...ready, sources: [{ area: 'study', status: 'unavailable' }] }, { areas: [], empty: 'Choose an area.' }).emptyMessage, 'Choose an area.')
+})
+
+test('choices kept under the Events page\'s earlier key are carried forward once, and the old copy stays', () => {
+  const kept = new Map([['other-app-v1', 'x'], ['old-name-choices-v1', JSON.stringify({ version: 1, choices: { going: { status: 'going', snapshot: { name: 'Saved event', date: '2026-10-05' } } } })]])
+  const storage = { getItem: (key) => kept.get(key) ?? null, setItem: (key, value) => kept.set(key, value), key: (index) => [...kept.keys()][index] ?? null, get length() { return kept.size } }
+  assert.equal(readEventChoices(storage).choices.going.status, 'going')
+  assert.equal(kept.get('events-choices-v1'), kept.get('old-name-choices-v1'))
+  assert.ok(kept.has('old-name-choices-v1'))
+  // Something else ending the same way but not choices is left alone.
+  const other = new Map([['notes-choices-v1', '{"version":2}']])
+  const plain = { getItem: (key) => other.get(key) ?? null, setItem: (key, value) => other.set(key, value), key: (index) => [...other.keys()][index] ?? null, get length() { return other.size } }
+  assert.deepEqual(readEventChoices(plain), { choices: {}, error: '' })
+  assert.equal(other.has('events-choices-v1'), false)
 })

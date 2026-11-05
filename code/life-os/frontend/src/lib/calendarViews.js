@@ -1,6 +1,6 @@
 // The calendar's address and its four views, worked out without React so the tests share them.
 // The address holds everything the page shows: the view and its month, week or year, the areas
-// left out, the Cardiff scope, a search, and the day (and the thing on it) open in the pop-up.
+// left out, the events scope, a search, and the day (and the thing on it) open in the pop-up.
 import { addDays, dateKey, isDateKey, itemOverlaps } from '../../../shared/calendar.js'
 import { calendarArea } from './calendar.js'
 import { clockOf } from './day.js'
@@ -19,7 +19,7 @@ export const DAY_TABS = [
   { key: 'home', label: 'Home' },
   { key: 'health', label: 'Health' },
 ]
-export const CARDIFF_SCOPES = ['all', 'saved', 'going']
+export const EVENT_SCOPES = ['all', 'saved', 'going']
 // What belongs to the pop-up in the address: closing it takes all of these out.
 export const DAY_KEYS = ['day', 'item', 'tab']
 
@@ -65,7 +65,7 @@ export function readCalendarAddress(params, today, areaKeys = []) {
     tab: DAY_TABS.some((entry) => entry.key === get('tab')) ? get('tab') : 'day',
     hidden,
     areas: areaKeys.filter((key) => !hidden.includes(key)),
-    cardiff: CARDIFF_SCOPES.includes(get('cardiff')) ? get('cardiff') : 'going',
+    events: EVENT_SCOPES.includes(get('events')) ? get('events') : 'going',
     q: get('q').slice(0, 100),
   }
 }
@@ -165,7 +165,7 @@ export const isNote = (item) => item.meta?.type === 'note'
 
 // ---- Where a thing opens ----------------------------------------------------------------
 const PLACES = [
-  ['/study', 'Study hub'], ['/cardiff-life', 'Cardiff Life'], ['/jobmap', 'JobMap'], ['/budget', 'Budget'],
+  ['/study', 'Study hub'], ['/events', 'Events'], ['/jobmap', 'JobMap'], ['/budget', 'Budget'],
   ['/ledger', 'Ledger'], ['/health', 'Health'], ['/people', 'People'], ['/journal', 'Journal'],
   ['/today', 'Today'], ['/planner', 'the week planner'], ['/room', 'its room'],
 ]

@@ -10,7 +10,7 @@ export const CALENDAR_AREAS = [
   { key: 'money', label: 'Money', tone: 'var(--g-coral)' },
   { key: 'home', label: 'Home', tone: 'var(--g-acc)' },
   { key: 'body', label: 'Health', tone: 'var(--m-spark)' },
-  { key: 'events', label: 'Cardiff events', tone: 'var(--g-rose)' },
+  { key: 'events', label: 'Events', tone: 'var(--g-rose)' },
   // Mail's dated things: replies she owes, what a message asks for by a day (hosting/mail).
   { key: 'admin', label: 'Mail and admin', tone: 'var(--g-sub)' }
 ]
@@ -23,7 +23,7 @@ export const CALENDAR_KINDS = [
   { key: 'note', label: 'Note' }
 ]
 
-export const CARDIFF_CHOICES_KEY = 'cardiff-life-choices-v1'
+export const EVENT_CHOICES_KEY = 'events-choices-v1'
 const DONE_STATUSES = new Set(['done', 'completed', 'complete', 'cancelled', 'canceled', 'archived'])
 
 export function calendarArea(area) {
@@ -76,15 +76,28 @@ export function itemTime(item) {
     : format(item.start)
 }
 
-export function readCardiffChoices(storageOrGetter) {
+const choicesShape = (value) => value?.version === 1 && value.choices && typeof value.choices === 'object' && !Array.isArray(value.choices)
+// Choices kept under the Events page's earlier name ("<name>-choices-v1") are copied to the
+// current key once, as the page itself does (events/planner.js); the old copy stays.
+function carriedForward(storage) {
+  for (let index = 0; index < (storage.length ?? 0); index += 1) {
+    const name = storage.key(index)
+    if (name === EVENT_CHOICES_KEY || !/^[a-z0-9-]+-choices-v1$/.test(name ?? '')) continue
+    const raw = storage.getItem(name)
+    try { if (!choicesShape(JSON.parse(raw))) continue } catch { continue }
+    try { storage.setItem(EVENT_CHOICES_KEY, raw) } catch { /* read it this time all the same */ }
+    return raw
+  }
+  return null
+}
+
+export function readEventChoices(storageOrGetter) {
   try {
     const storage = typeof storageOrGetter === 'function' ? storageOrGetter() : storageOrGetter
-    const raw = storage.getItem(CARDIFF_CHOICES_KEY)
+    const raw = storage.getItem(EVENT_CHOICES_KEY) ?? carriedForward(storage)
     if (!raw) return { choices: {}, error: '' }
     const value = JSON.parse(raw)
-    if (value.version !== 1 || !value.choices || typeof value.choices !== 'object' || Array.isArray(value.choices)) {
-      throw new Error('Invalid choices')
-    }
+    if (!choicesShape(value)) throw new Error('Invalid choices')
     const choices = Object.fromEntries(Object.entries(value.choices).map(([id, choice]) => {
       if (!/^[a-z0-9][a-z0-9_-]{0,150}$/i.test(id) || !choice || !['going', 'maybe'].includes(choice.status)) throw new Error('Invalid choice')
       const fields = ['event_id', 'name', 'date', 'start_time', 'end_time', 'location', 'source_url', 'activity', 'status', 'cost', 'description', 'organiser']
@@ -93,27 +106,27 @@ export function readCardiffChoices(storageOrGetter) {
     }))
     return { choices, error: '' }
   } catch {
-    return { choices: {}, error: 'Cardiff choices could not be read in this browser. Open Cardiff Life to check your saved plan, or show all options here.' }
+    return { choices: {}, error: 'Event choices could not be read in this browser. Open Events to check your saved plan, or show all options here.' }
   }
 }
 
-// Cardiff events show once she marks them Plan to go (Xar, 3 November); 'saved' adds Maybe, 'all' every researched option.
-export function filterCalendarItems(items, { areas, cardiffScope = 'going', choices = {} } = {}) {
+// Researched events show once marked Plan to go; 'saved' adds Maybe, 'all' every researched option.
+export function filterCalendarItems(items, { areas, eventScope = 'going', choices = {} } = {}) {
   return items.filter(item => {
     if (areas && !areas.includes(item.area)) return false
-    if (item.area !== 'events' || cardiffScope === 'all') return true
-    // An event she added to Cardiff Life herself is hers already; the researched ones show once she chooses them.
+    if (item.area !== 'events' || eventScope === 'all') return true
+    // An event the owner added herself is hers already; the researched ones show once chosen.
     if (item.meta?.own) return true
     const choice = choices[item.meta?.eventId]
-    return cardiffScope === 'going' ? choice?.status === 'going' : Boolean(choice)
+    return eventScope === 'going' ? choice?.status === 'going' : Boolean(choice)
   }).map(item => item.area === 'events' && choices[item.meta?.eventId]
     ? { ...item, choice: choices[item.meta.eventId].status }
     : item)
 }
 
-// Cardiff Life keeps a snapshot of a saved event even when research removes it.
+// The Events page keeps a snapshot of a saved event even when research removes it.
 // These remain browser-local plans; never send them back to the source files.
-export function withSavedCardiffItems(items, choices, from, to, knownEventIds = null) {
+export function withSavedEventItems(items, choices, from, to, knownEventIds = null) {
   const existing = new Set([...(knownEventIds || []), ...items.filter(item => item.area === 'events').map(item => item.meta?.eventId)])
   const saved = Object.entries(choices).flatMap(([id, choice]) => {
     const event = choice.snapshot
@@ -124,10 +137,10 @@ export function withSavedCardiffItems(items, choices, from, to, knownEventIds = 
     const endDay = endTime < time ? addDays(event.date, 1) : event.date
     const end = start && endTime ? londonDateTime(endDay, endTime) : ''
     const item = {
-      id: `cardiff-saved:${id}`, area: 'events', kind: start ? 'fixed' : 'plan',
-      title: event.name || 'Saved Cardiff event', start: start || event.date,
+      id: `events-saved:${id}`, area: 'events', kind: start ? 'fixed' : 'plan',
+      title: event.name || 'Saved event', start: start || event.date,
       end: end || null, all_day: !start,
-      href: cardiffEventHref(id), location: event.location || '',
+      href: eventHref(id), location: event.location || '',
       meta: { eventId: id, savedSnapshot: true }
     }
     return itemOverlaps(item, from, to) ? [item] : []
@@ -135,11 +148,11 @@ export function withSavedCardiffItems(items, choices, from, to, knownEventIds = 
   return [...items, ...saved]
 }
 
-// A Cardiff event opens itself in Cardiff Life, not only its list (the host adds #event= to the
-// app's address; hosting/skins/public/apps/cardiff-life.js). Older answers from the server name only the list.
-export const cardiffEventHref = (id) => `/cardiff-life#event=${encodeURIComponent(id)}`
+// An event opens itself on the Events page, not only its list (the host adds #event= to the
+// app's address; hosting/skins/public/apps/events.js). Older answers from the server name only the list.
+export const eventHref = (id) => `/events#event=${encodeURIComponent(id)}`
 export function withEventLinks(items) {
-  return items.map((item) => (item.area === 'events' && item.meta?.eventId && item.href === '/cardiff-life' ? { ...item, href: cardiffEventHref(item.meta.eventId) } : item))
+  return items.map((item) => (item.area === 'events' && item.meta?.eventId && item.href === '/events' ? { ...item, href: eventHref(item.meta.eventId) } : item))
 }
 
 export function sortCalendarItems(items) {

@@ -1,4 +1,4 @@
-/* Cardiff Life inside Life OS. Its written-in colours are rewritten as blends of the shared
+/* The Events page inside Life OS. Its written-in colours are rewritten as blends of the shared
    palette when the page is served (skins/recolor.mjs); this layer ties its type and its
    named parts to the chosen style. */
 html[data-life-os-ground] body { background: var(--m-bg); color: var(--m-ink); font-family: var(--m-font); }
