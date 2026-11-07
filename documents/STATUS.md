@@ -11,6 +11,8 @@
 
 - **7 November corrections:** morning sequence and person follow-up moved; project tasks aligned with live repository/report/board progress; deferred review moved after January; programme and travel/letter administration integrated. [Session](sessions/2026-11-07-codex-calendar-data-corrections.md). No app code changed.
 
+- **7 November wake-up replan:** unfinished routine and meals shifted later, with two hours of interview preparation and a 90-minute project block. Groceries moved to the following day. [Session](sessions/2026-11-07-codex-calendar-data-wake-up-replan.md). Saved records and the reloaded My day were checked.
+
 ## How to see what's new
 
 Open [7 November My day](http://127.0.0.1:47850/today?date=2026-11-07). Morning order and the linked project card were verified in the in-app browser. Owning sections remain Study, JobMap, Budget, Health, People/Waiting on you, research, mind and travel/admin. The large catch-all capture stays retired.
@@ -34,6 +36,6 @@ Accept core move/Study archive (old SQLite stays; deletion is hers); name the ne
 
 ## Data
 
-Read back 7 November: core 276 entries including archived captures; Autumn Study revision 112; JobMap 73; Budget unchanged at 117. One native owed action added, three updated; mail-message counts not refreshed. Private evidence/backups: .runtime/calendar-corrections-2026-11-07/; earlier native integration and capture receipts remain. PostgreSQL dump and JobMap API backup verified before writes. No migrations or direct database writes.
+Read back 7 November: core 276 entries including archived captures; Autumn Study revision 112; JobMap 73; Budget unchanged at 117. One native owed action added, three updated; mail-message counts not refreshed. Private evidence/backups: .runtime/wake-up-replan-2026-11-07/ and .runtime/calendar-corrections-2026-11-07/; earlier native integration and capture receipts remain. PostgreSQL dump and JobMap API backup verified before writes. No migrations or direct database writes.
 
-Last five sessions: [Schedule corrections](sessions/2026-11-07-codex-calendar-data-corrections.md), [Native integration](sessions/2026-11-06-codex-calendar-data-native-integration.md), [Stage 6](sessions/2026-11-04-claude-code-6-desk-build.md), [Interview](sessions/2026-11-04-codex-jobmap-interview-links.md), [Study](sessions/2026-11-04-codex-study-json-sync.md).
+Last five sessions: [Wake-up replan](sessions/2026-11-07-codex-calendar-data-wake-up-replan.md), [Schedule corrections](sessions/2026-11-07-codex-calendar-data-corrections.md), [Native integration](sessions/2026-11-06-codex-calendar-data-native-integration.md), [Stage 6](sessions/2026-11-04-claude-code-6-desk-build.md), [Interview](sessions/2026-11-04-codex-jobmap-interview-links.md).
