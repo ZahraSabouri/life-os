@@ -4,6 +4,8 @@
 
 ## Now
 
+- **12 November data reconciliation:** verified source updates in Study, JobMap, Calendar and Inbox. Added two CV work blocks and rescheduled unfinished plans using their existing records. [Session](sessions/2026-11-12-codex-mail-and-planning-reconciliation.md).
+
 - **12 November Study Hub update:** recorded both tests sat, report final checks, the December coursework focus and full attendance in the new module. Live readback verified Study revision 118 and 31 timetable sessions. [Session](sessions/2026-11-12-codex-study-coursework-focus.md).
 
 **Stage 7, code apart from data** ([brief](briefs/stage-7-separation.md)): CP1?CP4 done; CP5, the public version, next. Single-user, MIT, all parts, fresh history, no personal data. Xar names the destination before push.
