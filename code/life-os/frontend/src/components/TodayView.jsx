@@ -8,6 +8,7 @@ import { useDayPage } from '../lib/useDayPage.js'
 import { poemForDate } from '../lib/poems.js'
 import CalendarItems, { CalendarStatus } from './CalendarItems.jsx'
 import { AddLine, DayPanels, DayPath } from './DayParts.jsx'
+import TodayTasks from './tasks/TodayTasks.jsx'
 
 // A whole day: today by default, any other day when the address names one (?date=2026-10-13).
 export default function TodayView() {
@@ -34,6 +35,7 @@ export default function TodayView() {
     </nav>
 
     <AddLine page={page} />
+    <TodayTasks page={page} />
     <CalendarStatus calendar={calendar} />
     {day.error ? <p className="form-error" role="alert">The day's details could not be loaded: {day.error} <button type="button" className="day-retry" onClick={day.refetch}>Try again</button></p> : null}
 

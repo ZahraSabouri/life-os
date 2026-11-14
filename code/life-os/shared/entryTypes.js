@@ -1,4 +1,5 @@
 import { validateTrainingPlan, validateTrainingSession, validateMobilityRoutine } from './health/training.js'
+import { LANE_IDS, SLOT_IDS, cleanDue, cleanSteps } from './tasks.js'
 export { validateWorkoutCompletion } from './health/training.js'
 
 export const ARCHETYPES = ['moment', 'commitment', 'workstream', 'collection', 'practice', 'anchor']
@@ -31,9 +32,14 @@ export const ENTRY_TYPES = {
     label: 'Task',
     icon: 'T',
     rooms: [],
-    desc: 'Something you must do. Dated via entry start_at.',
+    desc: 'Something you must do. Dated via entry start_at (the day it is planned for); `due` is the day it must be done by. `lane` places it on the Tasks board (shared/tasks.js), `slot` says when in the day it fits, `estimate` is hours, `proof` says what shows it is done. Its steps are the common `steps` detail.',
     fields: {
-      priority: { type: 'enum', enum: ['low', 'med', 'high'], default: 'med' }
+      priority: { type: 'enum', enum: ['low', 'med', 'high'], default: 'med' },
+      lane: { type: 'enum', enum: LANE_IDS },
+      slot: { type: 'enum', enum: SLOT_IDS },
+      estimate: { type: 'number' },
+      due: { type: 'string', validate: cleanDue },
+      proof: { type: 'string' }
     }
   },
   'time-block': {
@@ -654,6 +660,8 @@ const COMMON_DETAILS = {
   note: (value) => (typeof value === 'string' && value.trim() ? value.trim().slice(0, 20000) : undefined),
   // The repeating plan a dated entry is one day of (shared/routines.js).
   routine: (value) => (typeof value === 'string' && value && value.length <= 100 ? value : undefined),
+  // A checklist: [{ id, text, done }] (shared/tasks.js). Any kind of entry may have one.
+  steps: (value) => cleanSteps(value),
 }
 
 export function validateDetails(type, details = {}) {
@@ -682,8 +690,10 @@ export function validateDetails(type, details = {}) {
   const value = {}
   const errors = []
   for (const key of common) {
-    const kept = COMMON_DETAILS[key](details[key])
-    if (kept !== undefined) value[key] = kept
+    try {
+      const kept = COMMON_DETAILS[key](details[key])
+      if (kept !== undefined) value[key] = kept
+    } catch (error) { errors.push(`${key}: ${error.message}`) }
   }
 
   fieldNames.forEach((fieldName) => {

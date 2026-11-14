@@ -68,6 +68,9 @@ export default function CourtLayout() {
             >
               Today
             </button>
+            <button type="button" className={location.pathname === '/tasks' ? 'active' : undefined} onClick={() => goTo('/tasks')}>
+              Tasks
+            </button>
             <button
               className={location.pathname === '/calendar' ? 'active' : undefined}
               type="button"

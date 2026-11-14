@@ -5,6 +5,7 @@ import CourtLayout from './components/CourtLayout.jsx'
 import DivanIntro from './components/DivanIntro.jsx'
 import TheCourt from './components/TheCourt.jsx'
 import TodayView from './components/TodayView.jsx'
+import TasksView from './components/TasksView.jsx'
 import LedgerView from './components/LedgerView.jsx'
 import PlannerView from './components/PlannerView.jsx'
 import ReviewView from './components/ReviewView.jsx'
@@ -123,6 +124,7 @@ function AppRoutes() {
           <Route path="/court" element={<TheCourt />} />
           <Route path="/calendar" element={<CalendarView />} />
           <Route path="/today" element={<TodayView />} />
+          <Route path="/tasks" element={<TasksView />} />
           <Route path="/review" element={<ReviewView />} />
           <Route path="/planner" element={<PlannerView />} />
           <Route path="/ledger" element={<LedgerView />} />

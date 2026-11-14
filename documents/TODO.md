@@ -14,6 +14,24 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 7. **I. Applying now:** the first list shows every open role in the order to act on it (12 October). Next: re-check the 32 uncertain adverts; her three answers.
 8. **K. Progress, review and focus for the whole of Life OS:** done 12 October night: focus timer, sound, notices, the week's review with eight weeks and her aims, the week planner, repeating plans. What is left is small (brief `stage-2c-focus-and-review.md`, "Open after CP6").
 9. **L. Everything leads somewhere:** the five links she named work (12 October evening). Continue as she finds dead spots.
+10. **M. The fresh plan and Tasks (14 November):** below. Plan written in `documents/PLAN_2026-11-16_to_2027-01-10.md`.
+
+---
+
+## M. The fresh plan (16 November 2026 to 10 January 2027) and Tasks in Life OS
+Her message, 14 November 2026, each objective quoted:
+
+- [ ] M1 > "a fresh new plan for the assignment that should be submitted by the end of December if I'm not wrong": CMT309, eight notebooks, 100%. Portal deadline Sun 27 Dec 23:59 (she is right); an older school date said 17 Dec, still to confirm with the module leader. Plan finishes on Wed 23 Dec, before the protected 24–27 Dec.
+- [ ] M2 > "and the new module that is starting from next week": MAT021 Foundations of Operational Research and Analytics, first class Mon 16 Nov 15:10.
+- [ ] M3 > "I want to actually study all of the sessions of that coding class to be able to do its assignment": CMT309 Weeks 1 to 10, each studied (delivery notebook, slides, lab against the solution) before the coursework question that uses it. W1–2 → Q1, W3–4 → Q2, W5 → Q3, W6 → Q6, W7 → Q8, W8 → Q7 and Q9, W9–10 → Q10.
+- [ ] M4 > "i need 5-20 hours a week on work": Cardiff ENCAP Student Developer (Proffiliadur, DigiGrid). 7 h a week in term (Mon, Tue, Wed blocks), more in the vacation; never above 20 h with any other work.
+- [ ] M5 > "getting acquainted with the new module and go its classes and deliver what i should deliver": every MAT021 class including the optional drop-in, a weekly review, and the Individual Coursework due Tue 1 Dec 09:30 (submit Mon 30 Nov).
+- [ ] M6 > "so much time on the computational data science module for its deadline is quite close": about 12 h a week of CMT309 study and coursework plus its Thursday classes.
+- [ ] M7 > "we also need to reset gym plan as well and come up with a fresh new realistic plan": no session of the October programme was logged done. Restart at week 1, two sessions a week (Tue after the lecture, Sat morning), a 30-minute minimum version, progress by sessions done, not by dates.
+- [ ] M8 > "some time searching/working on my research ideas and plans and getting ready for the thesis and stuff like that": Sat research block and Wed positions review; tasks with steps for the three research projects and dissertation preparation.
+- [ ] M9 > "some time to again apply for other jobs for after september 2027 or other part time/ full time job/research opportunities": two application blocks a week (Thu afternoon, Sun morning), replacing the many overlapping job-application repeats.
+- [ ] M10 > "there is no task management in this app/calendar. only study hub has such functionality. i need a sort of checklist for that too": Tasks in Life OS: any task has steps to tick; a Tasks page with lanes; tasks from the Inbox and the Study hub gathered beside her own.
+- [ ] M11 > "i had some designs in claude design that their parts are not even implemented in the code. like cards for daily tasks": the July design boards (`code/life-os/frontend/design-*-paper.png`): Desk "Today's folio" daily cards, the Board and Ledger of lanes, the card with steps, "add a leaf". Daily task cards on Today and the Court first. Standalone Claude Design closes by 14 December 2026: she should export anything she wants to keep.
 
 ---
 

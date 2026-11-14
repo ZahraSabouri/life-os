@@ -10,6 +10,7 @@ import { parseOwe } from '@shared/mail.js'
 import { addOwed } from './useMail.js'
 import { useCalendar, useLondonToday } from './useCalendar.js'
 import { useDay, useLondonClock } from './useDay.js'
+import { useTasks } from './useTasks.js'
 
 const ADD_KIND_KEY = 'life-os.today-add'
 const KINDS = ['plan', 'note', 'buy']
@@ -30,6 +31,8 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
   const near = !only && date >= addDays(today, -350) && date <= addDays(today, 14)
   const calendar = useCalendar(near ? addDays(today, -350) : only ? date : addDays(date, -7), near ? addDays(today, 14) : only ? date : addDays(date, 14))
   const day = useDay(date)
+  // Her tasks: the day's task cards, and the steps of a task shown on the day's path.
+  const tasks = useTasks()
   const [kind, setKind] = useState(savedKind)
   // The area a plan or note is filed under (a room page fixes it), and the day a plan is for
   // (the day being looked at unless she picks another).
@@ -77,7 +80,7 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
             : `“${plan.title}”, any time ${dayName}. Type a time (17:30, 5pm) to place it.`
 
   function choose(next) { setKind(next); try { window.localStorage.setItem(ADD_KIND_KEY, next) } catch { /* kept for this visit */ } }
-  function refetch() { calendar.refetch(); day.refetch(); onChanged?.() }
+  function refetch() { calendar.refetch(); day.refetch(); tasks.reload(); onChanged?.() }
   // A note dated to the day it is for (the calendar's notes), or written today (Today's).
   const noteFor = (body, details = {}) => ({ type: 'note', title: noteTitle(body), ...(notesAnyDay ? { start_at: date, all_day: true } : {}), details: { body, ...details } })
 
@@ -244,13 +247,14 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
   }
 
   return {
-    today, date, isToday, clock, dayName, calendar, day, data, items, groups, path, refetch, keepNote, setItemStatus, moveItem,
+    today, date, isToday, clock, dayName, calendar, day, data, items, groups, path, refetch, keepNote, setItemStatus, moveItem, tasks,
     loading: calendar.loading || (day.loading && !data),
     unavailable: (id) => data?.sources.find((source) => source.id === id && source.status === 'unavailable')?.error,
     line: { kind: adding, choose, text, setText, state: lineState, hint, save: saveLine, noteAllowed, area, setArea, fixedArea: Boolean(fixedArea), day: planDay, setDay,
       repeat, setRepeat, repeatDays, toggleRepeatDay: (weekday) => setRepeatDays((current) => (current.includes(weekday) ? current.filter((value) => value !== weekday) : [...current, weekday])), until, setUntil },
     error, notice, savingId, completeTask, tickShopping, tickStudy, markJob, jobMark, change, undoChange, forgetChange: () => setChange(null),
     undoJobMark: () => (jobMark?.previous?.status ? markJob(jobMark, jobMark.previous.status, jobMark.previous) : undefined),
-    stopProps: { onDone: (stop) => setEntryStatus(stop, 'done'), onRemove: (stop) => setEntryStatus(stop, 'cancelled'), onStudy: tickStudy, onChanged: refetch, busy: Boolean(savingId) },
+    stopProps: { onDone: (stop) => setEntryStatus(stop, 'done'), onRemove: (stop) => setEntryStatus(stop, 'cancelled'), onStudy: tickStudy, onChanged: refetch, busy: Boolean(savingId),
+      taskFor: (id) => tasks.tasks.find((task) => task.id === id) ?? null },
   }
 }

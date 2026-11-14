@@ -10,6 +10,7 @@ import StyleSwitch from './StyleSwitch.jsx'
 import { FocusButton } from './FocusDock.jsx'
 import { NoticeBell } from './NoticeBell.jsx'
 import { AddLine, count, hours, pounds, roomName } from './DayParts.jsx'
+import TodayTasks from './tasks/TodayTasks.jsx'
 import { aheadOf } from '../lib/day.js'
 import { useDayPage } from '../lib/useDayPage.js'
 import { clockOf } from '../lib/day.js'
@@ -334,6 +335,7 @@ function CourtNav({ navigate, quiet = false }) {
   return (
     <nav className={quiet ? 'redesign-nav redesign-nav-quiet' : 'redesign-nav'} aria-label="Primary">
       <button type="button" onClick={() => navigate('/today')}>Today</button>
+      <button type="button" onClick={() => navigate('/tasks')}>Tasks</button>
       <button type="button" onClick={() => navigate('/calendar')}>Calendar</button>
       <button type="button" onClick={() => navigate('/review')}>Review</button>
       <button type="button" onClick={() => navigate('/journal')}>Journal</button>
@@ -870,6 +872,7 @@ function IndigoCourt(props) {
           <section className="indigo-register" aria-label="Today and the rooms">
             <div className="court-day day-page">
               <AddLine page={props.page} id="court-add-input" />
+              <TodayTasks page={props.page} others />
             </div>
             <div className="indigo-register-head">
               <div>
@@ -942,8 +945,9 @@ function Ahead({ page }) {
 
 function CourtDay({ page }) {
   return (
-    <section className="court-day day-page" aria-label="Add something, and what lies ahead">
+    <section className="court-day day-page" aria-label="Add something, today's tasks, and what lies ahead">
       <AddLine page={page} id="court-add-input" />
+      <TodayTasks page={page} others />
       <Ahead page={page} />
     </section>
   )

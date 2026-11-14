@@ -10,6 +10,8 @@ import { ROOMS } from '@shared/rooms.js'
 import { calendarArea, formatCalendarDay } from '../lib/calendar.js'
 import { placeOf } from '../lib/calendarViews.js'
 import { daysAway } from '../lib/day.js'
+import { stepsDone } from '@shared/tasks.js'
+import { TaskSteps } from './tasks/TaskParts.jsx'
 
 export const pounds = (pence) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: pence % 100 ? 2 : 0 }).format(pence / 100)
 export const hours = (value) => `${Number.isInteger(value) ? value : value.toFixed(1)} h`
@@ -76,10 +78,13 @@ export function Steps({ card, limit = 6, onStudy, busy, doneWhen = true }) {
 
 // With `onOpen` (the calendar's pop-up) the title opens the thing in the pop-up, and a link
 // beside it goes to where it is kept; `notes` is how many notes are about it.
-function Stop({ stop, onDone, onRemove, onStudy, onChanged, busy, compact, onOpen, notes = 0 }) {
+function Stop({ stop, onDone, onRemove, onStudy, onChanged, busy, compact, onOpen, notes = 0, taskFor }) {
   const [changing, setChanging] = useState(false)
   const area = calendarArea(stop.area)
   const card = stop.card
+  // Her own task, when the stop is one: its steps are ticked here as on the Tasks page.
+  const own = stop.entry && !stop.entry.routine && taskFor ? taskFor(stop.entry.id) : null
+  const ownSteps = own && own.status !== 'done' ? own.details?.steps ?? [] : []
   const detailed = card && !card.done && (card.steps.length || card.doneWhen)
   // Her own plan says the room it is filed under; everything else, its part of Life OS.
   const label = (stop.room && roomName(stop.room)) || area.label
@@ -105,6 +110,11 @@ function Stop({ stop, onDone, onRemove, onStudy, onChanged, busy, compact, onOpe
         <Steps card={card} onStudy={onStudy} busy={busy} />
         <p className="day-card-foot">{card.steps.length ? `${card.stepsDone} of ${card.steps.length} steps done` : null}{card.steps.length && card.hours ? ' · ' : null}{card.hours ? hours(card.hours) : null} <Link to={card.href}>Open in Study hub</Link></p>
       </div> : null}
+      {ownSteps.length && !compact ? <div className="day-card">
+        <TaskSteps task={own} limit={6} busy={busy} />
+        <p className="day-card-foot">{stepsDone(ownSteps)} of {ownSteps.length} steps done{own.details?.proof ? ` · done when ${own.details.proof}` : ''} <Link to="/tasks">Open in Tasks</Link></p>
+      </div> : null}
+      {ownSteps.length && compact ? <p className="day-stop-meta"><span>{stepsDone(ownSteps)} of {ownSteps.length} steps</span></p> : null}
       {card && onStudy && card.hubCardId && card.semesterId ? <p className="day-stop-actions">
         <button type="button" onClick={() => onStudy(card, null, !card.done)} disabled={busy}>{card.done ? 'Not done after all' : 'Card done'}</button>
       </p> : null}

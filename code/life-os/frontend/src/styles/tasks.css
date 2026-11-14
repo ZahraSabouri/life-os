@@ -1,0 +1,190 @@
+/* Tasks: the day's task cards (Today and every Court), the Tasks page's board and list, and a
+   task opened. Drawn only with the shared style tokens (--m-* in palettes.css), so each style
+   gives them its own boxes, corners and type. The diamond is the design's tick: open, or filled. */
+
+/* ---- The diamond ---- */
+.task-tick {
+  flex: none; position: relative; display: inline-block; width: 0.8rem; height: 0.8rem; margin: 0.32rem 0.3rem 0 0.15rem; box-sizing: border-box;
+  transform: rotate(45deg); border: 1.5px solid var(--item-accent, var(--m-accent)); border-radius: 2px; background: transparent;
+}
+.task-tick.is-small { width: 0.62rem; height: 0.62rem; margin: 0.36rem 0.2rem 0 0.12rem; border-width: 1.3px; }
+.task-tick.is-done { background: var(--item-accent, var(--m-accent)); }
+.task-tick.is-ghost { border-style: dashed; border-color: var(--m-line-strong); opacity: 0.8; }
+.app-shell button.task-tick { padding: 0; min-width: 0; min-height: 0; appearance: none; cursor: pointer; box-shadow: none; border: 1.5px solid var(--item-accent, var(--m-accent)); background: transparent; }
+.app-shell button.task-tick.is-small { border-width: 1.3px; }
+.app-shell button.task-tick.is-done { background: var(--item-accent, var(--m-accent)); }
+.app-shell button.task-tick::before { content: ''; position: absolute; inset: -0.5rem; }
+.app-shell button.task-tick:hover:not(:disabled) { background: color-mix(in srgb, var(--item-accent, var(--m-accent)) 35%, transparent); }
+.app-shell button.task-tick.is-done:hover:not(:disabled) { background: color-mix(in srgb, var(--item-accent, var(--m-accent)) 70%, transparent); }
+.app-shell button.task-tick:focus-visible { outline: 2px solid var(--m-accent); outline-offset: 3px; }
+.app-shell button.task-tick:disabled { cursor: progress; opacity: 0.7; }
+
+/* ---- What a task is, in one line ---- */
+.task-meta { display: flex; flex-wrap: wrap; gap: 0.15rem 0.55rem; margin: 0.15rem 0 0; color: var(--m-muted); font: 500 0.74rem/1.35 var(--m-font); font-variant-numeric: tabular-nums; }
+.task-area { color: var(--item-accent, var(--m-accent-strong)); font-family: var(--m-label-font); font-weight: 700; letter-spacing: var(--m-label-tracking); text-transform: uppercase; font-size: 0.64rem; }
+.task-late, .task-high { color: var(--m-red); }
+.task-proof { margin: 0.35rem 0 0; color: var(--m-muted); font-size: 0.8rem; font-style: italic; line-height: 1.4; }
+.task-proof span { margin-right: 0.35rem; font: 700 0.62rem/1 var(--m-label-font); font-style: normal; letter-spacing: var(--m-label-tracking); text-transform: uppercase; }
+.app-shell button.task-card-title, .task-card-title {
+  display: block; width: 100%; padding: 0; border: 0; background: transparent; color: var(--m-ink); cursor: pointer; text-align: left; text-decoration: none;
+  font: var(--m-text-weight, 500) 0.95rem/1.35 var(--m-title-font, var(--m-font)); letter-spacing: 0; text-transform: none; min-height: 0; box-shadow: none;
+}
+.app-shell button.task-card-title:hover, a.task-card-title:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- Steps ---- */
+.task-steps { list-style: none; margin: 0.45rem 0 0; padding: 0; display: grid; gap: 0.18rem; }
+.task-steps li { display: flex; align-items: flex-start; gap: 0.35rem; color: var(--m-ink); font-size: 0.84rem; line-height: 1.4; }
+.task-steps li.is-done .task-step-text { color: var(--m-muted); text-decoration: line-through; text-decoration-color: var(--m-line-strong); }
+.task-step-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.task-step-tools { display: inline-flex; gap: 0.15rem; opacity: 0.35; transition: opacity 0.12s; }
+.task-steps li:hover .task-step-tools, .task-steps li:focus-within .task-step-tools { opacity: 1; }
+.app-shell .task-step-tools button, .app-shell .task-step-rename button {
+  min-height: 0; padding: 0.05rem 0.35rem; border: 1px solid var(--m-line); border-radius: var(--m-radius-control, 6px); background: transparent; color: var(--m-muted);
+  cursor: pointer; font: 600 0.68rem/1.3 var(--m-font); letter-spacing: 0; text-transform: none; box-shadow: none;
+}
+.app-shell .task-step-tools button:hover:not(:disabled) { color: var(--m-ink); border-color: var(--m-accent); }
+.app-shell .task-step-tools button:disabled { opacity: 0.35; cursor: default; }
+.task-step-rename { flex: 1; display: flex; gap: 0.3rem; }
+.task-step-rename input, .task-step-add input, .task-folio-add input, .task-lane-add input {
+  flex: 1; min-width: 0; box-sizing: border-box; border: 0; border-bottom: 1px dashed var(--m-line-strong); padding: 0.2rem 0; background: transparent;
+  color: var(--m-ink); font: inherit; font-size: 0.84rem; outline: none;
+}
+.task-step-rename input:focus, .task-step-add input:focus, .task-folio-add input:focus, .task-lane-add input:focus { border-bottom: 1px solid var(--m-accent); }
+.task-step-add, .task-folio-add { display: flex; align-items: flex-start; gap: 0.35rem; margin-top: 0.45rem; }
+.task-more { margin: 0.25rem 0 0 1.2rem; color: var(--m-muted); font-size: 0.78rem; }
+.app-shell .task-more button { padding: 0; min-height: 0; border: 0; background: transparent; color: var(--m-accent-strong); cursor: pointer; font: 600 0.78rem/1.3 var(--m-font); letter-spacing: 0; text-transform: none; box-shadow: none; }
+
+/* ---- Today's tasks (the folio) ---- */
+.task-folio > header { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.task-folio-line { margin: 0.35rem 0 0.2rem; color: var(--m-ink); font: var(--m-title-weight, 600) 1.3rem/1.25 var(--m-title-font, var(--m-font)); }
+.task-folio-list { list-style: none; margin: 0.4rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 0.15rem 1.4rem; }
+.task-folio-card { display: flex; align-items: flex-start; gap: 0.4rem; padding: 0.65rem 0 0.7rem; border-bottom: 1px solid var(--m-line); min-width: 0; }
+.task-folio-card > div { flex: 1; min-width: 0; }
+.task-folio-card.is-done .task-card-title { color: var(--m-muted); text-decoration: line-through; text-decoration-color: var(--m-line-strong); }
+.task-folio-card.is-study, .task-folio-card.is-mail { --item-accent: var(--m-muted); }
+.task-folio-card.is-study { --item-accent: var(--g-sage); }
+.task-folio-sum { display: flex; align-items: baseline; gap: 0.6rem; margin: 0.7rem 0 0; color: var(--m-muted); font-size: 0.82rem; font-style: italic; }
+.task-folio-sum i { flex: 1; border-bottom: 1px dotted var(--m-line-strong); transform: translateY(-0.2rem); }
+.task-folio-sum b { color: var(--m-ink); font-style: normal; font-variant-numeric: tabular-nums; }
+.court-day .task-folio { margin-top: 0; }
+
+/* ---- The Tasks page ---- */
+.tasks-page .ledger-header { align-items: end; }
+.tasks-subline { margin: 0; color: var(--m-muted); font-size: 0.88rem; }
+.tasks-toolbar, .tasks-areas { display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem; }
+.tasks-toolbar .task-primary { margin-left: auto; }
+.tasks-switch { display: inline-flex; border: 1px solid var(--m-line); border-radius: var(--m-radius-control, 6px); overflow: hidden; }
+.app-shell .tasks-switch button, .app-shell .tasks-areas button, .app-shell .task-chips button {
+  min-height: 0; padding: 0.35rem 0.75rem; border: 0; border-radius: 0; background: transparent; color: var(--m-muted); cursor: pointer; box-shadow: none;
+  font: var(--m-control-weight, 600) 0.8rem/1.2 var(--m-control-font, var(--m-font)); font-variant-caps: var(--m-control-caps, normal); letter-spacing: var(--m-control-tracking, 0); text-transform: none;
+}
+.app-shell .tasks-switch button + button { border-left: 1px solid var(--m-line); }
+.app-shell .tasks-switch button[aria-pressed='true'] { background: var(--m-primary-bg); color: var(--m-primary-ink); }
+.app-shell .tasks-areas button, .app-shell .task-chips button { border: 1px solid var(--m-line); border-radius: 999px; padding: 0.28rem 0.75rem; }
+.app-shell .tasks-areas button small { margin-left: 0.25rem; color: var(--m-faint, var(--m-muted)); }
+.app-shell .tasks-areas button[aria-pressed='true'], .app-shell .task-chips button[aria-pressed='true'] { border-color: var(--item-accent, var(--m-accent)); background: var(--m-accent-soft); color: var(--m-ink); }
+.app-shell .task-primary, .app-shell .task-sheet-foot button {
+  min-height: 0; padding: 0.45rem 1rem; border: 1px solid var(--m-line); border-radius: var(--m-radius-control, 6px); background: transparent; color: var(--m-ink); cursor: pointer; box-shadow: none;
+  font: var(--m-control-weight, 600) 0.82rem/1.2 var(--m-control-font, var(--m-font)); font-variant-caps: var(--m-control-caps, normal); letter-spacing: var(--m-control-tracking, 0); text-transform: none;
+}
+.app-shell .task-primary { border: var(--m-primary-outline, 1px solid transparent); background: var(--m-primary-bg); color: var(--m-primary-ink); }
+.app-shell .task-primary:disabled, .app-shell .task-sheet-foot button:disabled { opacity: 0.45; cursor: default; }
+
+.tasks-board-scroll { overflow-x: auto; padding-bottom: 0.4rem; }
+.tasks-board { display: grid; grid-template-columns: repeat(5, minmax(14.5rem, 1fr)); gap: 0.85rem; align-items: start; }
+.tasks-lane {
+  display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; min-height: 12rem; padding: 0.85rem 0.8rem 0.7rem;
+  background: var(--m-card-fill); border: var(--m-card-outline); border-top: var(--m-card-outline-top); border-radius: var(--m-radius-lg); box-shadow: var(--m-shadow);
+}
+.tasks-lane.is-over { outline: 2px dashed var(--m-accent); outline-offset: -4px; }
+.tasks-lane > header { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--m-accent-soft); }
+.tasks-lane > header h2 { margin: 0; color: var(--m-ink); font: var(--m-title-weight, 600) 1.1rem/1.2 var(--m-title-font, var(--m-font)); }
+.tasks-lane > header span { color: var(--m-muted); font-size: 0.74rem; font-variant-numeric: tabular-nums; }
+.tasks-lane-hint { margin: -0.2rem 0 0; color: var(--m-faint, var(--m-muted)); font-size: 0.72rem; font-style: italic; }
+.tasks-lane-cards { display: grid; gap: 0.45rem; }
+.tasks-lane-add { margin-top: auto; padding-top: 0.25rem; display: flex; }
+.task-card {
+  position: relative; display: flex; align-items: flex-start; gap: 0.35rem; padding: 0.55rem 0.6rem 0.6rem 0.45rem; min-width: 0;
+  background: var(--m-sunken, var(--m-surface)); border: 1px solid var(--m-line); border-left: 3px solid var(--item-accent, var(--m-accent)); border-radius: var(--m-radius-sm, 6px);
+}
+.task-card.is-own { cursor: grab; }
+.task-card.is-late { border-color: color-mix(in srgb, var(--m-red) 55%, var(--m-line)); border-left-color: var(--m-red); }
+.task-card.is-done { opacity: 0.6; }
+.task-card.is-done .task-card-title { text-decoration: line-through; }
+.task-card-body { flex: 1; min-width: 0; }
+.task-card .task-card-title { font-size: 0.88rem; }
+.task-progress { display: block; height: 3px; margin-top: 0.45rem; background: var(--m-line); border-radius: 3px; overflow: hidden; }
+.task-progress i { display: block; height: 100%; background: var(--item-accent, var(--m-accent)); }
+.tasks-done > header { display: flex; align-items: center; gap: 0.7rem; }
+.tasks-done > header h2 { margin: 0; color: var(--m-ink); font: var(--m-title-weight, 600) 1.05rem/1.2 var(--m-title-font, var(--m-font)); }
+.tasks-done > header span { color: var(--m-muted); font-variant-numeric: tabular-nums; }
+.tasks-done-cards { grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); margin-top: 0.6rem; }
+
+/* The list (the design's ledger): the lanes counted beside one table. */
+.tasks-ledger { display: grid; grid-template-columns: 12rem minmax(0, 1fr); gap: 1.4rem; align-items: start; }
+.tasks-ledger-lanes h2 { margin: 0 0 0.6rem; color: var(--m-muted); font: 700 0.68rem/1.2 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase; }
+.tasks-ledger-lanes ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.55rem; }
+.tasks-ledger-lanes li { display: flex; align-items: baseline; gap: 0.5rem; color: var(--m-ink); font: var(--m-text-weight, 500) 0.95rem/1.2 var(--m-title-font, var(--m-font)); }
+.tasks-ledger-lanes li i { flex: 1; border-bottom: 1px dotted var(--m-line-strong); }
+.tasks-ledger-lanes li b { color: var(--m-muted); font: 500 0.8rem/1 var(--m-font); font-variant-numeric: tabular-nums; }
+.tasks-table-scroll { overflow-x: auto; }
+.tasks-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.tasks-table th { padding: 0 0.6rem 0.45rem; border-bottom: 1px solid var(--m-line-strong); color: var(--m-muted); text-align: left; font: 700 0.64rem/1.2 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase; white-space: nowrap; }
+.tasks-table td { padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--m-line); color: var(--m-ink); vertical-align: top; font-variant-numeric: tabular-nums; }
+.tasks-table tr.is-late td:first-child { box-shadow: inset 3px 0 0 var(--m-red); }
+.tasks-table .task-card-title { font-size: 0.9rem; }
+.tasks-lane-cell { color: var(--m-muted); font-size: 0.76rem; white-space: nowrap; }
+.tasks-area-cell { color: var(--item-accent, var(--m-accent-strong)); font-size: 0.76rem; white-space: nowrap; }
+@media (max-width: 760px) {
+  .tasks-ledger { grid-template-columns: minmax(0, 1fr); }
+  .tasks-ledger-lanes ul { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .tasks-toolbar .task-primary { margin-left: 0; }
+}
+
+/* ---- A task opened, and a new one ---- */
+.task-dialog {
+  width: min(52rem, calc(100vw - 2rem)); max-width: none; max-height: calc(100dvh - 2rem); margin: auto; padding: 0; overflow: auto;
+  border: var(--m-card-outline, 1px solid var(--m-line)); border-radius: var(--m-radius-lg, 10px);
+  background: var(--m-bg, var(--m-card-fill)); color: var(--m-ink); box-shadow: 0 24px 80px rgb(0 0 0 / 0.35);
+}
+.task-dialog::backdrop { background: rgb(10 6 4 / 0.55); backdrop-filter: blur(2px); }
+.task-dialog[open] { animation: task-in 0.16s ease-out; }
+@keyframes task-in { from { opacity: 0; transform: translateY(8px) scale(0.99); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .task-dialog[open] { animation: none; } }
+.task-sheet { padding: 1.3rem 1.5rem 1.2rem; background: var(--m-card-fill); }
+.task-sheet-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; color: var(--m-muted); font-size: 0.76rem; }
+.task-eyebrow { margin: 0; color: var(--item-accent, var(--m-accent-strong)); font: 700 0.7rem/1.2 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase; }
+.app-shell .task-close { min-height: 0; padding: 0.2rem 0.6rem; border: 1px solid var(--m-line); border-radius: var(--m-radius-control, 6px); background: transparent; color: var(--m-muted); cursor: pointer; font: 600 0.76rem/1.2 var(--m-font); letter-spacing: 0; text-transform: none; box-shadow: none; }
+.task-open-title { display: flex; align-items: flex-start; gap: 0.4rem; }
+.task-open-title .task-tick { margin-top: 1rem; }
+.task-title-input {
+  width: 100%; box-sizing: border-box; margin: 0.6rem 0 0.3rem; padding: 0.25rem 0 0.45rem; border: 0; border-bottom: 1px solid var(--m-line-strong); background: transparent;
+  color: var(--m-ink); font: var(--m-title-weight, 500) 1.45rem/1.3 var(--m-title-font, var(--m-font)); outline: none;
+}
+.task-title-input:focus { border-bottom-color: var(--m-accent); }
+.task-open-steps { margin: 0.9rem 0 0.4rem; }
+.task-open-steps h3, .task-chips legend, .task-fields label {
+  margin: 0; color: var(--m-muted); font: 700 0.66rem/1.2 var(--m-label-font); letter-spacing: var(--m-label-tracking); text-transform: uppercase;
+}
+.task-open-steps .task-steps li { font-size: 0.92rem; }
+.task-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem 1.6rem; margin-top: 0.9rem; }
+.task-fields-col { display: grid; gap: 0.85rem; align-content: start; min-width: 0; }
+.task-chips { margin: 0; padding: 0; border: 0; min-width: 0; }
+.task-chips > div { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.4rem; }
+.task-fields-row { display: grid; grid-template-columns: 5.5rem repeat(2, minmax(0, 1fr)); gap: 0.6rem; }
+.task-fields label { display: grid; gap: 0.3rem; }
+.task-fields input, .task-fields textarea {
+  width: 100%; box-sizing: border-box; padding: 0.35rem 0.5rem; border: 1px solid var(--m-line); border-radius: var(--m-radius-control, 6px); background: var(--m-sunken, transparent);
+  color: var(--m-ink); font: 500 0.88rem/1.4 var(--m-font); letter-spacing: 0; text-transform: none; color-scheme: inherit;
+}
+.task-fields input:focus, .task-fields textarea:focus { outline: none; border-color: var(--m-accent); }
+/* A style with round controls (Madder) keeps text boxes only gently rounded, so no word is clipped. */
+.task-fields textarea, .task-fields input { border-radius: min(var(--m-radius-control, 6px), 10px); }
+.task-sheet-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem; margin-top: 1.1rem; padding-top: 0.9rem; border-top: 1px solid var(--m-line); }
+.task-error { margin: 0.7rem 0 0; color: var(--m-red); font-size: 0.85rem; }
+.task-said { margin: 0.7rem 0 0; color: var(--m-accent-strong); font-size: 0.85rem; }
+@media (max-width: 640px) {
+  .task-fields { grid-template-columns: minmax(0, 1fr); }
+  .task-sheet { padding: 1rem 1rem 1rem; }
+  .task-fields-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
