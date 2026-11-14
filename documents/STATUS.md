@@ -34,7 +34,7 @@ Refresh the app. **Tasks** is in the top bar ([Tasks](http://127.0.0.1:47850/tas
 
 ## Waiting on Xar
 
-Accept core move/Study archive (old SQLite stays; deletion is hers); name the new GitHub repository; decide whether to remove empty cardiff-own-events setting. From 14 November: the CMT309 deadline answer (17 or 27 December); the MAT021 brief when it appears (if it is the 70% piece, move 24 November's Week 4 to it); ENCAP's agreed weekly hours; two tasks wait in Rescue, the 7 November job triage and the 9 November interview notes (the ten 7–8 November chores were ticked done at her request, backup first, `.runtime/fresh-plan-2026-11-14/chores-done.json`); export anything wanted from standalone Claude Design before it closes on 14 December.
+Accept core move/Study archive (old SQLite stays; deletion is hers); name the new GitHub repository; decide whether to remove empty cardiff-own-events setting. From 14 November: the CMT309 deadline answer (the portal shows 27 December; an older school record said 17 December); the MAT021 brief and the coursework's own deadline (the individual coursework is 70%; only its coversheet is dated, 1 December 09:30; if the coursework is due then too, move 24 November's CMT309 Week 4 to it; card and assessment corrected the same evening, Study revision 121); ENCAP's agreed weekly hours; two tasks wait in Rescue, the 7 November job triage and the 9 November interview notes (the ten 7–8 November chores were ticked done at her request, backup first, `.runtime/fresh-plan-2026-11-14/chores-done.json`); export anything wanted from standalone Claude Design before it closes on 14 December.
 
 ## Known problems and limits
 
