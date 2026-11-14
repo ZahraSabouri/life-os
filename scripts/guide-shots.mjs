@@ -161,7 +161,7 @@ const RECIPES = {
   'calendar-add.jpg': async () => { await go('/calendar', '.calendar-explicit-capture'); await page.locator('.calendar-explicit-capture input').first().fill('Seminar: Bayesian methods'); await settle(300); await part('calendar-add.jpg', page.locator('.calendar-explicit-capture'), { pad: 14 }) },
   'strip.jpg': async () => { await go('/jobmap', '.area-today'); await settle(2500); await part('strip.jpg', page.locator('aside.area-today'), { pad: 4 }) },
   // ---- The Court
-  'court.jpg': async () => { await go('/court', '.court-ahead'); await view('court.jpg', { marks: ['form.day-note', '.court-ahead'] }) },
+  'court.jpg': async () => { await go('/court', '.court-ahead'); await settle(1500); await view('court.jpg', { marks: ['form.day-note', '.task-folio', '.court-ahead'] }) },
   'court-add.jpg': async () => {
     await go('/court', 'form.day-note')
     await page.locator('form.day-note input').first().fill('17:30 library')
@@ -179,7 +179,7 @@ const RECIPES = {
   },
   'court-ahead.jpg': async () => { await go('/court', '.court-ahead'); await part('court-ahead.jpg', page.locator('.court-ahead')) },
   // ---- Today
-  'today.jpg': async () => { await go('/today', '.day-path'); await panel('Jobs').locator('.day-figure').waitFor({ timeout: 20_000 }).catch(() => {}); await settle(1500); await view('today.jpg', { marks: ['.day-nav', 'form.day-note', '.day-path', 'section.day-panel[aria-label="Study"]', 'section.day-panel[aria-label="Jobs"]'] }) },
+  'today.jpg': async () => { await go('/today', '.day-path'); await panel('Jobs').locator('.day-figure').waitFor({ timeout: 20_000 }).catch(() => {}); await settle(1500); await view('today.jpg', { marks: ['.day-nav', 'form.day-note', '.task-folio', '.day-path', 'section.day-panel[aria-label="Study"]'] }) },
   'today-path.jpg': async () => { await go('/today', '.day-path'); await settle(2500); await part('today-path.jpg', page.locator('.day-path'), { marks: ['.day-stop-time', '.day-card', 'text:Card done'] }) },
   'today-change.jpg': async () => {
     // The first day from today that has a plan of hers.
@@ -201,6 +201,29 @@ const RECIPES = {
   'today-jobs.jpg': async () => { await go('/today', '.day-path'); await panel('Jobs').locator('.day-figure').waitFor({ timeout: 20_000 }); await part('today-jobs.jpg', panel('Jobs'), { pad: 14, marks: ['section.day-panel[aria-label="Jobs"] .day-figure', 'section.day-panel[aria-label="Jobs"] .day-list a', 'section.day-panel[aria-label="Jobs"] .day-mark'] }) },
   'today-home.jpg': async () => { await go('/today', '.day-path'); await panel('Home').locator('h3').first().waitFor({ timeout: 20_000 }); await part('today-home.jpg', panel('Home')) },
   // ---- Plan the week
+  // Tasks. Nothing is saved: a task is opened, never changed.
+  'tasks.jpg': async () => { await go('/tasks', '.tasks-board'); await page.locator('.task-card').first().waitFor({ timeout: 20_000 }).catch(() => {}); await settle(1500); await view('tasks.jpg', { marks: ['.tasks-switch', '.tasks-switch + .tasks-switch', '.tasks-areas', 'section.tasks-lane.is-today', 'section.tasks-lane.is-rescue', '.tasks-toolbar .task-primary'] }) },
+  'tasks-open.jpg': async () => {
+    await go('/tasks?from=own', '.tasks-board')
+    const withSteps = page.locator('.task-card.is-own', { has: page.locator('.task-progress') }).first()
+    await withSteps.waitFor({ timeout: 20_000 })
+    await withSteps.locator('.task-card-title').click()
+    await page.locator('dialog.task-dialog[open]').waitFor()
+    await settle(500)
+    await view('tasks-open.jpg', { marks: ['dialog.task-dialog .task-open-title .task-tick', 'dialog.task-dialog .task-steps', 'dialog.task-dialog .task-step-add', 'dialog.task-dialog .task-fields'] })
+  },
+  'tasks-new.jpg': async () => { await go('/tasks', '.tasks-board'); await page.locator('.tasks-toolbar .task-primary').click(); await page.locator('dialog.task-dialog[open]').waitFor(); await settle(500); await view('tasks-new.jpg') },
+  'tasks-list.jpg': async () => { await go('/tasks?view=list', '.tasks-table'); await settle(1500); await view('tasks-list.jpg') },
+  'today-tasks.jpg': async () => {
+    // The first day from today whose cards have steps.
+    for (let ahead = 0; ahead < 14; ahead += 1) {
+      await go(`/today?date=${dayAfter(ahead)}`, '.task-folio')
+      await settle(1500)
+      if (await page.locator('.task-folio .task-steps li').count()) break
+    }
+    await part('today-tasks.jpg', page.locator('.task-folio'))
+  },
+  'court-tasks.jpg': async () => { await go('/court', '.task-folio'); await settle(2500); await part('court-tasks.jpg', page.locator('.task-folio')) },
   'planner.jpg': async () => { await go('/planner', '.planner-week'); await page.locator('.planner-chip').first().waitFor({ timeout: 20_000 }).catch(() => {}); await settle(); await view('planner.jpg', { marks: ['.planner-day.is-today', '.planner-day .planner-add', '.planner-more'] }) },
   'planner-menu.jpg': async () => {
     await go('/planner', '.planner-week')

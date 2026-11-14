@@ -23,7 +23,8 @@ export const CHAPTERS = [
   {
     id: 'court', title: 'The Court', intro: 'The Court is the front page. It looks ahead; the day itself is on Today.',
     steps: [
-      { title: 'The whole page', image: 'court.jpg', marks: ['One line to add a plan, a note or something to buy', '“Ahead”: the next two weeks, day by day'], text: 'Open it by clicking “Life OS” or “Court” in the top bar.' },
+      { title: 'The whole page', image: 'court.jpg', marks: ['One line to add a plan, a note or something to buy', 'Today’s tasks, as cards', '“Ahead”: the next two weeks, day by day'], text: 'Open it by clicking “Life OS” or “Court” in the top bar.' },
+      { title: 'Today’s tasks', image: 'court-tasks.jpg', text: 'Your tasks for today as cards, with today’s Study hub cards and what is waiting on you today. Tick the diamond when one is done, tick its steps as you go, and click a title to open it. Anything older that slipped is counted under the cards and waits on the Tasks page.' },
       { title: 'Add something in one line', image: 'court-add.jpg', marks: ['Plan, Note or To buy', 'Type it: “17:30 library”, “Lidl”, “dinner at 8pm”', 'The day, how often, and the area it belongs to', 'What will be saved, said back to you before you press Add'], text: '“To buy” puts things on your shopping list in Budget: “eggs, rice, 2 kg onions” becomes three lines.' },
       { title: 'A plan that repeats', image: 'court-repeat.jpg', text: 'Under “repeat” choose every day, weekdays, one weekday, or “the days you choose” and tick them. “until” is the last day; leave it empty for no end. Each day of it can still be ticked or taken off by itself.' },
       { title: 'Ahead', image: 'court-ahead.jpg', text: 'Each day shows up to four things: tests and deadlines, jobs that close, your own dated plans. Click a day to open it in Today; click a thing to open it where it lives.' },
@@ -32,13 +33,23 @@ export const CHAPTERS = [
   {
     id: 'today', title: 'Today', intro: 'Today is the working page: the day in order on the left, and Waiting on you, Study, Home, Jobs, Health and Notes beside it.',
     steps: [
-      { title: 'The whole page', image: 'today.jpg', marks: ['A day back, today, a day forward, or any date', 'The add line, for this day', 'Your day in order', 'Study', 'Jobs'], text: 'Every other day has the same page: the buttons at the top move between days. Home and Notes are further down.' },
+      { title: 'The whole page', image: 'today.jpg', marks: ['A day back, today, a day forward, or any date', 'The add line, for this day', 'The day’s tasks, as cards', 'Your day in order', 'Study'], text: 'Every other day has the same page: the buttons at the top move between days. Jobs, Home and Notes are further down.' },
       { title: 'Your day, in order', image: 'today-path.jpg', marks: ['When it starts and ends', 'The steps of the study card: tick one here and the Study hub has it too', '“Card done” finishes the whole card'], text: 'Things with a time come first, with a line at “now”. Then “Any time today”, then “Also today” (deadlines and all-day things).' },
       { title: 'Change one of your own plans', image: 'today-change.jpg', text: 'Under a plan of yours: “Done” ticks it, “Change” opens its title, day, clock time, state and area right there, “Take off the day” removes it from the day. One day of a repeating plan opens the repeating plan and says so.' },
       { title: 'Study', image: 'today-study.jpg', text: 'The days to the next test, how many cards are done before it, and the cards due today. A card’s title opens that card in the Study hub.' },
       { title: 'Jobs', image: 'today-jobs.jpg', marks: ['How many jobs to apply for now', 'A job’s title opens it in JobMap', '“I applied” marks it applied in JobMap with today’s date. The line that confirms it has Undo'], text: 'The jobs are in JobMap’s own order, with the ones that close today first.' },
       { title: 'Home', image: 'today-home.jpg', text: 'Your shopping lists from Budget, with real tick boxes. Ticking needs no price. Under them: what you eat today (each meal opens its card in Budget), “What can I eat now?”, and what is at home.' },
       { title: 'Health', image: 'today-health.jpg', text: 'This week’s active minutes against the UK’s 150, and strength days against 2. The exercise planned for the day, with “Done”, and dots to tick for 5 A Day and drinks. “Open Health” goes to the Health part.' },
+    ],
+  },
+  {
+    id: 'tasks', title: 'Tasks', intro: 'Everything you have to do in one place: your own tasks, the Study hub’s cards for now, and what is waiting on you from the Inbox.',
+    steps: [
+      { title: 'The board', image: 'tasks.jpg', marks: ['Board or List', 'Everything, or only your tasks, the Study hub’s or the Inbox’s', 'An area', 'Today: for today, or just late', 'Rescue: slipped more than two days', 'A new task'], text: 'Each lane is a column: Today, This week, Deep work, Backlog, Waiting and Rescue. A task you give a day finds its lane by itself; drag one of your own tasks to another lane to move it. “+ add a task” at the foot of a lane adds one there in a line. Study hub cards and things waiting on you are ticked here and stay where they are kept.' },
+      { title: 'A task, open', image: 'tasks-open.jpg', marks: ['Tick it done', 'Its steps: tick, change the words, move up or down, remove', 'Add a step', 'Area, lane, when it fits the day, priority, hours, its day, the day it is due, and what shows it is done'], text: 'Click a task’s title to open it. A step is ticked as soon as you click it. “Save changes” keeps the rest; “Take off the list” keeps the task but takes it off the list.' },
+      { title: 'A new task', image: 'tasks-new.jpg', text: '“New task” opens the form: its title, then chips for its area, lane, when it fits the day and priority, its hours and days, what shows it is done, and its steps, one a line.' },
+      { title: 'The list', image: 'tasks-list.jpg', text: 'The same tasks as one table, lane by lane, with the lanes counted beside it.' },
+      { title: 'Today’s tasks', image: 'today-tasks.jpg', text: 'Today, the Court and every day in the calendar carry the day’s tasks as cards. A task on the day’s path shows its steps there too.' },
     ],
   },
   {

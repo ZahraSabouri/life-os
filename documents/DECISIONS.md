@@ -4,6 +4,12 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 14 November 2026 — Tasks with checklists in the core; a fresh plan to 10 January (Xar asked; details Claude Code's)
+
+- Xar: "there is no task management in this app/calendar. only study hub has such functionality. i need a sort of checklist for that too", and the July designs' "cards for daily tasks" were never built. Asked directly, so built outside stage 7's brief: steps on any entry, task lanes (with the design's Rescue lane for what slipped), a Tasks page that gathers the core's tasks with the Study hub's cards and Waiting on you (each still owned and ticked where it is kept), and the day's task cards on Today and every Court.
+- Paid work is not time to look for work: a time block or repeat can be marked `work`, and the day's job time leaves it out.
+- The plan (Claude Code's choices, hers to change): CMT309 studied week by week, each week before its question, submitted 22 December rather than the earlier 15 December target; MAT021 every class, coursework submitted a day early; about 7 work hours in term; applications in two blocks a week instead of about fifteen hours of evening blocks; the gym restarted at week 1, twice a week. Superseded records were archived, never deleted. `PLAN_2026-11-16_to_2027-01-10.md`.
+
 ## 4 November 2026 — Stage 7 is code apart from data, not accounts; a clean version on GitHub (Xar)
 
 - Asked where accounts should live and how people sign in, Xar: "no it's still single user for nowwww", "no accounts yet", and "make the functionality separate from the data even tho we are not yet doing multi usering. i want a clean professional push to github of a version of the app that doesnt contain my data". The core still moves to PostgreSQL in stage 7 ("Yes, in stage 7").
