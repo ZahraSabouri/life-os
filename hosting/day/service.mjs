@@ -117,13 +117,14 @@ export function studyDay(workspace, plans, date) {
 }
 
 // ---- Jobs -------------------------------------------------------------------------------
-// Hours she has set aside for job applications: time blocks whose area is career.
+// Hours she has set aside for job applications: time blocks whose area is career. Paid work
+// (`work`, a job she has) is not time to look for one.
 export function jobTime(entries, date) {
   return array(Array.isArray(entries) ? entries : entries?.entries).flatMap((entry) => {
     if (!entry || entry.type !== 'time-block' || ['cancelled', 'archived'].includes(lower(entry.status))) return []
     let details = entry.details ?? {}
     if (typeof details === 'string') { try { details = JSON.parse(details) } catch { details = {} } }
-    if (plain(details).area !== 'career' || plain(details).focus === true) return []
+    if (plain(details).area !== 'career' || plain(details).focus === true || plain(details).work === true) return []
     const timed = typeof entry.start_at === 'string' && entry.start_at.length > 10
     if ((timed ? dateKey(entry.start_at) : day(entry.start_at)) !== date) return []
     const minutes = timed && entry.end_at ? Math.max(0, Math.round((Date.parse(entry.end_at) - Date.parse(entry.start_at)) / 60_000)) : 0
@@ -251,7 +252,9 @@ export function notesDay(value, date) {
 }
 
 // ---- The day ----------------------------------------------------------------------------
-export function createDayService({ loadStudy, loadPlans, loadCareer, loadBudget, loadEntries, timeoutMs = 6000 } = {}) {
+// 15 seconds: a page reads the year's calendar at the same moment, and the two slow each other
+// down; a part that is only slow should show as loading, not as "could not be read".
+export function createDayService({ loadStudy, loadPlans, loadCareer, loadBudget, loadEntries, timeoutMs = 15000 } = {}) {
   return async function dayOf({ date } = {}) {
     if (!isDateKey(date)) throw Object.assign(new Error('Use a valid date (YYYY-MM-DD)'), { status: 400 })
     const sources = []

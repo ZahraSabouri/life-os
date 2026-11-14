@@ -5,7 +5,13 @@ import { laneLabel, slotLabel, stepsDone, taskDay, isLate } from '@shared/tasks.
 import { formatCalendarDay, calendarArea } from '../../lib/calendar.js'
 import { addStep, areaName, areaTone, dropStep, moveStep, renameStep, tickStep } from '../../lib/useTasks.js'
 
-export const hoursText = (value) => (value ? `${Number.isInteger(value) ? value : Number(value).toFixed(1)} h` : '')
+// Under an hour in minutes ("15 min"), otherwise in hours ("1.5 h").
+export const hoursText = (value) => {
+  const hours = Number(value)
+  if (!hours || !Number.isFinite(hours)) return ''
+  if (hours < 1) return `${Math.round(hours * 60)} min`
+  return `${Number.isInteger(hours) ? hours : (Math.round(hours * 10) / 10).toString()} h`
+}
 export const toneOf = (slug) => calendarArea(areaTone(slug)).tone
 
 // The diamond: open, or filled when done.

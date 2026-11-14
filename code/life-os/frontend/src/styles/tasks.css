@@ -91,7 +91,9 @@
 .app-shell .task-primary:disabled, .app-shell .task-sheet-foot button:disabled { opacity: 0.45; cursor: default; }
 
 .tasks-board-scroll { overflow-x: auto; padding-bottom: 0.4rem; }
-.tasks-board { display: grid; grid-template-columns: repeat(5, minmax(14.5rem, 1fr)); gap: 0.85rem; align-items: start; }
+.tasks-board { display: grid; grid-template-columns: repeat(6, minmax(12.25rem, 1fr)); gap: 0.65rem; align-items: start; }
+.tasks-lane.is-rescue > header { border-bottom-color: color-mix(in srgb, var(--m-red) 45%, transparent); }
+.tasks-lane.is-rescue > header h2 { color: var(--m-red); }
 .tasks-lane {
   display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; min-height: 12rem; padding: 0.85rem 0.8rem 0.7rem;
   background: var(--m-card-fill); border: var(--m-card-outline); border-top: var(--m-card-outline-top); border-radius: var(--m-radius-lg); box-shadow: var(--m-shadow);

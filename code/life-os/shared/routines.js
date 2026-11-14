@@ -38,6 +38,7 @@ export function routineOf(entry) {
     id: entry.id, title: String(entry.title ?? '').trim() || 'Repeating plan', from, until: dayOf(entry.end_at),
     weekdays: weekdaysOf(details.weekdays), start, end: start && CLOCK.test(details.end ?? '') && details.end > start ? details.end : '',
     area: typeof details.area === 'string' ? details.area : '',
+    ...(details.work === true ? { work: true } : {}),
   }
 }
 
@@ -52,7 +53,7 @@ export function occurrence(routine, date) {
   return {
     id: `routine:${routine.id}:${date}`, type, title: routine.title, status: 'planned',
     start_at: startAt, end_at: timed && routine.end ? londonDateTime(date, routine.end) || null : null, all_day: timed ? 0 : 1,
-    details: { ...(area ? { area } : {}), routine: routine.id }, archived: 0, virtual: true,
+    details: { ...(area ? { area } : {}), ...(routine.work ? { work: true } : {}), routine: routine.id }, archived: 0, virtual: true,
   }
 }
 

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import { validateDetails } from '../../shared/entryTypes.js'
-import { cleanSteps, compareTasks, hoursOf, isLate, laneOf, stepsFromLines, taskDay, tasksForDay } from '../../shared/tasks.js'
+import { cleanSteps, compareTasks, hoursOf, isLate, laneOf, slippedCount, stepsFromLines, taskDay, tasksForDay } from '../../shared/tasks.js'
 
 const today = '2026-11-16'
 const task = (fields = {}, details = {}) => ({ id: fields.id ?? 't', type: 'task', status: 'planned', title: 'x', start_at: null, all_day: true, ...fields, details: { priority: 'med', ...details } })
@@ -47,7 +47,9 @@ describe('task lanes and days', () => {
   it('places a task by its own lane, else by its day', () => {
     assert.equal(laneOf(task({}, { lane: 'waiting' }), today), 'waiting')
     assert.equal(laneOf(task({ start_at: '2026-11-16' }), today), 'today')
-    assert.equal(laneOf(task({ start_at: '2026-11-12' }), today), 'today')
+    assert.equal(laneOf(task({ start_at: '2026-11-14' }), today), 'today')
+    // More than two days late: it has slipped, and waits in Rescue.
+    assert.equal(laneOf(task({ start_at: '2026-11-12' }), today), 'rescue')
     assert.equal(laneOf(task({ start_at: '2026-11-21' }), today), 'week')
     assert.equal(laneOf(task({ start_at: '2026-11-30' }), today), 'backlog')
     assert.equal(laneOf(task(), today), 'backlog')
@@ -60,13 +62,14 @@ describe('task lanes and days', () => {
     assert.equal(taskDay(task({ start_at: '2026-11-20' })), '2026-11-20')
   })
 
-  it('gathers a day: its own tasks; on today also late ones and undated Today ones', () => {
+  it('gathers a day: its own tasks; on today also those just late and undated Today ones, not slipped ones', () => {
     const tasks = [
       task({ id: 'own', start_at: today }), task({ id: 'late', start_at: '2026-11-10' }), task({ id: 'lane' }, { lane: 'today' }),
       task({ id: 'later', start_at: '2026-11-18' }), task({ id: 'off', start_at: today, status: 'cancelled' }),
-      task({ id: 'done-late', start_at: '2026-11-10', status: 'done' }),
+      task({ id: 'done-late', start_at: '2026-11-10', status: 'done' }), task({ id: 'yesterday', start_at: '2026-11-15' }),
     ]
-    assert.deepEqual(tasksForDay(tasks, today, today).map((t) => t.id).sort(), ['lane', 'late', 'own'])
+    assert.deepEqual(tasksForDay(tasks, today, today).map((t) => t.id).sort(), ['lane', 'own', 'yesterday'])
+    assert.equal(slippedCount(tasks, today), 1)
     assert.deepEqual(tasksForDay(tasks, '2026-11-18', today).map((t) => t.id), ['later'])
     assert.equal(isLate(tasks[1], today), true)
     assert.equal(isLate(tasks[5], today), false)

@@ -143,6 +143,8 @@ test('job time is the hours set aside for the career area that day, and the week
     { id: 'b3', type: 'time-block', title: 'Gym', details: { area: 'core' }, start_at: '2026-10-13T08:00:00.000Z', end_at: '2026-10-13T09:00:00.000Z' },
     { id: 'b4', type: 'time-block', title: 'Cancelled', details: { area: 'career' }, start_at: '2026-10-13T08:00:00.000Z', end_at: '2026-10-13T09:00:00.000Z', status: 'cancelled' },
     { id: 'b5', type: 'time-block', title: 'Tomorrow', details: { area: 'career' }, start_at: '2026-10-14T16:00:00.000Z', end_at: '2026-10-14T19:00:00.000Z' },
+    // Paid work is the job itself, not time to apply for one.
+    { id: 'w1', type: 'time-block', title: 'Work · shift', details: { area: 'career', work: true }, start_at: '2026-10-13T08:00:00.000Z', end_at: '2026-10-13T10:00:00.000Z' },
     { id: 'n1', type: 'note', title: 'A note', created_at: '2026-10-13T08:00:00.000Z' },
   ]
   assert.deepEqual(jobTime(entries, DATE).map(block => [block.id, block.start, block.end, block.minutes, block.done]), [['b2', '', '', 0, true], ['b1', '15:45', '18:45', 180, false]])

@@ -138,8 +138,12 @@ function NowLine({ clock, label = 'Now' }) {
 }
 
 // The day in clock order, then what is for any time, then the all-day rest in one slim row.
-export function DayPath({ page, compact = false, onOpen, notesFor }) {
-  const { path, isToday, clock } = page
+// `skipOwnTasks`: the page shows her tasks as cards already (Today), so her undated tasks are not
+// listed again under "Any time".
+export function DayPath({ page, compact = false, onOpen, notesFor, skipOwnTasks = false }) {
+  const { isToday, clock } = page
+  const isOwnTask = (entry) => Boolean(entry.entry && !entry.entry.routine && page.stopProps?.taskFor?.(entry.entry.id))
+  const path = skipOwnTasks ? { ...page.path, anytime: page.path.anytime.filter((entry) => !isOwnTask(entry)) } : page.path
   const when = isToday ? 'today' : 'that day'
   const opened = onOpen ? { onOpen } : {}
   const notes = (key) => (notesFor ? notesFor(key) : 0)

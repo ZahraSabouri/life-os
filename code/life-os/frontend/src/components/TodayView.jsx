@@ -42,7 +42,7 @@ export default function TodayView() {
     <div className="day-grid">
       <section className="day-path" aria-labelledby="day-path-heading">
         <header><h2 id="day-path-heading">{isToday ? 'Your day' : 'The day'}</h2><span>{isToday ? page.clock : daysAway(Math.round((Date.parse(`${date}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000))}</span></header>
-        <DayPath page={page} />
+        <DayPath page={page} skipOwnTasks />
       </section>
       <div className="day-panels"><DayPanels page={page} /></div>
     </div>

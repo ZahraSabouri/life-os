@@ -4,13 +4,20 @@
 // it is kept. On Today and on every style's Court.
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { hoursOf, tasksForDay, compareTasks, isDoneTask } from '@shared/tasks.js'
+import { hoursOf, tasksForDay, compareTasks, isDoneTask, slippedCount } from '@shared/tasks.js'
 import { formatCalendarDay } from '../../lib/calendar.js'
 import { gatherItems } from '../../lib/taskItems.js'
 import { createTask, setTaskDone } from '../../lib/useTasks.js'
 import { saveAction, useMail } from '../../lib/useMail.js'
 import { TaskMeta, TaskSteps, TaskTick, hoursText } from './TaskParts.jsx'
 import { TaskDialog } from './TaskEditor.jsx'
+
+// Hours done of hours planned, both in the planned amount's unit: "15 of 45 min", "1.5 of 6 h".
+export function sumText(done, planned) {
+  if (planned < 1) return `${Math.round(done * 60)} of ${Math.round(planned * 60)} min`
+  const h = (value) => (Number.isInteger(value) ? String(value) : String(Math.round(value * 10) / 10))
+  return `${h(done)} of ${h(planned)} h`
+}
 
 const WORDS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve']
 const say = (n) => WORDS[n] ?? String(n)
@@ -33,6 +40,7 @@ export default function TodayTasks({ page, others = false, title }) {
   const gathered = useMemo(() => (others && isToday ? gatherItems({ tasks: [], today, day: page.data, mail: mail.data, includeDone: true }).filter((item) => item.lane === 'today') : []), [others, isToday, today, page.data, mail.data])
   const rest = gathered.filter((item) => !item.late)
   const lateElsewhere = { study: gathered.filter((item) => item.late && item.kind === 'study').length, mail: gathered.filter((item) => item.late && item.kind === 'mail').length }
+  const slipped = isToday ? slippedCount(tasks.tasks, today) : 0
   const done = mine.filter(isDoneTask).length + rest.filter((item) => item.done).length
   const open = mine.length + rest.length - done
   const hours = hoursOf(mine)
@@ -86,8 +94,8 @@ export default function TodayTasks({ page, others = false, title }) {
         </div>
       </li>)}
     </ul> : null}
-    {lateElsewhere.study || lateElsewhere.mail ? <p className="day-more">Also late: {[lateElsewhere.study ? `${lateElsewhere.study} Study hub ${lateElsewhere.study === 1 ? 'card' : 'cards'}` : '', lateElsewhere.mail ? `${lateElsewhere.mail} ${lateElsewhere.mail === 1 ? 'thing' : 'things'} waiting on you` : ''].filter(Boolean).join(' and ')}. <Link to="/tasks">See them in Tasks</Link></p> : null}
-    {hours.planned ? <p className="task-folio-sum"><span>the day so far</span><i aria-hidden="true" /><b>{hoursText(hours.done) || '0 h'} of {hoursText(hours.planned)}</b></p> : null}
+    {slipped || lateElsewhere.study || lateElsewhere.mail ? <p className="day-more">Also late: {[slipped ? `${slipped} of your ${slipped === 1 ? 'task' : 'tasks'} slipped more than two days` : '', lateElsewhere.study ? `${lateElsewhere.study} Study hub ${lateElsewhere.study === 1 ? 'card' : 'cards'}` : '', lateElsewhere.mail ? `${lateElsewhere.mail} ${lateElsewhere.mail === 1 ? 'thing' : 'things'} waiting on you` : ''].filter(Boolean).join(', ')}. <Link to="/tasks">See them in Tasks</Link></p> : null}
+    {hours.planned ? <p className="task-folio-sum"><span>the day so far</span><i aria-hidden="true" /><b>{sumText(hours.done, hours.planned)}</b></p> : null}
     <form className="task-folio-add" onSubmit={add}>
       <span className="task-tick is-ghost" aria-hidden="true" />
       <input value={adding} onChange={(event) => setAdding(event.target.value)} placeholder={`Add a task for ${dayName} and press Enter`} maxLength={300} aria-label={`A new task for ${dayName}`} disabled={state.saving === 'add'} />

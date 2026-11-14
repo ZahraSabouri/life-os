@@ -1,7 +1,7 @@
 // Everything she has to do, from wherever it is kept, as one list of cards with a lane each:
 // her own tasks (Life OS), the Study hub's cards for now (read from the day), and what is
 // waiting on her from the Inbox. Each stays owned by its part: a tick saves there.
-import { compareTasks, isDoneTask, isLate, isPutAway, laneOf, stepsDone, taskDay } from '@shared/tasks.js'
+import { compareTasks, hasSlipped, isDoneTask, isLate, isPutAway, laneOf, stepsDone, taskDay } from '@shared/tasks.js'
 import { formatCalendarDay, calendarArea } from './calendar.js'
 import { areaTone } from './useTasks.js'
 
@@ -20,7 +20,7 @@ export function ownItem(task, today) {
 function studyItem(card, today, lane) {
   const late = !card.done && Boolean(card.due) && card.due < today
   return {
-    key: `study:${card.id}`, kind: 'study', id: card.id, title: card.title, card, done: card.done, lane, late,
+    key: `study:${card.id}`, kind: 'study', id: card.id, title: card.title, card, done: card.done, lane: late && hasSlipped(card.due, today) ? 'rescue' : lane, late,
     tone: calendarArea('study').tone, area: 'study', source: card.moduleCode || 'Study hub',
     when: card.due ? `${late ? 'late · ' : ''}due ${dayWords(card.due, today)}` : '', extra: card.hours ? `${card.hours} h` : '',
     progress: progressOf(card.steps), href: card.href, day: card.due ?? '',
@@ -30,7 +30,7 @@ function studyItem(card, today, lane) {
 const MAIL_KINDS = new Set(['do', 'email', 'decide', 'read', 'text', 'reply', 'call'])
 function mailItem(row, today) {
   const due = row.due ? String(row.due).slice(0, 10) : ''
-  const lane = row.status === 'snoozed' ? 'waiting' : due && due <= today ? 'today' : due && due <= addDays(today, 6) ? 'week' : 'backlog'
+  const lane = row.status === 'snoozed' ? 'waiting' : hasSlipped(due, today) ? 'rescue' : due && due <= today ? 'today' : due && due <= addDays(today, 6) ? 'week' : 'backlog'
   return {
     key: `mail:${row.id}`, kind: 'mail', id: row.id, title: row.her_title || row.title, row, done: false, lane, late: Boolean(due) && due < today,
     tone: calendarArea('admin').tone, area: row.area || 'admin', source: 'Waiting on you',

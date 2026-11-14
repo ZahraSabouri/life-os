@@ -12,7 +12,7 @@ const patch = (id, body) => apiFetch(`/api/entries/${encodeURIComponent(id)}`, {
 // with a worked-out day (hosting/calendar/mappers.mjs: meta.routine).
 const occurrence = (routine, title, extra = {}) => ({
   type: routine.type, title, start_at: routine.start_at, ...(routine.end_at ? { end_at: routine.end_at } : {}), all_day: Boolean(routine.all_day),
-  details: { ...(routine.area ? { area: routine.area } : {}), routine: routine.id }, ...extra,
+  details: { ...(routine.area ? { area: routine.area } : {}), ...(routine.work ? { work: true } : {}), routine: routine.id }, ...extra,
 })
 
 // `entry` is { id, revision, routine } as the day builds it (lib/day.js: ownEntry).

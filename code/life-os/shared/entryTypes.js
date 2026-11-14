@@ -52,7 +52,9 @@ export const ENTRY_TYPES = {
       area: { type: 'enum', enum: ['core', 'study', 'career', 'money', 'home', 'relationships', 'events'], default: 'core' },
       // A block the focus timer wrote when it finished: time spent, not time set aside.
       focus: { type: 'boolean' },
-      minutes: { type: 'number' }
+      minutes: { type: 'number' },
+      // Paid work (a job she has), not time set aside to look for one.
+      work: { type: 'boolean' }
     }
   },
   repeat: {
@@ -65,7 +67,9 @@ export const ENTRY_TYPES = {
       weekdays: { type: 'string' },   // "1,3,5": Monday is 1, Sunday is 7
       start: { type: 'string' },      // "17:45", or nothing for any time of the day
       end: { type: 'string' },
-      area: { type: 'string' }
+      area: { type: 'string' },
+      // Its days are paid work, not time to look for work (shared/routines.js passes it on).
+      work: { type: 'boolean' }
     }
   },
   workout: {

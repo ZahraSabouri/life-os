@@ -140,12 +140,12 @@ export default function TasksView() {
       {LANES.map((lane) => {
         const items = open.filter((item) => item.lane === lane.id)
         const hours = items.reduce((sum, item) => sum + (Number(item.task?.details?.estimate) || 0), 0)
-        return <section key={lane.id} className={`tasks-lane${over === lane.id ? ' is-over' : ''}`} aria-labelledby={`lane-${lane.id}`}
+        return <section key={lane.id} className={`tasks-lane is-${lane.id}${over === lane.id ? ' is-over' : ''}`} aria-labelledby={`lane-${lane.id}`}
           onDragOver={(event) => { if (dragging) { event.preventDefault(); setOver(lane.id) } }} onDragLeave={() => setOver('')} onDrop={(event) => { event.preventDefault(); drop(lane.id) }}>
           <header><h2 id={`lane-${lane.id}`}>{lane.label}</h2><span>{items.length}{hours ? ` · ${hoursText(hours)}` : ''}</span></header>
           <p className="tasks-lane-hint">{lane.hint}</p>
           <div className="tasks-lane-cards">{items.length ? items.map(card) : <p className="day-quiet">{tasks.loading ? 'Reading…' : 'Nothing here.'}</p>}</div>
-          <LaneAdd lane={lane.id} today={today} onError={setError} />
+          {lane.id === 'rescue' ? null : <LaneAdd lane={lane.id} today={today} onError={setError} />}
         </section>
       })}
     </div></div> : <div className="tasks-ledger">

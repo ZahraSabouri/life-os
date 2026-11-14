@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router-dom'
 import { TaskCard, TaskMeta, TaskSteps } from '../src/components/tasks/TaskParts.jsx'
-import TodayTasks, { folioLine } from '../src/components/tasks/TodayTasks.jsx'
+import TodayTasks, { folioLine, sumText } from '../src/components/tasks/TodayTasks.jsx'
 import { gatherItems, ownItem } from '../src/lib/taskItems.js'
 
 const today = '2026-11-16'
@@ -31,10 +31,12 @@ test('the day’s cards are read as a sentence and drawn with their steps and wh
   assert.equal(folioLine(0, 0), 'Nothing on the list yet.')
   assert.equal(folioLine(2, 3), 'Two done, three to go.')
   assert.equal(folioLine(1, 0), 'One done. Everything is ticked.')
+  assert.equal(sumText(0, 0.25), '0 of 15 min')
+  assert.equal(sumText(1.5, 6), '1.5 of 6 h')
   const page = { tasks: { tasks: [task, { ...task, id: 't2', title: 'Gym A', status: 'done', details: { area: 'body', estimate: 1 } }], loading: false, error: '', reload() {} },
     date: today, today, isToday: true, data: null, savingId: '', tickStudy() {} }
   const markup = renderToStaticMarkup(<MemoryRouter><TodayTasks page={page} /></MemoryRouter>)
-  for (const words of ['Today’s tasks', 'One done, one to go.', 'MAT021 coursework: read the brief', 'Find the brief on Learning Central', 'Done when', 'brief saved and questions listed', '1 h of 2.5 h', 'Add a task for today', 'All tasks']) assert.ok(markup.includes(words), words)
+  for (const words of ['Today’s tasks', 'One done, one to go.', 'MAT021 coursework: read the brief', 'Find the brief on Learning Central', 'Done when', 'brief saved and questions listed', '1 of 2.5 h','Add a task for today', 'All tasks']) assert.ok(markup.includes(words), words)
   // Nothing in the app speaks to its maker or names an assistant.
   assert.ok(!/Claude|Codex|agent/i.test(markup))
 })

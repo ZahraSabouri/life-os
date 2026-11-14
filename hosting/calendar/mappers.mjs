@@ -84,7 +84,7 @@ export function mapEntries(value, range) {
       meta: { source: 'core', readonly: false, entryId: entry.id, type, status: entry.status, archetype: entry.archetype, ...(room ? { room } : {}), ...(done ? { completed: true } : {}),
         ...(type === 'note' ? { body: text(details.body, '').slice(0, 2000), ...(id(details.about) ? { about: details.about } : {}) } : {}),
         // One day of a repeating plan that she has not acted on: what it takes to make it a real entry when she does.
-        ...(entry.virtual ? { routine: { id: details.routine, type, start_at: entry.start_at, end_at: entry.end_at ?? null, all_day: Boolean(entry.all_day), area: details.area ?? '' } } : {}) },
+        ...(entry.virtual ? { routine: { id: details.routine, type, start_at: entry.start_at, end_at: entry.end_at ?? null, all_day: Boolean(entry.all_day), area: details.area ?? '', ...(details.work === true ? { work: true } : {}) } } : {}) },
       ...(details.location || details.venue ? { location: text(details.location ?? details.venue, '') } : {}),
     }
     const start = entry.start_at || details.deadline || details.exam_date || (type === 'trip' && details.start)

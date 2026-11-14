@@ -8,7 +8,10 @@ export const LANES = [
   { id: 'deep', label: 'Deep work', hint: 'Needs a long, quiet block' },
   { id: 'backlog', label: 'Backlog', hint: 'No day yet, or further off' },
   { id: 'waiting', label: 'Waiting', hint: 'On someone else' },
+  { id: 'rescue', label: 'Rescue', hint: 'Slipped more than two days: do it, give it a new day, or take it off' },
 ]
+// A task late by more than this many days has slipped: it waits in Rescue, not on today's cards.
+export const SLIPPED_AFTER_DAYS = 2
 export const LANE_IDS = LANES.map((lane) => lane.id)
 export const laneLabel = (id) => LANES.find((lane) => lane.id === id)?.label ?? (id === 'done' ? 'Done' : '')
 
@@ -85,12 +88,15 @@ export const isDoneTask = (task) => task?.status === 'done'
 export const isPutAway = (task) => ['cancelled', 'archived'].includes(task?.status)
 
 // The lane a task stands in today. Done is its own place. A lane she chose wins; otherwise
-// the day decides: today or late is Today, the next six days This week, anything else Backlog.
+// the day decides: slipped more than two days is Rescue, today or just late is Today, the next
+// six days This week, anything else Backlog.
+export const hasSlipped = (day, today) => Boolean(day) && day < addDays(today, -SLIPPED_AFTER_DAYS)
 export function laneOf(task, today) {
   if (isDoneTask(task)) return 'done'
   const chosen = task?.details?.lane
   if (LANE_IDS.includes(chosen)) return chosen
   const day = taskDay(task)
+  if (hasSlipped(day, today)) return 'rescue'
   if (day && day <= today) return 'today'
   if (day && day <= addDays(today, 6)) return 'week'
   return 'backlog'
@@ -99,17 +105,22 @@ export function laneOf(task, today) {
 // Late: planned for a day before today and not done.
 export const isLate = (task, today) => !isDoneTask(task) && !isPutAway(task) && Boolean(taskDay(task)) && taskDay(task) < today
 
-// The tasks that belong to a day's folio: planned for that day; on today, also those that are
-// late and those she put in the Today lane without a day. Done ones stay, ticked, on their day.
+// The tasks that belong to a day's folio: planned for that day; on today, also those just late
+// (two days at most: older ones wait in Rescue) and those she put in the Today lane without a
+// day. Done ones stay, ticked, on their day.
 export function tasksForDay(tasks, date, today) {
   return tasks.filter((task) => {
     if (isPutAway(task)) return false
     const day = taskDay(task)
     if (day === date) return true
     if (date !== today || isDoneTask(task)) return false
-    return (day && day < today) || (!day && task.details?.lane === 'today')
+    if (day) return day < today && !hasSlipped(day, today) && task.details?.lane !== 'rescue'
+    return task.details?.lane === 'today'
   })
 }
+
+// How many of her tasks have slipped into Rescue (by their day, or put there).
+export const slippedCount = (tasks, today) => tasks.filter((task) => !isDoneTask(task) && !isPutAway(task) && laneOf(task, today) === 'rescue').length
 
 // Order within a list: late first, then by clock time or slot, then priority, then title.
 const SLOT_ORDER = { am: 0, pm: 1, eve: 2, any: 3 }
