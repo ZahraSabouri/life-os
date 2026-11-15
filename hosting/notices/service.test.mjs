@@ -1,8 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { setId, buildNotices, createNoticesService, openPlans } from './service.mjs'
+import { isHerEvent, setId, buildNotices, createNoticesService, openPlans } from './service.mjs'
 import { settingText, settingValue } from '../../code/life-os/shared/settings.js'
-const kindOf = (id) => id.replace(/^(study:late|study:waiting|plans:late):[a-z0-9]+$/, "$1")
+const kindOf = (id) => id.replace(/^(study:late|study:waiting|plans:late):[a-z0-9]+$/, "$1").replace(/^job:closes:\d{4}-\d{2}-\d{2}:[a-z0-9]+$/, "job:closes")
 
 // Monday 12 October 2026, 17:00 in London (British summer time).
 const NOW = new Date('2026-10-12T16:00:00.000Z')
@@ -42,7 +42,7 @@ test('notices come from every part, in order: on now, soon, asked of today, slip
     ['now', 'timed:block', 'Library: diagnose the gaps'],
     ['soon', 'timed:dinner', 'Dinner with Ben'],
     ['today', 'study:due:2026-10-12', '1 study card due today'],
-    ['today', 'job:closes:j1:2026-10-12', 'Closes today: Data Manager'],
+    ['today', 'job:closes', 'Closes today: Data Manager'],
     ['today', 'home:list:l1:2026-10-12', '2 things to buy today'],
     ['today', 'dated:birthday:2026-10-12', 'Sara\'s birthday is today'],
     ['today', 'plans:today:2026-10-12', '1 plan of yours for today'],
@@ -58,7 +58,7 @@ test('notices come from every part, in order: on now, soon, asked of today, slip
   assert.equal(byId['timed:block'].detail, 'On now, 16:30 to 17:30 · Study')
   assert.equal(byId['timed:dinner'].detail, 'Starts in 40 min, 17:40 · Your plans')
   assert.equal(byId['study:due:2026-10-12'].href, '/study#/today?card=bayes')            // one card: straight to it
-  assert.equal(byId['job:closes:j1:2026-10-12'].href, '/jobmap#job=j1')
+  assert.equal(notices.find((notice) => notice.id.startsWith('job:closes:')).href, '/jobmap#job=j1')
   assert.equal(byId['job:follow:j5:late'].detail, 'B · was due 2 days ago')
   // What is still to start today, for telling her a few minutes before: not what is over, done, or tomorrow.
   assert.deepEqual(upcoming.map((row) => [row.id, row.at]), [['timed:dinner', '17:40'], ['timed:late-plan', '20:00']])
@@ -93,7 +93,7 @@ test('the service reads today and tomorrow, and says which part it could not rea
   const result = await service()
   assert.deepEqual(asked, ['day 2026-10-12', 'calendar 2026-10-12 2026-10-13'])
   assert.deepEqual(result.missing, ['the calendar'])
-  assert.ok(result.notices.some((notice) => notice.id === 'job:closes:j1:2026-10-12'))
+  assert.ok(result.notices.some((notice) => notice.id.startsWith('job:closes:2026-10-12:')))
   assert.ok(!result.notices.some((notice) => notice.id.startsWith('money:')))             // within budget: nothing to say
 })
 
@@ -129,4 +129,24 @@ test('a notice about what slipped keeps its name while the same things are in it
   const next = buildNotices({ day: null, items: [], open, now: new Date('2026-10-13T09:00:00Z') }).notices.find((n) => n.id.startsWith('plans:late'))
   assert.equal(one.id, next.id)
   assert.equal(one.href, '/tasks')
+})
+
+test('events: her own and those she chose are told about; the catalogue is not', () => {
+  const event = (id, own) => ({ id: 'events:event:' + id, area: 'events', title: 'Event ' + id, start: '2026-10-12T16:30:00.000Z', end: '2026-10-12T18:00:00.000Z', href: '/events#event=' + id, meta: { source: 'events', eventId: id, candidate: !own, ...(own ? { own: true } : {}) } })
+  const items = [event('mine', true), event('chosen', false), event('maybe', false), event('random', false)]
+  assert.deepEqual(items.filter((item) => isHerEvent(item, null)).map((item) => item.meta.eventId), ['mine'])
+  const chosen = { going: ['chosen'], maybe: ['maybe'] }
+  const { notices, upcoming } = buildNotices({ day: null, items, chosen, now: NOW })
+  assert.deepEqual(notices.map((notice) => notice.title).sort(), ['Event chosen', 'Event maybe', 'Event mine'])
+  assert.ok(!upcoming.some((row) => row.title === 'Event random'))
+})
+
+test('a renewal says it renews and what it costs; ten jobs closing are one line', () => {
+  const items = [{ id: 'budget:renewal:s1:2026-10-13', area: 'money', title: 'ChatGPT', start: '2026-10-13', all_day: true, href: '/budget', meta: { source: 'budget', type: 'renewal', costPence: 2000, auto: true } }]
+  const jobs = { closing: Array.from({ length: 10 }, (_, i) => ({ id: 'j' + i, role: 'Role ' + i, company: 'Co', href: '/jobmap#job=j' + i })), due: [], followUps: [] }
+  const { notices } = buildNotices({ day: { jobs }, items, now: NOW })
+  const renewal = notices.find((notice) => notice.id.startsWith('dated:budget:renewal'))
+  assert.deepEqual([renewal.title, renewal.detail], ['ChatGPT renews tomorrow', '£20 · paid automatically'])
+  const closing = notices.filter((notice) => notice.id.startsWith('job:closes'))
+  assert.deepEqual([closing.length, closing[0].title, closing[0].href], [1, '10 jobs on your list close today', '/jobmap'])
 })

@@ -275,6 +275,8 @@ export function createLifeOsApp(options = {}) {
     loadEntries: () => db.prepare(`SELECT ${ENTRY_COLUMNS} FROM entries WHERE type IN ('task', 'time-block') ORDER BY seq`).all(),
     loadBudget: calendarLoaders.loadBudget, budgetFigures,
     loadMail: mail ? () => mail.reads.forNotices() : undefined,
+    // The events she chose in Events (her browser keeps them; the app copies them here).
+    loadChoices: () => readSetting('event-choices', null),
   })
   // While a tab is open the browser tells her; when none is, the server asks Windows to
   // (hosting/notices/desktop.mjs). Only the real server does this, not a try-out.

@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { apiFetch } from './api.js'
 import { useSetting } from './settings.js'
 import { saveAction } from './useMail.js'
+import { readEventChoices } from './calendar.js'
 
 const FIRED_KEY = 'life-os.notices.fired'      // what the computer has already said, per browser
 const DESKTOP_KEY = 'life-os.notices.desktop'  // a copy of her choice that other code can read at once
@@ -62,6 +63,28 @@ export function NoticesProvider({ children }) {
     window.addEventListener('focus', refetch)
     document.addEventListener('visibilitychange', onVisible)
     return () => { window.clearInterval(timer); window.removeEventListener('focus', refetch); document.removeEventListener('visibilitychange', onVisible) }
+  }, [refetch])
+
+  // The events she chose in Events are kept by this browser; a copy goes to Life OS (the setting
+  // "event-choices") so the bell, and Windows when no tab is open, tell her about those and no
+  // others. Copied when the page opens, when Events changes them, and once a minute.
+  const synced = useRef('')
+  useEffect(() => {
+    const sync = () => {
+      const { choices, error } = readEventChoices(() => window.localStorage)
+      // A browser that has no choices (a phone that never opened Events) does not wipe another's.
+      if (error || !Object.keys(choices).length) return
+      const ids = (status) => Object.entries(choices).filter(([, choice]) => choice.status === status).map(([id]) => id).sort()
+      const value = { going: ids('going'), maybe: ids('maybe') }
+      const text = JSON.stringify(value)
+      if (text === synced.current) return
+      synced.current = text
+      apiFetch('/api/settings/event-choices', { method: 'PUT', body: JSON.stringify({ value }) }).then(refetch).catch(() => { synced.current = '' })
+    }
+    sync()
+    window.addEventListener('storage', sync)
+    const timer = window.setInterval(sync, 60_000)
+    return () => { window.removeEventListener('storage', sync); window.clearInterval(timer) }
   }, [refetch])
 
   // One panel at a time: the address holds one, so opening Focus shuts this one, and the other way round.

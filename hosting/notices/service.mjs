@@ -14,6 +14,8 @@ const LONDON_CLOCK = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London
 const clockOf = (iso) => LONDON_CLOCK.format(new Date(iso))
 const AREAS = { core: 'Your plans', study: 'Study', career: 'Jobs', money: 'Money', home: 'Home', relationships: 'People', events: 'Events', body: 'Health' }
 const DONE = new Set(['done', 'completed', 'complete', 'cancelled', 'canceled', 'archived', 'submitted'])
+// Her own plan opens on the day's checklist; anything else where it is kept.
+const linkOf = (item) => (item?.meta?.source === 'core' ? '/today' : item?.href || '/today')
 const finished = (item) => Boolean(item?.meta?.completed || item?.meta?.done) || DONE.has(String(item?.meta?.status ?? '').toLowerCase())
 
 // A notice about things that have slipped keeps the same name for as long as the same things are
@@ -32,8 +34,18 @@ export const SOON_MINUTES = 60
 // tomorrow, `open` her own plans left unticked on days that have gone, `money` the month by
 // Budget's rule. Returns the notices for the bell and the timed things still to start today
 // (the page tells her about those a few minutes before, if she asked it to).
-export function buildNotices({ day, items, open, money, now = new Date() } = {}) {
+// An event of the Events catalogue is told about only when she chose it (Plan to go or Maybe, kept in
+// her browser and copied to the setting "event-choices"); an event she added herself always.
+export function isHerEvent(item, chosen) {
+  if (item?.area !== 'events') return true
+  if (item.meta?.own === true || item.meta?.candidate === false) return true
+  const id = String(item.meta?.eventId ?? String(item.id ?? '').replace(/^events:event:/, ''))
+  return Boolean(chosen && (chosen.going?.includes(id) || chosen.maybe?.includes(id)))
+}
+
+export function buildNotices({ day, items, open, money, chosen = null, now = new Date() } = {}) {
   const today = dateKey(now)
+  items = array(items).filter((item) => isHerEvent(item, chosen))
   const tomorrow = addDays(today, 1)
   const at = now.getTime()
   const notices = []
@@ -46,10 +58,10 @@ export function buildNotices({ day, items, open, money, now = new Date() } = {})
   for (const { item, start, end } of timed) {
     const area = AREAS[item.area] ?? AREAS.core
     const span = `${clockOf(item.start)}${item.end ? ` to ${clockOf(item.end)}` : ''}`
-    if (start <= at && at < end) add({ id: `timed:${item.id}`, level: 'now', area: item.area, title: text(item.title), detail: `On now, ${span} · ${area}`, at: clockOf(item.start), href: item.href || '/today' })
-    else if (start > at && start - at <= SOON_MINUTES * 60_000) add({ id: `timed:${item.id}`, level: 'soon', area: item.area, title: text(item.title), detail: `Starts in ${Math.max(1, Math.round((start - at) / 60_000))} min, ${span} · ${area}`, at: clockOf(item.start), href: item.href || '/today' })
+    if (start <= at && at < end) add({ id: `timed:${item.id}`, level: 'now', area: item.area, title: text(item.title), detail: `On now, ${span} · ${area}`, at: clockOf(item.start), href: linkOf(item) })
+    else if (start > at && start - at <= SOON_MINUTES * 60_000) add({ id: `timed:${item.id}`, level: 'soon', area: item.area, title: text(item.title), detail: `Starts in ${Math.max(1, Math.round((start - at) / 60_000))} min, ${span} · ${area}`, at: clockOf(item.start), href: linkOf(item) })
   }
-  const upcoming = timed.filter((row) => row.start > at).map(({ item }) => ({ id: `timed:${item.id}`, title: text(item.title), startsAt: item.start, at: clockOf(item.start), area: item.area, href: item.href || '/today' }))
+  const upcoming = timed.filter((row) => row.start > at).map(({ item }) => ({ id: `timed:${item.id}`, title: text(item.title), startsAt: item.start, at: clockOf(item.start), area: item.area, href: linkOf(item) }))
 
   // ---- Study -------------------------------------------------------------------------------
   const study = day?.study
@@ -71,8 +83,11 @@ export function buildNotices({ day, items, open, money, now = new Date() } = {})
   // ---- Jobs --------------------------------------------------------------------------------
   const jobs = day?.jobs
   if (jobs) {
-    for (const job of array(jobs.closing).slice(0, 3)) add({ id: `job:closes:${job.id}:${today}`, level: 'today', area: 'career', title: `Closes today: ${job.role}`, detail: [job.company, job.label].filter(Boolean).join(' · '), href: job.href })
-    if (array(jobs.closing).length > 3) add({ id: `job:closes-more:${today}`, level: 'today', area: 'career', title: `${array(jobs.closing).length - 3} more jobs close today`, href: '/jobmap' })
+    const closing = array(jobs.closing)
+    if (closing.length) add({ id: setId(`job:closes:${today}`, closing.map((job) => job.id)), level: 'today', area: 'career',
+      title: closing.length === 1 ? `Closes today: ${closing[0].role}` : `${plural(closing.length, 'job')} on your list close today`,
+      detail: closing.length === 1 ? [closing[0].company, closing[0].label].filter(Boolean).join(' · ') : listed(closing.map((job) => `${job.role} · ${job.company}`), 3),
+      href: closing.length === 1 ? closing[0].href : '/jobmap' })
     const tomorrowJobs = array(jobs.due).filter((job) => job.days === 1 && job.listed && !job.applied)
     if (tomorrowJobs.length) add({ id: `job:tomorrow:${today}`, level: 'ahead', area: 'career', title: `${plural(tomorrowJobs.length, 'job')} on your list ${tomorrowJobs.length === 1 ? 'closes' : 'close'} tomorrow`, detail: listed(tomorrowJobs.map((job) => job.role)), href: tomorrowJobs.length === 1 ? tomorrowJobs[0].href : '/jobmap' })
     for (const job of array(jobs.followUps).filter((row) => row.days <= 0).slice(0, 3)) add({ id: job.days < 0 ? `job:follow:${job.id}:late` : `job:follow:${job.id}:${today}`, level: job.days < 0 ? 'late' : 'today', area: 'career', title: `Follow up: ${job.role}`, detail: [job.company, job.days < 0 ? `was due ${Math.abs(job.days)} ${Math.abs(job.days) === 1 ? 'day' : 'days'} ago` : 'due today'].filter(Boolean).join(' · '), href: job.href })
@@ -91,7 +106,11 @@ export function buildNotices({ day, items, open, money, now = new Date() } = {})
     if (date !== today && date !== tomorrow) continue
     // A birthday today leads to the wish on Waiting on you.
     const wish = item.meta?.type === 'birthday' && date === today
-    add({ id: `dated:${item.id}:${date}`, level: date === today ? 'today' : 'ahead', area: item.area, title: `${text(item.title)}${date === today ? ' is today' : ' is tomorrow'}`, detail: wish ? 'Wish them a happy birthday' : AREAS[item.area], href: wish ? '/inbox' : item.href || '/calendar' })
+    const when = date === today ? 'today' : 'tomorrow'
+    const title = item.meta?.type === 'renewal' ? `${text(item.title)} renews ${when}`
+      : item.meta?.type === 'budget-month' ? `A new budget month starts ${when}` : `${text(item.title)} is ${when}`
+    const detail = wish ? 'Wish them a happy birthday' : item.meta?.type === 'renewal' && Number.isFinite(Number(item.meta.costPence)) ? `${pounds(Number(item.meta.costPence))}${item.meta.auto === false ? ' · renew it yourself' : ' · paid automatically'}` : AREAS[item.area]
+    add({ id: `dated:${item.id}:${date}`, level: date === today ? 'today' : 'ahead', area: item.area, title, detail, href: wish ? '/inbox' : item.href || '/calendar' })
   }
 
   // ---- Health: appointments today and tomorrow, sessions planned for today ------------------
@@ -135,17 +154,18 @@ export function openPlans(entries, today, days = 7) {
   return { count: open.length, plans: open.slice(0, 6), ids: open.map((plan) => plan.id) }
 }
 
-export function createNoticesService({ dayOf, calendarOf, loadEntries, loadBudget, budgetFigures, loadMail, now = () => new Date() } = {}) {
+export function createNoticesService({ dayOf, calendarOf, loadEntries, loadBudget, budgetFigures, loadMail, loadChoices, now = () => new Date() } = {}) {
   return async function notices() {
     const moment = now()
     const today = dateKey(moment)
     // Each part that cannot be read leaves its notices out; the rest still come.
-    const [day, calendar, entries, budget, mail] = await Promise.all([
+    const [day, calendar, entries, budget, mail, chosen] = await Promise.all([
       Promise.resolve().then(() => dayOf({ date: today })).catch(() => null),
       Promise.resolve().then(() => calendarOf({ from: today, to: addDays(today, 1) })).catch(() => null),
       Promise.resolve().then(() => loadEntries()).catch(() => null),
       Promise.resolve().then(() => loadBudget?.()).catch(() => null),
       Promise.resolve().then(() => loadMail?.()).catch(() => null),
+      Promise.resolve().then(() => loadChoices?.()).catch(() => null),
     ])
     let money = null
     try {
@@ -153,7 +173,7 @@ export function createNoticesService({ dayOf, calendarOf, loadEntries, loadBudge
       const figures = state && typeof budgetFigures === 'function' ? budgetFigures(state, today.slice(0, 7)) : null
       if (figures && Number.isFinite(Number(figures.totalRemaining))) money = { month: today.slice(0, 7), spentPence: Math.round(Number(figures.totalSpent) * 100), budgetPence: Math.round(Number(figures.adjustedTotal) * 100), leftPence: Math.round(Number(figures.totalRemaining) * 100) }
     } catch { money = null }
-    const result = buildNotices({ day, items: calendar?.items ?? [], open: entries ? openPlans(entries, today) : null, money, now: moment })
+    const result = buildNotices({ day, items: calendar?.items ?? [], open: entries ? openPlans(entries, today) : null, money, chosen, now: moment })
     if (mail) {
       result.notices.push(...mailNotices(mail, today))
       result.notices.sort((a, b) => LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level) || String(a.at).localeCompare(String(b.at)))
