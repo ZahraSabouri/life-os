@@ -12,7 +12,11 @@ import { DAY_TABS, placeOf } from '../lib/calendarViews.js'
 import { daysAway, shortPlace } from '../lib/day.js'
 import { useDayPage } from '../lib/useDayPage.js'
 import ChangePlan from './ChangePlan.jsx'
-import { AddLine, DayPath, HomePanel, JobsPanel, Panel, Steps, StudyPanel, count, hours, roomName } from './DayParts.jsx'
+import { AddLine, HomePanel, JobsPanel, Panel, Steps, StudyPanel, count, hours, roomName } from './DayParts.jsx'
+import DayChecklist from './DayChecklist.jsx'
+import { thingKind } from '../lib/checklist.js'
+import { apiFetch } from '../lib/api.js'
+import { TaskSteps } from './tasks/TaskParts.jsx'
 import HealthPanel from './health/HealthPanel.jsx'
 
 const persianLong = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { timeZone: 'Europe/London', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
@@ -73,10 +77,57 @@ function NoteList({ notes }) {
   })}</ul>
 }
 
+// The name a thing has where it is kept, for reading everything about it (hosting/thing.mjs):
+// a study block is read as its card.
+function keptAs(thing) {
+  if (!thing) return ''
+  if (thing.card?.id) return `study:native:cards:${thing.card.id}`
+  if (thing.item?.meta?.type === 'study-block' && thing.item.meta.cardId) return `study:native:cards:${thing.item.meta.cardId}`
+  return thing.item?.id ?? ''
+}
+
+// Everything kept about a thing, read when it is opened: its note or description, more facts,
+// its steps, files and links.
+function useKept(id) {
+  const [state, setState] = useState({ id: '', data: null, loading: false })
+  useEffect(() => {
+    if (!id) return undefined
+    let off = false
+    setState({ id, data: null, loading: true })
+    apiFetch(`/api/thing?id=${encodeURIComponent(id)}`).then((data) => { if (!off) setState({ id, data, loading: false }) }).catch(() => { if (!off) setState({ id, data: null, loading: false }) })
+    return () => { off = true }
+  }, [id])
+  return state.id === id ? state : { id, data: null, loading: Boolean(id) }
+}
+
+// Facts the top of the thing already shows, or that say nothing to her ("planned", the hub's lane).
+const SHOWN = new Set(['When', 'Part', 'Kind', 'Where', 'Lane'])
+const QUIET = new Set(['planned', 'active', 'confirmed'])
+const factValue = (value) => (isDateKey(value) ? formatCalendarDay(value, { weekday: 'short', year: 'numeric' }) : value)
+function Kept({ kept, page, card, own }) {
+  const data = kept.data
+  if (kept.loading) return <p className="day-quiet">Reading everything about it…</p>
+  if (!data) return null
+  const facts = (data.facts ?? []).filter((fact) => !SHOWN.has(fact.label) && !(fact.label === 'Status' && QUIET.has(String(fact.value).toLowerCase())))
+    .map((fact) => ({ ...fact, value: factValue(fact.value) }))
+  const task = own && data.entryId ? page.tasks.tasks.find((entry) => entry.id === data.entryId) : null
+  return <div className="calendar-thing-kept">
+    {facts.length ? <dl className="calendar-thing-facts is-kept">{facts.map((fact) => <div key={fact.label}><dt>{fact.label}</dt><dd><Linked text={fact.value} /></dd></div>)}</dl> : null}
+    {(data.text ?? []).map((paragraph, index) => <p key={index} className="calendar-thing-text"><Linked text={paragraph} /></p>)}
+    {!card && data.steps?.length ? (task ? <TaskSteps task={task} editable /> : <ul className="day-steps">{data.steps.map((step) => <li key={step.id} className={step.done ? 'is-done' : undefined}><span className="day-tick" aria-hidden="true" /><span>{step.text}</span></li>)}</ul>) : null}
+    {!card && data.doneWhen ? <p className="day-done-when"><span>Done when</span> {data.doneWhen}</p> : null}
+    {data.exercises ? <details className="calendar-thing-more"><summary>The exercises</summary><p className="calendar-thing-text">{data.exercises}</p></details> : null}
+    {data.files?.length ? <div className="calendar-thing-files"><h4>Files</h4><ul>{data.files.map((file) => <li key={file.title}>{file.href ? <a href={file.href} target="_blank" rel="noreferrer">{file.title}</a> : file.title}</li>)}</ul></div> : null}
+    {data.links?.length ? <p className="calendar-thing-links">{data.links.map((entry) => <a key={entry.href} href={entry.href} target={entry.external ? '_blank' : undefined} rel="noreferrer">{entry.label}</a>)}</p> : null}
+    {data.notes ? <details className="calendar-thing-more"><summary>Notes kept with it</summary><p className="calendar-thing-text">{data.notes}</p></details> : null}
+  </div>
+}
+
 function Thing({ page, thingKey, onBack, onItem }) {
   const [changing, setChanging] = useState(false)
   const [moveTo, setMoveTo] = useState('')
   const thing = findThing(page, thingKey)
+  const kept = useKept(keptAs(thing))
   if (!thing) {
     return <section className="calendar-thing">
       <button type="button" className="calendar-thing-back" onClick={onBack}>‹ The whole day</button>
@@ -101,7 +152,7 @@ function Thing({ page, thingKey, onBack, onItem }) {
     <dl className="calendar-thing-facts">
       <div><dt>When</dt><dd>{when}</dd></div>
       <div><dt>Part</dt><dd>{(item?.meta?.room && roomName(item.meta.room)) || area.label}{card?.moduleCode || card?.module ? ` · ${card.moduleCode || card.module}` : ''}</dd></div>
-      {item ? <div><dt>Kind</dt><dd>{calendarKind(item.kind)}{item.choice ? ` · ${item.choice === 'going' ? 'Plan to go' : 'Maybe'}` : item.meta?.candidate ? ' · Available option' : ''}{done ? ' · Done' : ''}</dd></div> : null}
+      {item || block ? <div><dt>Kind</dt><dd>{(item ? thingKind(item) || calendarKind(item.kind) : 'Study block')}{item?.choice ? ` · ${item.choice === 'going' ? 'Plan to go' : 'Maybe'}` : item.meta?.candidate ? ' · Available option' : ''}{done ? ' · Done' : ''}</dd></div> : null}
       {where ? <div><dt>Where</dt><dd><span className="calendar-thing-place">{shortPlace(where)}</span>{shortPlace(where) !== where ? <small><Linked text={where} /></small> : null}</dd></div> : null}
       {card && (card.steps?.length || card.hours) ? <div><dt>Card</dt><dd>{card.steps.length ? `${card.stepsDone} of ${card.steps.length} steps done` : 'Planned'}{card.hours ? ` · ${hours(card.hours)}` : ''}</dd></div> : null}
     </dl>
@@ -109,6 +160,7 @@ function Thing({ page, thingKey, onBack, onItem }) {
     {item?.meta?.needsVerification ? <p className="day-warn">Check the published time and details before travelling.</p> : null}
     {item?.area === 'events' ? <p className="day-quiet">Choose Maybe or Plan to go for it in Events; the calendar shows your choice.</p> : null}
     {card && card.steps?.length ? <div className="day-card"><Steps card={card} limit={20} onStudy={page.tickStudy} busy={busy} /></div> : null}
+    <Kept kept={kept} page={page} card={card} own={own} />
 
     <div className="calendar-thing-actions">
       {place ? <Link className="calendar-thing-primary" to={thing.href}>Open in {place}</Link> : null}
@@ -234,9 +286,7 @@ export default function CalendarDay({ date, itemKey, tab, areas, eventScope, pre
             : <>
               <AddLine page={page} id="calendar-day-add" undo={false} />
               {page.day.error ? <p className="form-error" role="alert">The day's details could not be loaded: {page.day.error} <button type="button" className="day-retry" onClick={page.day.refetch}>Try again</button></p> : null}
-              <section className="day-path calendar-day-path" aria-label="The day in order">
-                <DayPath page={page} onOpen={onItem} notesFor={notesFor} />
-              </section>
+              <DayChecklist page={page} onOpen={onItem} className="calendar-day-checklist" title={page.isToday ? 'Today’s checklist' : 'The day’s checklist'} />
               <section className="calendar-day-notes-panel" aria-labelledby="calendar-day-notes-heading">
                 <h3 id="calendar-day-notes-heading">Notes {page.isToday ? 'today' : 'for this day'}{dayNotes.length ? ` · ${count(dayNotes.length, 'note')}` : ''}</h3>
                 <NoteList notes={dayNotes} />

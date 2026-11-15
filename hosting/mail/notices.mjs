@@ -9,9 +9,20 @@ const dayOf = (row) => (row.status === 'snoozed' && row.snoozed_until ? row.snoo
 
 // today: urgent, and due today; late: past their day, and replies waiting three days or more;
 // ahead: due tomorrow; and once per batch, the announcements it brought.
+// What is more than a week past its day is gathered into one line that leads to Tasks (its Rescue
+// lane), instead of one line each that comes back every day. Each line carries the action, so the
+// bell can tick it done or not needed where it is kept.
+export const OLD_AFTER_DAYS = 7
+const stableId = (ids) => {
+  let hash = 5381
+  for (const char of [...ids].sort().join('|')) hash = ((hash * 33) ^ char.charCodeAt(0)) >>> 0
+  return hash.toString(36)
+}
 export function mailNotices({ actions = [], announcements = 0, batchId = null } = {}, today) {
   const tomorrow = addDays(today, 1)
+  const old = addDays(today, -OLD_AFTER_DAYS)
   const notices = []
+  const older = []
   for (const row of actions) {
     const day = dayOf(row)
     if (row.status === 'snoozed' && day > today) continue
@@ -19,8 +30,16 @@ export function mailNotices({ actions = [], announcements = 0, batchId = null } 
     const level = day && day < today ? 'late' : row.kind === 'reply' && waited >= 3 ? 'late'
       : priorityOf(row) === 'urgent' || day === today ? 'today' : day === tomorrow ? 'ahead' : ''
     if (!level) continue
+    if (level === 'late' && day && day < old) { older.push(row); continue }
     const why = level === 'late' ? (day && day < today ? `Was due ${day}` : `Waiting ${waited} days`) : level === 'ahead' ? 'Due tomorrow' : day === today ? 'Due today' : 'Urgent'
-    notices.push({ id: `mail:${row.id}:${level}`, level, area: row.area === 'relationships' ? 'relationships' : 'admin', title: text(titleOf(row)), detail: [why, row.person_name, KIND_NAMES[row.kind]].filter(Boolean).join(' · '), at: '', href: '/inbox/waiting' })
+    notices.push({ id: `mail:${row.id}:${level}`, level, area: row.area === 'relationships' ? 'relationships' : 'admin', title: text(titleOf(row)), detail: [why, row.person_name, KIND_NAMES[row.kind]].filter(Boolean).join(' · '), at: '', href: '/inbox/waiting',
+      action: { kind: 'mail', id: row.id, revision: row.revision ?? null } })
+  }
+  if (older.length) {
+    const names = older.map((row) => text(titleOf(row), 80))
+    notices.push({ id: `mail:older:${stableId(older.map((row) => String(row.id)))}`, level: 'late', area: 'admin',
+      title: `${plural(older.length, 'thing')} waiting on you ${older.length === 1 ? 'is' : 'are'} more than a week past ${older.length === 1 ? 'its' : 'their'} day`,
+      detail: `${names.slice(0, 2).join('; ')}${names.length > 2 ? ` and ${names.length - 2} more` : ''}. Do, move or let go of them in Tasks.`, at: '', href: '/tasks?from=mail' })
   }
   if (announcements > 0 && batchId) notices.push({ id: `mail:announcements:${batchId}`, level: 'today', area: 'admin', title: plural(announcements, 'new announcement'), detail: 'In your mail', at: '', href: '/inbox/messages?filter=announcement' })
   return notices

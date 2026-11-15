@@ -7,8 +7,8 @@ import { calendarDayHref } from '../lib/calendarViews.js'
 import { useDayPage } from '../lib/useDayPage.js'
 import { poemForDate } from '../lib/poems.js'
 import CalendarItems, { CalendarStatus } from './CalendarItems.jsx'
-import { AddLine, DayPanels, DayPath } from './DayParts.jsx'
-import TodayTasks from './tasks/TodayTasks.jsx'
+import { AddLine, DayPanels } from './DayParts.jsx'
+import DayChecklist from './DayChecklist.jsx'
 
 // A whole day: today by default, any other day when the address names one (?date=2026-10-13).
 export default function TodayView() {
@@ -35,15 +35,12 @@ export default function TodayView() {
     </nav>
 
     <AddLine page={page} />
-    <TodayTasks page={page} />
     <CalendarStatus calendar={calendar} />
     {day.error ? <p className="form-error" role="alert">The day's details could not be loaded: {day.error} <button type="button" className="day-retry" onClick={day.refetch}>Try again</button></p> : null}
 
-    <div className="day-grid">
-      <section className="day-path" aria-labelledby="day-path-heading">
-        <header><h2 id="day-path-heading">{isToday ? 'Your day' : 'The day'}</h2><span>{isToday ? page.clock : daysAway(Math.round((Date.parse(`${date}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000))}</span></header>
-        <DayPath page={page} skipOwnTasks />
-      </section>
+    <div className="day-grid checklist-grid">
+      {/* The day is one checklist: everything in it in time order, each with a tick. */}
+      <DayChecklist page={page} title={isToday ? `Today’s checklist · ${page.clock}` : `Checklist · ${daysAway(Math.round((Date.parse(`${date}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000))}`} />
       <div className="day-panels"><DayPanels page={page} /></div>
     </div>
 
@@ -60,7 +57,7 @@ export default function TodayView() {
         {!showAllWeek && groups.week.length > 6 ? <button className="ghost-pill compact-pill" type="button" onClick={() => setShowAllWeek(true)}>Show {groups.week.length - 6} more</button> : null}
       </section>
     </div> : null}
-    <div className="today-page-controls"><Link className="ghost-pill compact-pill" to={isToday ? '/calendar' : calendarDayHref(date)}>Open calendar</Link><Link className="ghost-pill compact-pill" to="/planner">Plan the week</Link><Link className="ghost-pill compact-pill" to="/review">Look back on the week</Link><Link className="ghost-pill compact-pill" to="/ledger">Recent entries</Link><button className="ghost-pill compact-pill" type="button" onClick={page.refetch} disabled={calendar.loading}>Refresh</button></div>
+    <div className="today-page-controls"><Link className="ghost-pill compact-pill" to={isToday ? '/calendar' : calendarDayHref(date)}>Open calendar</Link><Link className="ghost-pill compact-pill" to={`/glance${isToday ? '' : `?date=${date}`}`}>The week at a glance</Link><Link className="ghost-pill compact-pill" to={`/glance?view=month${isToday ? '' : `&date=${date}`}`}>The month at a glance</Link><Link className="ghost-pill compact-pill" to="/planner">Plan the week</Link><Link className="ghost-pill compact-pill" to="/review">Look back on the week</Link><Link className="ghost-pill compact-pill" to="/ledger">Recent entries</Link><button className="ghost-pill compact-pill" type="button" onClick={page.refetch} disabled={calendar.loading}>Refresh</button></div>
     <p className="today-section-note">Events show your saved plans and maybes from this browser. <Link to="/events">Manage choices</Link>.</p>
     <footer className="ledger-poem" aria-label="Poem of the day"><div lang="fa" dir="rtl">{dailyPoem.lines.map((line, index) => <p key={index}>{line}</p>)}</div><small lang="fa" dir="rtl">{dailyPoem.poet}</small></footer>
   </section>

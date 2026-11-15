@@ -18,6 +18,17 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 
 ---
 
+## N. "the app's not usable at all!" (14 November 2026, night)
+Her message, each objective quoted:
+
+- [ ] N1 > "write tests for study hub and fix ux/ui study card showing ups in fronted": how Study hub cards appear in Life OS (Today's path, the Study panel, the Court, the calendar, Tasks), with tests.
+- [ ] N2 > "in the calendar, not everything is easily visible when you open each card": what a thing on the calendar shows when opened.
+- [ ] N3 > "i need a sorta checklist for every day": one list per day of everything in it, each line tickable.
+- [ ] N4 > "need an image of the week/the month": the week and the month at a glance, as a picture.
+- [ ] N5 > "i just need so much elevation in the user experience of the app for the objectives its been designed for": use it as she does and fix what gets in the way.
+- [ ] N6 > "when i click on notifications, for example this notification of a specific event, it doesnt route me to cardiff life and open the event": a notice opens the thing it is about, where it is kept.
+- [ ] N7 > "i need better integration and implemetation of the notification. especially handling the old notifs": notices grouped by when, old ones handled (cleared, folded, or gone once past), each with what can be done from it.
+
 ## M. The fresh plan (16 November 2026 to 10 January 2027) and Tasks in Life OS
 Her message, 14 November 2026, each objective quoted:
 

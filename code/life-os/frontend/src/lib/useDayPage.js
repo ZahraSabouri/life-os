@@ -58,6 +58,8 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
   const open = useMemo(() => items.filter((item) => !isComplete(item)), [items])
   const data = day.data?.date === date ? day.data : null
   const path = useMemo(() => buildDay({ items: open, day: data, date, now: isToday ? clock : '' }), [open, data, date, isToday, clock])
+  // The day with what is done as well, for its checklist: a ticked thing stays, ticked.
+  const fullPath = useMemo(() => buildDay({ items, day: data, date, now: isToday ? clock : '' }), [items, data, date, isToday, clock])
   // A note belongs to the day it is written, so another day takes plans and things to buy only;
   // on the calendar a note can be kept for the day it is about, and is dated to that day.
   const noteAllowed = isToday || notesAnyDay
@@ -247,7 +249,7 @@ export function useDayPage(requested, { area: fixedArea = '', onSaved, only = fa
   }
 
   return {
-    today, date, isToday, clock, dayName, calendar, day, data, items, groups, path, refetch, keepNote, setItemStatus, moveItem, tasks,
+    today, date, isToday, clock, dayName, calendar, day, data, items, groups, path, fullPath, refetch, keepNote, setItemStatus, moveItem, tasks,
     loading: calendar.loading || (day.loading && !data),
     unavailable: (id) => data?.sources.find((source) => source.id === id && source.status === 'unavailable')?.error,
     line: { kind: adding, choose, text, setText, state: lineState, hint, save: saveLine, noteAllowed, area, setArea, fixedArea: Boolean(fixedArea), day: planDay, setDay,

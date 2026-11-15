@@ -10,7 +10,7 @@ import StyleSwitch from './StyleSwitch.jsx'
 import { FocusButton } from './FocusDock.jsx'
 import { NoticeBell } from './NoticeBell.jsx'
 import { AddLine, count, hours, pounds, roomName } from './DayParts.jsx'
-import TodayTasks from './tasks/TodayTasks.jsx'
+import DayChecklist from './DayChecklist.jsx'
 import { aheadOf } from '../lib/day.js'
 import { useDayPage } from '../lib/useDayPage.js'
 import { clockOf } from '../lib/day.js'
@@ -872,7 +872,7 @@ function IndigoCourt(props) {
           <section className="indigo-register" aria-label="Today and the rooms">
             <div className="court-day day-page">
               <AddLine page={props.page} id="court-add-input" />
-              <TodayTasks page={props.page} others />
+              <DayChecklist page={props.page} />
             </div>
             <div className="indigo-register-head">
               <div>
@@ -924,7 +924,7 @@ function Ahead({ page }) {
   const groups = useMemo(() => aheadOf(page.items, page.today), [page.items, page.today])
   return (
     <section className="day-panel court-ahead" aria-labelledby="court-ahead-heading">
-      <header><h2 id="court-ahead-heading">Ahead</h2><span>the next two weeks</span><Link to="/planner">Plan the week</Link><Link to="/calendar">Calendar</Link></header>
+      <header><h2 id="court-ahead-heading">Ahead</h2><span>the next two weeks</span><Link to="/glance">The week at a glance</Link><Link to="/planner">Plan the week</Link><Link to="/calendar">Calendar</Link></header>
       {page.calendar.loading && !groups.length ? <p className="day-quiet">Looking ahead…</p> : null}
       {!page.calendar.loading && !groups.length ? <p className="day-quiet">Nothing is dated in the next two weeks: no test, no job closing on your list, no plan, no renewal.</p> : null}
       {groups.length ? <ol className="ahead-days">
@@ -947,7 +947,7 @@ function CourtDay({ page }) {
   return (
     <section className="court-day day-page" aria-label="Add something, today's tasks, and what lies ahead">
       <AddLine page={page} id="court-add-input" />
-      <TodayTasks page={page} others />
+      <DayChecklist page={page} />
       <Ahead page={page} />
     </section>
   )

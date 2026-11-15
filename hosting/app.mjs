@@ -15,6 +15,8 @@ import { createCalendarService } from './calendar/service.mjs'
 import { createCalendarLoaders } from './calendar/loaders.mjs'
 import { createCalendarRouter } from './calendar-route.mjs'
 import { createDayRouter, createDayService } from './day/service.mjs'
+import { createChecksRouter, createDayChecks } from './day/checks.mjs'
+import { createThing, createThingRouter } from './thing.mjs'
 import { createStudyFocus, createStudyTick, createStudyTickHandler } from './study/hub/tick.mjs'
 import { createReviewRouter, createReviewService } from './review/service.mjs'
 import { createAnalysisRouter, createAnalysisService, MAX_ANALYSIS_DAYS } from './review/analysis.mjs'
@@ -257,7 +259,14 @@ export function createLifeOsApp(options = {}) {
     loadEntries: () => db.prepare(`SELECT ${ENTRY_COLUMNS} FROM entries WHERE type IN ('note', 'time-block', 'task', 'repeat') ORDER BY seq`).all(),
     ...options.dayLoaders,
   })
+  // The day's checklist: ticks for what keeps no done-state of its own (hosting/day/checks.mjs).
+  app.use('/api/day/checks', createChecksRouter({ express, checks: createDayChecks({ readSetting, writeSetting }) }))
   app.use('/api/day', createDayRouter({ express, service: dayService }))
+  // Everything about one thing on the calendar or the day, from where it is kept (hosting/thing.mjs).
+  app.use('/api/thing', createThingRouter({ express, thing: createThing({
+    loadEntry: (id) => db.prepare(`SELECT ${ENTRY_COLUMNS} FROM entries WHERE id = ?`).get(id),
+    loadWorkspace, loadCareer: () => calendarLoaders.loadCareer(), loadEvents: () => calendarLoaders.loadEvents(),
+  }) }))
   let budgetRules
   const budgetFigures = (state, month) => { budgetRules ??= loadBudgetRules(budgetRoot); return budgetRules.forecast(state, month) }
   // Notices for the whole app: what is on now, starts soon, is asked of today, has slipped, is close ahead. Read only.

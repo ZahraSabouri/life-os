@@ -210,4 +210,17 @@ if(typeof document!=='undefined')(()=>{
   $('deadlines').innerHTML=data.deadlines.map(d=>'<li>'+d+'</li>').join('');$('schedules').innerHTML=data.schedules.map(s=>`<div><strong>${esc(s.name)}</strong><p>${esc(s.when)}</p><span class="schedule-state ${esc(s.state)}">${esc(s.state)}</span></div>`).join('');
   $('build-time').textContent='Page rebuilt '+new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Europe/London'}).format(new Date(data.built))+'. Rebuilding does not recheck sources.';
   render();renderCommunities();
+  // An address that names an event (#event=<id>: Life OS's notices, calendar and day link so)
+  // opens it on its week, with its details. Asked again when the address changes, and once her
+  // own events have arrived (an event she added is only known then).
+  function openFromAddress(){
+    const m=/^#event=(.+)$/.exec((typeof location!=='undefined'&&location.hash)||'');if(!m)return false;
+    let id;try{id=decodeURIComponent(m[1]);}catch{return false;}
+    const e=allEvents().find(x=>x.event_id===id);if(!e)return false;
+    showView('week');if(e.date){week=P.monday(e.date);render();}
+    if(!$('event-detail').open||selectedId!==id){if($('event-detail').open)$('event-detail').close();detail(id);}
+    return true;
+  }
+  window.addEventListener('hashchange',openFromAddress);
+  if(!openFromAddress())ownApi('','GET').then(()=>window.setTimeout(openFromAddress,0)).catch(()=>{});
 })();

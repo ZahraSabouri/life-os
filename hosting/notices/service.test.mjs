@@ -1,7 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { buildNotices, createNoticesService, openPlans } from './service.mjs'
+import { setId, buildNotices, createNoticesService, openPlans } from './service.mjs'
 import { settingText, settingValue } from '../../code/life-os/shared/settings.js'
+const kindOf = (id) => id.replace(/^(study:late|study:waiting|plans:late):[a-z0-9]+$/, "$1")
 
 // Monday 12 October 2026, 17:00 in London (British summer time).
 const NOW = new Date('2026-10-12T16:00:00.000Z')
@@ -37,7 +38,7 @@ const day = {
 test('notices come from every part, in order: on now, soon, asked of today, slipped, close ahead', () => {
   const { notices, upcoming, today } = buildNotices({ day, items, open: { count: 1, plans: [{ title: 'Email the tutor', href: '/today?date=2026-10-10' }] }, money: { month: '2026-10', spentPence: 27150, budgetPence: 25000, leftPence: -2150 }, now: NOW })
   assert.equal(today, TODAY)
-  assert.deepEqual(notices.map((notice) => [notice.level, notice.id, notice.title]), [
+  assert.deepEqual(notices.map((notice) => [notice.level, kindOf(notice.id), notice.title]), [
     ['now', 'timed:block', 'Library: diagnose the gaps'],
     ['soon', 'timed:dinner', 'Dinner with Ben'],
     ['today', 'study:due:2026-10-12', '1 study card due today'],
@@ -45,10 +46,10 @@ test('notices come from every part, in order: on now, soon, asked of today, slip
     ['today', 'home:list:l1:2026-10-12', '2 things to buy today'],
     ['today', 'dated:birthday:2026-10-12', 'Sara\'s birthday is today'],
     ['today', 'plans:today:2026-10-12', '1 plan of yours for today'],
-    ['late', 'study:late:2026-10-12', '2 study cards past their date'],
-    ['late', 'job:follow:j5:2026-10-12', 'Follow up: Tutor'],
+    ['late', 'study:late', '2 study cards past their date'],
+    ['late', 'job:follow:j5:late', 'Follow up: Tutor'],
     ['late', 'money:over:2026-10', 'Over this month\'s budget by £21.50'],
-    ['late', 'plans:late:2026-10-12', '1 plan left unticked from earlier days'],
+    ['late', 'plans:late', '1 plan left unticked from earlier days'],
     ['ahead', 'study:test:a1:2026-10-12', 'STAT101 · In-class test 1 is in 3 days'],
     ['ahead', 'job:tomorrow:2026-10-12', '1 job on your list closes tomorrow'],
     ['ahead', 'dated:sub:2026-10-13', 'Phone plan renews is tomorrow'],
@@ -58,7 +59,7 @@ test('notices come from every part, in order: on now, soon, asked of today, slip
   assert.equal(byId['timed:dinner'].detail, 'Starts in 40 min, 17:40 · Your plans')
   assert.equal(byId['study:due:2026-10-12'].href, '/study#/today?card=bayes')            // one card: straight to it
   assert.equal(byId['job:closes:j1:2026-10-12'].href, '/jobmap#job=j1')
-  assert.equal(byId['job:follow:j5:2026-10-12'].detail, 'B · was due 2 days ago')
+  assert.equal(byId['job:follow:j5:late'].detail, 'B · was due 2 days ago')
   // What is still to start today, for telling her a few minutes before: not what is over, done, or tomorrow.
   assert.deepEqual(upcoming.map((row) => [row.id, row.at]), [['timed:dinner', '17:40'], ['timed:late-plan', '20:00']])
 })
@@ -79,7 +80,7 @@ test('plans left unticked: her tasks and time set aside from the last week, not 
     { id: 'f', type: 'task', title: 'Today', status: 'planned', start_at: TODAY, details: {} },
     { id: 'g', type: 'event', title: 'A talk', status: null, start_at: at('18:00', '2026-10-08'), details: {} },
   ]
-  assert.deepEqual(openPlans(entries, TODAY), { count: 2, plans: [{ id: 'b', title: 'Job applications', date: '2026-10-09', href: '/today?date=2026-10-09' }, { id: 'a', title: 'Email the tutor', date: '2026-10-10', href: '/today?date=2026-10-10' }] })
+  assert.deepEqual(openPlans(entries, TODAY), { count: 2, plans: [{ id: 'b', title: 'Job applications', date: '2026-10-09', href: '/today?date=2026-10-09' }, { id: 'a', title: 'Email the tutor', date: '2026-10-10', href: '/today?date=2026-10-10' }], ids: ['b', 'a'] })
 })
 
 test('the service reads today and tomorrow, and says which part it could not read', async () => {
@@ -112,10 +113,20 @@ test('from the Study hub\'s own reminders: cards due tomorrow, and cards that ha
     waiting: { count: 2, cards: [{ id: 'w1', title: 'Ask about the formula sheet', days: 4, href: '/study#/today?card=w1' }, { id: 'w2', title: 'Portfolio brief', days: 2, href: '/study#/today?card=w2' }] },
   }
   const { notices } = buildNotices({ day: { date: TODAY, study }, items: [], now: NOW })
-  assert.deepEqual(notices.map((notice) => [notice.id, notice.level, notice.title, notice.detail, notice.href]), [
-    [`study:waiting:${TODAY}`, 'late', '2 study cards waiting for two days or more', 'Ask about the formula sheet (4 days); Portfolio brief (2 days)', '/study'],
+  assert.deepEqual(notices.map((notice) => [kindOf(notice.id), notice.level, notice.title, notice.detail, notice.href]), [
+    ['study:waiting', 'late', '2 study cards waiting for two days or more', 'Ask about the formula sheet (4 days); Portfolio brief (2 days)', '/study'],
     [`study:tomorrow:${TODAY}`, 'ahead', '1 study card due tomorrow', 'Hypothesis tests', '/study#/today?card=a'],
   ])
   // Nothing due tomorrow and nothing waiting: neither notice is made.
   assert.deepEqual(buildNotices({ day: { date: TODAY, study: { today: [], overdue: { count: 0, cards: [] }, next: null, tomorrow: [], waiting: { count: 0, cards: [] } } }, items: [], now: NOW }).notices, [])
+})
+
+test('a notice about what slipped keeps its name while the same things are in it, so seen stays seen', () => {
+  assert.equal(setId('plans:late', ['a', 'b']), setId('plans:late', ['b', 'a']))
+  assert.notEqual(setId('plans:late', ['a', 'b']), setId('plans:late', ['a', 'b', 'c']))
+  const open = { count: 1, plans: [{ id: 'p1', title: 'Old plan', date: '2026-10-09', href: '/today?date=2026-10-09' }], ids: ['p1'] }
+  const one = buildNotices({ day: null, items: [], open, now: new Date('2026-10-12T09:00:00Z') }).notices.find((n) => n.id.startsWith('plans:late'))
+  const next = buildNotices({ day: null, items: [], open, now: new Date('2026-10-13T09:00:00Z') }).notices.find((n) => n.id.startsWith('plans:late'))
+  assert.equal(one.id, next.id)
+  assert.equal(one.href, '/tasks')
 })

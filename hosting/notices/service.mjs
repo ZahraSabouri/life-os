@@ -16,6 +16,14 @@ const AREAS = { core: 'Your plans', study: 'Study', career: 'Jobs', money: 'Mone
 const DONE = new Set(['done', 'completed', 'complete', 'cancelled', 'canceled', 'archived', 'submitted'])
 const finished = (item) => Boolean(item?.meta?.completed || item?.meta?.done) || DONE.has(String(item?.meta?.status ?? '').toLowerCase())
 
+// A notice about things that have slipped keeps the same name for as long as the same things are
+// in it, so once seen it is not new again the next morning; it is new again only when the set changes.
+export function setId(prefix, ids) {
+  let hash = 5381
+  for (const char of [...ids].map(String).sort().join('|')) hash = ((hash * 33) ^ char.charCodeAt(0)) >>> 0
+  return `${prefix}:${hash.toString(36)}`
+}
+
 // In the order they are shown: happening now, starting within the hour, asked of today, slipped, close ahead.
 export const LEVELS = ['now', 'soon', 'today', 'late', 'ahead']
 export const SOON_MINUTES = 60
@@ -48,11 +56,11 @@ export function buildNotices({ day, items, open, money, now = new Date() } = {})
   if (study) {
     const due = array(study.today).filter((card) => !card.done)
     if (due.length) add({ id: `study:due:${today}`, level: 'today', area: 'study', title: `${plural(due.length, 'study card')} due today`, detail: listed(due.map((card) => card.title)), href: due.length === 1 ? due[0].href : '/study' })
-    if (study.overdue?.count) add({ id: `study:late:${today}`, level: 'late', area: 'study', title: `${plural(study.overdue.count, 'study card')} past ${study.overdue.count === 1 ? 'its' : 'their'} date`, detail: listed(array(study.overdue.cards).map((card) => card.title)), href: study.overdue.count === 1 ? study.overdue.cards[0]?.href ?? '/study' : '/review' })
+    if (study.overdue?.count) add({ id: setId('study:late', [study.overdue.count, ...array(study.overdue.cards).map((card) => card.id)]), level: 'late', area: 'study', title: `${plural(study.overdue.count, 'study card')} past ${study.overdue.count === 1 ? 'its' : 'their'} date`, detail: listed(array(study.overdue.cards).map((card) => card.title)), href: study.overdue.count === 1 ? study.overdue.cards[0]?.href ?? '/study' : '/review' })
     // From the Study hub's own reminders: what is due tomorrow, and what has waited too long.
     const tomorrow = array(study.tomorrow)
     if (tomorrow.length) add({ id: `study:tomorrow:${today}`, level: 'ahead', area: 'study', title: `${plural(tomorrow.length, 'study card')} due tomorrow`, detail: listed(tomorrow.map((card) => card.title)), href: tomorrow.length === 1 ? tomorrow[0].href : '/study' })
-    if (study.waiting?.count) add({ id: `study:waiting:${today}`, level: 'late', area: 'study', title: `${plural(study.waiting.count, 'study card')} waiting for two days or more`, detail: listed(array(study.waiting.cards).map((card) => `${card.title} (${card.days} days)`)), href: study.waiting.count === 1 ? array(study.waiting.cards)[0]?.href ?? '/study' : '/study' })
+    if (study.waiting?.count) add({ id: setId('study:waiting', [study.waiting.count, ...array(study.waiting.cards).map((card) => card.id)]), level: 'late', area: 'study', title: `${plural(study.waiting.count, 'study card')} waiting for two days or more`, detail: listed(array(study.waiting.cards).map((card) => `${card.title} (${card.days} days)`)), href: study.waiting.count === 1 ? array(study.waiting.cards)[0]?.href ?? '/study' : '/study' })
     if (study.next && study.next.days <= 7) add({
       id: `study:test:${study.next.id ?? study.next.title}:${today}`, level: study.next.days === 0 ? 'today' : 'ahead', area: 'study',
       title: study.next.days === 0 ? `${study.next.title} is today` : `${study.next.title} is ${study.next.days === 1 ? 'tomorrow' : `in ${study.next.days} days`}`,
@@ -67,7 +75,7 @@ export function buildNotices({ day, items, open, money, now = new Date() } = {})
     if (array(jobs.closing).length > 3) add({ id: `job:closes-more:${today}`, level: 'today', area: 'career', title: `${array(jobs.closing).length - 3} more jobs close today`, href: '/jobmap' })
     const tomorrowJobs = array(jobs.due).filter((job) => job.days === 1 && job.listed && !job.applied)
     if (tomorrowJobs.length) add({ id: `job:tomorrow:${today}`, level: 'ahead', area: 'career', title: `${plural(tomorrowJobs.length, 'job')} on your list ${tomorrowJobs.length === 1 ? 'closes' : 'close'} tomorrow`, detail: listed(tomorrowJobs.map((job) => job.role)), href: tomorrowJobs.length === 1 ? tomorrowJobs[0].href : '/jobmap' })
-    for (const job of array(jobs.followUps).filter((row) => row.days <= 0).slice(0, 3)) add({ id: `job:follow:${job.id}:${today}`, level: job.days < 0 ? 'late' : 'today', area: 'career', title: `Follow up: ${job.role}`, detail: [job.company, job.days < 0 ? `was due ${Math.abs(job.days)} ${Math.abs(job.days) === 1 ? 'day' : 'days'} ago` : 'due today'].filter(Boolean).join(' · '), href: job.href })
+    for (const job of array(jobs.followUps).filter((row) => row.days <= 0).slice(0, 3)) add({ id: job.days < 0 ? `job:follow:${job.id}:late` : `job:follow:${job.id}:${today}`, level: job.days < 0 ? 'late' : 'today', area: 'career', title: `Follow up: ${job.role}`, detail: [job.company, job.days < 0 ? `was due ${Math.abs(job.days)} ${Math.abs(job.days) === 1 ? 'day' : 'days'} ago` : 'due today'].filter(Boolean).join(' · '), href: job.href })
   }
 
   // ---- Home and money ----------------------------------------------------------------------
@@ -100,7 +108,8 @@ export function buildNotices({ day, items, open, money, now = new Date() } = {})
   // ---- Her own plans -----------------------------------------------------------------------
   const tasks = array(items).filter((item) => item?.all_day && item.meta?.source === 'core' && item.meta?.type === 'task' && String(item.start).slice(0, 10) === today && !finished(item))
   if (tasks.length) add({ id: `plans:today:${today}`, level: 'today', area: 'core', title: `${plural(tasks.length, 'plan')} of yours for today`, detail: listed(tasks.map((item) => text(item.title)), 3), href: '/today' })
-  if (open?.count) add({ id: `plans:late:${today}`, level: 'late', area: 'core', title: `${plural(open.count, 'plan')} left unticked from earlier days`, detail: listed(array(open.plans).map((plan) => plan.title)), href: array(open.plans)[0]?.href ?? '/review' })
+  // Tick them, give them a new day or take them off in Tasks (Rescue holds what slipped).
+  if (open?.count) add({ id: setId('plans:late', array(open.ids).length ? open.ids : array(open.plans).map((plan) => plan.id)), level: 'late', area: 'core', title: `${plural(open.count, 'plan')} left unticked from earlier days`, detail: listed(array(open.plans).map((plan) => plan.title)), href: '/tasks' })
 
   notices.sort((a, b) => LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level) || String(a.at).localeCompare(String(b.at)))
   return { today, now: now.toISOString(), notices, upcoming }
@@ -123,7 +132,7 @@ export function openPlans(entries, today, days = 7) {
     open.push({ id: entry.id, title: text(entry.title) || 'Plan', date, href: `/today?date=${date}` })
   }
   open.sort((a, b) => a.date.localeCompare(b.date))
-  return { count: open.length, plans: open.slice(0, 6) }
+  return { count: open.length, plans: open.slice(0, 6), ids: open.map((plan) => plan.id) }
 }
 
 export function createNoticesService({ dayOf, calendarOf, loadEntries, loadBudget, budgetFigures, loadMail, now = () => new Date() } = {}) {

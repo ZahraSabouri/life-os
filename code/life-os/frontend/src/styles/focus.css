@@ -125,3 +125,11 @@
 .notice-before select { padding: 0.3rem 0.45rem; }
 .notice-before span { color: var(--m-muted); font-size: 0.8rem; }
 .notice-settings .focus-note { margin: 0; }
+
+/* The bell: what can be done from a notice, and the folded "Slipped". */
+.notice-group li .notice-actions { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.25rem; max-width: 46%; }
+.focus-panel .notice-actions button { font-size: 0.72rem; line-height: 1.2; padding: 0.22rem 0.5rem; }
+.notice-fold-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.focus-panel button.notice-fold { padding: 0; border: 0; background: transparent; color: var(--m-ink); font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; }
+.focus-panel button.notice-fold:hover { color: var(--m-accent-strong); }
+.focus-panel button.notice-clear { font-size: 0.72rem; padding: 0.2rem 0.4rem; text-transform: none; letter-spacing: 0; }

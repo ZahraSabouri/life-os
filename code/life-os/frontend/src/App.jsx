@@ -8,6 +8,7 @@ import TodayView from './components/TodayView.jsx'
 import TasksView from './components/TasksView.jsx'
 import LedgerView from './components/LedgerView.jsx'
 import PlannerView from './components/PlannerView.jsx'
+import GlanceView from './components/GlanceView.jsx'
 import ReviewView from './components/ReviewView.jsx'
 import GuideView from './components/GuideView.jsx'
 import JournalView from './components/JournalView.jsx'
@@ -127,6 +128,7 @@ function AppRoutes() {
           <Route path="/tasks" element={<TasksView />} />
           <Route path="/review" element={<ReviewView />} />
           <Route path="/planner" element={<PlannerView />} />
+          <Route path="/glance" element={<GlanceView />} />
           <Route path="/ledger" element={<LedgerView />} />
           <Route path="/guide" element={<GuideView />} />
           <Route path="/guide/:chapter" element={<GuideView />} />

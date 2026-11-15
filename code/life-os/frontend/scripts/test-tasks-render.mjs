@@ -1,4 +1,5 @@
-// Bundles test/tasks-render.test.jsx with esbuild (with the @shared alias the app uses) and runs it with node --test.
+// Bundles a render test (test/tasks-render.test.jsx by default, or the file named) with esbuild, with the
+// @shared alias the app uses, and runs it with node --test. node scripts/test-tasks-render.mjs [test/day-render.test.jsx]
 import { build } from 'esbuild'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -11,7 +12,7 @@ const temporary = await mkdtemp(path.join(tempBase, 'lifeos-tasks-render-'))
 try {
   const output = path.join(temporary, 'tasks-render.test.cjs')
   await build({
-    entryPoints: [fileURLToPath(new URL('../test/tasks-render.test.jsx', import.meta.url))], outfile: output, bundle: true, platform: 'node', format: 'cjs', jsx: 'automatic', logLevel: 'error',
+    entryPoints: [process.argv[2] ? path.resolve(process.argv[2]) : fileURLToPath(new URL('../test/tasks-render.test.jsx', import.meta.url))], outfile: output, bundle: true, platform: 'node', format: 'cjs', jsx: 'automatic', logLevel: 'error',
     alias: { '@shared': fileURLToPath(new URL('../../shared', import.meta.url)) },
     define: { 'import.meta.env': '{}' },
   })

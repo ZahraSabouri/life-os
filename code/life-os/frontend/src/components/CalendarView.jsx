@@ -347,6 +347,8 @@ export default function CalendarView() {
         </label>
       </nav>
       <div className="calendar-view-controls">
+        <Link className="ghost-pill compact-pill" to={`/glance?date=${at.month}-01`}>The week as a picture</Link>
+        <Link className="ghost-pill compact-pill" to={`/glance?view=month&date=${at.month}-01`}>The month as a picture</Link>
         <button type="button" className="ghost-pill compact-pill" onClick={calendar.refetch} disabled={calendar.loading}>Refresh</button>
         {at.q ? <button type="button" className="ghost-pill compact-pill" onClick={() => { setQuery(''); address.swap({ q: null }) }}>Clear the search</button> : null}
         <span>{calendarDisplay(calendar, { areas: at.areas, count: counting, noun: at.q ? 'match' : 'dated item' }).countLabel.replace('matchs', 'matches')}{notes.length ? ` · ${counted(notes.length, 'note')}` : ''}</span>

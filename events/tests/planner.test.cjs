@@ -91,7 +91,7 @@ test('backup validation accepts choices and rejects malformed/prototype keys',()
 
 // A small DOM harness exercises the generated page's event wiring without a browser.
 // It deliberately does not claim to verify layout or native browser file storage.
-function boot(payload=data,saved=null,key=KEY){
+function boot(payload=data,saved=null,key=KEY,hash=''){
  const ids=new Map(),nodes=[],handlers={},storage=new Map(saved?[[key,saved]]:[]);
  let document;
  class Element{
@@ -107,7 +107,7 @@ function boot(payload=data,saved=null,key=KEY){
  parse(html.split('<script')[0]);
  const d=new Element({id:'events-data'});d.textContent=JSON.stringify(payload);ids.set(d.id,d);
  document={getElementById:id=>ids.get(id)||null,querySelectorAll:s=>nodes.filter(n=>matches(n,s)),querySelector:s=>nodes.find(n=>matches(n,s)),addEventListener:(k,fn)=>handlers[k]=fn,activeElement:null};
- const context={document,window:{addEventListener(){}},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),key:i=>[...storage.keys()][i]??null,get length(){return storage.size;}},Intl,Date:FixtureDate,console,setTimeout,Blob,URL};
+ const context={document,window:{addEventListener(){}},...(hash?{location:{hash}}:{}),localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),key:i=>[...storage.keys()][i]??null,get length(){return storage.size;}},Intl,Date:FixtureDate,console,setTimeout,Blob,URL};
  vm.runInNewContext(fs.readFileSync(path.join(root,'planner.js'),'utf8'),context);
  const click=dataset=>handlers.click({target:{dataset,closest(){return this;},hasAttribute:k=>k==='data-reset'&&dataset.reset!==undefined}});
  return {ids,storage,click};
@@ -163,4 +163,12 @@ test('standalone HTML embeds data and script, without network dependencies',()=>
  assert(!/__[A-Z_]+__/.test(html.split('<script')[0]));assert(!/__EVENTS_(DATA|SCRIPT)__/.test(html));
  assert(!/<script[^>]+src=/i.test(html));assert(!/<link[^>]+stylesheet/i.test(html));
  assert(!/url\s*\(/i.test(html.match(/<style>([\s\S]*?)<\/style>/)[1]));
+});
+
+test('an address that names an event opens it, as Life OS notices and the calendar link to it',()=>{
+ const app=boot(data,null,KEY,'#event=swim-a');
+ assert(app.ids.get('event-detail').open);
+ assert.equal(app.ids.get('detail-title').textContent,data.events.find(e=>e.event_id==='swim-a').name);
+ const none=boot(data,null,KEY,'#event=no-such-event');
+ assert(!none.ids.get('event-detail').open);
 });

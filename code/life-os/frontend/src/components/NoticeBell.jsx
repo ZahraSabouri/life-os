@@ -1,6 +1,6 @@
 // The bell in the top bar of every page, and the list it opens: notices from every part of
 // Life OS (what is on now, what starts soon, what today asks for, what slipped, what is close).
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { NOTICE_GROUPS, useNotices } from '../lib/notices.jsx'
 
@@ -29,6 +29,14 @@ export function NoticeBell({ className = '' }) {
 export function NoticePanel() {
   const notices = useNotices()
   const panel = useRef(null)
+  const [showSlipped, setShowSlipped] = useState(false)
+  const [busy, setBusy] = useState('')
+  const [error, setError] = useState('')
+  async function run(notice, status) {
+    setBusy(notice.id)
+    setError('')
+    try { await notices.act(notice, status) } catch (failure) { setError(`Not saved: ${failure.message}`) } finally { setBusy('') }
+  }
   useEffect(() => {
     if (!notices?.open) return undefined
     const onKey = (event) => { if (event.key === 'Escape' && !document.querySelector('dialog[open]')) notices.setOpen(false) }
@@ -52,22 +60,39 @@ export function NoticePanel() {
       {all.length ? NOTICE_GROUPS.map(([level, name]) => {
         const group = all.filter((notice) => notice.level === level)
         if (!group.length) return null
-        return <section className="focus-part notice-group" key={level} aria-label={name}>
-          <h3>{name}</h3>
-          <ul>
+        // What slipped is folded: it is old, so it waits under one line until she opens it.
+        const folded = level === 'late' && !showSlipped
+        const fresh = group.filter((notice) => !notices.seen[notice.id]).length
+        return <section className={`focus-part notice-group${level === 'late' ? ' is-slipped' : ''}`} key={level} aria-label={name}>
+          {level === 'late' ? <h3 className="notice-fold-head">
+            <button type="button" className="notice-fold" aria-expanded={!folded} onClick={() => setShowSlipped(!showSlipped)}>{name} · {group.length}{fresh ? ` (${fresh} new)` : ''} {folded ? '▾' : '▴'}</button>
+            <button type="button" className="is-quiet notice-clear" onClick={() => notices.hide(group.map((notice) => notice.id))} title="Take every slipped notice off the bell. They come back only if something changes.">Clear slipped</button>
+          </h3> : <h3>{name}</h3>}
+          {folded ? null : <ul>
             {group.map((notice) => {
               const seen = Boolean(notices.seen[notice.id])
+              const working = busy === notice.id
               return <li key={notice.id} className={seen ? 'is-seen' : undefined} data-area={notice.area}>
-                <Link to={notice.href} onClick={() => { notices.markSeen([notice.id]); notices.setOpen(false) }}>
+                {/* Closed in place: a step back at the same moment would undo the jump to the thing. */}
+                <Link to={notice.href} onClick={() => { notices.markSeen([notice.id]); notices.setOpen(false, { inPlace: true }) }}>
                   <b>{notice.title}</b>
                   {notice.detail ? <small>{notice.detail}</small> : null}
                 </Link>
-                {seen ? null : <button type="button" className="is-quiet" onClick={() => notices.markSeen([notice.id])} aria-label={`Seen: ${notice.title}`} title="Seen">✓</button>}
+                <span className="notice-actions">
+                  {notice.action?.kind === 'mail' ? <>
+                    <button type="button" disabled={working} onClick={() => run(notice, 'done')} title="Done: saved in Waiting on you">Done</button>
+                    <button type="button" disabled={working} onClick={() => run(notice, 'not-needed')} title="Not needed any more: saved in Waiting on you">Not needed</button>
+                  </> : null}
+                  {level === 'late' ? <button type="button" className="is-quiet" onClick={() => notices.hide([notice.id])} aria-label={`Take off the bell: ${notice.title}`} title="Take it off the bell">Hide</button>
+                    : seen ? null : <button type="button" className="is-quiet" onClick={() => notices.markSeen([notice.id])} aria-label={`Seen: ${notice.title}`} title="Seen">✓</button>}
+                </span>
               </li>
             })}
-          </ul>
+          </ul>}
         </section>
       }) : <p className="focus-note">Nothing needs you right now. Classes, study blocks, plans, jobs closing, things to buy and renewals show here when they come up.</p>}
+      {error ? <p className="focus-note day-warn" role="alert">{error}</p> : null}
+      {notices.hiddenCount ? <p className="focus-note">{notices.hiddenCount} taken off the bell. They come back only if something about them changes.</p> : null}
       <section className="focus-part notice-settings" aria-label="How to be told">
         <label className="notice-desktop">
           <input type="checkbox" checked={notices.desktop} disabled={blocked || notices.permission === 'unsupported'} onChange={(event) => notices.setDesktop(event.target.checked)} />

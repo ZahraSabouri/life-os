@@ -6,6 +6,7 @@ import { usePanel } from './addresses.js'
 import { useNavigate } from 'react-router-dom'
 import { apiFetch } from './api.js'
 import { useSetting } from './settings.js'
+import { saveAction } from './useMail.js'
 
 const FIRED_KEY = 'life-os.notices.fired'      // what the computer has already said, per browser
 const DESKTOP_KEY = 'life-os.notices.desktop'  // a copy of her choice that other code can read at once
@@ -67,7 +68,26 @@ export function NoticesProvider({ children }) {
   const toggle = useCallback(() => { if (!open) refetch(); setOpen(!open) }, [open, setOpen, refetch])
 
   const seen = prefs.seen ?? {}
-  const unseen = useMemo(() => data.notices.filter((notice) => !seen[notice.id]), [data.notices, seen])
+  // What she took off the bell stays off (for sixty days), unless it changes and so gets a new name.
+  const hidden = prefs.hidden ?? {}
+  const visible = useMemo(() => data.notices.filter((notice) => !hidden[notice.id]), [data.notices, hidden])
+  const unseen = useMemo(() => visible.filter((notice) => !seen[notice.id]), [visible, seen])
+
+  const hide = useCallback((ids) => {
+    if (!loaded || !ids.length) return
+    const today = data.today || new Date().toISOString().slice(0, 10)
+    const since = new Date(Date.parse(`${today}T12:00:00Z`) - 60 * 86_400_000).toISOString().slice(0, 10)
+    const kept = Object.fromEntries(Object.entries(hidden).filter(([, date]) => date >= since))
+    const stamp = Object.fromEntries(ids.map((id) => [id, today]))
+    setStored({ ...prefs, hidden: { ...kept, ...stamp }, seen: { ...seen, ...stamp } })
+  }, [loaded, data.today, hidden, seen, prefs, setStored])
+
+  // Done or not needed, from the bell, saved where the thing is kept (the Inbox's Waiting on you).
+  const act = useCallback(async (notice, status) => {
+    if (notice.action?.kind !== 'mail') return
+    await saveAction({ id: notice.action.id, revision: notice.action.revision }, { status })
+    refetch()
+  }, [refetch])
 
   const markSeen = useCallback((ids) => {
     if (!loaded || !ids.length) return
@@ -103,7 +123,7 @@ export function NoticesProvider({ children }) {
           desktopNotice(item.title, wait > 60_000 ? `Starts at ${item.at}, in ${Math.round(wait / 60_000)} minutes` : `Starts now (${item.at})`, { tag: item.id, onClick: () => goTo.current(item.href || '/today') })
         }
       }
-      const asked = data.notices.filter((notice) => ['today', 'late'].includes(notice.level) && !seen[notice.id])
+      const asked = visible.filter((notice) => ['today', 'late'].includes(notice.level) && !seen[notice.id])
       if (asked.length && !told.has(`summary:${data.today}`) && fire(`summary:${data.today}`, data.today)) {
         desktopNotice(`Life OS: ${asked.length} ${asked.length === 1 ? 'thing' : 'things'} for today`, asked.slice(0, 4).map((notice) => notice.title).join('\n'), { tag: `summary:${data.today}`, onClick: () => goTo.current('/today') })
       }
@@ -111,12 +131,12 @@ export function NoticesProvider({ children }) {
     check()
     const timer = window.setInterval(check, 20_000)
     return () => window.clearInterval(timer)
-  }, [prefs.desktop, prefs.minutesBefore, permission, data, seen])
+  }, [prefs.desktop, prefs.minutesBefore, permission, data, seen, visible])
 
   const value = useMemo(() => ({
-    open, setOpen, toggle, notices: data.notices, unseen, seen, markSeen, refetch,
+    open, setOpen, toggle, notices: visible, unseen, seen, markSeen, hide, act, refetch, hiddenCount: data.notices.length - visible.length,
     desktop: prefs.desktop, minutesBefore: prefs.minutesBefore, permission, setDesktop, setMinutesBefore,
     whenClosed: prefs.whenClosed !== false, setWhenClosed,
-  }), [open, setOpen, toggle, data.notices, unseen, seen, markSeen, refetch, prefs.desktop, prefs.minutesBefore, prefs.whenClosed, permission, setDesktop, setMinutesBefore, setWhenClosed])
+  }), [open, setOpen, toggle, visible, unseen, seen, markSeen, hide, act, refetch, data.notices.length, prefs.desktop, prefs.minutesBefore, prefs.whenClosed, permission, setDesktop, setMinutesBefore, setWhenClosed])
   return <NoticesContext.Provider value={value}>{children}</NoticesContext.Provider>
 }
