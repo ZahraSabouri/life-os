@@ -199,7 +199,7 @@ export function StudyPanel({ study, label = 'Today', compact = false, onStudy, s
     {!pending.length && study.today.length ? <p className="day-quiet">Everything for {when} is done.</p> : null}
     {study.overdue.count ? <><h3 className="day-warn">{count(study.overdue.count, 'card')} past {study.overdue.count === 1 ? 'its' : 'their'} date</h3>{compact ? null : <ul className="day-list">{study.overdue.cards.map((card) => <li key={card.id}><Link to={card.href}>{card.title}</Link><small>{formatCalendarDay(card.due)}</small></li>)}</ul>}</> : null}
     {compact ? null : <>
-      {study.running.length ? <><h3>This week</h3><ul className="day-list">{study.running.map((card) => <li key={card.id}><Link to={card.href}>{card.title}</Link><small>due {formatCalendarDay(card.due)}</small></li>)}</ul></> : null}
+      {study.running.length ? <><h3>Started, due later</h3><ul className="day-list">{study.running.map((card) => <li key={card.id}><Link to={card.href}>{card.title}</Link><small>due {formatCalendarDay(card.due)}</small></li>)}</ul></> : null}
       {study.undated.length ? <p className="day-quiet">No date yet: {study.undated.join('; ')}.</p> : null}
     </>}
   </>

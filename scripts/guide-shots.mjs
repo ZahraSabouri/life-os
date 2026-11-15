@@ -256,7 +256,7 @@ const RECIPES = {
   // Today, open over the month. The day is London's today, as the calendar counts it.
   'calendar-day.jpg': async () => {
     const day = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(new Date())
-    await go(`/calendar?day=${day}`, '.calendar-day-dialog[open] .day-stops'); await settle(2500)
+    await go(`/calendar?day=${day}`, '.calendar-day-dialog[open] .calendar-day-checklist .checklist-row'); await settle(2500)
     await view('calendar-day.jpg', { marks: ['.calendar-day-step', '.calendar-day-tabs [role="tablist"]', '#calendar-day-add', '.calendar-day-dialog .checklist-row .check-box', '.calendar-day-dialog .checklist-title'] })
   },
   'room.jpg': async () => { await go('/room/home'); await settle(3000); await view('room.jpg') },

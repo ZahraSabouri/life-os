@@ -88,4 +88,11 @@ export function nextRow(rows, clock) {
   return rows.find((row) => !row.done && row.time && (row.end || row.time) >= clock) ?? null
 }
 
+// The words of that line: "Now" while it is under way (until when), "Next" before it starts.
+export function nextLine(row, clock) {
+  if (!row) return null
+  const started = row.time <= clock
+  return { label: started ? 'Now' : 'Next', when: started && row.end ? `until ${row.end}` : row.time, title: row.title }
+}
+
 export { addDays }

@@ -5,7 +5,7 @@ import assert from 'node:assert/strict'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router-dom'
 import DayChecklist, { checklistLine } from '../src/components/DayChecklist.jsx'
-import { checklistRows, nextRow, thingKind } from '../src/lib/checklist.js'
+import { checklistRows, nextLine, nextRow, thingKind } from '../src/lib/checklist.js'
 import { groupOf, monthPicture, weekPicture } from '../src/lib/glance.js'
 
 const date = '2026-11-16'
@@ -47,6 +47,9 @@ test('the checklist has every thing of the day, ticked where it is kept', () => 
   assert.equal(list.also.length, 1)
   assert.deepEqual([list.done, list.total], [1, 6])
   assert.equal(nextRow(list.timed, '11:00').title, 'CMT309 · Week 1: strings')
+  // Under way, it is "Now" until it ends; before it starts, "Next" at its time.
+  assert.deepEqual(nextLine(nextRow(list.timed, '11:00'), '11:00'), { label: 'Now', when: 'until 12:00', title: 'CMT309 · Week 1: strings' })
+  assert.deepEqual(nextLine(nextRow(list.timed, '09:00'), '09:00'), { label: 'Next', when: '10:45', title: 'CMT309 · Week 1: strings' })
 })
 
 test('a study card shows folded: one line with its module, time and steps, opened for its steps and one link', () => {

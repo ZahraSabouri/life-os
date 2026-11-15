@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { formatCalendarDay } from '../lib/calendar.js'
 import { placeOf } from '../lib/calendarViews.js'
-import { checklistRows, nextRow, stepCount } from '../lib/checklist.js'
+import { checklistRows, nextLine, nextRow, stepCount } from '../lib/checklist.js'
 import { tickCheck, useDayChecks } from '../lib/useDayChecks.js'
 import { saveAction, useMail } from '../lib/useMail.js'
 import { createTask, setTaskDone } from '../lib/useTasks.js'
@@ -66,7 +66,7 @@ export default function DayChecklist({ page, onOpen, title, className = '' }) {
   const [error, setError] = useState('')
   const list = useMemo(() => checklistRows({ path: page.fullPath, items: page.items, tasks: page.tasks.tasks, date, today, checks: checks.checks[date] ?? {}, study: page.data?.study, mail: mail.data }),
     [page.fullPath, page.items, page.tasks.tasks, date, today, checks.checks, page.data, mail.data])
-  const next = isToday ? nextRow(list.timed, page.clock) : null
+  const next = isToday ? nextLine(nextRow(list.timed, page.clock), page.clock) : null
 
   async function run(key, work) {
     if (busy || page.savingId) return
@@ -101,7 +101,7 @@ export default function DayChecklist({ page, onOpen, title, className = '' }) {
       <span className="checklist-count">{loading ? 'Reading the day…' : checklistLine(list.done, list.total)}</span>
     </header>
     {list.total ? <div className="checklist-progress" role="img" aria-label={`${list.done} of ${list.total} done`}><i style={{ width: `${percent}%` }} /></div> : null}
-    {next ? <p className="checklist-next"><span>Next</span> {next.time} · {next.title}</p> : null}
+    {next ? <p className="checklist-next"><span>{next.label}</span> {next.when} · {next.title}</p> : null}
     {list.timed.length ? <ol className="checklist-rows">{list.timed.map((row) => <Row key={row.key} {...rowProps(row)} />)}</ol>
       : !loading ? <p className="day-quiet">Nothing has a time on this day.</p> : null}
     {list.anytime.length ? <><h3 className="checklist-group">Any time</h3><ol className="checklist-rows">{list.anytime.map((row) => <Row key={row.key} {...rowProps(row)} />)}</ol></> : null}
