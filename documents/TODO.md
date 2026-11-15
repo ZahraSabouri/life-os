@@ -28,6 +28,9 @@ Her message, each objective quoted:
 - [ ] N5 > "i just need so much elevation in the user experience of the app for the objectives its been designed for": use it as she does and fix what gets in the way.
 - [ ] N6 > "when i click on notifications, for example this notification of a specific event, it doesnt route me to cardiff life and open the event": a notice opens the thing it is about, where it is kept.
 - [ ] N7 > "i need better integration and implemetation of the notification. especially handling the old notifs": notices grouped by when, old ones handled (cleared, folded, or gone once past), each with what can be done from it.
+- [ ] N8 > (15 November) "notifications still suck in a way": look at the bell as she uses it and fix what is still wrong.
+- [ ] N9 > (15 November) "do a cleaning in the plans and data and all sorts of passed deadlines and events and job etc": put away what is over (passed deadlines, past events, jobs closed without an application, finished study cards, old Inbox things), archived, never deleted.
+- [x] (15 November, past midnight) "mark all checklists of all the other tasks of other days before tomorrow done obviously bc the feature was added just today": done, 1 October to 14 November (12 plans done, 100 ticks; `.runtime/past-days-done-2026-11-15/`).
 
 ## M. The fresh plan (16 November 2026 to 10 January 2027) and Tasks in Life OS
 Her message, 14 November 2026, each objective quoted:

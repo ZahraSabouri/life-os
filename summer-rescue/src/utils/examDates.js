@@ -9,7 +9,7 @@
 //   window      - the countdown is running against the start of the exam window
 import { STUDY_MODULES } from '../data/studyModules.js'
 import { semesterWindow } from '../data/plan.js'
-import { assessmentTargets } from './assessmentTargets.js'
+import { assessmentTargets, deadlineTargets } from './assessmentTargets.js'
 
 // Any module of the open semester can have an exam date.
 export const EXAM_MODULES = STUDY_MODULES.map((module) => ({ id: module.id, label: module.label, code: module.code || module.label }))
@@ -133,8 +133,12 @@ export function resolveExamTarget({ moduleExamDates = {}, schedule = {}, referen
     a.date.localeCompare(b.date),
   )
 
-  if (confirmed.length > 0) {
-    const next = confirmed.find((entry) => entry.date >= referenceDate) ?? confirmed[0]
+  // What is over is not counted towards: the next exam ahead, else the next coursework due
+  // (a test and a project may both be behind, with coursework still to come).
+  const ahead = confirmed.filter((entry) => !referenceDate || entry.date >= referenceDate)
+  const due = ahead.length ? [] : deadlineTargets(assessments, modules, referenceDate)
+  if (ahead.length > 0 || due.length > 0) {
+    const next = ahead[0] ?? due[0]
     return {
       source: next.assessmentId ? 'assessment' : 'module',
       status: 'confirmed',
@@ -156,8 +160,9 @@ export function resolveExamTarget({ moduleExamDates = {}, schedule = {}, referen
     confirmed: false,
     moduleId: null,
     label: 'exam window',
-    // With neither a module date nor a published window there is nothing to count down to.
-    date: published ? start : null,
+    // With neither a module date nor a published window there is nothing to count down to; a
+    // window that is over is not counted towards either.
+    date: published && !(referenceDate && start && start < referenceDate) ? start : null,
     windowStart: start,
     windowEnd: end,
     confirmedCount: 0,

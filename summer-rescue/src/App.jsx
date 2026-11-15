@@ -1034,7 +1034,7 @@ export default function App() {
   const donePct = Math.round((doneCount / totalCount) * 100)
   const examTarget = useMemo(
     () => resolveExamTarget({ moduleExamDates, schedule, referenceDate, assessments: session.assessments, modules: session.modules }),
-    [moduleExamDates, referenceDate, schedule],
+    [moduleExamDates, referenceDate, schedule, session.assessments, session.modules],
   )
 
   const examCountdown = useMemo(

@@ -3,6 +3,18 @@
 const examKinds = new Set(['exam', 'test', 'in-class test', 'in-class-test'])
 const finished = new Set(['done', 'completed', 'submitted', 'cancelled', 'canceled', 'archived'])
 
+// Any assessment still to hand in with a due day ahead (coursework, a project, a coversheet), soonest
+// first: what the countdown points at once every exam is behind.
+export function deadlineTargets(assessments = [], modules = [], referenceDate = '') {
+  return assessments.flatMap((row) => {
+    if (row.deleted_at || finished.has(String(row.status).toLowerCase())) return []
+    const date = String(row.end_at || row.end_date || row.start_at || row.start_date || '').slice(0, 10)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || (referenceDate && date < referenceDate)) return []
+    const module = modules.find((entry) => entry.rowId === row.module_id || entry.id === row.module_id)
+    return [{ date, label: row.title || 'Assessment', moduleId: module?.id || row.module_id || null, assessmentId: row.id, confirmed: true }]
+  }).sort((a, b) => a.date.localeCompare(b.date))
+}
+
 export function assessmentTargets(assessments = [], modules = [], referenceDate = '') {
   return assessments.flatMap((row) => {
     if (row.deleted_at || finished.has(String(row.status).toLowerCase()) || !examKinds.has(String(row.data?.kind).toLowerCase())) return []

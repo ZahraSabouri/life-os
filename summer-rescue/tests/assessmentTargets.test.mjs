@@ -21,3 +21,18 @@ test('a timed exam today stays eligible and a missing date stays unconfirmed', (
   assert.equal(assessmentTargets([{ id: 'today', start_at: '2030-10-28T14:10:00Z', data: { kind: 'exam' } }], [], '2030-10-28')[0].date, '2030-10-28')
   assert.deepEqual(assessmentTargets([{ id: 'unknown', data: { kind: 'exam' } }]), [])
 })
+
+test('once every exam is behind, the countdown points at the next coursework due, never at a past exam', async () => {
+  const { resolveExamTarget } = await import('../src/utils/examDates.js')
+  const modules = [{ id: 'mat022', rowId: 'm22' }, { id: 'mat021', rowId: 'm21' }, { id: 'cmt309', rowId: 'm309' }]
+  const assessments = [
+    { id: 't2', title: 'MAT022 · In-class test 2', status: 'done', module_id: 'm22', start_date: '2026-11-06', data: { kind: 'exam' } },
+    { id: 'cw1', title: 'MAT021 · Individual Coursework (70%) · coversheet due', status: 'planned', module_id: 'm21', end_at: '2026-12-01T09:30:00.000Z', data: { kind: 'coursework' } },
+    { id: 'cw2', title: 'CMT309 · Coursework', status: 'in-progress', module_id: 'm309', end_at: '2026-12-27T23:59:00.000Z', data: { kind: 'portfolio' } },
+  ]
+  const target = resolveExamTarget({ assessments, modules, referenceDate: '2026-11-15', schedule: { examWindowStart: '2026-11-06' } })
+  assert.deepEqual([target.date, target.label, target.assessmentId], ['2026-12-01', 'MAT021 · Individual Coursework (70%) · coversheet due', 'cw1'])
+  // With nothing ahead at all there is nothing to count down to.
+  const none = resolveExamTarget({ assessments: assessments.slice(0, 1), modules, referenceDate: '2026-11-15', schedule: { examWindowStart: '2026-11-06' } })
+  assert.equal(none.date, null)
+})

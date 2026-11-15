@@ -241,7 +241,7 @@ button.day-tick:disabled { cursor: progress; }
 
 /* ---- The add line: the day a plan is for, and the area it is filed under ---- */
 .day-note.has-filing { grid-template-columns: auto minmax(0, 1fr) auto auto; }
-.day-add-filing { display: flex; align-items: center; gap: 0.7rem; }
+.day-add-filing { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.7rem; min-width: 0; }
 .day-page .day-note .day-add-filing label { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--m-faint); font: 600 0.72rem/1.2 var(--m-font); letter-spacing: 0; text-transform: none; }
 .day-add-filing select, .day-add-filing input {
   max-width: 9.5rem; padding: 0.3rem 0.4rem; border: 1px solid var(--m-line); border-radius: var(--m-radius-sm); background: var(--m-card-fill); color: var(--m-ink);
