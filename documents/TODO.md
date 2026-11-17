@@ -16,6 +16,18 @@ Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or
 9. **L. Everything leads somewhere:** the five links she named work (12 October evening). Continue as she finds dead spots.
 10. **M. The fresh plan and Tasks (14 November):** done the same day, below. Plan written in `documents/PLAN_2026-11-16_to_2027-01-10.md`.
 11. **AB. Tasks, replanning, focus and the foundations (17 November), her order:** first the task actions and replanning (stage 8, brief `briefs/stage-8-task-loop.md`), then the documents tidied, the audit map and the loading fixes, then the focus room, then cleaning and production. Stage 7 CP5 (the public version) waits until the audit map exists, so it does not publish code about to be reorganised (recommended 17 November; she may put it first again).
+12. **AC. JobMap fixes (17 November):** Expired as a status, acting on several adverts at once, date filters (closing, added, the job's start and end), search and status filters, tests. Placed after stage 8 CP3 (replanning stays the priority) and before the documents tidy; she may move it.
+
+---
+
+## AC. JobMap: fixes and a better way to work through adverts (17 November 2026)
+Her message ("new debug life os"), each objective quoted. What JobMap has today (checked 17 November, `jobmap/lib/store.mjs`, `jobmap/app/page.tsx`): eight statuses (To review, Check details, Preparing, Applied, Interview, Offer, Rejected, Archived); "Missed deadline" exists only as an outcome, used for the 562 adverts put away on 15 November; one job is changed at a time; a search box and Status and Outcome filters exist; views include Closing and New; a job keeps Added, Advertised and Closing dates, but no start or end date of the job itself.
+
+- [ ] AC1 > "status of adverts must also contain the option "expired"": an Expired status (the closing date passed, or the advert taken down), set by hand and offered when a deadline passes; decide with her whether the 562 "Archived · Missed deadline" adverts become Expired (a data change, backed up first).
+- [ ] AC2 > "there should be better action/ux for archiving on or multiple adverts or doing the same thing on them": choose several adverts (tick boxes, select all shown) and archive, expire, change status or priority, or tag them in one go, with Undo; one advert archived in one click from the list.
+- [ ] AC3 > "new filters for the jobs: closes today/closes tomorrow/closes this week (any sort of date filtering for either when the advert was added to the app or when it's ending or more importantly when the start day of the job will be and possible end date with very wise filtering strategies)": date filters on closing (today, tomorrow, this week, next week, a range, no date), added to JobMap (today, this week, a range) and, most important, the job's start date and possible end date (new fields, filled from the advert where it says, by hand otherwise; e.g. "starts after September 2027", "fits the summer"); filters combine with each other and with the views.
+- [ ] AC4 > "also need search and filter by status": a search box and a Status filter exist already; find why they do not serve (where they sit, what the search covers, one status at a time) and make search and status filtering obvious and combinable.
+- [ ] AC5 > "need some good testing and ux elevating of this app honestly": tests for the store rules, the filters and the bulk actions, and a browser walk of JobMap as she uses it; then fix what gets in the way.
 
 ---
 

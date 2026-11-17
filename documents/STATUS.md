@@ -1,6 +1,6 @@
 # Life OS: status
 
-**Updated 17 November 2026.** Branch `stage/7-separation`. App http://127.0.0.1:47850. Main holds JobMap CP1 and stages 5–6, merged locally and not pushed. Life OS runs JobMap and the old standalone is in Retired Apps.
+**Updated 17 November 2026.** Branch `stage/7-separation`, pushed to GitHub on 17 November at Xar's request (stages 7 and 8 so far, Tasks and the day checklist). App http://127.0.0.1:47850. Local main holds JobMap CP1 and stages 5–6, merged and not pushed. Life OS runs JobMap and the old standalone is in Retired Apps.
 
 ## Now
 
@@ -49,7 +49,7 @@ Refresh the app. [Today](http://127.0.0.1:47850/today) opens on the day's checkl
 ## Exact next step
 
 0. Xar: refresh [Tasks](http://127.0.0.1:47850/tasks) and [Today](http://127.0.0.1:47850/today); open a task's line in the checklist to see ☆ and "Move", and open a task for its notes.
-1. Development: stage 8 CP2, "Continue stage 8: CP2, one model of a thing to do and the one-tap day actions" (running late +15/30/60, moving several at once, moving a Study card). Then CP3, "replan the rest of today". In Xar's order (TODO AB) the documents tidy, the audit map and the loading fixes follow, then the focus room.
+1. Development: stage 8 CP2, "Continue stage 8: CP2, one model of a thing to do and the one-tap day actions" (running late +15/30/60, moving several at once, moving a Study card). Then CP3, "replan the rest of today". Then the JobMap fixes (TODO AC: Expired, acting on several adverts, date filters, search and status, tests). In Xar's order (TODO AB) the documents tidy, the audit map and the loading fixes follow, then the focus room.
 2. Stage 7 CP5 (the public version) waits until the audit map exists, so it does not publish code about to be reorganised (recommended 17 November; Xar may put it first again).
 2. Cowork handoff: use mail/HARVEST.md v2 and HARVEST.local.md; prepare September weekly backfill, try on lifeos_test before import.
 3. Task connections and date-aware job matching are backlog work, not implemented by this data update.

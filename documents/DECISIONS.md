@@ -4,6 +4,10 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 17 November 2026 — The stage branch pushed; JobMap fixes added to the plan (Xar)
+
+Xar: "push the commits". `stage/7-separation` was not on GitHub, so it was pushed as a new branch (a plain push, no force), carrying its 53 commits since GitHub's `main`: stage 7 CP1–CP4, Tasks, the day checklist, Codex's records and stage 8 CP1. GitHub's `main` and local `main` were left as they were; one request, one push. The same day she added JobMap fixes to the plan (TODO AC) and chose to leave her Claude Code usage settings unchanged for now.
+
 ## 17 November 2026 — Stage 8, the task loop; two focus systems kept; cleaning starts (Xar)
 
 Xar approved better task management ("I want you to start coding for that") and replanning without AI as a priority, so stage 8 ([brief](briefs/stage-8-task-loop.md)) comes before the rest of TODO AB. Her other choices that day: the Study hub's focus and Life OS's Focus stay **separate**, with one reward count across both shown in Review; a day keeps being shown in Today, the calendar's day, Glance and Review, each in its own way, and today must be visible in the calendar; `dist-next` and the Budget test leftovers are to be cleaned up (done), and the whole app gets a cleaning plan. Details that were Claude Code's: a task's moves and dated notes live on the task (`details.moves`, `details.log`, validated in `shared/tasks.js`) rather than as separate entries, so one guarded save keeps them with the task; the star is the existing `favorite` column; moving a "Waiting on you" item is a snooze to that day; stage 8 is built on `stage/7-separation`, where Tasks lives. Stage 7 CP5 waits until the audit map exists (recommended, not yet confirmed by Xar).
