@@ -19,5 +19,8 @@ test('local persistence: reload, stale writers, backups, restore and corrupt-fil
    assert.equal((await fetch(base+'/art/..%2f..%2fdata/state.json')).status,403);
    const bad=JSON.parse(JSON.stringify(state));bad.lots=[{id:'bad',name:'Invalid',quantity:1,remaining:-1}];assert.equal((await put(3,bad)).status,400);assert.equal((await (await fetch(base+'/api/state')).json()).revision,3);
    fs.writeFileSync(path.join(data,'state.json'),'{broken');assert.equal((await fetch(base+'/api/state')).status,500);assert.equal((await put(3,state)).status,400);assert.equal(fs.readFileSync(path.join(data,'state.json'),'utf8'),'{broken');
- }finally{try{await fetch(base+'/__planner/stop',{method:'POST',headers:{'X-Planner-Action':'stop'}});}catch{}server.kill();}
+ }finally{try{await fetch(base+'/__planner/stop',{method:'POST',headers:{'X-Planner-Action':'stop'}});}catch{}server.kill();
+   // The throwaway data folder goes with the test, once the server has let go of its files.
+   if(server.exitCode===null&&server.signalCode===null)await new Promise(r=>{server.once('exit',r);setTimeout(r,3000);});
+   try{fs.rmSync(data,{recursive:true,force:true,maxRetries:5,retryDelay:100});}catch{}}
 });

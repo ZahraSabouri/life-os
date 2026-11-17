@@ -3,7 +3,7 @@
 // page saw (If-Match), so a change made elsewhere is never written over.
 import { useCallback, useEffect, useState } from 'react'
 import { apiFetch } from './api.js'
-import { stepId } from '@shared/tasks.js'
+import { moveTask, noteId, notesOf, stepId } from '@shared/tasks.js'
 
 const CHANGED = 'life-os:tasks-changed'
 export const tasksChanged = () => window.dispatchEvent(new Event(CHANGED))
@@ -68,6 +68,23 @@ export function moveStep(task, id, by) {
 // Done, or to do again. What it was comes back for Undo.
 export const setTaskDone = (task, done) => saveTask(task, { status: done ? 'done' : 'planned' })
 export const putTaskAway = (task) => saveTask(task, { status: 'cancelled' })
+
+// Moved to another day (shared/tasks.js says where each choice lands and records the move).
+// The answer is the saved task; `undoMove` puts back its day and details as they were.
+export const postponeTask = (task, { choice, day = '', why = '', today }) => saveTask(task, moveTask(task, { choice, day, why, today, now: new Date() }))
+export const undoMove = (saved, before) => saveTask(saved, { start_at: before.start_at ?? null, end_at: before.end_at ?? null, all_day: Boolean(before.all_day), details: before.details ?? {} })
+
+// The star: starred tasks come first in every list.
+export const setTaskStar = (task, on) => saveTask(task, { favorite: Boolean(on) })
+
+// A dated note on a task; `kind: 'done'` is "how it went", written when it is ticked done.
+export function addTaskNote(task, { text = '', minutes = 0, kind = 'note' } = {}) {
+  const words = String(text).trim()
+  const spent = Math.round(Number(minutes) || 0)
+  if (!words && !spent) return Promise.resolve(task)
+  return saveDetails(task, { log: [...notesOf(task), { id: noteId(), at: new Date().toISOString(), kind, text: words, ...(spent > 0 ? { minutes: spent } : {}) }] })
+}
+export const dropTaskNote = (task, id) => saveDetails(task, { log: notesOf(task).filter((note) => note.id !== id) })
 
 // Into a lane. Today also puts it on today's date, so it is on today's cards; the other lanes
 // keep its day.

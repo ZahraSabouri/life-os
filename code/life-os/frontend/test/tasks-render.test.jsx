@@ -6,6 +6,8 @@ import { MemoryRouter } from 'react-router-dom'
 import { TaskCard, TaskMeta, TaskSteps } from '../src/components/tasks/TaskParts.jsx'
 import TodayTasks, { folioLine, sumText } from '../src/components/tasks/TodayTasks.jsx'
 import { gatherItems, ownItem } from '../src/lib/taskItems.js'
+import { MoveMenu, StarButton, dayOfChoice, moveChoices, movedWords } from '../src/components/tasks/TaskActions.jsx'
+import { TaskDialog, minutesText } from '../src/components/tasks/TaskEditor.jsx'
 
 const today = '2026-11-16'
 const task = {
@@ -48,4 +50,49 @@ test('everything to do is gathered into lanes: her tasks, Study hub cards and wh
   assert.deepEqual(items.map((item) => [item.kind, item.lane]), [['own', 'today'], ['study', 'today'], ['mail', 'week'], ['mail', 'waiting']])
   const markup = renderToStaticMarkup(<TaskCard item={ownItem(task, today)} today={today} onOpen={() => {}} onToggle={() => {}} />)
   assert.match(markup, /aria-label="1 of 2 steps done"/)
+})
+
+// Stage 8 CP1: moving, starring and noting a task.
+const at = '2026-11-16T20:00:00.000Z'
+const moves = [
+  { at: '2026-11-14T20:00:00.000Z', from: '2026-11-14', to: '2026-11-15', why: 'time' },
+  { at: '2026-11-15T20:00:00.000Z', from: '2026-11-15', to: today },
+  { at, from: '2026-11-16', to: today, why: 'blocked' },
+]
+const worked = { ...task, favorite: true, details: { ...task.details, moves, log: [{ id: 'n1', at, kind: 'note', text: 'Read the first page', minutes: 20 }, { id: 'n2', at: '2026-11-16T21:00:00.000Z', kind: 'done', text: 'Clear in the end', minutes: 70 }] } }
+
+test('a card carries its star and the move menu, and says how often it was moved', () => {
+  const markup = renderToStaticMarkup(<TaskCard item={ownItem(worked, today)} today={today} onOpen={() => {}} onToggle={() => {}} onMove={() => {}} onStar={() => {}} />)
+  for (const words of ['is-starred', 'Take the star off', 'Move', 'moved 3×', 'is-stuck', '2 notes']) assert.ok(markup.includes(words), words)
+  // A card without the handlers stays as it was, and a done card offers no move.
+  assert.ok(!renderToStaticMarkup(<TaskCard item={ownItem(task, today)} today={today} />).includes('task-tools'))
+  assert.ok(!renderToStaticMarkup(<TaskCard item={ownItem({ ...worked, status: 'done' }, today)} today={today} onMove={() => {}} onStar={() => {}} />).includes('task-tools'))
+})
+
+test('the move menu offers what fits: later today only for today, someday only for her own tasks', () => {
+  const ids = (options) => moveChoices(options).map(([id]) => id)
+  assert.deepEqual(ids({ day: today, today }), ['later', 'tomorrow', 'week', 'someday'])
+  assert.deepEqual(ids({ day: '2026-11-20', today }), ['tomorrow', 'week', 'someday'])
+  assert.deepEqual(ids({ day: today, today, waiting: true }), ['tomorrow', 'week'])
+  assert.equal(dayOfChoice('week', today), '2026-11-23')
+  assert.equal(movedWords('tomorrow', today), 'Moved to tomorrow')
+  assert.equal(movedWords('someday', today), 'Moved to someday')
+  assert.equal(minutesText(45), '45 min')
+  assert.equal(minutesText(90), '1 h 30 min')
+  const closed = renderToStaticMarkup(<MoveMenu title="Read the brief" day={today} today={today} onMove={() => {}} />)
+  assert.match(closed, /aria-expanded="false"/)
+  assert.ok(!closed.includes('Why, if you like'), 'the menu is closed until asked for')
+  const star = renderToStaticMarkup(<StarButton on={false} title="Read the brief" onToggle={() => {}} />)
+  assert.match(star, /aria-pressed="false"/)
+})
+
+test('an opened task keeps its notes and moves as a timeline, and asks how it went', () => {
+  const markup = renderToStaticMarkup(<TaskDialog task={worked} today={today} askHow onClose={() => {}} />)
+  for (const words of ['Done. How did it go?', 'Minutes it took', 'How it went', 'Clear in the end', '1 h 10 min', 'Read the first page', '1 h 30 min noted',
+    'Moved', 'No time', 'Blocked', 'Moved 3 times', 'About this task', 'Take the star off', 'Move']) assert.ok(markup.includes(words), words)
+  assert.ok(markup.indexOf('Clear in the end') < markup.indexOf('Read the first page'), 'newest first')
+  assert.ok(!/Claude|Codex|agent/i.test(markup))
+  const plain = renderToStaticMarkup(<TaskDialog task={task} today={today} onClose={() => {}} />)
+  for (const words of ['Nothing noted yet.', 'Keep the note']) assert.ok(plain.includes(words), words)
+  assert.ok(!plain.includes('How did it go?'))
 })

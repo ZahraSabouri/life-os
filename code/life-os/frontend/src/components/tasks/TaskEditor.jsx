@@ -2,10 +2,67 @@
 // one, laid out like the design's "new leaf": the title first, then chips for area, lane, slot
 // and priority, the hours and days, what shows it is done, and its steps one a line.
 import { useEffect, useRef, useState } from 'react'
-import { LANES, PRIORITIES, SLOTS, stepsFromLines, taskDay } from '@shared/tasks.js'
+import { LANES, PRIORITIES, SLOTS, STUCK_AFTER_MOVES, minutesNoted, moveReasonLabel, notesOf, stepsFromLines, taskDay, timesMoved } from '@shared/tasks.js'
 import { formatCalendarDay } from '../../lib/calendar.js'
-import { TASK_AREAS, createTask, putTaskAway, saveTask, setTaskDone } from '../../lib/useTasks.js'
+import { TASK_AREAS, addTaskNote, createTask, dropTaskNote, postponeTask, putTaskAway, saveTask, setTaskDone, setTaskStar, undoMove } from '../../lib/useTasks.js'
 import { TaskSteps, TaskTick, toneOf } from './TaskParts.jsx'
+import { MoveMenu, StarButton, movedWords } from './TaskActions.jsx'
+
+// "45 min", "1 h 30 min".
+export function minutesText(total) {
+  const minutes = Math.round(Number(total) || 0)
+  if (minutes < 60) return `${minutes} min`
+  const rest = minutes % 60
+  return `${Math.floor(minutes / 60)} h${rest ? ` ${rest} min` : ''}`
+}
+const whenText = (iso) => new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(iso))
+const dayText = (day) => (day ? formatCalendarDay(day, { weekday: 'short' }) : 'no day')
+
+// A note to keep: words, and the minutes it took if that is worth saying. `onSave` answers true
+// once it is kept, and only then is the box emptied.
+function NoteForm({ kind, prompt, placeholder, busy, onSave, onSkip, autoFocus = false }) {
+  const [text, setText] = useState('')
+  const [minutes, setMinutes] = useState('')
+  const empty = !text.trim() && !(Number(minutes) > 0)
+  async function keep(event) {
+    event.preventDefault()
+    if (empty) return
+    if (await onSave({ text, minutes: Number(minutes) || 0, kind })) { setText(''); setMinutes('') }
+  }
+  return <form className={`task-note-form${kind === 'done' ? ' is-how' : ''}`} onSubmit={keep}>
+    {prompt ? <p className="task-note-prompt">{prompt}</p> : null}
+    <textarea rows={2} value={text} onChange={(event) => setText(event.target.value)} placeholder={placeholder} maxLength={4000} aria-label={prompt ?? 'A note'} autoFocus={autoFocus} />
+    <div className="task-note-row">
+      <label>Minutes it took<input type="number" min="0" max="1440" step="5" inputMode="numeric" value={minutes} onChange={(event) => setMinutes(event.target.value)} /></label>
+      <button type="submit" className="task-primary" disabled={busy || empty}>Keep the note</button>
+      {onSkip ? <button type="button" onClick={onSkip}>Not now</button> : null}
+    </div>
+  </form>
+}
+
+// What happened to a task, newest first: its notes ("how it went" among them) and its moves.
+function TaskNotes({ task, busy, run, askHow, onAsked }) {
+  const notes = notesOf(task).map((note) => ({ ...note, type: 'note' }))
+  const moves = (Array.isArray(task.details?.moves) ? task.details.moves : []).map((move, index) => ({ ...move, id: `move-${index}`, type: 'move' }))
+  const timeline = [...notes, ...moves].sort((a, b) => b.at.localeCompare(a.at))
+  const minutes = minutesNoted(task)
+  const save = (note, said) => run(() => addTaskNote(task, note), said)
+  return <section className="task-notes" aria-label="Notes">
+    <h3>Notes{minutes ? <small> · {minutesText(minutes)} noted</small> : null}</h3>
+    {askHow ? <NoteForm kind="done" prompt="Done. How did it go?" placeholder="What went well, what to remember next time" busy={busy} autoFocus
+      onSave={async (note) => { const kept = await save(note, 'Kept with the task.'); if (kept) onAsked(); return kept }} onSkip={onAsked} />
+      : <NoteForm kind="note" placeholder="Where you got to, what comes next, how it is going" busy={busy} onSave={(note) => save(note, 'Note kept.')} />}
+    {timeline.length ? <ol className="task-note-list">
+      {timeline.map((entry) => entry.type === 'move'
+        ? <li key={entry.id} className="is-move"><p className="task-note-when"><b>Moved</b><span>{whenText(entry.at)}</span><span>{dayText(entry.from)} → {dayText(entry.to)}</span>{entry.why ? <span>{moveReasonLabel(entry.why)}</span> : null}</p></li>
+        : <li key={entry.id} className={entry.kind === 'done' ? 'is-how' : undefined}>
+          <p className="task-note-when">{entry.kind === 'done' ? <b>How it went</b> : null}<span>{whenText(entry.at)}</span>{entry.minutes ? <span>{minutesText(entry.minutes)}</span> : null}
+            <button type="button" className="task-note-drop" disabled={busy} onClick={() => run(() => dropTaskNote(task, entry.id), 'Note removed.')} aria-label={`Remove the note of ${whenText(entry.at)}`}>Remove</button></p>
+          {entry.text ? <p className="task-note-text">{entry.text}</p> : null}
+        </li>)}
+    </ol> : <p className="task-notes-empty">Nothing noted yet.</p>}
+  </section>
+}
 
 function Modal({ label, onClose, children, className = '' }) {
   const ref = useRef(null)
@@ -54,7 +111,7 @@ function Fields({ form, set, withSteps }) {
         <label>Due by<input type="date" value={form.due} onChange={field('due')} /></label>
       </div>
       <label className="task-wide">Done when<input value={form.proof} onChange={field('proof')} maxLength={600} placeholder="What shows it is done: “submitted, receipt saved”" /></label>
-      <label className="task-wide">Note<textarea rows={2} value={form.note} onChange={field('note')} maxLength={20000} /></label>
+      <label className="task-wide">About this task<textarea rows={2} value={form.note} onChange={field('note')} maxLength={20000} /></label>
       {withSteps ? <label className="task-wide">Steps, one a line<textarea rows={4} value={form.stepsText} onChange={field('stepsText')} placeholder={'Read the brief\nDraft\nCheck and submit'} /></label> : null}
     </div>
   </div>
@@ -96,20 +153,29 @@ export function NewTask({ defaults = {}, onClose, onSaved }) {
   </Modal>
 }
 
-export function TaskDialog({ task, today, onClose }) {
+// A task opened. `askHow` opens it with "How did it go?" ready, as after a tick elsewhere.
+export function TaskDialog({ task, today, onClose, askHow: askAtFirst = false }) {
   const [form, setForm] = useState(() => fieldsOf(task))
-  const [state, setState] = useState({ saving: false, error: '', said: '' })
+  const [state, setState] = useState({ saving: false, error: '', said: '', undo: null })
+  const [askHow, setAskHow] = useState(askAtFirst)
   // A change saved elsewhere (a step ticked here, or on another page) brings a newer task: the
   // boxes follow it unless she is in the middle of changing them.
   const [dirty, setDirty] = useState(false)
   useEffect(() => { if (!dirty) setForm(fieldsOf(task)) }, [task, dirty])
   const set = (next) => { setDirty(true); setForm(next) }
   const done = task.status === 'done'
+  const moved = timesMoved(task)
 
+  // Runs a save; the action may answer a function that takes it back, offered as Undo.
   async function run(action, said) {
-    setState({ saving: true, error: '', said: '' })
-    try { await action(); setState({ saving: false, error: '', said }); return true } catch (failure) { setState({ saving: false, error: failure.message, said: '' }); return false }
+    setState({ saving: true, error: '', said: '', undo: null })
+    try { const answer = await action(); setState({ saving: false, error: '', said, undo: typeof answer === 'function' ? answer : null }); return true }
+    catch (failure) { setState({ saving: false, error: failure.message, said: '', undo: null }); return false }
   }
+  async function markDone(next) {
+    if (await run(() => setTaskDone(task, next), next ? 'Done.' : 'Back on the list.')) setAskHow(next)
+  }
+  const move = (choice) => run(async () => { const saved = await postponeTask(task, { ...choice, today }); return () => undoMove(saved, task) }, `${movedWords(choice.choice, today, choice.day)}.`)
   async function saveFields(event) {
     event.preventDefault()
     if (!form.title.trim()) { setState({ saving: false, error: 'Give the task a title.', said: '' }); return }
@@ -125,23 +191,29 @@ export function TaskDialog({ task, today, onClose }) {
   return <Modal label={task.title} onClose={onClose}>
     <header className="task-sheet-head">
       <p className="task-eyebrow" style={{ '--item-accent': toneOf(task.details?.area) }}>{done ? 'Done' : taskDay(task) ? `For ${taskDay(task) === today ? 'today' : formatCalendarDay(taskDay(task), { weekday: 'long' })}` : 'Task'}</p>
-      <button type="button" className="task-close" onClick={onClose}>Close</button>
+      <span className="task-sheet-tools">
+        <StarButton on={Boolean(task.favorite)} title={task.title} busy={state.saving} onToggle={() => run(() => setTaskStar(task, !task.favorite), task.favorite ? 'Star taken off.' : 'Starred: it comes first.')} />
+        <button type="button" className="task-close" onClick={onClose}>Close</button>
+      </span>
     </header>
     <div className="task-open-title">
-      <TaskTick done={done} busy={state.saving} label={done ? 'Not done after all' : 'Done'} onToggle={() => run(() => setTaskDone(task, !done), done ? 'Back on the list.' : 'Done.')} />
+      <TaskTick done={done} busy={state.saving} label={done ? 'Not done after all' : 'Done'} onToggle={() => markDone(!done)} />
       <input className="task-title-input" value={form.title} onChange={(event) => set({ ...form, title: event.target.value })} maxLength={300} aria-label="The task's title" />
     </div>
+    {state.error ? <p className="task-error" role="alert">{state.error}</p> : null}
+    {state.said ? <p className="task-said" role="status">{state.said}{state.undo ? <> <button type="button" className="day-undo" disabled={state.saving} onClick={() => run(state.undo, 'Put back.')}>Undo</button></> : null}</p> : null}
+    {!done && moved >= STUCK_AFTER_MOVES ? <p className="task-stuck">Moved {moved} times. Make it smaller (split it into steps below), give it a day you can keep, or take it off the list.</p> : null}
     <section className="task-open-steps" aria-label="Steps">
       <h3>The steps</h3>
-      <TaskSteps task={task} editable busy={state.saving} onError={(error) => setState({ saving: false, error, said: '' })} />
+      <TaskSteps task={task} editable busy={state.saving} onError={(error) => setState({ saving: false, error, said: '', undo: null })} />
     </section>
+    <TaskNotes task={task} busy={state.saving} run={run} askHow={askHow} onAsked={() => setAskHow(false)} />
     <form onSubmit={saveFields}>
       <Fields form={form} set={set} withSteps={false} />
-      {state.error ? <p className="task-error" role="alert">{state.error}</p> : null}
-      {state.said ? <p className="task-said" role="status">{state.said}</p> : null}
       <footer className="task-sheet-foot">
         <button type="submit" className="task-primary" disabled={state.saving || !dirty}>{state.saving ? 'Saving…' : 'Save changes'}</button>
-        <button type="button" onClick={() => run(() => setTaskDone(task, !done), done ? 'Back on the list.' : 'Done.')} disabled={state.saving}>{done ? 'Not done after all' : 'Mark done'}</button>
+        <button type="button" onClick={() => markDone(!done)} disabled={state.saving}>{done ? 'Not done after all' : 'Mark done'}</button>
+        {done ? null : <MoveMenu title={task.title} day={taskDay(task)} today={today} busy={state.saving} onMove={move} />}
         <button type="button" onClick={() => run(async () => { await putTaskAway(task); onClose() }, '')} disabled={state.saving} title="It is kept, and no longer shown on the list">Take off the list</button>
       </footer>
     </form>

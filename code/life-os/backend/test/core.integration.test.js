@@ -76,6 +76,17 @@ test('the core on lifeos_test: entries, days, If-Match, pictures, people, settin
   assert.equal(kept.title, both.find((answer) => answer.status === 200).body.title)
   assert.equal(kept.start_at, '2099-12-31T23:30:00-02:00')
 
+  // Stage 8: a task's star, its moves and its dated notes are kept and read back; a bad note is refused.
+  const at = '2099-12-30T20:00:00.000Z'
+  const worked = await call('PATCH', `/entries/${late.body.id}`, { favorite: true, details: {
+    moves: [{ at, from: '2099-12-31', to: '2100-01-02', why: 'time' }], log: [{ id: 'n1', at, kind: 'done', text: 'Went well', minutes: 40 }] } }, { 'If-Match': `"${kept.updated_at}"` })
+  assert.equal(worked.status, 200, JSON.stringify(worked.body))
+  const noted = (await call('GET', `/entries/${late.body.id}`)).body
+  assert.equal(noted.favorite, true)
+  assert.deepEqual(noted.details.moves, [{ at, from: '2099-12-31', to: '2100-01-02', why: 'time' }])
+  assert.deepEqual(noted.details.log, [{ id: 'n1', at, kind: 'done', text: 'Went well', minutes: 40 }])
+  assert.equal((await call('PATCH', `/entries/${late.body.id}`, { details: { log: [{ at: 'whenever', text: 'x' }] } })).status, 400)
+
   // Pictures: kept with the entry, shown with it, and gone with it.
   const picture = await call('POST', '/files', { entry_id: workout.body.id, data: PNG })
   assert.equal(picture.status, 201)

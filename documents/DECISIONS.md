@@ -4,6 +4,10 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 17 November 2026 — Stage 8, the task loop; two focus systems kept; cleaning starts (Xar)
+
+Xar approved better task management ("I want you to start coding for that") and replanning without AI as a priority, so stage 8 ([brief](briefs/stage-8-task-loop.md)) comes before the rest of TODO AB. Her other choices that day: the Study hub's focus and Life OS's Focus stay **separate**, with one reward count across both shown in Review; a day keeps being shown in Today, the calendar's day, Glance and Review, each in its own way, and today must be visible in the calendar; `dist-next` and the Budget test leftovers are to be cleaned up (done), and the whole app gets a cleaning plan. Details that were Claude Code's: a task's moves and dated notes live on the task (`details.moves`, `details.log`, validated in `shared/tasks.js`) rather than as separate entries, so one guarded save keeps them with the task; the star is the existing `favorite` column; moving a "Waiting on you" item is a snooze to that day; stage 8 is built on `stage/7-separation`, where Tasks lives. Stage 7 CP5 waits until the audit map exists (recommended, not yet confirmed by Xar).
+
 ## 16 November 2026 — Shared career strategy for agents and scheduled searches (Xar)
 
 Xar asked to retain supplied visa/sponsorship research in project knowledge and memory for both agents, potentially Life OS, and explicitly emphasised scheduled job hunting. The strategy is now private shared context and JobMap profile data, with a dated rule check and separate unresolved personal facts. Current study-compatible work and future-start sponsorship searches remain parallel. Shared search instructions and the existing paused Codex automation prompt were updated. This is data/guidance integration, not a change to the matching algorithm or approval to activate schedules. See `.private/career-strategy/README.md` and the [session](sessions/2026-11-16-codex-career-visa-strategy.md).

@@ -1,5 +1,5 @@
 import { validateTrainingPlan, validateTrainingSession, validateMobilityRoutine } from './health/training.js'
-import { LANE_IDS, SLOT_IDS, cleanDue, cleanSteps } from './tasks.js'
+import { LANE_IDS, SLOT_IDS, cleanDue, cleanLog, cleanMoves, cleanSteps } from './tasks.js'
 export { validateWorkoutCompletion } from './health/training.js'
 
 export const ARCHETYPES = ['moment', 'commitment', 'workstream', 'collection', 'practice', 'anchor']
@@ -32,14 +32,16 @@ export const ENTRY_TYPES = {
     label: 'Task',
     icon: 'T',
     rooms: [],
-    desc: 'Something you must do. Dated via entry start_at (the day it is planned for); `due` is the day it must be done by. `lane` places it on the Tasks board (shared/tasks.js), `slot` says when in the day it fits, `estimate` is hours, `proof` says what shows it is done. Its steps are the common `steps` detail.',
+    desc: 'Something you must do. Dated via entry start_at (the day it is planned for); `due` is the day it must be done by. `lane` places it on the Tasks board (shared/tasks.js), `slot` says when in the day it fits, `estimate` is hours, `proof` says what shows it is done. Its steps are the common `steps` detail. `moves` records each time it was moved to another day (when, from, to, why); `log` holds dated notes, "how it went" and minutes taken. The entry\'s `favorite` is its star.',
     fields: {
       priority: { type: 'enum', enum: ['low', 'med', 'high'], default: 'med' },
       lane: { type: 'enum', enum: LANE_IDS },
       slot: { type: 'enum', enum: SLOT_IDS },
       estimate: { type: 'number' },
       due: { type: 'string', validate: cleanDue },
-      proof: { type: 'string' }
+      proof: { type: 'string' },
+      moves: { type: 'object', validate: cleanMoves },
+      log: { type: 'object', validate: cleanLog }
     }
   },
   'time-block': {

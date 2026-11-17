@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import { validateDetails } from '../../shared/entryTypes.js'
-import { cleanSteps, compareTasks, hoursOf, isLate, laneOf, slippedCount, stepsFromLines, taskDay, tasksForDay } from '../../shared/tasks.js'
+import { cleanLog, cleanMoves, cleanSteps, compareTasks, hoursOf, isLate, laneOf, minutesNoted, moveTask, nextMonday, slippedCount, stepsFromLines, taskDay, tasksForDay, timesMoved } from '../../shared/tasks.js'
 
 const today = '2026-11-16'
 const task = (fields = {}, details = {}) => ({ id: fields.id ?? 't', type: 'task', status: 'planned', title: 'x', start_at: null, all_day: true, ...fields, details: { priority: 'med', ...details } })
@@ -88,5 +88,85 @@ describe('task lanes and days', () => {
 
   it('adds up estimated hours', () => {
     assert.deepEqual(hoursOf([task({}, { estimate: 2 }), task({ status: 'done' }, { estimate: 1.5 }), task()]), { planned: 3.5, done: 1.5 })
+  })
+
+  it('puts starred tasks first among the open ones', () => {
+    const list = [task({ id: 'plain', start_at: '2026-11-12' }), task({ id: 'star', start_at: '2026-11-20', favorite: true }), task({ id: 'done-star', status: 'done', favorite: true })].sort(compareTasks)
+    assert.deepEqual(list.map((t) => t.id), ['star', 'plain', 'done-star'])
+  })
+})
+
+describe('moving a task', () => {
+  const now = new Date('2026-11-16T10:00:00.000Z') // a Monday, 10:00 in London
+
+  it('lands each choice on its day and records the move', () => {
+    const own = task({ start_at: today }, { lane: 'today' })
+    const tomorrow = moveTask(own, { choice: 'tomorrow', today, now, why: 'time' })
+    assert.equal(tomorrow.start_at, '2026-11-17')
+    assert.equal(tomorrow.all_day, true)
+    assert.equal(tomorrow.details.lane, undefined, 'a lane the day decided is let go')
+    assert.deepEqual(tomorrow.details.moves, [{ at: now.toISOString(), from: today, to: '2026-11-17', why: 'time' }])
+    assert.equal(moveTask(own, { choice: 'week', today, now }).start_at, '2026-11-23')
+    assert.equal(nextMonday('2026-11-22'), '2026-11-23', 'from a Sunday, next week starts tomorrow')
+    assert.equal(moveTask(own, { choice: 'day', day: '2026-12-02', today, now }).start_at, '2026-12-02')
+    const someday = moveTask(own, { choice: 'someday', today, now })
+    assert.equal(someday.start_at, null)
+    assert.equal(someday.details.lane, 'backlog')
+    assert.equal(someday.details.moves[0].to, '')
+  })
+
+  it('keeps a lane chosen for the kind of work, and a reason only when it is one of the known ones', () => {
+    const moved = moveTask(task({ start_at: today }, { lane: 'deep' }), { choice: 'tomorrow', today, now, why: 'whatever' })
+    assert.equal(moved.details.lane, 'deep')
+    assert.equal('why' in moved.details.moves[0], false)
+  })
+
+  it('puts "later today" in a later part of the day', () => {
+    const later = moveTask(task({ start_at: today }, { slot: 'am' }), { choice: 'later', today, now })
+    assert.equal(later.start_at, today)
+    assert.equal(later.details.slot, 'pm')
+    assert.equal(moveTask(task({ start_at: today }), { choice: 'later', today, now: new Date('2026-11-16T15:00:00.000Z') }).details.slot, 'eve')
+  })
+
+  it('keeps the London clock time of a timed task across the clock change', () => {
+    // 18:00–19:30 in London on Saturday 24 October (UTC+1); moved to Monday 26 October (UTC).
+    const timed = task({ start_at: '2026-10-24T17:00:00.000Z', end_at: '2026-10-24T18:30:00.000Z', all_day: false })
+    const moved = moveTask(timed, { choice: 'day', day: '2026-10-26', today: '2026-10-24', now })
+    assert.equal(moved.start_at, '2026-10-26T18:00:00.000Z')
+    assert.equal(moved.end_at, '2026-10-26T19:30:00.000Z')
+    assert.equal(moved.all_day, false)
+  })
+
+  it('refuses a move with no place to go', () => {
+    assert.throws(() => moveTask(task(), { choice: 'day', day: 'Friday', today, now }), /Choose a day/)
+    assert.throws(() => moveTask(task(), { choice: 'away', today, now }), /Choose where/)
+  })
+
+  it('counts moves, keeps only the latest hundred, and checks what is saved', () => {
+    const many = Array.from({ length: 105 }, (_, i) => ({ at: now.toISOString(), from: '', to: today }))
+    assert.equal(cleanMoves(many).length, 100)
+    assert.equal(timesMoved(task({}, { moves: many.slice(0, 3) })), 3)
+    assert.equal(validateDetails('task', { moves: [{ at: 'yesterday', from: '', to: today }] }).ok, false)
+    assert.equal(validateDetails('task', { moves: [{ at: now.toISOString(), from: today, to: 'Friday' }] }).ok, false)
+  })
+})
+
+describe('notes on a task', () => {
+  it('keeps dated notes and "how it went" with minutes, and drops empty ones', () => {
+    const at = '2026-11-16T21:00:00.000Z'
+    const result = validateDetails('task', { log: [{ at, text: '  Read half the brief ' }, { at, kind: 'done', text: 'Went well', minutes: '45' }, { at, text: '  ' }] })
+    assert.equal(result.ok, true, result.errors.join('; '))
+    assert.equal(result.value.log.length, 2)
+    assert.equal(result.value.log[0].text, 'Read half the brief')
+    assert.equal(result.value.log[0].kind, 'note')
+    assert.deepEqual([result.value.log[1].kind, result.value.log[1].minutes], ['done', 45])
+    assert.equal(minutesNoted({ details: result.value }), 45)
+  })
+
+  it('refuses notes it cannot keep', () => {
+    assert.deepEqual(validateDetails('task', { log: 'a note' }).errors, ['log: log must be a list'])
+    assert.equal(validateDetails('task', { log: [{ at: 'now', text: 'x' }] }).ok, false)
+    assert.equal(validateDetails('task', { log: [{ at: '2026-11-16T21:00:00.000Z', text: 'x', minutes: 5000 }] }).ok, false)
+    assert.notEqual(...cleanLog([{ id: 'a', at: '2026-11-16T21:00:00.000Z', text: 'one' }, { id: 'a', at: '2026-11-16T21:00:00.000Z', text: 'two' }]).map((note) => note.id))
   })
 })

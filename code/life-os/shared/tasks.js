@@ -1,5 +1,6 @@
 // Tasks: what a task is beyond its title, where it stands, and what is for a given day.
 // Shared by the server (to check what is saved) and the pages (to arrange what is shown).
+import { londonDateTime } from './calendar.js'
 
 // Where a task stands. A task with no lane of its own is placed by its day (laneOf).
 export const LANES = [
@@ -122,12 +123,14 @@ export function tasksForDay(tasks, date, today) {
 // How many of her tasks have slipped into Rescue (by their day, or put there).
 export const slippedCount = (tasks, today) => tasks.filter((task) => !isDoneTask(task) && !isPutAway(task) && laneOf(task, today) === 'rescue').length
 
-// Order within a list: late first, then by clock time or slot, then priority, then title.
+// Order within a list: starred first, then late, then by clock time or slot, then priority, then title.
 const SLOT_ORDER = { am: 0, pm: 1, eve: 2, any: 3 }
 const PRIORITY_ORDER = { high: 0, med: 1, low: 2 }
 export function compareTasks(a, b) {
   const done = Number(isDoneTask(a)) - Number(isDoneTask(b))
   if (done) return done
+  const star = Number(Boolean(b.favorite)) - Number(Boolean(a.favorite))
+  if (star) return star
   const dayA = taskDay(a) || '9999-12-31'
   const dayB = taskDay(b) || '9999-12-31'
   if (dayA !== dayB) return dayA.localeCompare(dayB)
@@ -161,3 +164,114 @@ export function cleanDue(value) {
   if (!DAY.test(text) || Number.isNaN(Date.parse(`${text}T12:00:00Z`))) throw new Error('due must be a day (YYYY-MM-DD)')
   return text
 }
+
+const isInstant = (value) => typeof value === 'string' && !Number.isNaN(Date.parse(value))
+const londonParts = (instant) => Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+  .formatToParts(new Date(instant)).map((part) => [part.type, part.value]))
+
+// ---- Moving a task ------------------------------------------------------------------------
+// Why it was moved, when that is said. Chosen before where to, and never required.
+export const MOVE_REASONS = [
+  { id: 'time', label: 'No time' },
+  { id: 'blocked', label: 'Blocked' },
+  { id: 'ready', label: 'Not ready' },
+  { id: 'energy', label: 'No energy' },
+]
+const MOVE_REASON_IDS = MOVE_REASONS.map((reason) => reason.id)
+export const moveReasonLabel = (id) => MOVE_REASONS.find((reason) => reason.id === id)?.label ?? ''
+export const MAX_MOVES = 100
+// From this many moves a task is stuck: the opened task suggests making it smaller or letting it go.
+export const STUCK_AFTER_MOVES = 3
+
+// A task's moves as kept, oldest first: [{ at, from, to, why? }]; `from` and `to` are days, or ''
+// for no day. Only the latest MAX_MOVES are kept.
+export function cleanMoves(value) {
+  if (value === undefined || value === null) return undefined
+  if (!Array.isArray(value)) throw new Error('moves must be a list')
+  const dayOrNone = (raw) => {
+    if (raw === undefined || raw === null || raw === '') return ''
+    const text = String(raw).slice(0, 10)
+    if (!DAY.test(text)) throw new Error('a move goes from a day to a day (YYYY-MM-DD)')
+    return text
+  }
+  const moves = value.slice(-MAX_MOVES).map((raw) => {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('each move must be { at, from, to }')
+    if (!isInstant(raw.at)) throw new Error('a move needs the time it was made')
+    return { at: new Date(raw.at).toISOString(), from: dayOrNone(raw.from), to: dayOrNone(raw.to), ...(MOVE_REASON_IDS.includes(raw.why) ? { why: raw.why } : {}) }
+  })
+  return moves.length ? moves : undefined
+}
+export const timesMoved = (task) => (Array.isArray(task?.details?.moves) ? task.details.moves.length : 0)
+
+// The Monday after `today` (the next week's first day).
+export function nextMonday(today) {
+  const weekday = new Date(`${today}T12:00:00Z`).getUTCDay()
+  return addDays(today, ((8 - weekday) % 7) || 7)
+}
+
+// The choices of the move menu. "Later today" keeps it on today in a later part of the day.
+export const MOVE_CHOICES = ['later', 'tomorrow', 'week', 'day', 'someday']
+
+// What to save to move a task: its new day (and clock time, when it had one, kept in London time),
+// its lane let go when the day decided it, and the move recorded. `now` is the instant of the move.
+export function moveTask(task, { choice, day = '', why = '', today, now = new Date() }) {
+  const from = taskDay(task)
+  const details = { ...(task?.details ?? {}) }
+  if (['today', 'week', 'rescue', 'backlog'].includes(details.lane)) delete details.lane
+  let to = ''
+  if (choice === 'later') {
+    to = today
+    details.slot = Number(londonParts(now).hour) < 12 ? 'pm' : 'eve'
+  } else if (choice === 'tomorrow') to = addDays(today, 1)
+  else if (choice === 'week') to = nextMonday(today)
+  else if (choice === 'day') {
+    if (!DAY.test(String(day)) || Number.isNaN(Date.parse(`${day}T12:00:00Z`))) throw new Error('Choose a day.')
+    to = day
+  } else if (choice === 'someday') details.lane = 'backlog'
+  else throw new Error('Choose where to move it.')
+
+  let when
+  const timed = Boolean(task?.start_at) && !task.all_day && String(task.start_at).length > 10
+  if (!to) when = { start_at: null, end_at: null, all_day: false }
+  else if (timed && choice !== 'later') {
+    const { hour, minute } = londonParts(task.start_at)
+    const startAt = londonDateTime(to, `${hour}:${minute}`) || `${to}T${hour}:${minute}:00.000Z`
+    const length = task.end_at ? Date.parse(task.end_at) - Date.parse(task.start_at) : 0
+    when = { start_at: startAt, end_at: length > 0 ? new Date(Date.parse(startAt) + length).toISOString() : null, all_day: false }
+  } else when = { start_at: to, end_at: null, all_day: true }
+
+  const move = { at: new Date(now).toISOString(), from, to, ...(MOVE_REASON_IDS.includes(why) ? { why } : {}) }
+  details.moves = [...(Array.isArray(details.moves) ? details.moves : []), move].slice(-MAX_MOVES)
+  return { ...when, details }
+}
+
+// ---- Notes on a task ----------------------------------------------------------------------
+// Dated notes, oldest first: [{ id, at, kind, text, minutes? }]. Kind 'done' is "how it went",
+// written when it was ticked done; minutes are the time it took, when that is said.
+export const MAX_NOTES = 200
+const NOTE_TEXT = 4000
+export function noteId() {
+  return `n${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`
+}
+export function cleanLog(value) {
+  if (value === undefined || value === null) return undefined
+  if (!Array.isArray(value)) throw new Error('log must be a list')
+  if (value.length > MAX_NOTES) throw new Error(`a task holds at most ${MAX_NOTES} notes`)
+  const seen = new Set()
+  const log = []
+  for (const raw of value) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('each note must be { at, text }')
+    if (!isInstant(raw.at)) throw new Error('a note needs the time it was written')
+    const text = String(raw.text ?? '').trim().slice(0, NOTE_TEXT)
+    const minutes = raw.minutes === undefined || raw.minutes === null || raw.minutes === '' ? 0 : Math.round(Number(raw.minutes))
+    if (!Number.isFinite(minutes) || minutes < 0 || minutes > 1440) throw new Error('minutes must be between 0 and 1440')
+    if (!text && !minutes) continue
+    let id = typeof raw.id === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(raw.id) ? raw.id : noteId()
+    while (seen.has(id)) id = noteId()
+    seen.add(id)
+    log.push({ id, at: new Date(raw.at).toISOString(), kind: raw.kind === 'done' ? 'done' : 'note', text, ...(minutes ? { minutes } : {}) })
+  }
+  return log.length ? log : undefined
+}
+export const notesOf = (task) => (Array.isArray(task?.details?.log) ? task.details.log : [])
+export const minutesNoted = (task) => notesOf(task).reduce((sum, note) => sum + (Number(note.minutes) || 0), 0)

@@ -1,9 +1,17 @@
 // The pieces a task is drawn with wherever it appears: the diamond that ticks it, its steps
 // (ticked, added, renamed, moved, removed in place), the line that says what it is, and the card.
 import { useState } from 'react'
-import { laneLabel, slotLabel, stepsDone, taskDay, isLate } from '@shared/tasks.js'
+import { STUCK_AFTER_MOVES, laneLabel, notesOf, slotLabel, stepsDone, taskDay, timesMoved, isLate } from '@shared/tasks.js'
 import { formatCalendarDay, calendarArea } from '../../lib/calendar.js'
 import { addStep, areaName, areaTone, dropStep, moveStep, renameStep, tickStep } from '../../lib/useTasks.js'
+import { MoveMenu, StarButton } from './TaskActions.jsx'
+
+// "moved 3×", in red from the third move, when a task has been moved at all.
+export function MovedMark({ task }) {
+  const moved = timesMoved(task)
+  if (!moved) return null
+  return <span className={`task-moved${moved >= STUCK_AFTER_MOVES ? ' is-stuck' : ''}`} title={`Moved to another day ${moved} ${moved === 1 ? 'time' : 'times'}`}>moved {moved}×</span>
+}
 
 // Under an hour in minutes ("15 min"), otherwise in hours ("1.5 h").
 export const hoursText = (value) => {
@@ -27,7 +35,9 @@ export function TaskMeta({ task, today, showLane = false, lane = '' }) {
   const day = taskDay(task)
   const late = isLate(task, today)
   const due = task.details?.due
+  const notes = notesOf(task).length
   return <p className="task-meta">
+    {task.favorite ? <span className="task-starred" title="Starred: first in every list">★</span> : null}
     <span className="task-area" style={{ '--item-accent': toneOf(task.details?.area) }}>{areaName(task.details?.area)}</span>
     {showLane && lane ? <span>{laneLabel(lane)}</span> : null}
     {day ? <span className={late ? 'task-late' : undefined}>{late ? 'late · ' : ''}{day === today ? 'today' : formatCalendarDay(day, { weekday: 'short' })}</span> : null}
@@ -36,6 +46,8 @@ export function TaskMeta({ task, today, showLane = false, lane = '' }) {
     {task.details?.estimate ? <span>{hoursText(task.details.estimate)}</span> : null}
     {task.details?.priority === 'high' ? <span className="task-high">high</span> : null}
     {steps.length ? <span>{stepsDone(steps)} of {steps.length} steps</span> : null}
+    {notes ? <span>{notes} {notes === 1 ? 'note' : 'notes'}</span> : null}
+    <MovedMark task={task} />
   </p>
 }
 
@@ -80,10 +92,13 @@ export function TaskSteps({ task, editable = false, limit = 0, busy = false, onE
 }
 
 // A card for a task of any kind. `item` is { key, kind: 'own' | 'study' | 'mail', title, done, task?, … }
-// as the Tasks page and the day gather them (lib/taskItems.js).
-export function TaskCard({ item, today, onOpen, onToggle, busy, compact = false, draggable = false, onDragStart }) {
+// as the Tasks page and the day gather them (lib/taskItems.js). With `onMove` (and `onStar` for her
+// own tasks) an open card carries the star and the move menu.
+export function TaskCard({ item, today, onOpen, onToggle, onMove, onStar, busy, compact = false, draggable = false, onDragStart }) {
   const own = item.kind === 'own'
-  return <article className={`task-card${item.done ? ' is-done' : ''}${item.late ? ' is-late' : ''}${own ? ' is-own' : ` is-${item.kind}`}`} style={{ '--item-accent': item.tone }}
+  const starred = own && Boolean(item.task.favorite)
+  const tools = !item.done && (onMove || (own && onStar))
+  return <article className={`task-card${item.done ? ' is-done' : ''}${item.late ? ' is-late' : ''}${starred ? ' is-starred' : ''}${own ? ' is-own' : ` is-${item.kind}`}`} style={{ '--item-accent': item.tone }}
     draggable={draggable} onDragStart={onDragStart}>
     <TaskTick done={item.done} busy={busy} label={`${item.done ? 'Not done after all' : 'Done'}: ${item.title}`} onToggle={onToggle} />
     <div className="task-card-body">
@@ -91,6 +106,10 @@ export function TaskCard({ item, today, onOpen, onToggle, busy, compact = false,
       {own ? <TaskMeta task={item.task} today={today} /> : <p className="task-meta"><span className="task-area" style={{ '--item-accent': item.tone }}>{item.source}</span>{item.when ? <span className={item.late ? 'task-late' : undefined}>{item.when}</span> : null}{item.extra ? <span>{item.extra}</span> : null}</p>}
       {!compact && own && item.task.details?.proof && !item.done ? <p className="task-proof"><span>Done when</span> {item.task.details.proof}</p> : null}
       {item.progress ? <span className="task-progress" role="img" aria-label={`${item.progress.done} of ${item.progress.total} steps done`}><i style={{ width: `${Math.round((item.progress.done / item.progress.total) * 100)}%` }} /></span> : null}
+      {tools ? <div className="task-tools">
+        {own && onStar ? <StarButton on={starred} title={item.title} busy={busy} onToggle={onStar} /> : null}
+        {onMove ? <MoveMenu title={item.title} day={item.day} today={today} waiting={item.kind === 'mail'} busy={busy} onMove={onMove} /> : null}
+      </div> : null}
     </div>
   </article>
 }

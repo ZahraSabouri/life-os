@@ -34,6 +34,10 @@ export async function saveAction(row, fields) {
   return saved
 }
 
+// Moved to a day: snoozed until then, so it comes back on that day. Undo gives back what it had.
+export const snoozeAction = (row, day) => saveAction(row, { status: 'snoozed', snoozed_until: day })
+export const unsnoozeAction = (saved, before) => saveAction(saved, { status: before.status, snoozed_until: before.snoozed_until ?? null })
+
 export async function addOwed(body) {
   const saved = await apiFetch('/api/mail/actions', { method: 'POST', body: JSON.stringify(body) })
   mailChanged()

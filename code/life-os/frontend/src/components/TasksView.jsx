@@ -8,8 +8,9 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { LANES, laneLabel } from '@shared/tasks.js'
 import { formatCalendarDay } from '../lib/calendar.js'
 import { gatherItems } from '../lib/taskItems.js'
-import { TASK_AREAS, areaName, createTask, moveTaskLane, setTaskDone, useTasks } from '../lib/useTasks.js'
-import { saveAction, useMail } from '../lib/useMail.js'
+import { TASK_AREAS, areaName, createTask, moveTaskLane, postponeTask, setTaskDone, setTaskStar, undoMove, useTasks } from '../lib/useTasks.js'
+import { saveAction, snoozeAction, unsnoozeAction, useMail } from '../lib/useMail.js'
+import { dayOfChoice, movedWords } from './tasks/TaskActions.jsx'
 import { useDay } from '../lib/useDay.js'
 import { useLondonToday } from '../lib/useCalendar.js'
 import { apiFetch } from '../lib/api.js'
@@ -47,6 +48,7 @@ export default function TasksView() {
   const day = useDay(today)
   const mail = useMail('/api/mail/actions')
   const [openId, setOpenId] = useState('')
+  const [askHow, setAskHow] = useState(false)
   const [adding, setAdding] = useState(null)
   const [showDone, setShowDone] = useState(false)
   const [busy, setBusy] = useState('')
@@ -73,15 +75,15 @@ export default function TasksView() {
     for (const [key, value] of Object.entries(next)) { if (value) merged.set(key, value); else merged.delete(key) }
     setParams(merged, { replace: true })
   }
-  async function run(key, action, words) {
+  async function run(key, action, words, how = '') {
     if (busy) return
     setBusy(key)
     setError('')
-    try { const undo = await action(); setSaid(words ? { words, undo } : null) } catch (failure) { setError(failure.message) } finally { setBusy('') }
+    try { const undo = await action(); setSaid(words ? { words, undo, how } : null) } catch (failure) { setError(failure.message) } finally { setBusy('') }
   }
-  // A tick, wherever the thing is kept.
+  // A tick, wherever the thing is kept. Her own task ticked done offers "how it went".
   function toggle(item) {
-    if (item.kind === 'own') return run(item.key, async () => { const saved = await setTaskDone(item.task, !item.done); return () => setTaskDone(saved, item.done) }, `${item.done ? 'Back on the list' : 'Done'}: “${item.title}”.`)
+    if (item.kind === 'own') return run(item.key, async () => { const saved = await setTaskDone(item.task, !item.done); return () => setTaskDone(saved, item.done) }, `${item.done ? 'Back on the list' : 'Done'}: “${item.title}”.`, item.done ? '' : item.id)
     if (item.kind === 'mail') return run(item.key, async () => { const saved = await saveAction(item.row, { status: 'done' }); mail.reload(); return async () => { await saveAction(saved, { status: 'open' }); mail.reload() } }, `Done: “${item.title}”.`)
     if (item.kind === 'study' && item.card.hubCardId) {
       return run(item.key, async () => {
@@ -94,12 +96,24 @@ export default function TasksView() {
   }
   async function undo() {
     if (!said?.undo) return
-    await run('undo', async () => { await said.undo(); tasks.reload() }, '')
+    await run('undo', async () => { await said.undo(); tasks.reload(); mail.reload() }, '')
   }
-  function openItem(item) {
+  function openItem(item, how = false) {
+    setAskHow(how)
     if (item.kind === 'own') setOpenId(item.id)
     else navigate(item.href)
   }
+  // Moved to another day: her task in the core, a thing waiting on her snoozed to that day.
+  function move(item, choice) {
+    const words = `${movedWords(choice.choice, today, choice.day)}: “${item.title}”.`
+    if (item.kind === 'own') return run(item.key, async () => { const saved = await postponeTask(item.task, { ...choice, today }); return () => undoMove(saved, item.task) }, words)
+    if (item.kind === 'mail') {
+      return run(item.key, async () => { const saved = await snoozeAction(item.row, dayOfChoice(choice.choice, today, choice.day)); mail.reload(); return async () => { await unsnoozeAction(saved, item.row); mail.reload() } }, words)
+    }
+    return undefined
+  }
+  const star = (item) => run(item.key, async () => { const saved = await setTaskStar(item.task, !item.task.favorite); return () => setTaskStar(saved, item.task.favorite) },
+    `${item.task.favorite ? 'Star taken off' : 'Starred, first in every list'}: “${item.title}”.`)
   function drop(lane) {
     const item = all.find((candidate) => candidate.key === dragging)
     setDragging('')
@@ -109,6 +123,7 @@ export default function TasksView() {
   }
 
   const card = (item) => <TaskCard key={item.key} item={item} today={today} busy={Boolean(busy)} onOpen={() => openItem(item)} onToggle={item.kind === 'study' && !item.card.hubCardId ? undefined : () => toggle(item)}
+    onMove={item.kind === 'own' || item.kind === 'mail' ? (choice) => move(item, choice) : undefined} onStar={item.kind === 'own' ? () => star(item) : undefined}
     draggable={item.kind === 'own'} onDragStart={(event) => { setDragging(item.key); event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', item.key) }} />
 
   return <section className="today-layout unified-today day-page tasks-page" aria-label="Tasks">
@@ -131,7 +146,8 @@ export default function TasksView() {
       {areas.map(([slug, name, count]) => <button key={slug} type="button" aria-pressed={area === slug} onClick={() => set({ area: area === slug ? '' : slug })}>{name} <small>{count}</small></button>)}
     </div>
 
-    {said ? <p className="day-add-hint day-add-done" role="status">{said.words}{said.undo ? <> <button type="button" className="day-undo" onClick={undo} disabled={Boolean(busy)}>Undo</button></> : null}</p> : null}
+    {said ? <p className="day-add-hint day-add-done" role="status">{said.words}{said.undo ? <> <button type="button" className="day-undo" onClick={undo} disabled={Boolean(busy)}>Undo</button></> : null}
+      {said.how ? <> <button type="button" className="day-undo" onClick={() => { setAskHow(true); setOpenId(said.how) }}>Add how it went</button></> : null}</p> : null}
     {error ? <p className="day-add-hint day-warn" role="alert">{error}</p> : null}
     {tasks.error ? <p className="day-warn" role="alert">Your tasks could not be read: {tasks.error} <button type="button" className="day-retry" onClick={tasks.reload}>Try again</button></p> : null}
     {day.error ? <p className="day-quiet">The Study hub’s cards could not be read just now.</p> : null}
@@ -177,6 +193,6 @@ export default function TasksView() {
 
     <p className="today-section-note">Study hub cards and things waiting on you are ticked here and kept where they belong: <Link to="/study">Study hub</Link>, <Link to="/inbox/waiting">Waiting on you</Link>.</p>
     {adding ? <NewTask defaults={{ ...adding, area }} onClose={() => setAdding(null)} /> : null}
-    {opened ? <TaskDialog task={opened} today={today} onClose={() => setOpenId('')} /> : null}
+    {opened ? <TaskDialog task={opened} today={today} askHow={askHow} onClose={() => { setOpenId(''); setAskHow(false) }} /> : null}
   </section>
 }

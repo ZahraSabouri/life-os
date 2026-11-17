@@ -4,6 +4,8 @@
 
 ## Now
 
+- **17 November, stage 8 started (Claude Code): move, star and note a task.** Xar asked for better task management ("postpone them, highlight them, put notes and comments for how I did them") and replanning as a priority; her thirteen points are TODO section AB, and the work is [brief stage 8](briefs/stage-8-task-loop.md). CP1 done: wherever a task shows (Tasks board, the day checklist on Today, every Court and the calendar's day, a task opened) it has ☆ (starred first everywhere) and "Move" (later today, tomorrow, next week, a day, someday, with an optional reason); every move is kept and "moved 3×" turns red; a task opened has dated notes with minutes and the moves as one timeline, and asks "How did it go?" when ticked done. "Waiting on you" items move by snoozing. Undo after each change. Also: `dist-next` (188 MB try-out build) and 42 leftover Budget test folders deleted, and that test now cleans up after itself. [Session](sessions/2026-11-17-claude-code-8-cp1-task-actions.md).
+
 - **17 November unfinished-work rollover:** all unfinished Monday work moved into 17–23 November, with CMT309 prerequisites and ENCAP milestones replanned. Completed follow-ups and the lecture tick were preserved. Setup is Tuesday 20:55; Week 1 Wednesday/Thursday; Week 2 and Q1 Friday–Sunday; Week 3 Monday before Week 4. ENCAP reserves 9 h 45 min toward Friday's handoff within the existing initial 10-hour scenario, subject to the hours check. Backup, guarded API saves and readback passed; no open flexible Monday items or new overlaps. [Session](sessions/2026-11-17-codex-calendar-unfinished-rollover.md).
 
 - **16 November career strategy:** retained the supplied visa/sponsorship research in shared private guidance, updated both agents' job-search instructions and the existing Codex automation prompt (still paused), and saved the strategy in JobMap's career profile. Profile API readback passed; all vacancies and matching preferences stayed unchanged. Personal legal dates remain unverified; Claude's live scheduler was not inspected. [Session](sessions/2026-11-16-codex-career-visa-strategy.md).
@@ -46,8 +48,9 @@ Refresh the app. [Today](http://127.0.0.1:47850/today) opens on the day's checkl
 
 ## Exact next step
 
-0. Xar: refresh Today/Calendar for the 17 November rollover. The postponed Proffiliadur baseline uses today's 17:00 work block; CMT309 setup is 20:55. Follow the revised sequence through Monday 23 November. Adaptive daily replanning remains a discussion proposal, with no feature implementation selected.
-1. Development remains stage 7 CP5: "Continue stage 7: CP5, the public version." (Tasks is now in the code CP5 publishes.)
+0. Xar: refresh [Tasks](http://127.0.0.1:47850/tasks) and [Today](http://127.0.0.1:47850/today); open a task's line in the checklist to see ☆ and "Move", and open a task for its notes.
+1. Development: stage 8 CP2, "Continue stage 8: CP2, one model of a thing to do and the one-tap day actions" (running late +15/30/60, moving several at once, moving a Study card). Then CP3, "replan the rest of today". In Xar's order (TODO AB) the documents tidy, the audit map and the loading fixes follow, then the focus room.
+2. Stage 7 CP5 (the public version) waits until the audit map exists, so it does not publish code about to be reorganised (recommended 17 November; Xar may put it first again).
 2. Cowork handoff: use mail/HARVEST.md v2 and HARVEST.local.md; prepare September weekly backfill, try on lifeos_test before import.
 3. Task connections and date-aware job matching are backlog work, not implemented by this data update.
 
