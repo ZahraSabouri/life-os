@@ -1,6 +1,6 @@
 # Life OS: status
 
-**Updated 17 November 2026.** Branch `stage/7-separation`, pushed to GitHub on 17 November at Xar's request (stages 7 and 8 so far, Tasks and the day checklist). App http://127.0.0.1:47850. Local main holds JobMap CP1 and stages 5–6, merged and not pushed. Life OS runs JobMap and the old standalone is in Retired Apps.
+**Updated 17 November 2026.** Branch `stage/7-separation`, pushed to GitHub on 17 November at Xar's request, and `main` (GitHub and local) brought level with it the same day (stages 5–6, JobMap CP1, stage 7 CP1–CP4, Tasks, the day checklist, stage 8 CP1). App http://127.0.0.1:47850. Life OS runs JobMap and the old standalone is in Retired Apps.
 
 ## Now
 
