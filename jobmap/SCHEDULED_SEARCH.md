@@ -1,3 +1,11 @@
+# UK visa strategy: current direction (16 November 2026)
+
+Before career, JobMap or scheduled-search work, read `.private/career-strategy/README.md` and `.private/career-strategy/SCHEDULED-SEARCH.md` (from the Life OS root). They are a local reading copy of the canonical career-folder strategy; keep the copies aligned when updating it. The dated rule check is a snapshot, not permanent legal fact. This user-requested direction supersedes older no-graduate/no-2027 restrictions below. Preserve the existing technical scope, current permission limits, application-state protections and paused scheduler states. Personal immigration detail belongs in private data/documents, not app code.
+
+Current scheduling/source rules are in `C:\Users\ctrlz\Documents\Scheduled Workflows\instructions\jobs.md` and applicable scout/integrate instructions; use the mechanics below only where consistent with them and Life OS ownership.
+
+---
+
 # Life OS JobMap only (user instruction, 27 October 2026)
 
 Zahra: "we only will work on the life os job map from now on". From this date,
@@ -30,7 +38,7 @@ User instruction, 8 October 2026: scheduled searches and further development cov
 - Standalone: `C:\Users\ctrlz\Documents\JobMap\Career Agent\JobMap App`
 - Life OS: `C:\Users\ctrlz\Documents\Personal\Projects\Life_OS\jobmap`
 
-Read `C:\Users\ctrlz\Documents\JobMap\AGENTS.md`, `Career Agent\AGENTS.md`, and each app's `AGENTS.md` and `SCHEDULED_SEARCH.md`. Follow Life OS root instructions when working there. Run all Node commands below separately in each app's own working directory.
+Read `C:\Users\ctrlz\Documents\JobMap\AGENTS.md`, `05 Career Guidance\AGENTS.md`, and each app's `AGENTS.md` and `SCHEDULED_SEARCH.md`. Follow Life OS root instructions when working there. Run all Node commands below separately in each app's own working directory.
 
 Research once and compare findings with both collections. Save the same verified findings in each app's `data/discoveries` with the same unique `runId`; keep that runId when retrying. Dry-run each copy before queueing it. Vacancy IDs can differ: match canonical advert URLs and resolve `existingId` against the target collection, using a target-specific batch only when an identity resolution requires it. Never copy a workspace or data directory from one app over the other.
 
@@ -38,7 +46,7 @@ Inspect each copy's import log and inbox processed/failed folders. Report both r
 
 Do not archive jobs during routine searches. Both interfaces now use the shared personal workspace described below; a routine search still changes only vacancy evidence.
 
-Run in `C:\Users\ctrlz\Documents\JobMap`. Read `Career Agent\AGENTS.md` first. Search current paid technical employee roles, prioritising part-time possibilities and retaining relevant full-time leads with their actual hours flagged. Use her saved skills and preferences from the app. Prioritise Cardiff, practical South Wales travel and genuine UK-remote employment. Research exact hours and on-site frequency; do not treat full-time, graduate, freelance or unpaid work as a current fit. Do not infer work permission or hiring chances from a score.
+Run in `C:\Users\ctrlz\Documents\JobMap`. Read `05 Career Guidance\AGENTS.md` first. Search current paid technical employee roles, prioritising part-time possibilities and retaining relevant full-time leads with their actual hours flagged. Use her saved skills and preferences from the app. Prioritise Cardiff, practical South Wales travel and genuine UK-remote employment. Research exact hours and on-site frequency; do not treat full-time, graduate, freelance or unpaid work as a current fit. Do not infer work permission or hiring chances from a score.
 
 Use public employer careers pages and trustworthy public listings. The original cloud task used public sources only; keep that boundary for scheduled runs. Private Cardiff, email and LinkedIn account reviews are separate tasks. Retain every credible current technical employee opportunity found and verified in the run, with hours and material gaps flagged; do not limit the additions to a small shortlist. Do not submit applications or contact employers.
 

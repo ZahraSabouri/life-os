@@ -1,8 +1,23 @@
 # Life OS: status
 
-**Updated 15 November 2026 by Claude Code (the day's checklist, notices, clearing out what is over).** Branch `stage/7-separation`; app http://127.0.0.1:47850. Main holds JobMap CP1 and stages 5?6, merged locally, not pushed. Standalone JobMap stays frozen.
+**Updated 17 November 2026.** Branch `stage/7-separation`. App http://127.0.0.1:47850. Main holds JobMap CP1 and stages 5–6, merged locally and not pushed. Life OS runs JobMap and the old standalone is in Retired Apps.
 
 ## Now
+
+- **17 November unfinished-work rollover:** all unfinished Monday work moved into 17–23 November, with CMT309 prerequisites and ENCAP milestones replanned. Completed follow-ups and the lecture tick were preserved. Setup is Tuesday 20:55; Week 1 Wednesday/Thursday; Week 2 and Q1 Friday–Sunday; Week 3 Monday before Week 4. ENCAP reserves 9 h 45 min toward Friday's handoff within the existing initial 10-hour scenario, subject to the hours check. Backup, guarded API saves and readback passed; no open flexible Monday items or new overlaps. [Session](sessions/2026-11-17-codex-calendar-unfinished-rollover.md).
+
+- **16 November career strategy:** retained the supplied visa/sponsorship research in shared private guidance, updated both agents' job-search instructions and the existing Codex automation prompt (still paused), and saved the strategy in JobMap's career profile. Profile API readback passed; all vacancies and matching preferences stayed unchanged. Personal legal dates remain unverified; Claude's live scheduler was not inspected. [Session](sessions/2026-11-16-codex-career-visa-strategy.md).
+
+
+- **16 November evening reset:** Xar reported no morning work completed and requested a 17:00–00:00 restart. Saved CMT309 deadline check, setup and Week 1, dinner/break, ENCAP 21:20–23:05, MAT700/MAT022 follow-ups and a 23:45 buffer/close. Ben, MAT021 preparation and the internship shortlist moved to Tuesday; the MAT021 coursework review moved to Wednesday. Today's work occurrence moved without changing future repeats. API readback and conflict checks passed; nothing marked done. Adaptive replanning was discussed as a proposal, with no feature code changes. [Session](sessions/2026-11-16-codex-calendar-evening-reset-and-adaptive-planning.md).
+
+- **16 November library and coursework replan (today's times superseded above):** Daily admin runs through 23 December. CMT309 is scheduled to be ready by 16 December while the official date is checked. The 4 December job-search task has five company career pages and the recurring search now prioritises MSc-compatible data internships. [Session](sessions/2026-11-16-codex-calendar-library-and-coursework.md).
+
+- **16 November application outcomes:** Fidelity expired without submission. Lloyds Bristol saved a draft through contact and education, with right to work and personal declarations still open at step 4 of 7. Lloyds and HSBC deadlines corrected to 29 November. HSBC and Sky are on hold for work permission. Four JobMap records and the 15 November review checklist and calendar block verified. [Session](sessions/2026-11-16-codex-job-application-outcomes.md).
+
+- **15 November career files:** Life OS is the active JobMap. The standalone app and launchers moved to Retired Apps, and the career files were reorganised with active links and the workbook verified. The job source update is on 4 December and the data model and development review is on 11 January. [Session](sessions/2026-11-15-codex-career-files-and-planning.md).
+
+- **15 November evening reset:** tonight’s application checklist and optional Proffiliadur orientation are in Today. Monday starts at 10:00 with CMT309 setup, followed by Week 1, Cardiff work and the MAT021 lecture. MAT700 and MAT022 have separate Monday evening follow-ups. The Schengen letter, documents and appointment preparation now run Tuesday to Friday. [Session](sessions/2026-11-15-codex-calendar-evening-reset.md).
 
 - **15 November: the day's checklist, notices, and clearing out.** Xar: "the app's not usable at all!", then "notifications still suck" and "do a cleaning". Built: one checklist per day (Today, Courts, the calendar's day), a thing opened on the calendar shows everything kept about it, the week and month as pictures (`/glance`), notices that open what they are about (events in Events) and tell only about her own and chosen events, old ones folded. Data: 562 adverts closed without an application archived "Missed deadline", 9 Inbox things over put Not needed, the MAT022 project done, past event and appointment done, pre-restart gym sessions put away; nothing deleted. Objectives in [TODO N](TODO.md); commits `[day-cp1]`–`[day-cp4]`; [session](sessions/2026-11-15-claude-code-checklist-notices-and-cleaning.md).
 
@@ -31,7 +46,7 @@ Refresh the app. [Today](http://127.0.0.1:47850/today) opens on the day's checkl
 
 ## Exact next step
 
-0. Xar: follow the plan from Monday; on Monday ask the CMT309 module leader whether the deadline is 17 or 27 December (task on Monday's cards). Change anything in the app itself.
+0. Xar: refresh Today/Calendar for the 17 November rollover. The postponed Proffiliadur baseline uses today's 17:00 work block; CMT309 setup is 20:55. Follow the revised sequence through Monday 23 November. Adaptive daily replanning remains a discussion proposal, with no feature implementation selected.
 1. Development remains stage 7 CP5: "Continue stage 7: CP5, the public version." (Tasks is now in the code CP5 publishes.)
 2. Cowork handoff: use mail/HARVEST.md v2 and HARVEST.local.md; prepare September weekly backfill, try on lifeos_test before import.
 3. Task connections and date-aware job matching are backlog work, not implemented by this data update.
@@ -50,6 +65,8 @@ Accept core move/Study archive (old SQLite stays; deletion is hers); name the ne
 
 ## Data
 
+Read back 17 November: 9 core changes and 3 new records (340 → 343; 331 unrelated entries equal); 8 Study blocks and 8 cards' dates moved (revision 136 → 137). Monday has no open flexible work, all progress/ticks were preserved, and the changed intervals have no conflicts. PostgreSQL dump verified before guarded API writes; evidence in `.runtime/rollover-2026-11-17/`.
+
 Read back 15 November (clearing out): JobMap revision 104 → 667 (563 changes, none refused on the resumed run; no job open past its deadline, 1,054 open ahead); Inbox 10 changes; Study one assessment done; core 7 entries. PostgreSQL dump and JobMap backup verified first; evidence in `.runtime/cleaning-2026-11-15/`. Read back 14 November (fresh plan): Study revision 119 → 120 (29 cards rewritten or added, 46 future blocks replaced by 50, history and all progress unchanged, MAT021 coursework assessment added); core 280 → 313 entries (33 added, 45 changed, 235 others compared equal); 5 work repeats then marked `work`. PostgreSQL dump verified before writing; evidence in `.runtime/fresh-plan-2026-11-14/`. Read back 9 November: core 276 entries, two existing entries updated and all others compared equal. PostgreSQL backup verified before guarded writes. Health and Calendar verified. Private evidence is in `.runtime/appointment-update-2026-11-09/`. Last verified 7 November: Autumn Study revision 112, JobMap 73, Budget 117. Earlier evidence remains in `.runtime/wake-up-replan-2026-11-07/` and `.runtime/calendar-corrections-2026-11-07/`. No migrations or direct database writes.
 
-Last five sessions: [Checklist, notices, clearing out](sessions/2026-11-15-claude-code-checklist-notices-and-cleaning.md), [Cardiff handoff](sessions/2026-11-14-codex-calendar-data-cardiff-phase0.md), [Tasks and the fresh plan](sessions/2026-11-14-claude-code-tasks-and-fresh-plan.md), [Mail and planning](sessions/2026-11-12-codex-mail-and-planning-reconciliation.md), [Coursework focus](sessions/2026-11-12-codex-study-coursework-focus.md).
+Last five sessions: [Unfinished-work rollover](sessions/2026-11-17-codex-calendar-unfinished-rollover.md), [Career strategy](sessions/2026-11-16-codex-career-visa-strategy.md), [Evening reset and adaptive planning](sessions/2026-11-16-codex-calendar-evening-reset-and-adaptive-planning.md), [Library and coursework](sessions/2026-11-16-codex-calendar-library-and-coursework.md), [Application outcomes](sessions/2026-11-16-codex-job-application-outcomes.md).

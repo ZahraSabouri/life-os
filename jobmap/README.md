@@ -1,6 +1,6 @@
 # JobMap
 
-JobMap now runs inside Life OS: double-click **Start Life OS.cmd** in the Life_OS folder and open **JobMap** (or go to http://127.0.0.1:47850/jobmap). Life OS starts and stops JobMap's own server for you; the old Start JobMap.cmd is no longer used.
+To open JobMap, double-click **Start Life OS.cmd** in the Life OS folder and open **JobMap**, or go to http://127.0.0.1:47850/jobmap. Life OS starts and stops the JobMap service. The former standalone installation and launchers were archived on 15 November.
 
 - **All jobs:** opens on To apply, the roles a check has seen open, in the order to act on them. Also review potential part-time leads, tech and data roles, or the complete collection. Sort by match, location, application effort, deadline or your own priority.
 - **Shortlist:** star the jobs you want to keep close.
@@ -35,7 +35,7 @@ Workflow inspiration: [ai-job-search](https://github.com/ai-job-search-dev/ai-jo
 
 ## Life OS owns the data (28 October 2026)
 
-Since 27 October only this copy is developed and searched into. On 28 October the saved workspace moved here: `data/workspace/progress.json` in this folder, written only by the JobMap server Life OS starts (port 47852, public at http://127.0.0.1:47850/apps/jobmap/). The move used JobMap's own backup and restore, and all 1,195 jobs compared equal afterwards. The standalone `Documents\JobMap\Career Agent\JobMap App` is kept as it was on 28 October, as a fallback. Do not start its server: its own connection still lists this folder's inbox. The sections below about two apps sharing one workspace are history.
+The active workspace is `data/workspace/progress.json`, owned by the JobMap service Life OS starts on port 47852 and reachable through http://127.0.0.1:47850/apps/jobmap/. The 28 October transfer used JobMap's backup and restore and verified all 1,195 records. The retired standalone workspace is preserved as a recovery copy under `Documents\Backups\Retired Apps\JobMap Standalone 2026-11-15`. The sections below describe the earlier shared workspace.
 
 The app runs on this computer. It does not submit applications or contact employers. A scheduled search can add and refresh verified jobs through the importer (`queue-jobs.mjs`). Original adverts may require a university or job-board login. Location ranking follows the places set in Matching.
 

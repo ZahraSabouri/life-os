@@ -4,6 +4,11 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ---
 
+## 16 November 2026 — Shared career strategy for agents and scheduled searches (Xar)
+
+Xar asked to retain supplied visa/sponsorship research in project knowledge and memory for both agents, potentially Life OS, and explicitly emphasised scheduled job hunting. The strategy is now private shared context and JobMap profile data, with a dated rule check and separate unresolved personal facts. Current study-compatible work and future-start sponsorship searches remain parallel. Shared search instructions and the existing paused Codex automation prompt were updated. This is data/guidance integration, not a change to the matching algorithm or approval to activate schedules. See `.private/career-strategy/README.md` and the [session](sessions/2026-11-16-codex-career-visa-strategy.md).
+
+
 ## 14 November 2026 — Tasks with checklists in the core; a fresh plan to 10 January (Xar asked; details Claude Code's)
 
 - Xar: "there is no task management in this app/calendar. only study hub has such functionality. i need a sort of checklist for that too", and the July designs' "cards for daily tasks" were never built. Asked directly, so built outside stage 7's brief: steps on any entry, task lanes (with the design's Rescue lane for what slipped), a Tasks page that gathers the core's tasks with the Study hub's cards and Waiting on you (each still owned and ticked where it is kept), and the day's task cards on Today and every Court.

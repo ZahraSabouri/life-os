@@ -1,3 +1,9 @@
+# UK visa strategy: current direction (16 November 2026)
+
+Before career, JobMap or scheduled-search work, read `.private/career-strategy/README.md` and `.private/career-strategy/SCHEDULED-SEARCH.md` (from the Life OS root). They are a local reading copy of the canonical career-folder strategy; keep the copies aligned when updating it. The dated rule check is a snapshot, not permanent legal fact. This user-requested direction supersedes older no-graduate/no-2027 restrictions below. Preserve the existing technical scope, current permission limits, application-state protections and paused scheduler states. Personal immigration detail belongs in private data/documents, not app code.
+
+---
+
 # Life OS: instructions for coding agents (Codex, Claude Code, Claude in Cowork)
 
 **Updated 5 October 2026.** Read this first, every session. Xar owns every decision; when something is genuinely hers to decide, ask. How Xar runs the work, and the prompts she uses, are in `documents/WORKFLOW.md`.
@@ -74,7 +80,7 @@ Older documents (the Blueprint, the July architecture and Taxonomy, the Implemen
 
 ## JobMap: Life OS only, and Life OS owns its data (27–28 October 2026)
 
-Supersedes the two JobMap sections further down. Zahra, 27 October: "we only will work on the life os job map from now on". Develop and search into `jobmap/` only. Since 28 October its own server owns the saved workspace (`jobmap/data/workspace-connection.json`). The standalone `Documents\JobMap\Career Agent\JobMap App` is a frozen fallback: don't start its server, run its scripts or write to it. Details are in `jobmap/AGENTS.md`.
+Supersedes the two JobMap sections further down. Zahra, 27 October: "we only will work on the life os job map from now on". Develop and search into `jobmap/` only. Since 28 October its own server owns the saved workspace (`jobmap/data/workspace-connection.json`). The separate installation and its launchers were retired on 15 November. Its historical workspace is kept in the recovery archive described in `jobmap/AGENTS.md`.
 
 ## JobMap: maintain both copies (superseded 27 October 2026)
 

@@ -1,4 +1,12 @@
+# UK visa strategy: current direction (16 November 2026)
+
+Before career, JobMap or scheduled-search work, read `.private/career-strategy/README.md` and `.private/career-strategy/SCHEDULED-SEARCH.md` (from the Life OS root). They are a local reading copy of the canonical career-folder strategy; keep the copies aligned when updating it. The dated rule check is a snapshot, not permanent legal fact. This user-requested direction supersedes older no-graduate/no-2027 restrictions below. Preserve the existing technical scope, current permission limits, application-state protections and paused scheduler states. Personal immigration detail belongs in private data/documents, not app code.
+
+---
+
 # Life OS JobMap only, and it owns its data (27–28 October 2026)
+
+15 November 2026: the standalone app and its launchers were moved out of the career folder into `Documents\Backups\Retired Apps\JobMap Standalone 2026-11-15`. Life OS remains the active installation and workspace owner. The frozen paths mentioned below describe the previous location.
 
 Zahra, 27 October: "we only will work on the life os job map from now on". Develop, search into and queue only `C:\Users\ctrlz\Documents\Personal\Projects\Life_OS\jobmap`. On 28 October, at her choice, the saved workspace moved here: `data/workspace-connection.json` names this folder as the owner, served by the JobMap server Life OS starts (http://127.0.0.1:47852; public at http://127.0.0.1:47850/apps/jobmap/api/). The move used JobMap's own backup and restore, and all 1,195 jobs compared equal afterwards (backups in `Life_OS_backups/jobmap-move-2026-10-28/`).
 
@@ -18,7 +26,7 @@ User instruction, 8 October 2026: scheduled searches, manual vacancy updates and
 - Standalone: `C:\Users\ctrlz\Documents\JobMap\Career Agent\JobMap App`
 - Life OS: `C:\Users\ctrlz\Documents\Personal\Projects\Life_OS\jobmap`
 
-Read `C:\Users\ctrlz\Documents\JobMap\AGENTS.md` for the shared maintenance procedure and `C:\Users\ctrlz\Documents\JobMap\Career Agent\AGENTS.md` for career guidance. Follow the Life OS root instructions when working there.
+Read `C:\Users\ctrlz\Documents\JobMap\AGENTS.md` for the shared maintenance procedure and `C:\Users\ctrlz\Documents\JobMap\05 Career Guidance\AGENTS.md` for career guidance. Follow the Life OS root instructions when working there.
 
 For searches, research once, compare both collections and deliver the findings through each app's own discovery inbox, using the same runId. Dry-run and queue separately in each app folder; verify import results separately. Match vacancies by canonical URL, because custom IDs may differ. Preserve personal edits and dates. Do not copy progress.json or replace data folders.
 
