@@ -6,7 +6,7 @@ A history of what we chose, when and why. Newest first. A decision here means "t
 
 ## 17 November 2026 — The stage branch pushed; JobMap fixes added to the plan (Xar)
 
-Xar: "push the commits". `stage/7-separation` was not on GitHub, so it was pushed as a new branch (a plain push, no force), carrying its 53 commits since GitHub's `main`: stage 7 CP1–CP4, Tasks, the day checklist, Codex's records and stage 8 CP1. GitHub's `main` and local `main` were left as they were; one request, one push. The same day she added JobMap fixes to the plan (TODO AC) and chose to leave her Claude Code usage settings unchanged for now.
+Xar: "push the commits". `stage/7-separation` was not on GitHub, so it was pushed as a new branch (a plain push, no force), carrying its 52 commits since GitHub's `main`: stage 7 CP1–CP4, Tasks, the day checklist, Codex's records and stage 8 CP1. GitHub's `main` and local `main` were left as they were; one request, one push. The same day she added JobMap fixes to the plan (TODO AC) and chose to leave her Claude Code usage settings unchanged for now.
 
 ## 17 November 2026 — Stage 8, the task loop; two focus systems kept; cleaning starts (Xar)
 
