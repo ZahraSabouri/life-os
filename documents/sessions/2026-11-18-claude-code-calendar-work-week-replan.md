@@ -22,7 +22,7 @@ Xar (00:30, Wednesday 18 November): plan only, no code. Move Tuesday's unfinishe
 Dry run with an overlap check against the live calendar and entry validation; then `--apply`: a PostgreSQL custom-format dump listed with `pg_restore --list` first; Study state and plan saved with their revision and plan hash; core writes with If-Match. Read-back: 31 patched entries equal to the patch, 314 others unchanged, 378 entries; Study revision 137 → 138 with 8 blocks and 8 cards moved; day ticks unchanged; every new block on the calendar. Two repeat days (Wednesday's research/PhD review, Saturday's research block) reappeared when their dated occurrences moved; cancelled markers added; final check: no overlaps 18–29 November.
 
 ## Data touched
-Backup: `.runtime/work-week-2026-11-18/backups/planning-2026-11-18/before-work-week-replan-*.dump`. Core: 33 entries changed (31 + 2 marker-free cancellations counted within), 35 created (incl. 4 cancelled repeat markers). Study: revision 138. Nothing deleted, nothing marked done.
+Backup: `.runtime/work-week-2026-11-18/backups/planning-2026-11-18/before-work-week-replan-*.dump`. Core: 31 entries changed (two of them Friday's old ENCAP blocks, cancelled and kept), 35 created (4 of them cancelled repeat markers); 345 → 380 entries. Study: revision 138. Nothing deleted, nothing marked done.
 
 ## Problems and surprises
 - She wrote "Friday 29th"; 29 November is a Sunday. The note is on Friday 27; move it if Sunday was meant.
