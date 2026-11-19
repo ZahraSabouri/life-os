@@ -5,6 +5,8 @@
 Marks: `[x]` done · `[~]` partly · `[ ]` open · **(Xar)** needs her answer or is her step.
 
 ## The order of work
+**From 19 November the order is in [WORK_PLAN.md](WORK_PLAN.md)** (where each point stands, the plan in order, the decisions that are hers). The list below is the history of the order before it.
+
 1. ~~E. Dark mode across the app~~ done 12 October (Modern, as she asked).
 2. ~~A. The study plan's leftovers~~ checked and recorded 12 October; two small items left.
 3. **B. The day reaches everything:** done 12 October. Job time is a repeating plan through to 27 December.

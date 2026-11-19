@@ -17,7 +17,8 @@ import { createCalendarRouter } from './calendar-route.mjs'
 import { createDayRouter, createDayService } from './day/service.mjs'
 import { createChecksRouter, createDayChecks } from './day/checks.mjs'
 import { createThing, createThingRouter } from './thing.mjs'
-import { createStudyFocus, createStudyTick, createStudyTickHandler } from './study/hub/tick.mjs'
+import { createStudyFocus, createStudyMove, createStudyTick, createStudyTickHandler } from './study/hub/tick.mjs'
+import { createHash } from 'node:crypto'
 import { createReviewRouter, createReviewService } from './review/service.mjs'
 import { createAnalysisRouter, createAnalysisService, MAX_ANALYSIS_DAYS } from './review/analysis.mjs'
 import { createNoticesRouter, createNoticesService } from './notices/service.mjs'
@@ -246,6 +247,8 @@ export function createLifeOsApp(options = {}) {
   // What a day needs beyond its dated items: study blocks with their cards, and the current
   // content of Study, Jobs, Home and Notes. Read only.
   // A step of a study card ticked from the day, saved by the Study hub's own rule and revision check.
+  // A Study block or a card's day moved from the Life OS day (Running late, Move).
+  app.post('/api/day/study/move', createStudyTickHandler(options.studyMove ?? createStudyMove({ hub: study.hub, createHash }), (body) => body))
   app.post('/api/day/study', createStudyTickHandler(options.studyTick ?? createStudyTick({ hub: study.hub })))
   // A job marked "applied" or "rejected" from the day, saved by JobMap's own server.
   app.post('/api/day/jobs', createJobMarkHandler(options.jobMark ?? createJobMark({ getJobMapPort })))

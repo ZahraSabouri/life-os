@@ -125,3 +125,52 @@ export function createStudyTickHandler(run, shape = (body) => ({ semester: body.
     }
   }
 }
+
+// Moving a Study block (one day of the hub's plan) or a card's day from the Life OS day: the
+// block's own rule moves (only a block planned for one day; a repeating one is moved in the hub),
+// and the card's dates that sat on the old day follow. The plan is saved with its hash check and
+// the state with its revision check, so nothing changed elsewhere is written over. The answer
+// carries what puts it back.
+const DAY = /^\d{4}-\d{2}-\d{2}$/
+const CLOCK = /^([01]\d|2[0-3]):[0-5]\d$/
+const weekdayOf = (date) => ((new Date(`${date}T12:00:00Z`).getUTCDay() + 6) % 7) + 1
+function moveCardDates(state, cardId, from, to) {
+  const next = structuredClone(state)
+  const card = (Array.isArray(next.addedCards) ? next.addedCards : []).find((c) => c?.id === cardId)
+  if (!card) return { state: next, changed: false }
+  let changed = false
+  for (const key of ['startDate', 'dueDate', 'planningWindowStart', 'planningWindowEnd']) if (card[key] === from) { card[key] = to; changed = true }
+  return { state: next, changed }
+}
+export function createStudyMove({ hub, createHash }) {
+  return async ({ semester, rule, card, from, date, start, end } = {}) => {
+    if (!hub) throw new TickError(503, 'The Study hub is not available')
+    if (!named(semester) || !DAY.test(String(date)) || !DAY.test(String(from))) throw new TickError(400, 'Say which semester and which days')
+    let moved = null
+    if (rule) {
+      if (!named(rule) || !CLOCK.test(String(start)) || !CLOCK.test(String(end)) || end <= start) throw new TickError(400, 'Say which block and its new times')
+      const plan = await hub.plan(semester)
+      const rules = Array.isArray(plan?.scheduleRules) ? plan.scheduleRules : []
+      const found = rules.find((r) => r?.id === rule)
+      if (!found) throw new TickError(404, 'That Study block is not in the plan any more')
+      if (found.from !== found.to || found.from !== from) throw new TickError(409, 'This Study block repeats; move it in the Study hub')
+      moved = { rule, start: found.start, end: found.end }
+      const scheduleRules = rules.map((r) => (r.id === rule ? { ...r, from: date, to: date, start, end, weekdays: [weekdayOf(date)] } : r))
+      await hub.updatePlan(semester, { scheduleRules }, { expectedPlanHash: createHash('sha256').update(JSON.stringify(plan)).digest('hex') })
+      card = card || found.cardId
+    }
+    if (card && named(card) && from !== date) {
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const { payload, revision } = await hub.readState(semester)
+        if (!payload?.state) break
+        const result = moveCardDates(payload.state, card, from, date)
+        if (!result.changed) break
+        const saved = await hub.writeState(semester, result.state, { expectedRevision: revision, writerId: DAY_WRITER })
+        if (!saved.conflict) break
+        if (attempt === 1) throw new TickError(409, 'The Study hub is being changed somewhere else. Try again.')
+      }
+    }
+    // What puts it back: the same call with the old day and times.
+    return { moved: true, undo: { semester, ...(rule ? { rule, start: moved.start, end: moved.end } : {}), ...(card ? { card } : {}), from: date, date: from } }
+  }
+}

@@ -56,6 +56,8 @@ Refresh the app. [Today](http://127.0.0.1:47850/today) opens on the day's checkl
 
 ## Exact next step
 
+The whole plan for what is left is [WORK_PLAN.md](WORK_PLAN.md). Next there: "Finish CP2" (stage 8).
+
 0. Xar: refresh [Today](http://127.0.0.1:47850/today) and the [calendar](http://127.0.0.1:47850/calendar) for the 18 November replan; Wednesday and Thursday follow the Trello cards, Friday's meeting is at 9:00. ☆ and "Move" are on each task's line.
 1. Development: stage 8 CP2, "Continue stage 8: CP2, one model of a thing to do and the one-tap day actions" (running late +15/30/60, moving several at once, moving a Study card). Then CP3, "replan the rest of today". Then the JobMap fixes (TODO AC: Expired, acting on several adverts, date filters, search and status, tests). In Xar's order (TODO AB) the documents tidy, the audit map and the loading fixes follow, then the focus room.
 2. Stage 7 CP5 (the public version) waits until the audit map exists, so it does not publish code about to be reorganised (recommended 17 November; Xar may put it first again).
