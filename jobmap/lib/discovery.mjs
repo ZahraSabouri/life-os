@@ -2,7 +2,7 @@ import {randomUUID} from 'node:crypto';
 import {calendarDay} from './job-dates.mjs';
 import {sameVacancy} from './matching.mjs';
 
-const limits={role:500,company:300,url:4000,location:1000,salary:3000,hours:500,deadline:10,advertisedOn:10,description:100000,employment:1000,stack:3000,watch:5000,reason:5000,checked:10,source:200,sourceDetail:1000,availability:20};
+const limits={role:500,company:300,url:4000,location:1000,salary:3000,hours:500,deadline:10,advertisedOn:10,description:100000,employment:1000,stack:3000,watch:5000,reason:5000,checked:10,source:200,sourceDetail:1000,availability:20,jobStart:10,jobStartText:300,jobEnd:10,jobEndText:300};
 const object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
 export function canonicalUrl(raw){
  try{const u=new URL(raw);u.hash='';u.hostname=u.hostname.toLowerCase().replace(/^www\./,'');u.pathname=u.pathname.replace(/\/$/,'');
@@ -21,6 +21,8 @@ export function validateObservation(raw,validatePatch){
  if(clean.checked&&!/^\d{4}-\d{2}-\d{2}$/.test(clean.checked))throw new Error('Use a checked date as YYYY-MM-DD.');
  if(clean.checked)validatePatch({deadline:clean.checked});
  if(clean.availability&&!['open','closed','uncertain'].includes(clean.availability))throw new Error('Invalid vacancy availability.');
+ // When the job itself starts and ends, as the advert says (a month or season as its first day), with the advert's words.
+ for(const key of ['jobStart','jobEnd'])if(clean[key]&&(!/^\d{4}-\d{2}-\d{2}$/.test(clean[key])||Number.isNaN(Date.parse(clean[key]+'T12:00:00Z'))))throw new Error('Use '+key+' as YYYY-MM-DD.');
  return clean;
 }
 export function planImport(state,base,raw,validatePatch){

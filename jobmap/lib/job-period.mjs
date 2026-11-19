@@ -1,4 +1,5 @@
-// When a job starts and when it ends: her own dates first (startsOn, endsOn), otherwise what the
+// When a job starts and when it ends: her own dates first (startsOn, endsOn), then what the scheduled
+// search saved from the advert (jobStart, jobEnd and their words), otherwise what the
 // advert says in so many words. Only a real date next to a start or end word counts ("Start date:
 // September 2027", "commencing 1 October 2026", "until 31 March 2027", "Summer 2027 internship",
 // "12-week placement"), so boilerplate like "check the start date" or "until filled" is ignored.
@@ -34,12 +35,16 @@ const textOf = (job) => [job.role, job.employment, job.hours, job.description, .
 const addWeeks = (date, weeks) => new Date(Date.parse(date + 'T12:00:00Z') + weeks * 7 * 86400000).toISOString().slice(0, 10);
 const addMonths = (date, months) => { const d = new Date(date + 'T12:00:00Z'); d.setUTCMonth(d.getUTCMonth() + months); return d.toISOString().slice(0, 10); };
 
+// A saved date on the first of a month whose words name no day ("September 2027") is approximate.
+const roughly = (date, words = '') => date.endsWith('-01') && !/\b\d{1,2}(?:st|nd|rd|th)?\s+[a-z]/i.test(words || '');
 // { start: { date, approx, asap, source, words }, end: { date, approx, permanent, weeks, source, words } }
 export function jobPeriod(job) {
   const text = textOf(job);
   const start = { date: '', approx: false, asap: false, source: '', words: '' };
   const end = { date: '', approx: false, permanent: false, weeks: 0, source: '', words: '' };
   if (job.startsOn) Object.assign(start, { date: job.startsOn, source: 'mine' });
+  else if (job.jobStart) Object.assign(start, { date: job.jobStart, approx: roughly(job.jobStart, job.jobStartText), source: 'search', words: (job.jobStartText || '').slice(0, 80) });
+  else if (job.jobStartText && ASAP.test('start ' + job.jobStartText)) Object.assign(start, { asap: true, source: 'search', words: job.jobStartText.slice(0, 80) });
   else {
     let m = text.match(START), found = m && dateFrom(m, 1);
     if (!valid(found)) { m = text.match(START_AFTER); found = m && dateFrom(m, 1); }
@@ -53,6 +58,7 @@ export function jobPeriod(job) {
   if (length) end.weeks = (length[1] ? (length[2].toLowerCase() === 'week' ? Number(length[1]) : Number(length[1]) * 4.345) : (length[4].toLowerCase() === 'week' ? Number(length[3]) : Number(length[3]) * 4.345));
   end.weeks = Math.round(end.weeks);
   if (job.endsOn) Object.assign(end, { date: job.endsOn, source: 'mine' });
+  else if (job.jobEnd) Object.assign(end, { date: job.jobEnd, approx: roughly(job.jobEnd, job.jobEndText), source: 'search', words: (job.jobEndText || '').slice(0, 80) });
   else {
     const m = text.match(END), found = m && dateFrom(m, 1);
     if (valid(found) && (!start.date || found.date >= start.date)) Object.assign(end, found, { source: 'advert', words: m[0].trim().slice(0, 80) });
@@ -61,7 +67,7 @@ export function jobPeriod(job) {
       Object.assign(end, { date, approx: true, source: 'advert', words: length[0].trim().slice(0, 80) });
     }
   }
-  if (!end.date && !end.weeks && PERMANENT.test(text)) end.permanent = true;
+  if (!end.date && !end.weeks && (PERMANENT.test(text) || PERMANENT.test(job.jobEndText || ''))) end.permanent = true;
   return { start, end };
 }
 

@@ -114,3 +114,14 @@ test('a start or end filter looks past the focus tabs',()=>{
  const future=job('future',{description:'Graduate scheme starting in September 2027.'});
  assert.deepEqual(selectJobs([future],{scope:'parttime',starts:'after-sep'},undefined,today).map(r=>r.job.id),['future']);
 });
+import {validateObservation} from '../lib/discovery.mjs';
+test('the scheduled search can save when a job starts and ends, and JobMap reads it first',()=>{
+ const seen=validateObservation({role:'Analyst',company:'Fixture',url:'https://example.com/a',jobStart:'2027-09-01',jobStartText:'Start date: September 2027',jobEnd:'2028-08-31',jobEndText:'12-month placement'},validatePatch);
+ assert.equal(seen.jobStart,'2027-09-01');
+ assert.throws(()=>validateObservation({role:'A',company:'B',url:'https://example.com/b',jobStart:'Sept 2027'},validatePatch),/jobStart as YYYY-MM-DD/);
+ const saved=jobPeriod(job('s',{jobStart:'2027-09-01',jobStartText:'Start date: September 2027',jobEnd:'2028-08-31',jobEndText:'Ends 31 August 2028'}));
+ assert.deepEqual([saved.start.date,saved.start.approx,saved.start.source,saved.end.date,saved.end.approx],['2027-09-01',true,'search','2028-08-31',false]);
+ assert.equal(jobPeriod(job('a',{jobStartText:'As soon as possible'})).start.asap,true);
+ assert.equal(jobPeriod(job('p',{jobEndText:'Permanent'})).end.permanent,true);
+ assert.equal(jobPeriod(job('o',{jobStart:'2027-09-01',startsOn:'2027-10-04'})).start.date,'2027-10-04','her own date wins');
+});
