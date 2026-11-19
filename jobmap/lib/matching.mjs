@@ -180,6 +180,7 @@ export function matchesSearch(job,search,field=''){
 }
 // Date filters. Closing: today, tomorrow, this week (to Sunday), the next 7 or 30 days, passed, no date.
 // Added to JobMap: today, this week (from Monday), the last 7 or 30 days.
+import {startMatch,endMatch} from './job-period.mjs';
 export const CLOSES_FILTERS=[['','Any closing date'],['today','Closes today'],['tomorrow','Closes tomorrow'],['week','Closes this week'],['next7','Closes in the next 7 days'],['next30','Closes in the next 30 days'],['passed','Closing date passed'],['none','No closing date']];
 export const ADDED_FILTERS=[['','Added any time'],['today','Added today'],['week','Added this week'],['last7','Added in the last 7 days'],['last30','Added in the last 30 days']];
 export function closesMatch(job,closes,today=dayNow()){
@@ -196,18 +197,18 @@ export function addedMatch(job,added,today=dayNow()){
  const sinceMonday=(new Date(today+'T12:00:00Z').getUTCDay()+6)%7;
  return added==='today'?a===0:added==='week'?a>=-sinceMonday:added==='last7'?a>=-6:added==='last30'?a>=-29:true;
 }
-export function selectJobs(jobs,{view='all',scope='parttime',source='',search='',field='',sort='priority',status='',tag='',outcome='',docs='',visa='',hours='',closes='',added=''},profile=DEFAULT_PROFILE,today=dayNow()){
+export function selectJobs(jobs,{view='all',scope='parttime',source='',search='',field='',sort='priority',status='',tag='',outcome='',docs='',visa='',hours='',closes='',added='',starts='',ends=''},profile=DEFAULT_PROFILE,today=dayNow()){
  const q=search.toLowerCase().trim();
- // A chosen status finds every job with it, from any view; closed adverts are found when she asks for them.
- const overStatus=!!status,wantsClosed=closes==='passed';
+ // A chosen status finds every job with it, from any view; a start or end filter looks across every focus tab; closed adverts are found when she asks for them.
+ const overStatus=!!status,wantsClosed=closes==='passed',byPeriod=!!(starts||ends);
  const inList=job=>overStatus?job.status===status:wantsClosed&&view==='all'?!OVER.includes(job.status):inView(view,job,today);
  // A listing joined to another job is shown once, as that job.
  const repeats=view==='repeats'?repeatsOf(jobs):null;
  let rows=jobs.filter(job=>!job.sameAs&&inList(job)&&(!repeats||repeats.has(job.id))).map(job=>{const match=assess(job,profile,today);return {job,match,priority:assessPriority(job,match,today)};}).filter(({job,match,priority})=>{
-  if(view==='all'&&!overStatus&&!wantsClosed&&scope==='parttime'&&(!(match.parttime||match.hoursFit||job.track?.startsWith('A -'))||match.early||match.unpaid||match.contractor||match.closed))return false;
+  if(view==='all'&&!overStatus&&!wantsClosed&&!byPeriod&&scope==='parttime'&&(!(match.parttime||match.hoursFit||job.track?.startsWith('A -'))||match.early||match.unpaid||match.contractor||match.closed))return false;
   // Everything a check has seen open or possibly open, whatever its hours.
-  if(view==='all'&&!overStatus&&!wantsClosed&&scope==='apply'&&priority.section>3)return false;
-  if(view==='all'&&!overStatus&&!wantsClosed&&scope==='tech'&&(!match.software&&!match.data))return false;
+  if(view==='all'&&!overStatus&&!wantsClosed&&!byPeriod&&scope==='apply'&&priority.section>3)return false;
+  if(view==='all'&&!overStatus&&!wantsClosed&&!byPeriod&&scope==='tech'&&(!match.software&&!match.data))return false;
   if(source&&job.source!==source)return false;if(status&&job.status!==status)return false;
   if(outcome&&(job.outcome||'')!==outcome)return false;
   // What the advert says about visas; "open" leaves out only adverts limited by nationality or clearance.
@@ -223,6 +224,7 @@ export function selectJobs(jobs,{view='all',scope='parttime',source='',search=''
    if(docs==='folder'&&!job.folder)return false;
    if(docs==='files'&&!job.files?.length)return false;}
   if(!closesMatch(job,closes,today)||!addedMatch(job,added,today))return false;
+  if(!startMatch(job,starts,today)||!endMatch(job,ends,today))return false;
   if(tag&&!tagsOf(job).some(t=>t.toLowerCase()===tag.toLowerCase()))return false;
   if(q&&!matchesSearch(job,search,field))return false;
   return true;

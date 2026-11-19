@@ -11,8 +11,8 @@ import {EMPTY_CAREER_PROFILE,validateCareerProfile} from './career-profile.mjs';
 
 // Expired: the advert closed (or was taken down) before she applied; kept with the archive.
 export const STATUSES = ['To review','Check details','Preparing','Applied','Interview','Offer','Rejected','Expired','Archived'];
-const strings = {notes:30000,feedback:20000,nextStep:1000,decidedOn:10,followUp:10,applied:10,cv:2000,coverLetter:2000,tags:500,folder:1000,attachments:6000,hours:500,role:500,company:300,location:1000,salary:3000,url:4000,deadline:10,advertisedOn:10};
-const dateKeys = new Set(['followUp','applied','decidedOn','deadline','advertisedOn']);
+const strings = {notes:30000,feedback:20000,nextStep:1000,decidedOn:10,followUp:10,applied:10,cv:2000,coverLetter:2000,tags:500,folder:1000,attachments:6000,hours:500,role:500,company:300,location:1000,salary:3000,url:4000,deadline:10,advertisedOn:10,startsOn:10,endsOn:10};
+const dateKeys = new Set(['followUp','applied','decidedOn','deadline','advertisedOn','startsOn','endsOn']);
 // What the employer came back with, kept apart from the stage the job sits at.
 export const OUTCOMES = ['','Awaiting reply','Interview invited','Rejected','Offer','Withdrawn','Missed deadline'];
 const empty = () => ({schemaVersion:1,revision:0,updatedAt:null,overrides:{},customJobs:[],preferences:{...DEFAULT_PROFILE}});

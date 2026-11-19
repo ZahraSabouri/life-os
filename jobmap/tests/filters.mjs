@@ -75,3 +75,42 @@ test('many jobs change in one save, with each job’s earlier values for Undo',a
   assert.equal(store.state.revision,2,'nothing saved by a refused change');
  }finally{await fs.rm(directory,{recursive:true,force:true});}
 });
+
+// Part 2: when the job starts and ends.
+import {jobPeriod,startMatch,endMatch,nextSeptember} from '../lib/job-period.mjs';
+test('the job’s start and end come from her own dates, else a real date next to a start or end word',()=>{
+ const p=(description,extra={})=>jobPeriod(job('p',{description,...extra}));
+ assert.deepEqual([p('Start date: September 2027.').start.date,p('Start date: September 2027.').start.approx],['2027-09-01',true]);
+ assert.equal(p('The role is commencing on 1 October 2026.').start.date,'2026-10-01');
+ assert.equal(p('This is a 2027 Summer Internship in data.').start.date,'2027-06-01');
+ assert.equal(p('Immediate start available.').start.asap,true);
+ assert.equal(p('Please check the start date and eligibility before applying.').start.date,'','boilerplate is not a start date');
+ assert.equal(p('Apply as soon as possible.').start.asap,false,'applying soon is not starting soon');
+ assert.equal(p('Open until filled. Permanent, full time.').end.permanent,true);
+ assert.equal(p('Fixed term until 31 March 2027.').end.date,'2027-03-31');
+ const placement=p('A 10-week internship starting June 2027.');
+ assert.deepEqual([placement.end.weeks,placement.end.date],[10,'2027-08-10']);
+ const mine=jobPeriod(job('m',{description:'Start date: September 2027.',startsOn:'2027-10-04',endsOn:'2028-03-31'}));
+ assert.deepEqual([mine.start.date,mine.start.source,mine.end.date,mine.end.source],['2027-10-04','mine','2028-03-31','mine']);
+});
+test('start and end filters: soon, next summer, after next September, permanent, fixed, before September, short',()=>{
+ const t=today;assert.equal(nextSeptember(t),'2027-09-01');
+ const on=(description)=>job('f',{description});
+ assert.equal(startMatch(on('Immediate start.'),'asap',t),true);
+ assert.equal(startMatch(on('Start date: 5 January 2027.'),'3m',t),true);
+ assert.equal(startMatch(on('A 2027 summer internship programme.'),'summer',t),true);
+ assert.equal(startMatch(on('Starting in September 2027.'),'after-sep',t),true);
+ assert.equal(startMatch(on('Starting in September 2027.'),'3m',t),false);
+ assert.equal(startMatch(on('No dates here.'),'none',t),true);
+ assert.equal(endMatch(on('Permanent role.'),'permanent',t),true);
+ assert.equal(endMatch(on('A 12-week placement starting June 2027.'),'fixed',t),true);
+ assert.equal(endMatch(on('A 12-week placement starting June 2027.'),'before-sep',t),true);
+ assert.equal(endMatch(on('A 12-week placement starting June 2027.'),'short',t),true);
+ assert.equal(endMatch(on('Permanent role.'),'none',t),false);
+ const ids=selectJobs([on('Starting in September 2027.'),{...on('Permanent.'),id:'g'}],{scope:'all',starts:'after-sep'},undefined,t).map(r=>r.job.id);
+ assert.deepEqual(ids,['f']);
+});
+test('a start or end filter looks past the focus tabs',()=>{
+ const future=job('future',{description:'Graduate scheme starting in September 2027.'});
+ assert.deepEqual(selectJobs([future],{scope:'parttime',starts:'after-sep'},undefined,today).map(r=>r.job.id),['future']);
+});
