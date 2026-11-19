@@ -10,10 +10,9 @@
 - **Checks:** `tests/filters.mjs` (in `npm test`); the whole JobMap suite passes; Life OS render tests (tasks, day, inbox); a headless walk of JobMap and Tasks with saves answered in the browser; the Madder style looked at.
 
 ## Part 2 (built 19 November)
-- **When the job starts and ends:**  reads her own dates (, , editable in the details) or a real date next to a start or end word in the advert (month or season = approximate); permanent and placement lengths too. Shown on each job’s dates (with the advert’s words on hover). Filters: as soon as possible, within 3 months, next summer, the next September or later, not stated; permanent, fixed term, ends before the next September, six months or shorter. Status, start and end filters look past the focus tabs. Tests in .
-- **Data:** 604 archived adverts with no time left became Expired (8 without a closing date stay Archived); JobMap backup in .
+- **When the job starts and ends:** `lib/job-period.mjs` reads her own dates (`startsOn`, `endsOn`, editable in the details) or a real date next to a start or end word in the advert (month or season = approximate); permanent and placement lengths too. Shown on each job's dates (with the advert's words on hover). Filters: as soon as possible, within 3 months, next summer, the next September or later, not stated; permanent, fixed term, ends before the next September, six months or shorter. Status, start and end filters look past the focus tabs. Tests in `tests/filters.mjs` (8).
+- **Data:** at her answer ("archived adverts if have no time left for application they are technically expired"), 604 archived adverts whose closing date had passed became Expired; 8 without a closing date stay Archived. JobMap backup and journal in `.runtime/jobmap-expire-2026-11-19/`.
 
 ## Still open
-- The job's start date and possible end date (new fields, read from the advert where it says, by hand otherwise) with filters ("starts after September 2027", "fits the summer").
-- More tests and a walk of JobMap as she uses it; fix what gets in the way.
-- Xar's answer: should the 612 archived adverts (562 of them Missed deadline) become Expired? A data change, backed up first, through the new many-jobs save.
+- About 7% of adverts state a start date; the rest read "Start date not stated" until she adds one. The scheduled search could save the start and end dates it sees.
+- More UX: a walk of JobMap as she uses it; fix what gets in the way.
