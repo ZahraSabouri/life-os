@@ -70,6 +70,7 @@ const server=http.createServer(async(req,res)=>{
   if(url.pathname==='/api/jobs'&&req.method==='GET'){json(res,{jobs:store.jobs(),revision:store.state.revision,updatedAt:store.state.updatedAt,preferences:store.state.preferences,careerProfile:store.careerProfile()});return;}
   if(url.pathname==='/api/preferences'&&req.method==='PUT'){const b=await body(req);json(res,await store.preferences(b.preferences,b.revision));return;}
   if(url.pathname==='/api/jobs'&&req.method==='POST'){const b=await body(req);json(res,await store.add(b.job,b.revision),201);return;}
+  if(url.pathname==='/api/jobs/bulk'&&req.method==='POST'){const b=await body(req,2*1024*1024);json(res,await store.patchMany(b.changes,b.revision));return;}
   if(url.pathname.startsWith('/api/jobs/')&&req.method==='PATCH'){const b=await body(req);json(res,await store.patch(decodeURIComponent(url.pathname.slice(10)),b.patch,b.revision));return;}
   if(url.pathname==='/api/backup'&&req.method==='GET'){res.setHeader('Content-Disposition',`attachment; filename="JobMap-backup-${new Date().toISOString().slice(0,10)}.json"`);json(res,await files.withFiles(store.export(),store.all()));return;}
   if(url.pathname==='/api/restore'&&req.method==='POST'){const b=await body(req,90*1024*1024);const result=await store.restore(b.backup,b.revision);await files.putBack(b.backup,store.all());json(res,result);return;}

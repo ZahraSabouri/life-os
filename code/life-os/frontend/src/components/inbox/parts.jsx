@@ -57,7 +57,7 @@ const since = (row) => {
   return days >= 1 ? `waiting ${days} ${days === 1 ? 'day' : 'days'}` : 'since today'
 }
 
-// One thing she owes: Done, Tomorrow, Next week, Not needed, the email, its priority, a note.
+// One thing she owes: Done, Tomorrow, Next week, Dismiss (not needed), the email, its priority, a note.
 export function ActionLine({ row, today, undo, id, compact = false, onError = () => {} }) {
   const [note, setNote] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -90,7 +90,7 @@ export function ActionLine({ row, today, undo, id, compact = false, onError = ()
         <button type="button" disabled={busy} onClick={() => change({ status: 'done' }, 'Done.')}>Done</button>
         <button type="button" disabled={busy} onClick={() => snooze(1, 'Moved to tomorrow.')}>Tomorrow</button>
         {compact ? null : <button type="button" disabled={busy} onClick={() => snooze(7, 'Moved to next week.')}>Next week</button>}
-        {compact ? null : <button type="button" disabled={busy} onClick={() => change({ status: 'not-needed' }, 'Marked not needed.')}>Not needed</button>}
+        <button type="button" disabled={busy} onClick={() => change({ status: 'not-needed' }, 'Dismissed.')} title="Not needed any more: it leaves the list and is kept">Dismiss</button>
       </>}
       {row.link && /^https:\/\//.test(row.link) ? <a href={row.link} target="_blank" rel="noopener noreferrer">Open the email</a> : null}
       {compact ? null : <>

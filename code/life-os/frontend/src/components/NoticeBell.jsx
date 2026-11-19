@@ -81,7 +81,7 @@ export function NoticePanel() {
                 <span className="notice-actions">
                   {notice.action?.kind === 'mail' ? <>
                     <button type="button" disabled={working} onClick={() => run(notice, 'done')} title="Done: saved in Waiting on you">Done</button>
-                    <button type="button" disabled={working} onClick={() => run(notice, 'not-needed')} title="Not needed any more: saved in Waiting on you">Not needed</button>
+                    <button type="button" disabled={working} onClick={() => run(notice, 'not-needed')} title="Not needed any more: it leaves the list and is kept">Dismiss</button>
                   </> : null}
                   {level === 'late' ? <button type="button" className="is-quiet" onClick={() => notices.hide([notice.id])} aria-label={`Take off the bell: ${notice.title}`} title="Take it off the bell">Hide</button>
                     : seen ? null : <button type="button" className="is-quiet" onClick={() => notices.markSeen([notice.id])} aria-label={`Seen: ${notice.title}`} title="Seen">✓</button>}

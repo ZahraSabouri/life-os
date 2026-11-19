@@ -225,3 +225,9 @@ summary:after { color: var(--muted); }
 .deadline-close { border-color: color-mix(in srgb, var(--amber) 40%, var(--line)); background: color-mix(in srgb, var(--amber) 9%, var(--panel)); border-radius: var(--radius); }
 .documents-preview iframe { border-color: var(--line); border-radius: var(--radius-sm); }
 .visa-tag { border-radius: var(--radius-pill); } .visa-citizens { background: color-mix(in srgb, var(--red) 12%, var(--panel)); color: color-mix(in srgb, var(--red) 80%, var(--ink)); } .visa-sponsor { background: color-mix(in srgb, var(--green) 14%, var(--panel)); color: color-mix(in srgb, var(--green) 75%, var(--ink)); }
+/* JobMap part 1 (19 November 2026): the bar for several chosen jobs, a chosen row, Expired. */
+.bulk-bar { background: var(--panel); color: var(--ink); border: var(--m-card-outline); border-radius: var(--radius-lg); box-shadow: var(--shadow-1); }
+.bulk-bar b { color: var(--ink); }
+.pick-job input { accent-color: var(--m-accent, var(--accent, currentColor)); }
+.job-row.is-picked { background: color-mix(in srgb, var(--m-accent, var(--accent, currentColor)) 10%, transparent); box-shadow: inset 3px 0 var(--m-accent, var(--accent, currentColor)); }
+.status-expired { background: var(--panel-2); color: var(--muted); }

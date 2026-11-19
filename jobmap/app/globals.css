@@ -136,3 +136,9 @@ button.my-tag{cursor:pointer;color:var(--blue)}button.my-tag:hover{border-color:
 .visa-tag{font-size:.75rem;border-radius:5px;padding:1px 7px}.visa-citizens{background:#fbe9e7;color:#9c2b1c}.visa-sponsor{background:#e6f4ea;color:#1e6b34}
 /* Search on its own row, with the filters wrapping beneath it, at every width. */
 .toolbar{flex-wrap:wrap}.toolbar>.search-box{flex:1 1 100%}
+/* JobMap part 1 (19 November 2026): expired adverts, choosing several jobs, the filters wrapping. */
+.status-expired{background:#f6efe9;color:#9a6f52}
+.toolbar{flex-wrap:wrap}.toolbar>.search-box{flex:1 1 260px}
+.pick-job{display:flex;align-items:flex-start;margin:0;padding:25px 0 0 14px;cursor:pointer}.pick-job input{width:17px;height:17px;margin:0;padding:0;cursor:pointer;accent-color:var(--blue)}.job-row .pick-job+.job-open{padding-left:12px}
+.job-row.is-picked{background:#f1f5ff;box-shadow:inset 3px 0 #9bb5fd}
+.bulk-bar{position:sticky;top:0;z-index:4;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:0 0 12px;padding:10px 14px;background:#fff;border:1px solid #c9d7fb;border-radius:10px;box-shadow:0 4px 18px #23325514;font-size:.875rem}.bulk-bar b{margin-right:4px;font-weight:600}.bulk-bar button{display:inline-flex;align-items:center;gap:6px;padding:7px 11px}.bulk-bar select{width:auto;padding:7px 26px 7px 10px}

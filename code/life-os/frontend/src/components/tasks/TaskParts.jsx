@@ -94,10 +94,10 @@ export function TaskSteps({ task, editable = false, limit = 0, busy = false, onE
 // A card for a task of any kind. `item` is { key, kind: 'own' | 'study' | 'mail', title, done, task?, … }
 // as the Tasks page and the day gather them (lib/taskItems.js). With `onMove` (and `onStar` for her
 // own tasks) an open card carries the star and the move menu.
-export function TaskCard({ item, today, onOpen, onToggle, onMove, onStar, busy, compact = false, draggable = false, onDragStart }) {
+export function TaskCard({ item, today, onOpen, onToggle, onMove, onStar, onDismiss, busy, compact = false, draggable = false, onDragStart }) {
   const own = item.kind === 'own'
   const starred = own && Boolean(item.task.favorite)
-  const tools = !item.done && (onMove || (own && onStar))
+  const tools = !item.done && (onMove || onDismiss || (own && onStar))
   return <article className={`task-card${item.done ? ' is-done' : ''}${item.late ? ' is-late' : ''}${starred ? ' is-starred' : ''}${own ? ' is-own' : ` is-${item.kind}`}`} style={{ '--item-accent': item.tone }}
     draggable={draggable} onDragStart={onDragStart}>
     <TaskTick done={item.done} busy={busy} label={`${item.done ? 'Not done after all' : 'Done'}: ${item.title}`} onToggle={onToggle} />
@@ -109,6 +109,7 @@ export function TaskCard({ item, today, onOpen, onToggle, onMove, onStar, busy, 
       {tools ? <div className="task-tools">
         {own && onStar ? <StarButton on={starred} title={item.title} busy={busy} onToggle={onStar} /> : null}
         {onMove ? <MoveMenu title={item.title} day={item.day} today={today} waiting={item.kind === 'mail'} busy={busy} onMove={onMove} /> : null}
+        {onDismiss ? <button type="button" className="task-move-button" disabled={busy} onClick={onDismiss} aria-label={`Dismiss: ${item.title}`} title="Not needed any more: it leaves the list and is kept">Dismiss</button> : null}
       </div> : null}
     </div>
   </article>

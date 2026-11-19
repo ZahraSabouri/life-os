@@ -9,7 +9,8 @@ import {validDocuments} from './documents.mjs';
 import legacyDates from './legacy-dates.json' with {type:'json'};
 import {EMPTY_CAREER_PROFILE,validateCareerProfile} from './career-profile.mjs';
 
-export const STATUSES = ['To review','Check details','Preparing','Applied','Interview','Offer','Rejected','Archived'];
+// Expired: the advert closed (or was taken down) before she applied; kept with the archive.
+export const STATUSES = ['To review','Check details','Preparing','Applied','Interview','Offer','Rejected','Expired','Archived'];
 const strings = {notes:30000,feedback:20000,nextStep:1000,decidedOn:10,followUp:10,applied:10,cv:2000,coverLetter:2000,tags:500,folder:1000,attachments:6000,hours:500,role:500,company:300,location:1000,salary:3000,url:4000,deadline:10,advertisedOn:10};
 const dateKeys = new Set(['followUp','applied','decidedOn','deadline','advertisedOn']);
 // What the employer came back with, kept apart from the stage the job sits at.
@@ -30,7 +31,7 @@ const STAGE=['To review','Check details','Preparing','Applied','Interview','Offe
 function combine(keep,other){
  const out={},earliest=(a,b)=>[a,b].filter(Boolean).sort()[0]||'';
  if(other.saved&&!keep.saved)out.saved=true;
- const over=s=>['Archived','Rejected'].includes(s);
+ const over=s=>['Archived','Rejected','Expired'].includes(s);
  // An archived job stays archived unless she had already started on the other listing.
  if(!over(other.status)&&STAGE.indexOf(other.status)>(over(keep.status)?0:STAGE.indexOf(keep.status)))out.status=other.status;
  if(other.priority&&(other.priority<keep.priority||!keep.priority))out.priority=other.priority;
@@ -105,6 +106,24 @@ export class Store {
   const files=(await readdir(path.join(this.directory,'backups'))).filter(n=>n.endsWith('.json')).sort();
   for(const f of files.slice(0,-40))await unlink(path.join(this.directory,'backups',f)).catch(()=>{});
  }
+ // The same kind of change to many jobs at once (archive, expire, a status, a priority, a category),
+ // or each job's own earlier values for Undo: one check, one save, one recovery copy.
+ patchMany(changes,revision){return this.run(async()=>{
+  this.check(revision);if(!Array.isArray(changes)||!changes.length||changes.length>500)throw new Error('Choose between 1 and 500 jobs.');
+  const jobs=new Map(this.jobs().map(j=>[j.id,j])),seen=new Set(),next=structuredClone(this.state),previous=[],at=new Date().toISOString();
+  for(const change of changes){
+   if(!object(change)||!isId(change.id)||seen.has(change.id))throw new Error('Each job once, with its changes.');seen.add(change.id);
+   const current=jobs.get(change.id);if(!current)throw new Error('Job not found.');
+   const patch=validatePatch(change.patch);if(Object.hasOwn(patch,'sameAs')||Object.hasOwn(patch,'notSame'))throw new Error('Join or separate jobs one at a time.');
+   if(patch.status==='Applied'&&!current.applied&&!Object.hasOwn(patch,'applied'))patch.applied=localDay();
+   previous.push({id:change.id,patch:Object.fromEntries(Object.keys(patch).map(k=>[k,current[k]??(k==='saved'?false:'')]))});
+   const existing=next.overrides[change.id]||{};const history=[...(existing.history||[])];
+   if(patch.status&&patch.status!==current.status)history.push({at,label:`${current.status} → ${patch.status}`});
+   next.overrides[change.id]={...existing,...patch,history:history.slice(-100)};
+  }
+  await this.persist(next,'bulk');const after=new Map(this.jobs().map(j=>[j.id,j]));
+  return {jobs:[...seen].map(id=>after.get(id)),previous,revision:this.state.revision};
+ });}
  patch(id,raw,revision){return this.run(async()=>{
   this.check(revision);const current=this.jobs().find(j=>j.id===id);if(!current)throw new Error('Job not found.');const patch=validatePatch(raw);if(Object.hasOwn(patch,'sameAs'))throw new Error('Unsupported field: sameAs');const next=structuredClone(this.state);
   if(patch.status==='Applied'&&!current.applied&&!Object.hasOwn(patch,'applied'))patch.applied=localDay();

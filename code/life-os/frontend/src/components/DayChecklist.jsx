@@ -31,7 +31,7 @@ function StudySteps({ row, page }) {
   </ol>
 }
 
-function Row({ row, page, open, onToggleOpen, onTick, busy, detailsTo, onOpen, onMove, onStar, onOpenTask }) {
+function Row({ row, page, open, onToggleOpen, onTick, busy, detailsTo, onOpen, onMove, onStar, onOpenTask, onDismiss }) {
   const place = placeOf(row.href)
   const meta = [row.kind, row.place, stepCount(row), row.hours ? hoursText(row.hours) : '', row.late && row.lateFrom ? `from ${formatCalendarDay(row.lateFrom, { weekday: 'short' })}` : '', row.extra].filter(Boolean)
   const verb = row.kind === 'Class' ? (row.done ? 'Not gone after all' : 'Went') : row.done ? 'Not done after all' : 'Done'
@@ -53,6 +53,7 @@ function Row({ row, page, open, onToggleOpen, onTick, busy, detailsTo, onOpen, o
         </div> : null}
         {row.how === 'mail' && !row.done ? <div className="task-tools checklist-tools">
           <MoveMenu title={row.title} day={page.date} today={page.today} waiting busy={busy} onMove={(choice) => onMove(row, choice)} />
+          <button type="button" className="task-move-button" disabled={busy} onClick={() => onDismiss(row)} aria-label={`Dismiss: ${row.title}`} title="Not needed any more: it leaves the list and is kept">Dismiss</button>
         </div> : null}
         <p className="checklist-actions">
           {place ? <Link to={row.href}>Open in {place}</Link> : row.href && row.href !== '/calendar' && !task ? <Link to={row.href}>Open it</Link> : null}
@@ -107,6 +108,12 @@ export default function DayChecklist({ page, onOpen, title, className = '' }) {
     setSaid({ words: `${row.task.favorite ? 'Star taken off' : 'Starred, first in every list'}: “${row.title}”.`, undo: () => setTaskStar(saved, row.task.favorite) })
   })
   const undo = () => run('undo', async () => { await said.undo() })
+  // A thing waiting on her that is not needed any more: it leaves the list and is kept.
+  const dismiss = (row) => run(row.key, async () => {
+    const saved = await saveAction(row.row, { status: 'not-needed' })
+    mail.reload()
+    setSaid({ words: `Dismissed: “${row.title}”.`, undo: async () => { await saveAction(saved, { status: row.row.status }); mail.reload() } })
+  })
   function tick(row) {
     // A tick kept for the day is taken back the same way.
     if (row.checked) return run(row.key, () => tickCheck(date, row.key, false, row.title))
@@ -126,7 +133,7 @@ export default function DayChecklist({ page, onOpen, title, className = '' }) {
   }
   const detailsTo = (row) => (row.key.startsWith('task:') || row.key.startsWith('mail:') ? '' : `/calendar?day=${date}&item=${encodeURIComponent(row.key)}`)
   const rowProps = (row) => ({ row, page, open: openKey === row.key, onToggleOpen: () => setOpenKey(openKey === row.key ? '' : row.key), onTick: () => tick(row),
-    busy: Boolean(busy || page.savingId), detailsTo: detailsTo(row), onOpen, onMove: move, onStar: star, onOpenTask: (id) => setOpenTask({ id, how: false }) })
+    busy: Boolean(busy || page.savingId), detailsTo: detailsTo(row), onOpen, onMove: move, onStar: star, onDismiss: dismiss, onOpenTask: (id) => setOpenTask({ id, how: false }) })
   const opened = openTask.id ? page.tasks.tasks.find((task) => task.id === openTask.id) : null
   const percent = list.total ? Math.round((list.done / list.total) * 100) : 0
   const loading = page.loading && !list.total

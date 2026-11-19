@@ -112,6 +112,9 @@ export default function TasksView() {
     }
     return undefined
   }
+  // A thing waiting on her that is not needed any more: it leaves the list and is kept.
+  const dismiss = (item) => run(item.key, async () => { const saved = await saveAction(item.row, { status: 'not-needed' }); mail.reload(); return async () => { await saveAction(saved, { status: item.row.status }); mail.reload() } },
+    `Dismissed: “${item.title}”.`)
   const star = (item) => run(item.key, async () => { const saved = await setTaskStar(item.task, !item.task.favorite); return () => setTaskStar(saved, item.task.favorite) },
     `${item.task.favorite ? 'Star taken off' : 'Starred, first in every list'}: “${item.title}”.`)
   function drop(lane) {
@@ -124,6 +127,7 @@ export default function TasksView() {
 
   const card = (item) => <TaskCard key={item.key} item={item} today={today} busy={Boolean(busy)} onOpen={() => openItem(item)} onToggle={item.kind === 'study' && !item.card.hubCardId ? undefined : () => toggle(item)}
     onMove={item.kind === 'own' || item.kind === 'mail' ? (choice) => move(item, choice) : undefined} onStar={item.kind === 'own' ? () => star(item) : undefined}
+    onDismiss={item.kind === 'mail' ? () => dismiss(item) : undefined}
     draggable={item.kind === 'own'} onDragStart={(event) => { setDragging(item.key); event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', item.key) }} />
 
   return <section className="today-layout unified-today day-page tasks-page" aria-label="Tasks">
